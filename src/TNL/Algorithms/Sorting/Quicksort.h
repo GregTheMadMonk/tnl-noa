@@ -11,8 +11,8 @@
 #include <TNL/Algorithms/Sorting/detail/Quicksorter.h>
 
 namespace TNL {
-   namespace Algorithms {
-      namespace Sorting {
+namespace Algorithms {
+namespace Sorting {
 
 struct Quicksort
 {
@@ -29,9 +29,8 @@ struct Quicksort
       Quicksorter< typename Array::ValueType, typename Array::DeviceType > qs;
       qs.sort( array, compare );
    }
-
 };
 
-      } // namespace Sorting
-   } // namespace Algorithms
-} //namespace TNL
+}  // namespace Sorting
+}  // namespace Algorithms
+}  // namespace TNL

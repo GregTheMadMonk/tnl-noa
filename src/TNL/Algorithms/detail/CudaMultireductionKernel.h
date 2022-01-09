@@ -29,45 +29,43 @@ namespace detail {
 static constexpr int Multireduction_maxThreadsPerBlock = 256;  // must be a power of 2
 static constexpr int Multireduction_registersPerThread = 32;   // empirically determined optimal value
 
-// __CUDA_ARCH__ is defined only in device code!
-#if (__CUDA_ARCH__ == 750 )
-   // Turing has a limit of 1024 threads per multiprocessor
-   static constexpr int Multireduction_minBlocksPerMultiprocessor = 4;
-#else
-   static constexpr int Multireduction_minBlocksPerMultiprocessor = 8;
-#endif
+   // __CUDA_ARCH__ is defined only in device code!
+   #if( __CUDA_ARCH__ == 750 )
+                                                              // Turing has a limit of 1024 threads per multiprocessor
+static constexpr int Multireduction_minBlocksPerMultiprocessor = 4;
+   #else
+static constexpr int Multireduction_minBlocksPerMultiprocessor = 8;
+   #endif
 
-template< int blockSizeX,
-          typename Result,
-          typename DataFetcher,
-          typename Reduction,
-          typename Index >
-__global__ void
+template< int blockSizeX, typename Result, typename DataFetcher, typename Reduction, typename Index >
+__global__
+void
 __launch_bounds__( Multireduction_maxThreadsPerBlock, Multireduction_minBlocksPerMultiprocessor )
-CudaMultireductionKernel( const Result identity,
-                          DataFetcher dataFetcher,
-                          const Reduction reduction,
-                          const Index size,
-                          const int n,
-                          Result* output )
+   CudaMultireductionKernel( const Result identity,
+                             DataFetcher dataFetcher,
+                             const Reduction reduction,
+                             const Index size,
+                             const int n,
+                             Result* output )
 {
    Result* sdata = Cuda::getSharedMemory< Result >();
 
    // Get the thread id (tid), global thread id (gid) and gridSize.
    const Index tid = threadIdx.y * blockDim.x + threadIdx.x;
-         Index gid = blockIdx.x * blockDim.x + threadIdx.x;
+   Index gid = blockIdx.x * blockDim.x + threadIdx.x;
    const Index gridSizeX = blockDim.x * gridDim.x;
 
    // Get the dataset index.
    const int y = blockIdx.y * blockDim.y + threadIdx.y;
-   if( y >= n ) return;
+   if( y >= n )
+      return;
 
    sdata[ tid ] = identity;
 
    // Start with the sequential reduction and push the result into the shared memory.
    while( gid + 4 * gridSizeX < size ) {
-      sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid,                 y ) );
-      sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid + gridSizeX,     y ) );
+      sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid, y ) );
+      sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid + gridSizeX, y ) );
       sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid + 2 * gridSizeX, y ) );
       sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid + 3 * gridSizeX, y ) );
       gid += 4 * gridSizeX;
@@ -100,7 +98,7 @@ CudaMultireductionKernel( const Result identity,
       __syncthreads();
    }
    if( blockSizeX >= 128 ) {
-      if( threadIdx.x <  64 )
+      if( threadIdx.x < 64 )
          sdata[ tid ] = reduction( sdata[ tid ], sdata[ tid + 64 ] );
       __syncthreads();
    }
@@ -120,13 +118,13 @@ CudaMultireductionKernel( const Result identity,
       if( blockSizeX >= 16 )
          sdata[ tid ] = reduction( sdata[ tid ], sdata[ tid + 8 ] );
       __syncwarp();
-      if( blockSizeX >=  8 )
+      if( blockSizeX >= 8 )
          sdata[ tid ] = reduction( sdata[ tid ], sdata[ tid + 4 ] );
       __syncwarp();
-      if( blockSizeX >=  4 )
+      if( blockSizeX >= 4 )
          sdata[ tid ] = reduction( sdata[ tid ], sdata[ tid + 2 ] );
       __syncwarp();
-      if( blockSizeX >=  2 )
+      if( blockSizeX >= 2 )
          sdata[ tid ] = reduction( sdata[ tid ], sdata[ tid + 1 ] );
    }
 
@@ -137,10 +135,7 @@ CudaMultireductionKernel( const Result identity,
 }
 #endif
 
-template< typename Result,
-          typename DataFetcher,
-          typename Reduction,
-          typename Index >
+template< typename Result, typename DataFetcher, typename Reduction, typename Index >
 int
 CudaMultireductionKernelLauncher( const Result identity,
                                   DataFetcher dataFetcher,
@@ -169,19 +164,19 @@ CudaMultireductionKernelLauncher( const Result identity,
    launch_config.blockSize.y = TNL::min( n, 16 );
 
    // version B: up to 16 rows of threads, then "minimize" number of inactive rows
-//   if( n <= 16 )
-//      launch_config.blockSize.y = n;
-//   else {
-//      int r = (n - 1) % 16 + 1;
-//      if( r > 12 )
-//         launch_config.blockSize.y = 16;
-//      else if( r > 8 )
-//         launch_config.blockSize.y = 4;
-//      else if( r > 4 )
-//         launch_config.blockSize.y = 8;
-//      else
-//         launch_config.blockSize.y = 4;
-//   }
+   //   if( n <= 16 )
+   //      launch_config.blockSize.y = n;
+   //   else {
+   //      int r = (n - 1) % 16 + 1;
+   //      if( r > 12 )
+   //         launch_config.blockSize.y = 16;
+   //      else if( r > 8 )
+   //         launch_config.blockSize.y = 4;
+   //      else if( r > 4 )
+   //         launch_config.blockSize.y = 8;
+   //      else
+   //         launch_config.blockSize.y = 4;
+   //   }
 
    // launch_config.blockSize.x has to be a power of 2
    launch_config.blockSize.x = Multireduction_maxThreadsPerBlock;
@@ -192,7 +187,8 @@ CudaMultireductionKernelLauncher( const Result identity,
    launch_config.gridSize.y = Cuda::getNumberOfBlocks( n, launch_config.blockSize.y );
 
    if( launch_config.gridSize.y > (unsigned) Cuda::getMaxGridSize() ) {
-      std::cerr << "Maximum launch_config.gridSize.y limit exceeded (limit is 65535, attempted " << launch_config.gridSize.y << ")." << std::endl;
+      std::cerr << "Maximum launch_config.gridSize.y limit exceeded (limit is 65535, attempted " << launch_config.gridSize.y
+                << ")." << std::endl;
       throw 1;
    }
 
@@ -205,61 +201,132 @@ CudaMultireductionKernelLauncher( const Result identity,
 
    // when there is only one warp per launch_config.blockSize.x, we need to allocate two warps
    // worth of shared memory so that we don't index shared memory out of bounds
-   launch_config.dynamicSharedMemorySize = (launch_config.blockSize.x <= 32)
-            ? 2 * launch_config.blockSize.x * launch_config.blockSize.y * sizeof( Result )
-            : launch_config.blockSize.x * launch_config.blockSize.y * sizeof( Result );
+   launch_config.dynamicSharedMemorySize = ( launch_config.blockSize.x <= 32 )
+                                            ? 2 * launch_config.blockSize.x * launch_config.blockSize.y * sizeof( Result )
+                                            : launch_config.blockSize.x * launch_config.blockSize.y * sizeof( Result );
 
    // Depending on the blockSize we generate appropriate template instance.
-   switch( launch_config.blockSize.x )
-   {
+   switch( launch_config.blockSize.x ) {
       case 512:
-         Cuda::launchKernelSync( CudaMultireductionKernel< 512, Result, DataFetcher, Reduction, Index >, 0, launch_config,
-                                 identity, dataFetcher, reduction, size, n, output );
+         Cuda::launchKernelSync( CudaMultireductionKernel< 512, Result, DataFetcher, Reduction, Index >,
+                                 0,
+                                 launch_config,
+                                 identity,
+                                 dataFetcher,
+                                 reduction,
+                                 size,
+                                 n,
+                                 output );
          break;
       case 256:
-         cudaFuncSetCacheConfig( CudaMultireductionKernel< 256, Result, DataFetcher, Reduction, Index >, cudaFuncCachePreferShared );
-         Cuda::launchKernelSync( CudaMultireductionKernel< 256, Result, DataFetcher, Reduction, Index >, 0, launch_config,
-                                 identity, dataFetcher, reduction, size, n, output );
+         cudaFuncSetCacheConfig( CudaMultireductionKernel< 256, Result, DataFetcher, Reduction, Index >,
+                                 cudaFuncCachePreferShared );
+         Cuda::launchKernelSync( CudaMultireductionKernel< 256, Result, DataFetcher, Reduction, Index >,
+                                 0,
+                                 launch_config,
+                                 identity,
+                                 dataFetcher,
+                                 reduction,
+                                 size,
+                                 n,
+                                 output );
          break;
       case 128:
-         cudaFuncSetCacheConfig( CudaMultireductionKernel< 128, Result, DataFetcher, Reduction, Index >, cudaFuncCachePreferShared );
-         Cuda::launchKernelSync( CudaMultireductionKernel< 128, Result, DataFetcher, Reduction, Index >, 0, launch_config,
-                                 identity, dataFetcher, reduction, size, n, output );
+         cudaFuncSetCacheConfig( CudaMultireductionKernel< 128, Result, DataFetcher, Reduction, Index >,
+                                 cudaFuncCachePreferShared );
+         Cuda::launchKernelSync( CudaMultireductionKernel< 128, Result, DataFetcher, Reduction, Index >,
+                                 0,
+                                 launch_config,
+                                 identity,
+                                 dataFetcher,
+                                 reduction,
+                                 size,
+                                 n,
+                                 output );
          break;
-      case  64:
-         cudaFuncSetCacheConfig( CudaMultireductionKernel<  64, Result, DataFetcher, Reduction, Index >, cudaFuncCachePreferShared );
-         Cuda::launchKernelSync( CudaMultireductionKernel<  64, Result, DataFetcher, Reduction, Index >, 0, launch_config,
-                                 identity, dataFetcher, reduction, size, n, output );
+      case 64:
+         cudaFuncSetCacheConfig( CudaMultireductionKernel< 64, Result, DataFetcher, Reduction, Index >,
+                                 cudaFuncCachePreferShared );
+         Cuda::launchKernelSync( CudaMultireductionKernel< 64, Result, DataFetcher, Reduction, Index >,
+                                 0,
+                                 launch_config,
+                                 identity,
+                                 dataFetcher,
+                                 reduction,
+                                 size,
+                                 n,
+                                 output );
          break;
-      case  32:
-         cudaFuncSetCacheConfig( CudaMultireductionKernel<  32, Result, DataFetcher, Reduction, Index >, cudaFuncCachePreferShared );
-         Cuda::launchKernelSync( CudaMultireductionKernel<  32, Result, DataFetcher, Reduction, Index >, 0, launch_config,
-                                 identity, dataFetcher, reduction, size, n, output );
+      case 32:
+         cudaFuncSetCacheConfig( CudaMultireductionKernel< 32, Result, DataFetcher, Reduction, Index >,
+                                 cudaFuncCachePreferShared );
+         Cuda::launchKernelSync( CudaMultireductionKernel< 32, Result, DataFetcher, Reduction, Index >,
+                                 0,
+                                 launch_config,
+                                 identity,
+                                 dataFetcher,
+                                 reduction,
+                                 size,
+                                 n,
+                                 output );
          break;
-      case  16:
-         cudaFuncSetCacheConfig( CudaMultireductionKernel<  16, Result, DataFetcher, Reduction, Index >, cudaFuncCachePreferShared );
-         Cuda::launchKernelSync( CudaMultireductionKernel<  16, Result, DataFetcher, Reduction, Index >, 0, launch_config,
-                                 identity, dataFetcher, reduction, size, n, output );
+      case 16:
+         cudaFuncSetCacheConfig( CudaMultireductionKernel< 16, Result, DataFetcher, Reduction, Index >,
+                                 cudaFuncCachePreferShared );
+         Cuda::launchKernelSync( CudaMultireductionKernel< 16, Result, DataFetcher, Reduction, Index >,
+                                 0,
+                                 launch_config,
+                                 identity,
+                                 dataFetcher,
+                                 reduction,
+                                 size,
+                                 n,
+                                 output );
          break;
-     case   8:
-         cudaFuncSetCacheConfig( CudaMultireductionKernel<   8, Result, DataFetcher, Reduction, Index >, cudaFuncCachePreferShared );
-         Cuda::launchKernelSync( CudaMultireductionKernel<   8, Result, DataFetcher, Reduction, Index >, 0, launch_config,
-                                 identity, dataFetcher, reduction, size, n, output );
+      case 8:
+         cudaFuncSetCacheConfig( CudaMultireductionKernel< 8, Result, DataFetcher, Reduction, Index >,
+                                 cudaFuncCachePreferShared );
+         Cuda::launchKernelSync( CudaMultireductionKernel< 8, Result, DataFetcher, Reduction, Index >,
+                                 0,
+                                 launch_config,
+                                 identity,
+                                 dataFetcher,
+                                 reduction,
+                                 size,
+                                 n,
+                                 output );
          break;
-      case   4:
-         cudaFuncSetCacheConfig( CudaMultireductionKernel<   4, Result, DataFetcher, Reduction, Index >, cudaFuncCachePreferShared );
-         Cuda::launchKernelSync( CudaMultireductionKernel<   4, Result, DataFetcher, Reduction, Index >, 0, launch_config,
-                                 identity, dataFetcher, reduction, size, n, output );
-        break;
-      case   2:
-         cudaFuncSetCacheConfig( CudaMultireductionKernel<   2, Result, DataFetcher, Reduction, Index >, cudaFuncCachePreferShared );
-         Cuda::launchKernelSync( CudaMultireductionKernel<   2, Result, DataFetcher, Reduction, Index >, 0, launch_config,
-                                 identity, dataFetcher, reduction, size, n, output );
+      case 4:
+         cudaFuncSetCacheConfig( CudaMultireductionKernel< 4, Result, DataFetcher, Reduction, Index >,
+                                 cudaFuncCachePreferShared );
+         Cuda::launchKernelSync( CudaMultireductionKernel< 4, Result, DataFetcher, Reduction, Index >,
+                                 0,
+                                 launch_config,
+                                 identity,
+                                 dataFetcher,
+                                 reduction,
+                                 size,
+                                 n,
+                                 output );
          break;
-      case   1:
+      case 2:
+         cudaFuncSetCacheConfig( CudaMultireductionKernel< 2, Result, DataFetcher, Reduction, Index >,
+                                 cudaFuncCachePreferShared );
+         Cuda::launchKernelSync( CudaMultireductionKernel< 2, Result, DataFetcher, Reduction, Index >,
+                                 0,
+                                 launch_config,
+                                 identity,
+                                 dataFetcher,
+                                 reduction,
+                                 size,
+                                 n,
+                                 output );
+         break;
+      case 1:
          throw std::logic_error( "blockSize should not be 1." );
       default:
-         throw std::logic_error( "Block size is " + std::to_string(launch_config.blockSize.x) + " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
+         throw std::logic_error( "Block size is " + std::to_string( launch_config.blockSize.x )
+                                 + " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
    }
 
    // return the size of the output array on the CUDA device
@@ -269,6 +336,6 @@ CudaMultireductionKernelLauncher( const Result identity,
 #endif
 }
 
-} // namespace detail
-} // namespace Algorithms
-} // namespace TNL
+}  // namespace detail
+}  // namespace Algorithms
+}  // namespace TNL

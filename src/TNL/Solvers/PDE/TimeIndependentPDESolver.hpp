@@ -24,27 +24,18 @@ namespace TNL {
 namespace Solvers {
 namespace PDE {
 
-
 template< typename Problem >
-TimeIndependentPDESolver< Problem >::
-TimeIndependentPDESolver()
-: problem( 0 )
-{
-}
+TimeIndependentPDESolver< Problem >::TimeIndependentPDESolver() : problem( 0 )
+{}
 
 template< typename Problem >
 void
-TimeIndependentPDESolver< Problem >::
-configSetup( Config::ConfigDescription& config,
-             const String& prefix )
-{
-}
+TimeIndependentPDESolver< Problem >::configSetup( Config::ConfigDescription& config, const String& prefix )
+{}
 
 template< typename Problem >
 bool
-TimeIndependentPDESolver< Problem >::
-setup( const Config::ParameterContainer& parameters,
-       const String& prefix )
+TimeIndependentPDESolver< Problem >::setup( const Config::ParameterContainer& parameters, const String& prefix )
 {
    /////
    // Load the mesh from the mesh file
@@ -65,8 +56,7 @@ setup( const Config::ParameterContainer& parameters,
    /****
     * Set-up common data
     */
-   if( ! this->commonDataPointer->setup( parameters ) )
-   {
+   if( ! this->commonDataPointer->setup( parameters ) ) {
       std::cerr << "The problem common data initiation failed!" << std::endl;
       return false;
    }
@@ -75,8 +65,7 @@ setup( const Config::ParameterContainer& parameters,
    /****
     * Setup the problem
     */
-   if( ! problem->setup( parameters, prefix ) )
-   {
+   if( ! problem->setup( parameters, prefix ) ) {
       std::cerr << "The problem initiation failed!" << std::endl;
       return false;
    }
@@ -88,7 +77,6 @@ setup( const Config::ParameterContainer& parameters,
    this->dofs->setSize( problem->getDofs() );
    this->dofs->setValue( 0.0 );
    this->problem->bindDofs( this->dofs );
-
 
    /***
     * Set-up the initial condition
@@ -103,9 +91,7 @@ setup( const Config::ParameterContainer& parameters,
 
 template< typename Problem >
 bool
-TimeIndependentPDESolver< Problem >::
-writeProlog( Logger& logger,
-             const Config::ParameterContainer& parameters )
+TimeIndependentPDESolver< Problem >::writeProlog( Logger& logger, const Config::ParameterContainer& parameters )
 {
    logger.writeHeader( problem->getPrologHeader() );
    problem->writeProlog( logger, parameters );
@@ -115,7 +101,7 @@ writeProlog( Logger& logger,
    else
       meshPointer->writeProlog( logger );
    logger.writeSeparator();
-   const String& solverName = parameters. getParameter< String >( "discrete-solver" );
+   const String& solverName = parameters.getParameter< String >( "discrete-solver" );
    logger.writeParameter< String >( "Discrete solver:", "discrete-solver", parameters );
    if( solverName == "sor" )
       logger.writeParameter< double >( "Omega:", "sor-omega", parameters, 1 );
@@ -131,23 +117,20 @@ writeProlog( Logger& logger,
 
 template< typename Problem >
 void
-TimeIndependentPDESolver< Problem >::
-setProblem( ProblemType& problem )
+TimeIndependentPDESolver< Problem >::setProblem( ProblemType& problem )
 {
    this->problem = &problem;
 }
 
 template< typename Problem >
 bool
-TimeIndependentPDESolver< Problem >::
-solve()
+TimeIndependentPDESolver< Problem >::solve()
 {
    TNL_ASSERT_TRUE( problem, "No problem was set in tnlPDESolver." );
 
    this->computeTimer->reset();
    this->computeTimer->start();
-   if( ! this->problem->solve( this->dofs ) )
-   {
+   if( ! this->problem->solve( this->dofs ) ) {
       this->computeTimer->stop();
       return false;
    }
@@ -157,12 +140,11 @@ solve()
 
 template< typename Problem >
 bool
-TimeIndependentPDESolver< Problem >::
-writeEpilog( Logger& logger ) const
+TimeIndependentPDESolver< Problem >::writeEpilog( Logger& logger ) const
 {
    return this->problem->writeEpilog( logger );
 }
 
-} // namespace PDE
-} // namespace Solvers
-} // namespace TNL
+}  // namespace PDE
+}  // namespace Solvers
+}  // namespace TNL

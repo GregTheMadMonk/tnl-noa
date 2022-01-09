@@ -12,7 +12,8 @@
 
 namespace TNL {
 
-struct CacheSizes {
+struct CacheSizes
+{
    int L1instruction = 0;
    int L1data = 0;
    int L2 = 0;
@@ -22,20 +23,33 @@ struct CacheSizes {
 class SystemInfo
 {
 public:
-   static String getHostname();
-   static String getArchitecture();
-   static String getSystemName();
-   static String getSystemRelease();
-   static String getCurrentTime( const char* format = "%a %b %d %Y, %H:%M:%S" );
+   static String
+   getHostname();
+   static String
+   getArchitecture();
+   static String
+   getSystemName();
+   static String
+   getSystemRelease();
+   static String
+   getCurrentTime( const char* format = "%a %b %d %Y, %H:%M:%S" );
 
-   static int    getNumberOfProcessors();
-   static String getOnlineCPUs();
-   static int    getNumberOfCores( int cpu_id );
-   static int    getNumberOfThreads( int cpu_id );
-   static String getCPUModelName( int cpu_id );
-   static int    getCPUMaxFrequency( int cpu_id );
-   static CacheSizes getCPUCacheSizes( int cpu_id );
-   static size_t getFreeMemory();
+   static int
+   getNumberOfProcessors();
+   static String
+   getOnlineCPUs();
+   static int
+   getNumberOfCores( int cpu_id );
+   static int
+   getNumberOfThreads( int cpu_id );
+   static String
+   getCPUModelName( int cpu_id );
+   static int
+   getCPUMaxFrequency( int cpu_id );
+   static CacheSizes
+   getCPUCacheSizes( int cpu_id );
+   static size_t
+   getFreeMemory();
 
 protected:
    struct CPUInfo
@@ -46,11 +60,12 @@ protected:
       int CPUCores = 0;
    };
 
-   static CPUInfo parseCPUInfo();
+   static CPUInfo
+   parseCPUInfo();
 
    template< typename ResultType >
    static ResultType
-   readFile( const String & fileName )
+   readFile( const String& fileName )
    {
       std::ifstream file( fileName.getString() );
       if( ! file ) {
@@ -63,6 +78,6 @@ protected:
    }
 };
 
-} // namespace TNL
+}  // namespace TNL
 
 #include <TNL/SystemInfo.hpp>

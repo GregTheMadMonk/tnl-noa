@@ -12,7 +12,7 @@
 namespace TNL {
 namespace Containers {
 
- /**
+/**
  * \brief Vector with constant size.
  *
  * \param Size Size of static vector. Number of its elements.
@@ -22,7 +22,6 @@ template< int Size, typename Real = double >
 class StaticVector : public StaticArray< Size, Real >
 {
 public:
-
    /**
     * \brief Type of numbers stored in this vector.
     */
@@ -49,17 +48,19 @@ public:
     * \brief Default copy-assignment operator.
     */
    __cuda_callable__
-   StaticVector& operator=( const StaticVector& ) = default;
+   StaticVector&
+   operator=( const StaticVector& ) = default;
 
    /**
     * \brief Default move-assignment operator.
     */
    __cuda_callable__
-   StaticVector& operator=( StaticVector&& ) = default;
+   StaticVector&
+   operator=( StaticVector&& ) = default;
 
    //! Constructors and assignment operators are inherited from the class \ref StaticArray.
    using StaticArray< Size, Real >::StaticArray;
-#if !defined(__CUDACC_VER_MAJOR__) || __CUDACC_VER_MAJOR__ < 11
+#if ! defined( __CUDACC_VER_MAJOR__ ) || __CUDACC_VER_MAJOR__ < 11
    using StaticArray< Size, Real >::operator=;
 #endif
 
@@ -68,9 +69,7 @@ public:
     *
     * \param expr is binary expression.
     */
-   template< typename T1,
-             typename T2,
-             typename Operation >
+   template< typename T1, typename T2, typename Operation >
    __cuda_callable__
    StaticVector( const Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& expr );
 
@@ -79,8 +78,7 @@ public:
     *
     * \param expr is unary expression
     */
-   template< typename T,
-             typename Operation >
+   template< typename T, typename Operation >
    __cuda_callable__
    StaticVector( const Expressions::StaticUnaryExpressionTemplate< T, Operation >& expr );
 
@@ -94,7 +92,8 @@ public:
     */
    template< typename VectorExpression >
    __cuda_callable__
-   StaticVector& operator=( const VectorExpression& expression );
+   StaticVector&
+   operator=( const VectorExpression& expression );
 
    /**
     * \brief Addition operator with a vector expression
@@ -106,7 +105,8 @@ public:
     */
    template< typename VectorExpression >
    __cuda_callable__
-   StaticVector& operator+=( const VectorExpression& expression );
+   StaticVector&
+   operator+=( const VectorExpression& expression );
 
    /**
     * \brief Subtraction operator with a vector expression.
@@ -118,7 +118,8 @@ public:
     */
    template< typename VectorExpression >
    __cuda_callable__
-   StaticVector& operator-=( const VectorExpression& expression );
+   StaticVector&
+   operator-=( const VectorExpression& expression );
 
    /**
     * \brief Elementwise multiplication by a vector expression.
@@ -130,7 +131,8 @@ public:
     */
    template< typename VectorExpression >
    __cuda_callable__
-   StaticVector& operator*=( const VectorExpression& expression );
+   StaticVector&
+   operator*=( const VectorExpression& expression );
 
    /**
     * \brief Elementwise division by a vector expression.
@@ -142,7 +144,8 @@ public:
     */
    template< typename VectorExpression >
    __cuda_callable__
-   StaticVector& operator/=( const VectorExpression& expression );
+   StaticVector&
+   operator/=( const VectorExpression& expression );
 
    /**
     * \brief Elementwise modulo by a vector expression.
@@ -154,7 +157,8 @@ public:
     */
    template< typename VectorExpression >
    __cuda_callable__
-   StaticVector& operator%=( const VectorExpression& expression );
+   StaticVector&
+   operator%=( const VectorExpression& expression );
 
    /**
     * \brief Cast operator for changing of the \e Value type.
@@ -174,14 +178,13 @@ public:
 
 // Enable expression templates for StaticVector
 namespace Expressions {
-   template< int Size, typename Real >
-   struct HasEnabledStaticExpressionTemplates< StaticVector< Size, Real > >
-   : std::true_type
-   {};
-} // namespace Expressions
+template< int Size, typename Real >
+struct HasEnabledStaticExpressionTemplates< StaticVector< Size, Real > > : std::true_type
+{};
+}  // namespace Expressions
 
-} // namespace Containers
-} // namespace TNL
+}  // namespace Containers
+}  // namespace TNL
 
 #include <TNL/Containers/StaticVector.hpp>
 
@@ -191,8 +194,8 @@ namespace Containers {
 
 template< typename Real >
 __cuda_callable__
-StaticVector< 3, Real > VectorProduct( const StaticVector< 3, Real >& u,
-                                       const StaticVector< 3, Real >& v )
+StaticVector< 3, Real >
+VectorProduct( const StaticVector< 3, Real >& u, const StaticVector< 3, Real >& v )
 {
    StaticVector< 3, Real > p;
    p[ 0 ] = u[ 1 ] * v[ 2 ] - u[ 2 ] * v[ 1 ];
@@ -203,17 +206,16 @@ StaticVector< 3, Real > VectorProduct( const StaticVector< 3, Real >& u,
 
 template< typename Real >
 __cuda_callable__
-Real TriangleArea( const StaticVector< 2, Real >& a,
-                   const StaticVector< 2, Real >& b,
-                   const StaticVector< 2, Real >& c )
+Real
+TriangleArea( const StaticVector< 2, Real >& a, const StaticVector< 2, Real >& b, const StaticVector< 2, Real >& c )
 {
    StaticVector< 3, Real > u1, u2;
-   u1. x() = b. x() - a. x();
-   u1. y() = b. y() - a. y();
-   u1. z() = 0.0;
-   u2. x() = c. x() - a. x();
-   u2. y() = c. y() - a. y();
-   u2. z() = 0;
+   u1.x() = b.x() - a.x();
+   u1.y() = b.y() - a.y();
+   u1.z() = 0.0;
+   u2.x() = c.x() - a.x();
+   u2.y() = c.y() - a.y();
+   u2.z() = 0;
 
    const StaticVector< 3, Real > v = VectorProduct( u1, u2 );
    return 0.5 * TNL::sqrt( dot( v, v ) );
@@ -221,21 +223,20 @@ Real TriangleArea( const StaticVector< 2, Real >& a,
 
 template< typename Real >
 __cuda_callable__
-Real TriangleArea( const StaticVector< 3, Real >& a,
-                   const StaticVector< 3, Real >& b,
-                   const StaticVector< 3, Real >& c )
+Real
+TriangleArea( const StaticVector< 3, Real >& a, const StaticVector< 3, Real >& b, const StaticVector< 3, Real >& c )
 {
    StaticVector< 3, Real > u1, u2;
-   u1. x() = b. x() - a. x();
-   u1. y() = b. y() - a. y();
-   u1. z() = b. z() - a. z();
-   u2. x() = c. x() - a. x();
-   u2. y() = c. y() - a. y();
-   u2. z() = c. z() - a. z();
+   u1.x() = b.x() - a.x();
+   u1.y() = b.y() - a.y();
+   u1.z() = b.z() - a.z();
+   u2.x() = c.x() - a.x();
+   u2.y() = c.y() - a.y();
+   u2.z() = c.z() - a.z();
 
    const StaticVector< 3, Real > v = VectorProduct( u1, u2 );
    return 0.5 * TNL::sqrt( dot( v, v ) );
 }
 
-} // namespace Containers
-} // namespace TNL
+}  // namespace Containers
+}  // namespace TNL

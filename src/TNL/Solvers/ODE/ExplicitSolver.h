@@ -20,58 +20,68 @@ namespace ODE {
 
 template< class Problem,
           typename SolverMonitor = IterativeSolverMonitor< typename Problem::RealType, typename Problem::IndexType > >
-class ExplicitSolver : public IterativeSolver< typename Problem::RealType,
-                                               typename Problem::IndexType,
-                                               SolverMonitor >
+class ExplicitSolver : public IterativeSolver< typename Problem::RealType, typename Problem::IndexType, SolverMonitor >
 {
-   public:
-
+public:
    using ProblemType = Problem;
    using DofVectorType = typename Problem::DofVectorType;
    using RealType = typename Problem::RealType;
    using DeviceType = typename Problem::DeviceType;
    using IndexType = typename Problem::IndexType;
-   using DofVectorPointer = Pointers::SharedPointer<  DofVectorType, DeviceType >;
+   using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
    using SolverMonitorType = SolverMonitor;
 
    ExplicitSolver();
 
-   static void configSetup( Config::ConfigDescription& config,
-                            const String& prefix = "" );
+   static void
+   configSetup( Config::ConfigDescription& config, const String& prefix = "" );
 
-   bool setup( const Config::ParameterContainer& parameters,
-              const String& prefix = "" );
+   bool
+   setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
 
-   void setProblem( Problem& problem );
+   void
+   setProblem( Problem& problem );
 
-   void setTime( const RealType& t );
+   void
+   setTime( const RealType& t );
 
-   const RealType& getTime() const;
+   const RealType&
+   getTime() const;
 
-   void setStopTime( const RealType& stopTime );
+   void
+   setStopTime( const RealType& stopTime );
 
-   RealType getStopTime() const;
+   RealType
+   getStopTime() const;
 
-   void setTau( const RealType& tau );
+   void
+   setTau( const RealType& tau );
 
-   const RealType& getTau() const;
+   const RealType&
+   getTau() const;
 
-   void setMaxTau( const RealType& maxTau );
+   void
+   setMaxTau( const RealType& maxTau );
 
-   const RealType& getMaxTau() const;
+   const RealType&
+   getMaxTau() const;
 
-   void setVerbose( IndexType v );
+   void
+   setVerbose( IndexType v );
 
-   virtual bool solve( DofVectorPointer& u ) = 0;
+   virtual bool
+   solve( DofVectorPointer& u ) = 0;
 
-   void setTestingMode( bool testingMode );
+   void
+   setTestingMode( bool testingMode );
 
-   void setRefreshRate( const IndexType& refreshRate );
+   void
+   setRefreshRate( const IndexType& refreshRate );
 
-   void refreshSolverMonitor( bool force = false );
+   void
+   refreshSolverMonitor( bool force = false );
 
 protected:
-
    /****
     * Current time of the parabolic problem.
     */
@@ -101,8 +111,8 @@ protected:
    Containers::Vector< RealType, DeviceType, IndexType > cudaBlockResidue;
 };
 
-} // namespace ODE
-} // namespace Solvers
-} // namespace TNL
+}  // namespace ODE
+}  // namespace Solvers
+}  // namespace TNL
 
 #include <TNL/Solvers/ODE/ExplicitSolver.hpp>

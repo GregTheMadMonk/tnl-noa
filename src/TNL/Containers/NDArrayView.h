@@ -20,11 +20,8 @@
 namespace TNL {
 namespace Containers {
 
-template< typename Value,
-          typename Device,
-          typename Indexer >
-class NDArrayView
-: public Indexer
+template< typename Value, typename Device, typename Indexer >
+class NDArrayView : public Indexer
 {
 public:
    using ValueType = Value;
@@ -44,12 +41,12 @@ public:
    // explicit initialization by raw data pointer and sizes and strides
    __cuda_callable__
    NDArrayView( Value* data, SizesHolderType sizes, StridesHolderType strides = StridesHolderType{} )
-   : IndexerType(sizes, strides), array(data) {}
+   : IndexerType( sizes, strides ), array( data )
+   {}
 
    // explicit initialization by raw data pointer and indexer
    __cuda_callable__
-   NDArrayView( Value* data, IndexerType indexer )
-   : IndexerType(indexer), array(data) {}
+   NDArrayView( Value* data, IndexerType indexer ) : IndexerType( indexer ), array( data ) {}
 
    // Copy-constructor does shallow copy, so views can be passed-by-value into
    // CUDA kernels and they can be captured-by-value in __cuda_callable__
@@ -65,7 +62,8 @@ public:
    // must match (i.e. copy-assignment cannot resize).
    TNL_NVCC_HD_WARNING_DISABLE
    __cuda_callable__
-   NDArrayView& operator=( const NDArrayView& other )
+   NDArrayView&
+   operator=( const NDArrayView& other )
    {
       TNL_ASSERT_EQ( getSizes(), other.getSizes(), "The sizes of the array views must be equal, views are not resizable." );
       if( getStorageSize() > 0 )
@@ -77,7 +75,8 @@ public:
    TNL_NVCC_HD_WARNING_DISABLE
    template< typename OtherView >
    __cuda_callable__
-   NDArrayView& operator=( const OtherView& other )
+   NDArrayView&
+   operator=( const OtherView& other )
    {
       static_assert( std::is_same< PermutationType, typename OtherView::PermutationType >::value,
                      "Arrays must have the same permutation of indices." );
@@ -87,7 +86,8 @@ public:
                        "The sizes of the array views must be equal, views are not resizable." );
       if( getStorageSize() > 0 ) {
          TNL_ASSERT_TRUE( array, "Attempted to assign to an empty view." );
-         Algorithms::MultiDeviceMemoryOperations< DeviceType, typename OtherView::DeviceType >::copy( array, other.getData(), getStorageSize() );
+         Algorithms::MultiDeviceMemoryOperations< DeviceType, typename OtherView::DeviceType >::copy(
+            array, other.getData(), getStorageSize() );
       }
       return *this;
    }
@@ -97,7 +97,8 @@ public:
 
    // methods for rebinding (reinitialization)
    __cuda_callable__
-   void bind( NDArrayView view )
+   void
+   bind( NDArrayView view )
    {
       IndexerType::operator=( view );
       array = view.array;
@@ -105,7 +106,8 @@ public:
 
    // binds to the given raw pointer and changes the indexer
    __cuda_callable__
-   void bind( Value* data, IndexerType indexer )
+   void
+   bind( Value* data, IndexerType indexer )
    {
       IndexerType::operator=( indexer );
       array = data;
@@ -113,13 +115,15 @@ public:
 
    // binds to the given raw pointer and preserves the current indexer
    __cuda_callable__
-   void bind( Value* data )
+   void
+   bind( Value* data )
    {
       array = data;
    }
 
    __cuda_callable__
-   void reset()
+   void
+   reset()
    {
       IndexerType::operator=( IndexerType{} );
       array = nullptr;
@@ -127,7 +131,8 @@ public:
 
    TNL_NVCC_HD_WARNING_DISABLE
    __cuda_callable__
-   bool operator==( const NDArrayView& other ) const
+   bool
+   operator==( const NDArrayView& other ) const
    {
       if( getSizes() != other.getSizes() )
          return false;
@@ -138,7 +143,8 @@ public:
 
    TNL_NVCC_HD_WARNING_DISABLE
    __cuda_callable__
-   bool operator!=( const NDArrayView& other ) const
+   bool
+   operator!=( const NDArrayView& other ) const
    {
       if( getSizes() != other.getSizes() )
          return true;
@@ -147,55 +153,62 @@ public:
    }
 
    __cuda_callable__
-   ValueType* getData()
+   ValueType*
+   getData()
    {
       return array;
    }
 
    __cuda_callable__
-   std::add_const_t< ValueType >* getData() const
+   std::add_const_t< ValueType >*
+   getData() const
    {
       return array;
    }
 
    // methods from the base class
    using IndexerType::getDimension;
-   using IndexerType::getSizes;
-   using IndexerType::getSize;
-   using IndexerType::getStride;
    using IndexerType::getOverlap;
-   using IndexerType::getStorageSize;
+   using IndexerType::getSize;
+   using IndexerType::getSizes;
    using IndexerType::getStorageIndex;
+   using IndexerType::getStorageSize;
+   using IndexerType::getStride;
 
    __cuda_callable__
-   const IndexerType& getIndexer() const
+   const IndexerType&
+   getIndexer() const
    {
       return *this;
    }
 
    __cuda_callable__
-   ViewType getView()
+   ViewType
+   getView()
    {
       return ViewType( *this );
    }
 
    __cuda_callable__
-   ConstViewType getConstView() const
+   ConstViewType
+   getConstView() const
    {
       return ConstViewType( array, getIndexer() );
    }
 
    template< std::size_t... Dimensions, typename... IndexTypes >
    __cuda_callable__
-   auto getSubarrayView( IndexTypes&&... indices )
+   auto
+   getSubarrayView( IndexTypes&&... indices )
    {
       static_assert( sizeof...( indices ) == getDimension(), "got wrong number of indices" );
-      static_assert( 0 < sizeof...(Dimensions) && sizeof...(Dimensions) <= getDimension(), "got wrong number of dimensions" );
+      static_assert( 0 < sizeof...( Dimensions ) && sizeof...( Dimensions ) <= getDimension(),
+                     "got wrong number of dimensions" );
 // FIXME: nvcc chokes on the variadic brace-initialization
 #ifndef __NVCC__
-      static_assert( __ndarray_impl::all_elements_in_range( 0, PermutationType::size(), {Dimensions...} ),
+      static_assert( __ndarray_impl::all_elements_in_range( 0, PermutationType::size(), { Dimensions... } ),
                      "invalid dimensions" );
-      static_assert( __ndarray_impl::is_increasing_sequence( {Dimensions...} ),
+      static_assert( __ndarray_impl::is_increasing_sequence( { Dimensions... } ),
                      "specifying permuted dimensions is not supported" );
 #endif
 
@@ -204,11 +217,13 @@ public:
       auto& begin = operator()( std::forward< IndexTypes >( indices )... );
       auto subarray_sizes = Getter::filterSizes( getSizes(), std::forward< IndexTypes >( indices )... );
       auto strides = Getter::getStrides( getSizes(), std::forward< IndexTypes >( indices )... );
-      static_assert( Subpermutation::size() == sizeof...(Dimensions), "Bug - wrong subpermutation length." );
-      static_assert( decltype(subarray_sizes)::getDimension() == sizeof...(Dimensions), "Bug - wrong dimension of the new sizes." );
-      static_assert( decltype(strides)::getDimension() == sizeof...(Dimensions), "Bug - wrong dimension of the strides." );
+      static_assert( Subpermutation::size() == sizeof...( Dimensions ), "Bug - wrong subpermutation length." );
+      static_assert( decltype( subarray_sizes )::getDimension() == sizeof...( Dimensions ),
+                     "Bug - wrong dimension of the new sizes." );
+      static_assert( decltype( strides )::getDimension() == sizeof...( Dimensions ), "Bug - wrong dimension of the strides." );
       // TODO: select overlaps for the subarray
-      using Subindexer = NDArrayIndexer< decltype(subarray_sizes), Subpermutation, typename Indexer::NDBaseType, decltype(strides) >;
+      using Subindexer =
+         NDArrayIndexer< decltype( subarray_sizes ), Subpermutation, typename Indexer::NDBaseType, decltype( strides ) >;
       using SubarrayView = NDArrayView< ValueType, Device, Subindexer >;
       return SubarrayView{ &begin, subarray_sizes, strides };
    }
@@ -251,7 +266,8 @@ public:
    }
 
    template< typename Device2 = DeviceType, typename Func >
-   void forAll( Func f ) const
+   void
+   forAll( Func f ) const
    {
       __ndarray_impl::ExecutorDispatcher< PermutationType, Device2 > dispatch;
       using Begins = ConstStaticSizesHolder< IndexType, getDimension(), 0 >;
@@ -259,7 +275,8 @@ public:
    }
 
    template< typename Device2 = DeviceType, typename Func >
-   void forInternal( Func f ) const
+   void
+   forInternal( Func f ) const
    {
       __ndarray_impl::ExecutorDispatcher< PermutationType, Device2 > dispatch;
       using Begins = ConstStaticSizesHolder< IndexType, getDimension(), 1 >;
@@ -272,7 +289,8 @@ public:
    }
 
    template< typename Device2 = DeviceType, typename Func, typename Begins, typename Ends >
-   void forInternal( Func f, const Begins& begins, const Ends& ends ) const
+   void
+   forInternal( Func f, const Begins& begins, const Ends& ends ) const
    {
       // TODO: assert "begins <= getSizes()", "ends <= getSizes()"
       __ndarray_impl::ExecutorDispatcher< PermutationType, Device2 > dispatch;
@@ -280,7 +298,8 @@ public:
    }
 
    template< typename Device2 = DeviceType, typename Func >
-   void forBoundary( Func f ) const
+   void
+   forBoundary( Func f ) const
    {
       using Begins = ConstStaticSizesHolder< IndexType, getDimension(), 0 >;
       using SkipBegins = ConstStaticSizesHolder< IndexType, getDimension(), 1 >;
@@ -295,7 +314,8 @@ public:
    }
 
    template< typename Device2 = DeviceType, typename Func, typename SkipBegins, typename SkipEnds >
-   void forBoundary( Func f, const SkipBegins& skipBegins, const SkipEnds& skipEnds ) const
+   void
+   forBoundary( Func f, const SkipBegins& skipBegins, const SkipEnds& skipEnds ) const
    {
       // TODO: assert "skipBegins <= getSizes()", "skipEnds <= getSizes()"
       using Begins = ConstStaticSizesHolder< IndexType, getDimension(), 0 >;
@@ -308,5 +328,5 @@ protected:
    IndexerType indexer;
 };
 
-} // namespace Containers
-} // namespace TNL
+}  // namespace Containers
+}  // namespace TNL

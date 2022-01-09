@@ -18,44 +18,45 @@ template< class Problem,
           typename SolverMonitor = IterativeSolverMonitor< typename Problem::RealType, typename Problem::IndexType > >
 class Merson : public ExplicitSolver< Problem, SolverMonitor >
 {
-   public:
+public:
+   using ProblemType = Problem;
+   using DofVectorType = typename Problem::DofVectorType;
+   using RealType = typename Problem::RealType;
+   using DeviceType = typename Problem::DeviceType;
+   using IndexType = typename Problem::IndexType;
+   using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
+   using SolverMonitorType = SolverMonitor;
 
-      using ProblemType = Problem;
-      using DofVectorType = typename Problem::DofVectorType;
-      using RealType = typename Problem::RealType;
-      using DeviceType = typename Problem::DeviceType;
-      using IndexType = typename Problem::IndexType;
-      using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
-      using SolverMonitorType = SolverMonitor;
+   Merson();
 
-      Merson();
+   static void
+   configSetup( Config::ConfigDescription& config, const String& prefix = "" );
 
-      static void configSetup( Config::ConfigDescription& config,
-                               const String& prefix = "" );
+   bool
+   setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
 
-      bool setup( const Config::ParameterContainer& parameters,
-                 const String& prefix = "" );
+   void
+   setAdaptivity( const RealType& a );
 
-      void setAdaptivity( const RealType& a );
+   bool
+   solve( DofVectorPointer& u );
 
-      bool solve( DofVectorPointer& u );
+protected:
+   void
+   writeGrids( const DofVectorPointer& u );
 
-   protected:
+   DofVectorPointer _k1, _k2, _k3, _k4, _k5, _kAux;
 
-      void writeGrids( const DofVectorPointer& u );
+   /****
+    * This controls the accuracy of the solver
+    */
+   RealType adaptivity;
 
-      DofVectorPointer _k1, _k2, _k3, _k4, _k5, _kAux;
-
-      /****
-       * This controls the accuracy of the solver
-       */
-      RealType adaptivity;
-
-      Containers::Vector< RealType, DeviceType, IndexType > openMPErrorEstimateBuffer;
+   Containers::Vector< RealType, DeviceType, IndexType > openMPErrorEstimateBuffer;
 };
 
-} // namespace ODE
-} // namespace Solvers
-} // namespace TNL
+}  // namespace ODE
+}  // namespace Solvers
+}  // namespace TNL
 
 #include <TNL/Solvers/ODE/Merson.hpp>

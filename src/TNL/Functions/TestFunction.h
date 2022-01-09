@@ -15,128 +15,134 @@
 namespace TNL {
 namespace Functions {
 
-template< int FunctionDimension,
-          typename Real = double,
-          typename Device = Devices::Host >
+template< int FunctionDimension, typename Real = double, typename Device = Devices::Host >
 class TestFunction : public Domain< FunctionDimension, SpaceDomain >
 {
-   protected:
+protected:
+   enum TestFunctions
+   {
+      constant,
+      paraboloid,
+      expBump,
+      sinBumps,
+      sinWave,
+      cylinder,
+      flowerpot,
+      twins,
+      pseudoSquare,
+      blob,
+      vectorNorm,
+      paraboloidSDF,
+      sinWaveSDF,
+      sinBumpsSDF
+   };
 
-      enum TestFunctions{ constant,
-                          paraboloid,
-                          expBump,
-                          sinBumps,
-                          sinWave,
-                          cylinder,
-                          flowerpot,
-                          twins,
-                          pseudoSquare,
-                          blob,
-                          vectorNorm,
-                          paraboloidSDF,
-                          sinWaveSDF,
-                          sinBumpsSDF };
+   enum TimeDependence
+   {
+      none,
+      linear,
+      quadratic,
+      cosine
+   };
 
-      enum TimeDependence { none,
-                            linear,
-                            quadratic,
-                            cosine };
+   enum Operators
+   {
+      identity,
+      heaviside,
+      smoothHeaviside
+   };
 
-      enum Operators { identity,
-                       heaviside,
-                       smoothHeaviside };
+public:
+   enum
+   {
+      Dimension = FunctionDimension
+   };
+   typedef Real RealType;
+   typedef Containers::StaticVector< Dimension, Real > PointType;
 
-   public:
+   TestFunction();
 
-      enum{ Dimension = FunctionDimension };
-      typedef Real RealType;
-      typedef Containers::StaticVector< Dimension, Real > PointType;
+   static void
+   configSetup( Config::ConfigDescription& config, const String& prefix = "" );
 
-      TestFunction();
+   bool
+   setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
 
-      static void configSetup( Config::ConfigDescription& config,
-                               const String& prefix = "" );
+   const TestFunction&
+   operator=( const TestFunction& function );
 
-      bool setup( const Config::ParameterContainer& parameters,
-                 const String& prefix = "" );
+   template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0 >
+   __cuda_callable__
+   Real
+   getPartialDerivative( const PointType& vertex, const Real& time = 0 ) const;
 
-      const TestFunction& operator = ( const TestFunction& function );
+   __cuda_callable__
+   Real
+   operator()( const PointType& vertex, const Real& time = 0 ) const
+   {
+      return this->getPartialDerivative< 0, 0, 0 >( vertex, time );
+   }
 
-      template< int XDiffOrder = 0,
-                int YDiffOrder = 0,
-                int ZDiffOrder = 0 >
-      __cuda_callable__
-      Real getPartialDerivative( const PointType& vertex,
-                                 const Real& time = 0 ) const;
+   template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0 >
+   __cuda_callable__
+   Real
+   getTimeDerivative( const PointType& vertex, const Real& time = 0 ) const;
 
-      __cuda_callable__
-      Real operator()( const PointType& vertex,
-                     const Real& time = 0 ) const
-      {
-         return this->getPartialDerivative< 0, 0, 0 >( vertex, time );
-      }
+   std::ostream&
+   print( std::ostream& str ) const;
 
+   ~TestFunction();
 
-      template< int XDiffOrder = 0,
-                int YDiffOrder = 0,
-                int ZDiffOrder = 0 >
-      __cuda_callable__
-      Real getTimeDerivative( const PointType& vertex,
-                              const Real& time = 0 ) const;
+protected:
+   template< typename FunctionType >
+   bool
+   setupFunction( const Config::ParameterContainer& parameters, const String& prefix = "" );
 
-      std::ostream& print( std::ostream& str ) const;
+   template< typename OperatorType >
+   bool
+   setupOperator( const Config::ParameterContainer& parameters, const String& prefix = "" );
 
-      ~TestFunction();
+   template< typename FunctionType >
+   void
+   deleteFunction();
 
-   protected:
+   template< typename OperatorType >
+   void
+   deleteOperator();
 
-      template< typename FunctionType >
-      bool setupFunction( const Config::ParameterContainer& parameters,
-                         const String& prefix = "" );
-      
-      template< typename OperatorType >
-      bool setupOperator( const Config::ParameterContainer& parameters,
-                          const String& prefix = "" );
+   void
+   deleteFunctions();
 
-      template< typename FunctionType >
-      void deleteFunction();
+   template< typename FunctionType >
+   void
+   copyFunction( const void* function );
 
-      template< typename OperatorType >
-      void deleteOperator();
+   template< typename FunctionType >
+   std::ostream&
+   printFunction( std::ostream& str ) const;
 
-      void deleteFunctions();
+   void* function;
 
-      template< typename FunctionType >
-      void copyFunction( const void* function );
+   void* operator_;
 
-      template< typename FunctionType >
-      std::ostream& printFunction( std::ostream& str ) const;
+   TestFunctions functionType;
 
-      void* function;
+   Operators operatorType;
 
-      void* operator_;
+   TimeDependence timeDependence;
 
-      TestFunctions functionType;
-      
-      Operators operatorType;
-
-      TimeDependence timeDependence;
-
-      Real timeScale;
-
+   Real timeScale;
 };
 
-template< int FunctionDimension,
-          typename Real,
-          typename Device >
-std::ostream& operator << ( std::ostream& str, const TestFunction< FunctionDimension, Real, Device >& f )
+template< int FunctionDimension, typename Real, typename Device >
+std::ostream&
+operator<<( std::ostream& str, const TestFunction< FunctionDimension, Real, Device >& f )
 {
    str << "Test function: ";
    return f.print( str );
 }
 
-} // namespace Functions
-} // namespace TNL
+}  // namespace Functions
+}  // namespace TNL
 
 #include <TNL/Functions/TestFunction_impl.h>
-

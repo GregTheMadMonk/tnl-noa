@@ -17,7 +17,8 @@ namespace __ndarray_impl {
 template< typename DistributedNDArray, std::size_t level >
 struct SynchronizerBuffersLayer
 {
-   SynchronizerBuffersLayer& getDimBuffers( std::integral_constant< std::size_t, level > )
+   SynchronizerBuffersLayer&
+   getDimBuffers( std::integral_constant< std::size_t, level > )
    {
       return *this;
    }
@@ -33,7 +34,8 @@ struct SynchronizerBuffersLayer
    int left_neighbor = -1;
    int right_neighbor = -1;
 
-   void reset()
+   void
+   reset()
    {
       left_send_buffer.reset();
       left_recv_buffer.reset();
@@ -45,7 +47,8 @@ struct SynchronizerBuffersLayer
       right_send_view.reset();
       right_recv_view.reset();
 
-      left_send_offsets = left_recv_offsets = right_send_offsets = right_recv_offsets = typename DistributedNDArray::LocalBeginsType{};
+      left_send_offsets = left_recv_offsets = right_send_offsets = right_recv_offsets =
+         typename DistributedNDArray::LocalBeginsType{};
 
       left_neighbor = right_neighbor = -1;
    }
@@ -73,18 +76,18 @@ struct SynchronizerBuffersLayerHelper< DistributedNDArray, std::integral_constan
 };
 
 template< typename DistributedNDArray >
-struct SynchronizerBuffers
-: public SynchronizerBuffersLayerHelper< DistributedNDArray >
+struct SynchronizerBuffers : public SynchronizerBuffersLayerHelper< DistributedNDArray >
 {
    using SynchronizerBuffersLayerHelper< DistributedNDArray >::getDimBuffers;
 
    template< std::size_t level >
-   auto& getDimBuffers()
+   auto&
+   getDimBuffers()
    {
       return this->getDimBuffers( std::integral_constant< std::size_t, level >{} );
    }
 };
 
-} // namespace __ndarray_impl
-} // namespace Containers
-} // namespace TNL
+}  // namespace __ndarray_impl
+}  // namespace Containers
+}  // namespace TNL

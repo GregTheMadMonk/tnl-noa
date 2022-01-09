@@ -27,16 +27,14 @@ namespace detail {
  * `ValueType`, e.g. using the `__shfl_sync` intrinsics for supported
  * value types.
  */
-template< ScanType scanType,
-          int blockSize,
-          typename Reduction,
-          typename ValueType >
+template< ScanType scanType, int blockSize, typename Reduction, typename ValueType >
 struct CudaBlockScan
 {
    // storage to be allocated in shared memory
    struct Storage
    {
-      ValueType chunkResults[ blockSize + blockSize / Cuda::getNumberOfSharedMemoryBanks() ];  // accessed via Cuda::getInterleaving()
+      ValueType
+         chunkResults[ blockSize + blockSize / Cuda::getNumberOfSharedMemoryBanks() ];  // accessed via Cuda::getInterleaving()
       ValueType warpResults[ Cuda::getWarpSize() ];
    };
 
@@ -52,13 +50,9 @@ struct CudaBlockScan
     * \param storage      Auxiliary storage (must be allocated as a __shared__
     *                     variable).
     */
-   __device__ static
-   ValueType
-   scan( const Reduction& reduction,
-         ValueType identity,
-         ValueType threadValue,
-         int tid,
-         Storage& storage )
+   __device__
+   static ValueType
+   scan( const Reduction& reduction, ValueType identity, ValueType threadValue, int tid, Storage& storage )
    {
       // verify the configuration
       TNL_ASSERT_EQ( blockDim.x, blockSize, "unexpected block size in CudaBlockScan::scan" );
@@ -76,7 +70,8 @@ struct CudaBlockScan
       #pragma unroll
       for( int stride = 1; stride < Cuda::getWarpSize(); stride *= 2 ) {
          if( lane_id >= stride ) {
-            storage.chunkResults[ chunkResultIdx ] = reduction( storage.chunkResults[ chunkResultIdx ], storage.chunkResults[ Cuda::getInterleaving( tid - stride ) ] );
+            storage.chunkResults[ chunkResultIdx ] = reduction( storage.chunkResults[ chunkResultIdx ],
+                                                                storage.chunkResults[ Cuda::getInterleaving( tid - stride ) ] );
          }
          __syncwarp();
       }
@@ -105,7 +100,7 @@ struct CudaBlockScan
       if( scanType == ScanType::Exclusive ) {
          storage.chunkResults[ chunkResultIdx ] = threadValue;
          __syncthreads();
-         threadValue = (tid == 0) ? identity : storage.chunkResults[ Cuda::getInterleaving( tid - 1 ) ];
+         threadValue = ( tid == 0 ) ? identity : storage.chunkResults[ Cuda::getInterleaving( tid - 1 ) ];
       }
 
       __syncthreads();
@@ -137,13 +132,9 @@ struct CudaBlockScanShfl
     * \param storage      Auxiliary storage (must be allocated as a __shared__
     *                     variable).
     */
-   __device__ static
-   ValueType
-   scan( const Reduction& reduction,
-         ValueType identity,
-         ValueType threadValue,
-         int tid,
-         Storage& storage )
+   __device__
+   static ValueType
+   scan( const Reduction& reduction, ValueType identity, ValueType threadValue, int tid, Storage& storage )
    {
       const int lane_id = tid % Cuda::getWarpSize();
       const int warp_id = tid / Cuda::getWarpSize();
@@ -183,13 +174,9 @@ struct CudaBlockScanShfl
     * total = thread's result of the *inclusive* scan
     */
    template< ScanType warpScanType >
-   __device__ static
-   ValueType
-   warpScan( const Reduction& reduction,
-             ValueType identity,
-             ValueType threadValue,
-             int lane_id,
-             ValueType& total )
+   __device__
+   static ValueType
+   warpScan( const Reduction& reduction, ValueType identity, ValueType threadValue, int lane_id, ValueType& total )
    {
       constexpr unsigned mask = 0xffffffff;
 
@@ -215,58 +202,40 @@ struct CudaBlockScanShfl
    }
 };
 
-template< ScanType scanType,
-          int blockSize,
-          typename Reduction >
-struct CudaBlockScan< scanType, blockSize, Reduction, int >
-: public CudaBlockScanShfl< scanType, blockSize, Reduction, int >
+template< ScanType scanType, int blockSize, typename Reduction >
+struct CudaBlockScan< scanType, blockSize, Reduction, int > : public CudaBlockScanShfl< scanType, blockSize, Reduction, int >
 {};
 
-template< ScanType scanType,
-          int blockSize,
-          typename Reduction >
+template< ScanType scanType, int blockSize, typename Reduction >
 struct CudaBlockScan< scanType, blockSize, Reduction, unsigned int >
 : public CudaBlockScanShfl< scanType, blockSize, Reduction, unsigned int >
 {};
 
-template< ScanType scanType,
-          int blockSize,
-          typename Reduction >
-struct CudaBlockScan< scanType, blockSize, Reduction, long >
-: public CudaBlockScanShfl< scanType, blockSize, Reduction, long >
+template< ScanType scanType, int blockSize, typename Reduction >
+struct CudaBlockScan< scanType, blockSize, Reduction, long > : public CudaBlockScanShfl< scanType, blockSize, Reduction, long >
 {};
 
-template< ScanType scanType,
-          int blockSize,
-          typename Reduction >
+template< ScanType scanType, int blockSize, typename Reduction >
 struct CudaBlockScan< scanType, blockSize, Reduction, unsigned long >
 : public CudaBlockScanShfl< scanType, blockSize, Reduction, unsigned long >
 {};
 
-template< ScanType scanType,
-          int blockSize,
-          typename Reduction >
+template< ScanType scanType, int blockSize, typename Reduction >
 struct CudaBlockScan< scanType, blockSize, Reduction, long long >
 : public CudaBlockScanShfl< scanType, blockSize, Reduction, long long >
 {};
 
-template< ScanType scanType,
-          int blockSize,
-          typename Reduction >
+template< ScanType scanType, int blockSize, typename Reduction >
 struct CudaBlockScan< scanType, blockSize, Reduction, unsigned long long >
 : public CudaBlockScanShfl< scanType, blockSize, Reduction, unsigned long long >
 {};
 
-template< ScanType scanType,
-          int blockSize,
-          typename Reduction >
+template< ScanType scanType, int blockSize, typename Reduction >
 struct CudaBlockScan< scanType, blockSize, Reduction, float >
 : public CudaBlockScanShfl< scanType, blockSize, Reduction, float >
 {};
 
-template< ScanType scanType,
-          int blockSize,
-          typename Reduction >
+template< ScanType scanType, int blockSize, typename Reduction >
 struct CudaBlockScan< scanType, blockSize, Reduction, double >
 : public CudaBlockScanShfl< scanType, blockSize, Reduction, double >
 {};
@@ -275,11 +244,7 @@ struct CudaBlockScan< scanType, blockSize, Reduction, double >
  * It is a *cooperative* operation - all threads must call the operation,
  * otherwise it will deadlock!
  */
-template< ScanType scanType,
-          int blockSize,
-          int valuesPerThread,
-          typename Reduction,
-          typename ValueType >
+template< ScanType scanType, int blockSize, int valuesPerThread, typename Reduction, typename ValueType >
 struct CudaTileScan
 {
    using BlockScan = CudaBlockScan< ScanType::Exclusive, blockSize, Reduction, ValueType >;
@@ -310,10 +275,9 @@ struct CudaTileScan
     * \param storage      Auxiliary storage (must be allocated as a __shared__
     *                     variable).
     */
-   template< typename InputView,
-             typename OutputView >
-   __device__ static
-   ValueType
+   template< typename InputView, typename OutputView >
+   __device__
+   static ValueType
    scan( const InputView input,
          OutputView output,
          typename InputView::IndexType begin,
@@ -343,16 +307,14 @@ struct CudaTileScan
       // Load data into the shared memory.
       {
          int idx = threadIdx.x;
-         while( idx < elementsInBlock )
-         {
+         while( idx < elementsInBlock ) {
             storage.data[ idx ] = input[ begin ];
             begin += blockDim.x;
             idx += blockDim.x;
          }
          // fill the remaining (maxElementsInBlock - elementsInBlock) values with identity
          // (this helps to avoid divergent branches in the blocks below)
-         while( idx < maxElementsInBlock )
-         {
+         while( idx < maxElementsInBlock ) {
             storage.data[ idx ] = identity;
             idx += blockDim.x;
          }
@@ -374,8 +336,7 @@ struct CudaTileScan
 
       // Downsweep step: scan the chunks and use the result of spine scan as the initial value.
       #pragma unroll
-      for( int i = 0; i < valuesPerThread; i++ )
-      {
+      for( int i = 0; i < valuesPerThread; i++ ) {
          const ValueType inputValue = storage.data[ chunkOffset + i ];
          if( scanType == ScanType::Exclusive )
             storage.data[ chunkOffset + i ] = value;
@@ -388,8 +349,7 @@ struct CudaTileScan
       // Store the result back in the global memory.
       {
          int idx = threadIdx.x;
-         while( idx < elementsInBlock )
-         {
+         while( idx < elementsInBlock ) {
             output[ outputBegin ] = storage.data[ idx ];
             outputBegin += blockDim.x;
             idx += blockDim.x;
@@ -403,12 +363,9 @@ struct CudaTileScan
 
 /* CudaScanKernelUpsweep - compute partial reductions per each CUDA block.
  */
-template< int blockSize,
-          int valuesPerThread,
-          typename InputView,
-          typename Reduction,
-          typename ValueType >
-__global__ void
+template< int blockSize, int valuesPerThread, typename InputView, typename Reduction, typename ValueType >
+__global__
+void
 CudaScanKernelUpsweep( const InputView input,
                        typename InputView::IndexType begin,
                        typename InputView::IndexType end,
@@ -424,13 +381,15 @@ CudaScanKernelUpsweep( const InputView input,
 
    // allocate shared memory
    using BlockReduce = CudaBlockReduce< blockSize, Reduction, ValueType >;
-   union Shared {
+   union Shared
+   {
       ValueType data[ blockSize * valuesPerThread ];
       typename BlockReduce::Storage blockReduceStorage;
 
       // initialization is not allowed for __shared__ variables, so we need to
       // disable initialization in the implicit default constructor
-      __device__ Shared() {}
+      __device__
+      Shared() {}
    };
    __shared__ Shared storage;
 
@@ -446,16 +405,14 @@ CudaScanKernelUpsweep( const InputView input,
    // Load data into the shared memory.
    {
       int idx = threadIdx.x;
-      while( idx < elementsInBlock )
-      {
+      while( idx < elementsInBlock ) {
          storage.data[ idx ] = input[ begin ];
          begin += blockDim.x;
          idx += blockDim.x;
       }
       // fill the remaining (maxElementsInBlock - elementsInBlock) values with identity
       // (this helps to avoid divergent branches in the blocks below)
-      while( idx < maxElementsInBlock )
-      {
+      while( idx < maxElementsInBlock ) {
          storage.data[ idx ] = identity;
          idx += blockDim.x;
       }
@@ -481,13 +438,9 @@ CudaScanKernelUpsweep( const InputView input,
 /* CudaScanKernelDownsweep - scan each tile of the input separately in each CUDA
  * block and use the result of spine scan as the initial value
  */
-template< ScanType scanType,
-          int blockSize,
-          int valuesPerThread,
-          typename InputView,
-          typename OutputView,
-          typename Reduction >
-__global__ void
+template< ScanType scanType, int blockSize, int valuesPerThread, typename InputView, typename OutputView, typename Reduction >
+__global__
+void
 CudaScanKernelDownsweep( const InputView input,
                          OutputView output,
                          typename InputView::IndexType begin,
@@ -502,12 +455,14 @@ CudaScanKernelDownsweep( const InputView input,
    using TileScan = CudaTileScan< scanType, blockSize, valuesPerThread, Reduction, ValueType >;
 
    // allocate shared memory
-   union Shared {
+   union Shared
+   {
       typename TileScan::Storage tileScanStorage;
 
       // initialization is not allowed for __shared__ variables, so we need to
       // disable initialization in the implicit default constructor
-      __device__ Shared() {}
+      __device__
+      Shared() {}
    };
    __shared__ Shared storage;
 
@@ -522,13 +477,9 @@ CudaScanKernelDownsweep( const InputView input,
  * block (first phase to be followed by CudaScanKernelUniformShift when there
  * are multiple CUDA blocks).
  */
-template< ScanType scanType,
-          int blockSize,
-          int valuesPerThread,
-          typename InputView,
-          typename OutputView,
-          typename Reduction >
-__global__ void
+template< ScanType scanType, int blockSize, int valuesPerThread, typename InputView, typename OutputView, typename Reduction >
+__global__
+void
 CudaScanKernelParallel( const InputView input,
                         OutputView output,
                         typename InputView::IndexType begin,
@@ -542,17 +493,20 @@ CudaScanKernelParallel( const InputView input,
    using TileScan = CudaTileScan< scanType, blockSize, valuesPerThread, Reduction, ValueType >;
 
    // allocate shared memory
-   union Shared {
+   union Shared
+   {
       typename TileScan::Storage tileScanStorage;
 
       // initialization is not allowed for __shared__ variables, so we need to
       // disable initialization in the implicit default constructor
-      __device__ Shared() {}
+      __device__
+      Shared() {}
    };
    __shared__ Shared storage;
 
    // scan from input into output
-   const ValueType value = TileScan::scan( input, output, begin, end, outputBegin, reduction, identity, identity, storage.tileScanStorage );
+   const ValueType value =
+      TileScan::scan( input, output, begin, end, outputBegin, reduction, identity, identity, storage.tileScanStorage );
 
    // The last thread of the block stores the block result in the global memory.
    if( blockResults && threadIdx.x == blockDim.x - 1 )
@@ -567,11 +521,9 @@ CudaScanKernelParallel( const InputView input,
  * \param shift         A global shift to be applied to all elements of the
  *                      output array.
  */
-template< int blockSize,
-          int valuesPerThread,
-          typename OutputView,
-          typename Reduction >
-__global__ void
+template< int blockSize, int valuesPerThread, typename OutputView, typename Reduction >
+__global__
+void
 CudaScanKernelUniformShift( OutputView output,
                             typename OutputView::IndexType outputBegin,
                             typename OutputView::IndexType outputEnd,
@@ -580,12 +532,14 @@ CudaScanKernelUniformShift( OutputView output,
                             typename OutputView::ValueType shift )
 {
    // load the block result into a __shared__ variable first
-   union Shared {
+   union Shared
+   {
       typename OutputView::ValueType blockResult;
 
       // initialization is not allowed for __shared__ variables, so we need to
       // disable initialization in the implicit default constructor
-      __device__ Shared() {}
+      __device__
+      Shared() {}
    };
    __shared__ Shared storage;
    if( threadIdx.x == 0 )
@@ -602,8 +556,7 @@ CudaScanKernelUniformShift( OutputView output,
    shift = reduction( shift, storage.blockResult );
 
    int valueIdx = 0;
-   while( valueIdx < valuesPerThread && outputBegin < outputEnd )
-   {
+   while( valueIdx < valuesPerThread && outputBegin < outputEnd ) {
       output[ outputBegin ] = reduction( output[ outputBegin ], shift );
       outputBegin += blockDim.x;
       valueIdx++;
@@ -619,7 +572,7 @@ template< ScanType scanType,
           typename ValueType,
           // use blockSize=256 for 32-bit value types, scale with sizeof(ValueType)
           // to keep shared memory requirements constant
-          int blockSize = 256 * 4 / sizeof(ValueType),
+          int blockSize = 256 * 4 / sizeof( ValueType ),
           // valuesPerThread should be odd to avoid shared memory bank conflicts
           int valuesPerThread = 7 >
 struct CudaScanKernelLauncher
@@ -639,9 +592,7 @@ struct CudaScanKernelLauncher
     * \param identity Neutral element for given reduction operation, i.e.
     *                 value such that `reduction(identity, x) == x` for any `x`.
     */
-   template< typename InputArray,
-             typename OutputArray,
-             typename Reduction >
+   template< typename InputArray, typename OutputArray, typename Reduction >
    static void
    perform( const InputArray& input,
             OutputArray& output,
@@ -651,29 +602,13 @@ struct CudaScanKernelLauncher
             Reduction&& reduction,
             typename OutputArray::ValueType identity )
    {
-      const auto blockShifts = performFirstPhase(
-         input,
-         output,
-         begin,
-         end,
-         outputBegin,
-         reduction,
-         identity );
+      const auto blockShifts = performFirstPhase( input, output, begin, end, outputBegin, reduction, identity );
 
       // if the first-phase kernel was launched with just one block, skip the second phase
       if( blockShifts.getSize() <= 2 )
          return;
 
-      performSecondPhase(
-         input,
-         output,
-         blockShifts,
-         begin,
-         end,
-         outputBegin,
-         reduction,
-         identity,
-         identity );
+      performSecondPhase( input, output, blockShifts, begin, end, outputBegin, reduction, identity, identity );
    }
 
    /****
@@ -691,9 +626,7 @@ struct CudaScanKernelLauncher
     * \param identity Neutral element for given reduction operation, i.e.
     *                 value such that `reduction(identity, x) == x` for any `x`.
     */
-   template< typename InputArray,
-             typename OutputArray,
-             typename Reduction >
+   template< typename InputArray, typename OutputArray, typename Reduction >
    static auto
    performFirstPhase( const InputArray& input,
                       OutputArray& output,
@@ -714,60 +647,84 @@ struct CudaScanKernelLauncher
 
          // run the kernel with just 1 block
          if( end - begin <= blockSize ) {
-            constexpr auto kernel = CudaScanKernelParallel< scanType, blockSize, 1, typename InputArray::ConstViewType, typename OutputArray::ViewType, Reduction >;
-            Cuda::launchKernelSync(
-                  kernel, 0, Cuda::LaunchConfiguration( 1, blockSize ),
-                  input.getConstView(),
-                  output.getView(),
-                  begin,
-                  end,
-                  outputBegin,
-                  reduction,
-                  identity,
-                  // blockResults are shifted by 1, because the 0-th element should stay identity
-                  &blockResults.getData()[ 1 ] );
+            constexpr auto kernel = CudaScanKernelParallel< scanType,
+                                                            blockSize,
+                                                            1,
+                                                            typename InputArray::ConstViewType,
+                                                            typename OutputArray::ViewType,
+                                                            Reduction >;
+            Cuda::launchKernelSync( kernel,
+                                    0,
+                                    Cuda::LaunchConfiguration( 1, blockSize ),
+                                    input.getConstView(),
+                                    output.getView(),
+                                    begin,
+                                    end,
+                                    outputBegin,
+                                    reduction,
+                                    identity,
+                                    // blockResults are shifted by 1, because the 0-th element should stay identity
+                                    &blockResults.getData()[ 1 ] );
          }
          else if( end - begin <= blockSize * 3 ) {
-            constexpr auto kernel = CudaScanKernelParallel< scanType, blockSize, 3, typename InputArray::ConstViewType, typename OutputArray::ViewType, Reduction >;
-            Cuda::launchKernelSync(
-                  kernel, 0, Cuda::LaunchConfiguration( 1, blockSize ),
-                  input.getConstView(),
-                  output.getView(),
-                  begin,
-                  end,
-                  outputBegin,
-                  reduction,
-                  identity,
-                  // blockResults are shifted by 1, because the 0-th element should stay identity
-                  &blockResults.getData()[ 1 ] );
+            constexpr auto kernel = CudaScanKernelParallel< scanType,
+                                                            blockSize,
+                                                            3,
+                                                            typename InputArray::ConstViewType,
+                                                            typename OutputArray::ViewType,
+                                                            Reduction >;
+            Cuda::launchKernelSync( kernel,
+                                    0,
+                                    Cuda::LaunchConfiguration( 1, blockSize ),
+                                    input.getConstView(),
+                                    output.getView(),
+                                    begin,
+                                    end,
+                                    outputBegin,
+                                    reduction,
+                                    identity,
+                                    // blockResults are shifted by 1, because the 0-th element should stay identity
+                                    &blockResults.getData()[ 1 ] );
          }
          else if( end - begin <= blockSize * 5 ) {
-            constexpr auto kernel = CudaScanKernelParallel< scanType, blockSize, 5, typename InputArray::ConstViewType, typename OutputArray::ViewType, Reduction >;
-            Cuda::launchKernelSync(
-                  kernel, 0, Cuda::LaunchConfiguration( 1, blockSize ),
-                  input.getConstView(),
-                  output.getView(),
-                  begin,
-                  end,
-                  outputBegin,
-                  reduction,
-                  identity,
-                  // blockResults are shifted by 1, because the 0-th element should stay identity
-                  &blockResults.getData()[ 1 ] );
+            constexpr auto kernel = CudaScanKernelParallel< scanType,
+                                                            blockSize,
+                                                            5,
+                                                            typename InputArray::ConstViewType,
+                                                            typename OutputArray::ViewType,
+                                                            Reduction >;
+            Cuda::launchKernelSync( kernel,
+                                    0,
+                                    Cuda::LaunchConfiguration( 1, blockSize ),
+                                    input.getConstView(),
+                                    output.getView(),
+                                    begin,
+                                    end,
+                                    outputBegin,
+                                    reduction,
+                                    identity,
+                                    // blockResults are shifted by 1, because the 0-th element should stay identity
+                                    &blockResults.getData()[ 1 ] );
          }
          else {
-            constexpr auto kernel = CudaScanKernelParallel< scanType, blockSize, valuesPerThread, typename InputArray::ConstViewType, typename OutputArray::ViewType, Reduction >;
-            Cuda::launchKernelSync(
-                  kernel, 0, Cuda::LaunchConfiguration( 1, blockSize ),
-                  input.getConstView(),
-                  output.getView(),
-                  begin,
-                  end,
-                  outputBegin,
-                  reduction,
-                  identity,
-                  // blockResults are shifted by 1, because the 0-th element should stay identity
-                  &blockResults.getData()[ 1 ] );
+            constexpr auto kernel = CudaScanKernelParallel< scanType,
+                                                            blockSize,
+                                                            valuesPerThread,
+                                                            typename InputArray::ConstViewType,
+                                                            typename OutputArray::ViewType,
+                                                            Reduction >;
+            Cuda::launchKernelSync( kernel,
+                                    0,
+                                    Cuda::LaunchConfiguration( 1, blockSize ),
+                                    input.getConstView(),
+                                    output.getView(),
+                                    begin,
+                                    end,
+                                    outputBegin,
+                                    reduction,
+                                    identity,
+                                    // blockResults are shifted by 1, because the 0-th element should stay identity
+                                    &blockResults.getData()[ 1 ] );
          }
 
          // Store the number of CUDA grids for the purpose of unit testing, i.e.
@@ -799,54 +756,58 @@ struct CudaScanKernelLauncher
             launch_config.gridSize.x = roundUpDivision( currentSize, maxElementsInBlock );
 
             // run the kernel
-            switch( phaseType )
-            {
+            switch( phaseType ) {
                case ScanPhaseType::WriteInFirstPhase:
-               {
-                  constexpr auto kernel = CudaScanKernelParallel< scanType, blockSize, valuesPerThread, typename InputArray::ConstViewType, typename OutputArray::ViewType, Reduction >;
-                  Cuda::launchKernelAsync(
-                        kernel, 0, launch_config,
-                        input.getConstView(),
-                        output.getView(),
-                        begin + gridOffset,
-                        begin + gridOffset + currentSize,
-                        outputBegin + gridOffset,
-                        reduction,
-                        identity,
-                        &blockResults.getData()[ gridIdx * maxGridSize() ] );
-                  break;
-               }
+                  {
+                     constexpr auto kernel = CudaScanKernelParallel< scanType,
+                                                                     blockSize,
+                                                                     valuesPerThread,
+                                                                     typename InputArray::ConstViewType,
+                                                                     typename OutputArray::ViewType,
+                                                                     Reduction >;
+                     Cuda::launchKernelAsync( kernel,
+                                              0,
+                                              launch_config,
+                                              input.getConstView(),
+                                              output.getView(),
+                                              begin + gridOffset,
+                                              begin + gridOffset + currentSize,
+                                              outputBegin + gridOffset,
+                                              reduction,
+                                              identity,
+                                              &blockResults.getData()[ gridIdx * maxGridSize() ] );
+                     break;
+                  }
 
                case ScanPhaseType::WriteInSecondPhase:
-               {
-                  constexpr auto kernel = CudaScanKernelUpsweep< blockSize, valuesPerThread, typename InputArray::ConstViewType, Reduction, typename OutputArray::ValueType >;
-                  Cuda::launchKernelAsync(
-                        kernel, 0, launch_config,
-                        input.getConstView(),
-                        begin + gridOffset,
-                        begin + gridOffset + currentSize,
-                        reduction,
-                        identity,
-                        &blockResults.getData()[ gridIdx * maxGridSize() ] );
-                  break;
-               }
+                  {
+                     constexpr auto kernel = CudaScanKernelUpsweep< blockSize,
+                                                                    valuesPerThread,
+                                                                    typename InputArray::ConstViewType,
+                                                                    Reduction,
+                                                                    typename OutputArray::ValueType >;
+                     Cuda::launchKernelAsync( kernel,
+                                              0,
+                                              launch_config,
+                                              input.getConstView(),
+                                              begin + gridOffset,
+                                              begin + gridOffset + currentSize,
+                                              reduction,
+                                              identity,
+                                              &blockResults.getData()[ gridIdx * maxGridSize() ] );
+                     break;
+                  }
             }
          }
 
          // synchronize the null-stream after all grids
-         cudaStreamSynchronize(0);
+         cudaStreamSynchronize( 0 );
          TNL_CHECK_CUDA_DEVICE;
 
          // blockResults now contains scan results for each block. The first phase
          // ends by computing an exclusive scan of this array.
          CudaScanKernelLauncher< ScanType::Exclusive, ScanPhaseType::WriteInSecondPhase, ValueType >::perform(
-            blockResults,
-            blockResults,
-            0,
-            blockResults.getSize(),
-            0,
-            reduction,
-            identity );
+            blockResults, blockResults, 0, blockResults.getSize(), 0, reduction, identity );
 
          // Store the number of CUDA grids for the purpose of unit testing, i.e.
          // to check if we test the algorithm with more than one CUDA grid.
@@ -876,10 +837,7 @@ struct CudaScanKernelLauncher
     * \param shift A constant shifting all elements of the array (usually
     *              `identity`, i.e. the neutral value).
     */
-   template< typename InputArray,
-             typename OutputArray,
-             typename BlockShifts,
-             typename Reduction >
+   template< typename InputArray, typename OutputArray, typename BlockShifts, typename Reduction >
    static void
    performSecondPhase( const InputArray& input,
                        OutputArray& output,
@@ -897,15 +855,17 @@ struct CudaScanKernelLauncher
       // if the input was already scanned with just one block in the first phase,
       // it must be shifted uniformly in the second phase
       if( end - begin <= blockSize * valuesPerThread ) {
-         constexpr auto kernel = CudaScanKernelUniformShift< blockSize, valuesPerThread, typename OutputArray::ViewType, Reduction >;
-         Cuda::launchKernelSync(
-               kernel, 0, Cuda::LaunchConfiguration( 1, blockSize ),
-               output.getView(),
-               outputBegin,
-               outputBegin + end - begin,
-               reduction,
-               blockShifts.getData(),
-               shift );
+         constexpr auto kernel =
+            CudaScanKernelUniformShift< blockSize, valuesPerThread, typename OutputArray::ViewType, Reduction >;
+         Cuda::launchKernelSync( kernel,
+                                 0,
+                                 Cuda::LaunchConfiguration( 1, blockSize ),
+                                 output.getView(),
+                                 outputBegin,
+                                 outputBegin + end - begin,
+                                 reduction,
+                                 blockShifts.getData(),
+                                 shift );
       }
       else {
          // compute the number of grids
@@ -925,62 +885,72 @@ struct CudaScanKernelLauncher
             launch_config.gridSize.x = roundUpDivision( currentSize, maxElementsInBlock );
 
             // run the kernel
-            switch( phaseType )
-            {
+            switch( phaseType ) {
                case ScanPhaseType::WriteInFirstPhase:
-               {
-                  constexpr auto kernel = CudaScanKernelUniformShift< blockSize, valuesPerThread, typename OutputArray::ViewType, Reduction >;
-                  Cuda::launchKernelAsync(
-                        kernel, 0, launch_config,
-                        output.getView(),
-                        outputBegin + gridOffset,
-                        outputBegin + gridOffset + currentSize,
-                        reduction,
-                        &blockShifts.getData()[ gridIdx * maxGridSize() ],
-                        shift );
-                  break;
-               }
+                  {
+                     constexpr auto kernel =
+                        CudaScanKernelUniformShift< blockSize, valuesPerThread, typename OutputArray::ViewType, Reduction >;
+                     Cuda::launchKernelAsync( kernel,
+                                              0,
+                                              launch_config,
+                                              output.getView(),
+                                              outputBegin + gridOffset,
+                                              outputBegin + gridOffset + currentSize,
+                                              reduction,
+                                              &blockShifts.getData()[ gridIdx * maxGridSize() ],
+                                              shift );
+                     break;
+                  }
 
                case ScanPhaseType::WriteInSecondPhase:
-               {
-                  constexpr auto kernel = CudaScanKernelDownsweep< scanType, blockSize, valuesPerThread, typename InputArray::ConstViewType, typename OutputArray::ViewType, Reduction >;
-                  Cuda::launchKernelAsync(
-                        kernel, 0, launch_config,
-                        input.getConstView(),
-                        output.getView(),
-                        begin + gridOffset,
-                        begin + gridOffset + currentSize,
-                        outputBegin + gridOffset,
-                        reduction,
-                        identity,
-                        shift,
-                        &blockShifts.getData()[ gridIdx * maxGridSize() ] );
-                  break;
-               }
+                  {
+                     constexpr auto kernel = CudaScanKernelDownsweep< scanType,
+                                                                      blockSize,
+                                                                      valuesPerThread,
+                                                                      typename InputArray::ConstViewType,
+                                                                      typename OutputArray::ViewType,
+                                                                      Reduction >;
+                     Cuda::launchKernelAsync( kernel,
+                                              0,
+                                              launch_config,
+                                              input.getConstView(),
+                                              output.getView(),
+                                              begin + gridOffset,
+                                              begin + gridOffset + currentSize,
+                                              outputBegin + gridOffset,
+                                              reduction,
+                                              identity,
+                                              shift,
+                                              &blockShifts.getData()[ gridIdx * maxGridSize() ] );
+                     break;
+                  }
             }
          }
 
          // synchronize the null-stream after all grids
-         cudaStreamSynchronize(0);
+         cudaStreamSynchronize( 0 );
          TNL_CHECK_CUDA_DEVICE;
       }
    }
 
    // The following serves for setting smaller maxGridSize so that we can force
    // the scan in CUDA to run with more than one grid in unit tests.
-   static int& maxGridSize()
+   static int&
+   maxGridSize()
    {
       static int maxGridSize = Cuda::getMaxGridSize();
       return maxGridSize;
    }
 
-   static void resetMaxGridSize()
+   static void
+   resetMaxGridSize()
    {
       maxGridSize() = Cuda::getMaxGridSize();
       gridsCount() = -1;
    }
 
-   static int& gridsCount()
+   static int&
+   gridsCount()
    {
       static int gridsCount = -1;
       return gridsCount;
@@ -989,6 +959,6 @@ struct CudaScanKernelLauncher
 
 #endif
 
-} // namespace detail
-} // namespace Algorithms
-} // namespace TNL
+}  // namespace detail
+}  // namespace Algorithms
+}  // namespace TNL

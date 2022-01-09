@@ -13,13 +13,10 @@
 namespace TNL {
 namespace Exceptions {
 
-struct ConfigError
-   : public std::runtime_error
+struct ConfigError : public std::runtime_error
 {
-   ConfigError( std::string msg )
-   : std::runtime_error( msg )
-   {}
+   ConfigError( std::string msg ) : std::runtime_error( msg ) {}
 };
 
-} // namespace Exceptions
-} // namespace TNL
+}  // namespace Exceptions
+}  // namespace TNL

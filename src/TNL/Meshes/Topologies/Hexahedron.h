@@ -104,73 +104,264 @@ struct Subtopology< Hexahedron, 2 >
  *
  */
 
-template<> struct SubentityVertexMap< Hexahedron, Edge,  0, 0> { static constexpr int index = 0; };
-template<> struct SubentityVertexMap< Hexahedron, Edge,  0, 1> { static constexpr int index = 1; };
+template<>
+struct SubentityVertexMap< Hexahedron, Edge, 0, 0 >
+{
+   static constexpr int index = 0;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Edge, 0, 1 >
+{
+   static constexpr int index = 1;
+};
 
-template<> struct SubentityVertexMap< Hexahedron, Edge,  1, 0> { static constexpr int index = 1; };
-template<> struct SubentityVertexMap< Hexahedron, Edge,  1, 1> { static constexpr int index = 2; };
+template<>
+struct SubentityVertexMap< Hexahedron, Edge, 1, 0 >
+{
+   static constexpr int index = 1;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Edge, 1, 1 >
+{
+   static constexpr int index = 2;
+};
 
-template<> struct SubentityVertexMap< Hexahedron, Edge,  2, 0> { static constexpr int index = 2; };
-template<> struct SubentityVertexMap< Hexahedron, Edge,  2, 1> { static constexpr int index = 3; };
+template<>
+struct SubentityVertexMap< Hexahedron, Edge, 2, 0 >
+{
+   static constexpr int index = 2;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Edge, 2, 1 >
+{
+   static constexpr int index = 3;
+};
 
-template<> struct SubentityVertexMap< Hexahedron, Edge,  3, 0> { static constexpr int index = 3; };
-template<> struct SubentityVertexMap< Hexahedron, Edge,  3, 1> { static constexpr int index = 0; };
+template<>
+struct SubentityVertexMap< Hexahedron, Edge, 3, 0 >
+{
+   static constexpr int index = 3;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Edge, 3, 1 >
+{
+   static constexpr int index = 0;
+};
 
-template<> struct SubentityVertexMap< Hexahedron, Edge,  4, 0> { static constexpr int index = 0; };
-template<> struct SubentityVertexMap< Hexahedron, Edge,  4, 1> { static constexpr int index = 4; };
+template<>
+struct SubentityVertexMap< Hexahedron, Edge, 4, 0 >
+{
+   static constexpr int index = 0;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Edge, 4, 1 >
+{
+   static constexpr int index = 4;
+};
 
-template<> struct SubentityVertexMap< Hexahedron, Edge,  5, 0> { static constexpr int index = 1; };
-template<> struct SubentityVertexMap< Hexahedron, Edge,  5, 1> { static constexpr int index = 5; };
+template<>
+struct SubentityVertexMap< Hexahedron, Edge, 5, 0 >
+{
+   static constexpr int index = 1;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Edge, 5, 1 >
+{
+   static constexpr int index = 5;
+};
 
-template<> struct SubentityVertexMap< Hexahedron, Edge,  6, 0> { static constexpr int index = 2; };
-template<> struct SubentityVertexMap< Hexahedron, Edge,  6, 1> { static constexpr int index = 6; };
+template<>
+struct SubentityVertexMap< Hexahedron, Edge, 6, 0 >
+{
+   static constexpr int index = 2;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Edge, 6, 1 >
+{
+   static constexpr int index = 6;
+};
 
-template<> struct SubentityVertexMap< Hexahedron, Edge,  7, 0> { static constexpr int index = 3; };
-template<> struct SubentityVertexMap< Hexahedron, Edge,  7, 1> { static constexpr int index = 7; };
+template<>
+struct SubentityVertexMap< Hexahedron, Edge, 7, 0 >
+{
+   static constexpr int index = 3;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Edge, 7, 1 >
+{
+   static constexpr int index = 7;
+};
 
-template<> struct SubentityVertexMap< Hexahedron, Edge,  8, 0> { static constexpr int index = 4; };
-template<> struct SubentityVertexMap< Hexahedron, Edge,  8, 1> { static constexpr int index = 5; };
+template<>
+struct SubentityVertexMap< Hexahedron, Edge, 8, 0 >
+{
+   static constexpr int index = 4;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Edge, 8, 1 >
+{
+   static constexpr int index = 5;
+};
 
-template<> struct SubentityVertexMap< Hexahedron, Edge,  9, 0> { static constexpr int index = 5; };
-template<> struct SubentityVertexMap< Hexahedron, Edge,  9, 1> { static constexpr int index = 6; };
+template<>
+struct SubentityVertexMap< Hexahedron, Edge, 9, 0 >
+{
+   static constexpr int index = 5;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Edge, 9, 1 >
+{
+   static constexpr int index = 6;
+};
 
-template<> struct SubentityVertexMap< Hexahedron, Edge, 10, 0> { static constexpr int index = 6; };
-template<> struct SubentityVertexMap< Hexahedron, Edge, 10, 1> { static constexpr int index = 7; };
+template<>
+struct SubentityVertexMap< Hexahedron, Edge, 10, 0 >
+{
+   static constexpr int index = 6;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Edge, 10, 1 >
+{
+   static constexpr int index = 7;
+};
 
-template<> struct SubentityVertexMap< Hexahedron, Edge, 11, 0> { static constexpr int index = 7; };
-template<> struct SubentityVertexMap< Hexahedron, Edge, 11, 1> { static constexpr int index = 4; };
+template<>
+struct SubentityVertexMap< Hexahedron, Edge, 11, 0 >
+{
+   static constexpr int index = 7;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Edge, 11, 1 >
+{
+   static constexpr int index = 4;
+};
 
+template<>
+struct SubentityVertexMap< Hexahedron, Quadrangle, 0, 0 >
+{
+   static constexpr int index = 0;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Quadrangle, 0, 1 >
+{
+   static constexpr int index = 1;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Quadrangle, 0, 2 >
+{
+   static constexpr int index = 2;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Quadrangle, 0, 3 >
+{
+   static constexpr int index = 3;
+};
 
-template<> struct SubentityVertexMap< Hexahedron, Quadrangle, 0, 0> { static constexpr int index = 0; };
-template<> struct SubentityVertexMap< Hexahedron, Quadrangle, 0, 1> { static constexpr int index = 1; };
-template<> struct SubentityVertexMap< Hexahedron, Quadrangle, 0, 2> { static constexpr int index = 2; };
-template<> struct SubentityVertexMap< Hexahedron, Quadrangle, 0, 3> { static constexpr int index = 3; };
+template<>
+struct SubentityVertexMap< Hexahedron, Quadrangle, 1, 0 >
+{
+   static constexpr int index = 0;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Quadrangle, 1, 1 >
+{
+   static constexpr int index = 1;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Quadrangle, 1, 2 >
+{
+   static constexpr int index = 5;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Quadrangle, 1, 3 >
+{
+   static constexpr int index = 4;
+};
 
-template<> struct SubentityVertexMap< Hexahedron, Quadrangle, 1, 0> { static constexpr int index = 0; };
-template<> struct SubentityVertexMap< Hexahedron, Quadrangle, 1, 1> { static constexpr int index = 1; };
-template<> struct SubentityVertexMap< Hexahedron, Quadrangle, 1, 2> { static constexpr int index = 5; };
-template<> struct SubentityVertexMap< Hexahedron, Quadrangle, 1, 3> { static constexpr int index = 4; };
+template<>
+struct SubentityVertexMap< Hexahedron, Quadrangle, 2, 0 >
+{
+   static constexpr int index = 1;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Quadrangle, 2, 1 >
+{
+   static constexpr int index = 2;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Quadrangle, 2, 2 >
+{
+   static constexpr int index = 6;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Quadrangle, 2, 3 >
+{
+   static constexpr int index = 5;
+};
 
-template<> struct SubentityVertexMap< Hexahedron, Quadrangle, 2, 0> { static constexpr int index = 1; };
-template<> struct SubentityVertexMap< Hexahedron, Quadrangle, 2, 1> { static constexpr int index = 2; };
-template<> struct SubentityVertexMap< Hexahedron, Quadrangle, 2, 2> { static constexpr int index = 6; };
-template<> struct SubentityVertexMap< Hexahedron, Quadrangle, 2, 3> { static constexpr int index = 5; };
+template<>
+struct SubentityVertexMap< Hexahedron, Quadrangle, 3, 0 >
+{
+   static constexpr int index = 2;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Quadrangle, 3, 1 >
+{
+   static constexpr int index = 3;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Quadrangle, 3, 2 >
+{
+   static constexpr int index = 7;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Quadrangle, 3, 3 >
+{
+   static constexpr int index = 6;
+};
 
-template<> struct SubentityVertexMap< Hexahedron, Quadrangle, 3, 0> { static constexpr int index = 2; };
-template<> struct SubentityVertexMap< Hexahedron, Quadrangle, 3, 1> { static constexpr int index = 3; };
-template<> struct SubentityVertexMap< Hexahedron, Quadrangle, 3, 2> { static constexpr int index = 7; };
-template<> struct SubentityVertexMap< Hexahedron, Quadrangle, 3, 3> { static constexpr int index = 6; };
+template<>
+struct SubentityVertexMap< Hexahedron, Quadrangle, 4, 0 >
+{
+   static constexpr int index = 3;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Quadrangle, 4, 1 >
+{
+   static constexpr int index = 0;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Quadrangle, 4, 2 >
+{
+   static constexpr int index = 4;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Quadrangle, 4, 3 >
+{
+   static constexpr int index = 7;
+};
 
-template<> struct SubentityVertexMap< Hexahedron, Quadrangle, 4, 0> { static constexpr int index = 3; };
-template<> struct SubentityVertexMap< Hexahedron, Quadrangle, 4, 1> { static constexpr int index = 0; };
-template<> struct SubentityVertexMap< Hexahedron, Quadrangle, 4, 2> { static constexpr int index = 4; };
-template<> struct SubentityVertexMap< Hexahedron, Quadrangle, 4, 3> { static constexpr int index = 7; };
+template<>
+struct SubentityVertexMap< Hexahedron, Quadrangle, 5, 0 >
+{
+   static constexpr int index = 4;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Quadrangle, 5, 1 >
+{
+   static constexpr int index = 5;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Quadrangle, 5, 2 >
+{
+   static constexpr int index = 6;
+};
+template<>
+struct SubentityVertexMap< Hexahedron, Quadrangle, 5, 3 >
+{
+   static constexpr int index = 7;
+};
 
-template<> struct SubentityVertexMap< Hexahedron, Quadrangle, 5, 0> { static constexpr int index = 4; };
-template<> struct SubentityVertexMap< Hexahedron, Quadrangle, 5, 1> { static constexpr int index = 5; };
-template<> struct SubentityVertexMap< Hexahedron, Quadrangle, 5, 2> { static constexpr int index = 6; };
-template<> struct SubentityVertexMap< Hexahedron, Quadrangle, 5, 3> { static constexpr int index = 7; };
-
-} // namespace Topologies
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Topologies
+}  // namespace Meshes
+}  // namespace TNL

@@ -29,57 +29,55 @@ namespace Solvers {
 namespace PDE {
 
 template< typename Problem >
-class TimeIndependentPDESolver : public PDESolver< typename Problem::RealType,
-                                                   typename Problem::IndexType >
+class TimeIndependentPDESolver : public PDESolver< typename Problem::RealType, typename Problem::IndexType >
 {
-   public:
+public:
+   using RealType = typename Problem::RealType;
+   using DeviceType = typename Problem::DeviceType;
+   using IndexType = typename Problem::IndexType;
+   using BaseType = PDESolver< RealType, IndexType >;
+   using ProblemType = Problem;
+   typedef typename ProblemType::MeshType MeshType;
+   typedef typename ProblemType::DofVectorType DofVectorType;
+   typedef Pointers::SharedPointer< MeshType, DeviceType > MeshPointer;
+   typedef Pointers::SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
+   typedef typename ProblemType::CommonDataType CommonDataType;
+   typedef typename ProblemType::CommonDataPointer CommonDataPointer;
 
-      using RealType = typename Problem::RealType;
-      using DeviceType = typename Problem::DeviceType;
-      using IndexType = typename Problem::IndexType;
-      using BaseType = PDESolver< RealType, IndexType >;
-      using ProblemType = Problem;
-      typedef typename ProblemType::MeshType MeshType;
-      typedef typename ProblemType::DofVectorType DofVectorType;
-      typedef Pointers::SharedPointer< MeshType, DeviceType > MeshPointer;
-      typedef Pointers::SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
-      typedef typename ProblemType::CommonDataType CommonDataType;
-      typedef typename ProblemType::CommonDataPointer CommonDataPointer;
+   TimeIndependentPDESolver();
 
+   static void
+   configSetup( Config::ConfigDescription& config, const String& prefix = "" );
 
-      TimeIndependentPDESolver();
+   bool
+   setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
 
-      static void configSetup( Config::ConfigDescription& config,
-                               const String& prefix = "" );
+   bool
+   writeProlog( Logger& logger, const Config::ParameterContainer& parameters );
 
-      bool setup( const Config::ParameterContainer& parameters,
-                  const String& prefix = "" );
+   void
+   setProblem( ProblemType& problem );
 
-      bool writeProlog( Logger& logger,
-                        const Config::ParameterContainer& parameters );
+   bool
+   solve();
 
+   bool
+   writeEpilog( Logger& logger ) const;
 
-      void setProblem( ProblemType& problem );
+protected:
+   MeshPointer meshPointer;
 
-      bool solve();
+   Pointers::SharedPointer< Meshes::DistributedMeshes::DistributedMesh< MeshType > > distributedMeshPointer;
 
-      bool writeEpilog( Logger& logger ) const;
+   CommonDataPointer commonDataPointer;
 
-   protected:
+   DofVectorPointer dofs;
 
-      MeshPointer meshPointer;
-
-      Pointers::SharedPointer< Meshes::DistributedMeshes::DistributedMesh<MeshType> > distributedMeshPointer;
-
-      CommonDataPointer commonDataPointer;
-
-      DofVectorPointer dofs;
-
-      ProblemType* problem;
+   ProblemType* problem;
 };
 
-} // namespace PDE
-} // namespace Solvers
-} // namespace TNL
+}  // namespace PDE
+}  // namespace Solvers
+}  // namespace TNL
 
 #include <TNL/Solvers/PDE/TimeIndependentPDESolver.hpp>

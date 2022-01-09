@@ -60,7 +60,6 @@ SystemInfo::getCurrentTime( const char* format )
    return String( ss.str().c_str() );
 }
 
-
 inline int
 SystemInfo::getNumberOfProcessors( void )
 {
@@ -154,11 +153,10 @@ SystemInfo::getCPUCacheSizes( int cpu_id )
 inline size_t
 SystemInfo::getFreeMemory()
 {
-   long pages = sysconf(_SC_PHYS_PAGES);
-   long page_size = sysconf(_SC_PAGE_SIZE);
+   long pages = sysconf( _SC_PHYS_PAGES );
+   long page_size = sysconf( _SC_PAGE_SIZE );
    return pages * page_size;
 }
-
 
 inline SystemInfo::CPUInfo
 SystemInfo::parseCPUInfo( void )
@@ -172,36 +170,35 @@ SystemInfo::parseCPUInfo( void )
 
    char line[ 1024 ];
    std::set< int > processors;
-   while( ! file.eof() )
-   {
+   while( ! file.eof() ) {
       int i;
       file.getline( line, 1024 );
-      if( strncmp( line, "physical id", strlen( "physical id" ) ) == 0 )
-      {
+      if( strncmp( line, "physical id", strlen( "physical id" ) ) == 0 ) {
          i = strlen( "physical id" );
-         while( line[ i ] != ':' && line[ i ] ) i ++;
+         while( line[ i ] != ':' && line[ i ] )
+            i++;
          processors.insert( atoi( &line[ i + 1 ] ) );
          continue;
       }
       // FIXME: the rest does not work on heterogeneous multi-socket systems
-      if( strncmp( line, "model name", strlen( "model name" ) ) == 0 )
-      {
+      if( strncmp( line, "model name", strlen( "model name" ) ) == 0 ) {
          i = strlen( "model name" );
-         while( line[ i ] != ':' && line[ i ] ) i ++;
+         while( line[ i ] != ':' && line[ i ] )
+            i++;
          info.CPUModelName = &line[ i + 1 ];
          continue;
       }
-      if( strncmp( line, "cpu cores", strlen( "cpu cores" ) ) == 0 )
-      {
+      if( strncmp( line, "cpu cores", strlen( "cpu cores" ) ) == 0 ) {
          i = strlen( "cpu MHz" );
-         while( line[ i ] != ':' && line[ i ] ) i ++;
+         while( line[ i ] != ':' && line[ i ] )
+            i++;
          info.CPUCores = atoi( &line[ i + 1 ] );
          continue;
       }
-      if( strncmp( line, "siblings", strlen( "siblings" ) ) == 0 )
-      {
+      if( strncmp( line, "siblings", strlen( "siblings" ) ) == 0 ) {
          i = strlen( "siblings" );
-         while( line[ i ] != ':' && line[ i ] ) i ++;
+         while( line[ i ] != ':' && line[ i ] )
+            i++;
          info.CPUThreads = atoi( &line[ i + 1 ] );
       }
    }
@@ -210,4 +207,4 @@ SystemInfo::parseCPUInfo( void )
    return info;
 }
 
-} // namespace TNL
+}  // namespace TNL

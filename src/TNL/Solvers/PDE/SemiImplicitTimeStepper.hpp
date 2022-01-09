@@ -16,17 +16,12 @@ namespace PDE {
 
 template< typename Problem >
 void
-SemiImplicitTimeStepper< Problem >::
-configSetup( Config::ConfigDescription& config,
-             const String& prefix )
-{
-}
+SemiImplicitTimeStepper< Problem >::configSetup( Config::ConfigDescription& config, const String& prefix )
+{}
 
 template< typename Problem >
 bool
-SemiImplicitTimeStepper< Problem >::
-setup( const Config::ParameterContainer& parameters,
-       const String& prefix )
+SemiImplicitTimeStepper< Problem >::setup( const Config::ParameterContainer& parameters, const String& prefix )
 {
    // set up the linear solver
    const String& discreteSolver = parameters.getParameter< String >( prefix + "discrete-solver" );
@@ -50,16 +45,14 @@ setup( const Config::ParameterContainer& parameters,
 
 template< typename Problem >
 bool
-SemiImplicitTimeStepper< Problem >::
-init( const MeshType& mesh )
+SemiImplicitTimeStepper< Problem >::init( const MeshType& mesh )
 {
    this->matrix = std::make_shared< MatrixType >();
    if( ! this->problem->setupLinearSystem( this->matrix ) ) {
       std::cerr << "Failed to set up the linear system." << std::endl;
       return false;
    }
-   if( this->matrix->getRows() == 0 || this->matrix->getColumns() == 0 )
-   {
+   if( this->matrix->getRows() == 0 || this->matrix->getColumns() == 0 ) {
       std::cerr << "The matrix for the semi-implicit time stepping was not set correctly." << std::endl;
       if( ! this->matrix->getRows() )
          std::cerr << "The matrix dimensions are set to 0 rows." << std::endl;
@@ -82,24 +75,21 @@ init( const MeshType& mesh )
 
 template< typename Problem >
 void
-SemiImplicitTimeStepper< Problem >::
-setProblem( ProblemType& problem )
+SemiImplicitTimeStepper< Problem >::setProblem( ProblemType& problem )
 {
    this->problem = &problem;
 };
 
 template< typename Problem >
 Problem*
-SemiImplicitTimeStepper< Problem >::
-getProblem() const
+SemiImplicitTimeStepper< Problem >::getProblem() const
 {
-    return this->problem;
+   return this->problem;
 };
 
 template< typename Problem >
 void
-SemiImplicitTimeStepper< Problem >::
-setSolverMonitor( SolverMonitorType& solverMonitor )
+SemiImplicitTimeStepper< Problem >::setSolverMonitor( SolverMonitorType& solverMonitor )
 {
    this->solverMonitor = &solverMonitor;
    if( this->linearSystemSolver )
@@ -108,11 +98,9 @@ setSolverMonitor( SolverMonitorType& solverMonitor )
 
 template< typename Problem >
 bool
-SemiImplicitTimeStepper< Problem >::
-setTimeStep( const RealType& timeStep )
+SemiImplicitTimeStepper< Problem >::setTimeStep( const RealType& timeStep )
 {
-   if( timeStep <= 0.0 )
-   {
+   if( timeStep <= 0.0 ) {
       std::cerr << "Time step for SemiImplicitTimeStepper must be positive. " << std::endl;
       return false;
    }
@@ -122,10 +110,7 @@ setTimeStep( const RealType& timeStep )
 
 template< typename Problem >
 bool
-SemiImplicitTimeStepper< Problem >::
-solve( const RealType& time,
-       const RealType& stopTime,
-       DofVectorPointer& dofVector )
+SemiImplicitTimeStepper< Problem >::solve( const RealType& time, const RealType& stopTime, DofVectorPointer& dofVector )
 {
    TNL_ASSERT_TRUE( this->problem, "problem was not set" );
 
@@ -135,8 +120,7 @@ solve( const RealType& time,
    RealType t = time;
 
    // ignore very small steps at the end, most likely caused by truncation errors
-   while( stopTime - t > this->timeStep * 1e-6 )
-   {
+   while( stopTime - t > this->timeStep * 1e-6 ) {
       RealType currentTau = min( this->timeStep, stopTime - t );
 
       if( this->solverMonitor ) {
@@ -145,8 +129,7 @@ solve( const RealType& time,
       }
 
       this->preIterateTimer.start();
-      if( ! this->problem->preIterate( t, currentTau, dofVector ) )
-      {
+      if( ! this->problem->preIterate( t, currentTau, dofVector ) ) {
          std::cerr << std::endl << "Preiteration failed." << std::endl;
          return false;
       }
@@ -156,26 +139,20 @@ solve( const RealType& time,
          this->solverMonitor->setStage( "Assembling the linear system" );
 
       this->linearSystemAssemblerTimer.start();
-      this->problem->assemblyLinearSystem( t,
-                                           currentTau,
-                                           dofVector,
-                                           this->matrix,
-                                           this->rightHandSidePointer );
+      this->problem->assemblyLinearSystem( t, currentTau, dofVector, this->matrix, this->rightHandSidePointer );
       this->linearSystemAssemblerTimer.stop();
 
       if( this->solverMonitor )
          this->solverMonitor->setStage( "Solving the linear system" );
 
-      if( this->preconditioner )
-      {
+      if( this->preconditioner ) {
          this->preconditionerUpdateTimer.start();
          preconditioner->update( this->matrix );
          this->preconditionerUpdateTimer.stop();
       }
 
       this->linearSystemSolverTimer.start();
-      if( ! this->linearSystemSolver->solve( *this->rightHandSidePointer, *dofVector ) )
-      {
+      if( ! this->linearSystemSolver->solve( *this->rightHandSidePointer, *dofVector ) ) {
          std::cerr << std::endl << "The linear system solver did not converge." << std::endl;
          // save the linear system for debugging
          this->problem->saveFailedLinearSystem( *this->matrix, *dofVector, *this->rightHandSidePointer );
@@ -188,8 +165,7 @@ solve( const RealType& time,
          this->solverMonitor->setStage( "Postiteration" );
 
       this->postIterateTimer.start();
-      if( ! this->problem->postIterate( t, currentTau, dofVector ) )
-      {
+      if( ! this->problem->postIterate( t, currentTau, dofVector ) ) {
          std::cerr << std::endl << "Postiteration failed." << std::endl;
          return false;
       }
@@ -202,8 +178,7 @@ solve( const RealType& time,
 
 template< typename Problem >
 bool
-SemiImplicitTimeStepper< Problem >::
-writeEpilog( Logger& logger ) const
+SemiImplicitTimeStepper< Problem >::writeEpilog( Logger& logger ) const
 {
    logger.writeParameter< long long int >( "Iterations count:", this->allIterations );
    logger.writeParameter< const char* >( "Pre-iterate time:", "" );
@@ -219,6 +194,6 @@ writeEpilog( Logger& logger ) const
    return true;
 }
 
-} // namespace PDE
-} // namespace Solvers
-} // namespace TNL
+}  // namespace PDE
+}  // namespace Solvers
+}  // namespace TNL

@@ -10,29 +10,26 @@
 
 namespace TNL {
 namespace Functions {
-namespace Analytic {   
+namespace Analytic {
 
-template< typename Real,
-          int Dimension >
+template< typename Real, int Dimension >
 bool
-FlowerpotBase< Real, Dimension >::
-setup( const Config::ParameterContainer& parameters,
-       const String& prefix )
+FlowerpotBase< Real, Dimension >::setup( const Config::ParameterContainer& parameters, const String& prefix )
 {
    this->diameter = parameters.getParameter< double >( prefix + "diameter" );
    return true;
 }
 
-template< typename Real,
-          int Dimension >
-void FlowerpotBase< Real, Dimension >::setDiameter( const Real& sigma )
+template< typename Real, int Dimension >
+void
+FlowerpotBase< Real, Dimension >::setDiameter( const Real& sigma )
 {
    this->diameter = diameter;
 }
 
-template< typename Real,
-          int Dimension >
-const Real& FlowerpotBase< Real, Dimension >::getDiameter() const
+template< typename Real, int Dimension >
+const Real&
+FlowerpotBase< Real, Dimension >::getDiameter() const
 {
    return this->diameter;
 }
@@ -43,18 +40,13 @@ const Real& FlowerpotBase< Real, Dimension >::getDiameter() const
 
 template< typename Real >
 Flowerpot< 1, Real >::Flowerpot()
-{
-}
+{}
 
 template< typename Real >
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder,
-             typename Point >
+template< int XDiffOrder, int YDiffOrder, int ZDiffOrder, typename Point >
 __cuda_callable__
 Real
-Flowerpot< 1, Real >::getPartialDerivative( const Point& v,
-                                                       const Real& time ) const
+Flowerpot< 1, Real >::getPartialDerivative( const Point& v, const Real& time ) const
 {
    const RealType& x = v.x();
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
@@ -67,32 +59,23 @@ Flowerpot< 1, Real >::getPartialDerivative( const Point& v,
 template< typename Real >
 __cuda_callable__
 Real
-Flowerpot< 1, Real >::
-operator()( const PointType& v,
-            const Real& time ) const
+Flowerpot< 1, Real >::operator()( const PointType& v, const Real& time ) const
 {
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );
 }
-
 
 /****
  * 2D
  */
 template< typename Real >
 Flowerpot< 2, Real >::Flowerpot()
-{
-}
+{}
 
 template< typename Real >
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder,
-             typename Point >
+template< int XDiffOrder, int YDiffOrder, int ZDiffOrder, typename Point >
 __cuda_callable__
 Real
-Flowerpot< 2, Real >::
-getPartialDerivative( const Point& v,
-                      const Real& time ) const
+Flowerpot< 2, Real >::getPartialDerivative( const Point& v, const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -106,13 +89,10 @@ getPartialDerivative( const Point& v,
 template< typename Real >
 __cuda_callable__
 Real
-Flowerpot< 2, Real >::
-operator()( const PointType& v,
-            const Real& time ) const
+Flowerpot< 2, Real >::operator()( const PointType& v, const Real& time ) const
 {
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );
 }
-
 
 /****
  * 3D
@@ -120,19 +100,13 @@ operator()( const PointType& v,
 
 template< typename Real >
 Flowerpot< 3, Real >::Flowerpot()
-{
-}
+{}
 
 template< typename Real >
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder,
-             typename Point >
+template< int XDiffOrder, int YDiffOrder, int ZDiffOrder, typename Point >
 __cuda_callable__
 Real
-Flowerpot< 3, Real >::
-getPartialDerivative( const Point& v,
-                      const Real& time ) const
+Flowerpot< 3, Real >::getPartialDerivative( const Point& v, const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -145,14 +119,11 @@ getPartialDerivative( const Point& v,
 template< typename Real >
 __cuda_callable__
 Real
-Flowerpot< 3, Real >::
-operator()( const PointType& v,
-            const Real& time ) const
+Flowerpot< 3, Real >::operator()( const PointType& v, const Real& time ) const
 {
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );
 }
 
-} // namespace Analytic
-} // namespace Functions
-} // namespace TNL
-
+}  // namespace Analytic
+}  // namespace Functions
+}  // namespace TNL

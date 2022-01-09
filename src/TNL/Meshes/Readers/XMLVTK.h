@@ -28,30 +28,24 @@ namespace TNL {
 namespace Meshes {
 namespace Readers {
 
-static const std::map< std::string, std::string > VTKDataTypes {
-   {"Int8", "std::int8_t"},
-   {"UInt8", "std::uint8_t"},
-   {"Int16", "std::int16_t"},
-   {"UInt16", "std::uint16_t"},
-   {"Int32", "std::int32_t"},
-   {"UInt32", "std::uint32_t"},
-   {"Int64", "std::int64_t"},
-   {"UInt64", "std::uint64_t"},
-   {"Float32", "float"},
-   {"Float64", "double"}
-};
+static const std::map< std::string, std::string > VTKDataTypes{ { "Int8", "std::int8_t" },   { "UInt8", "std::uint8_t" },
+                                                                { "Int16", "std::int16_t" }, { "UInt16", "std::uint16_t" },
+                                                                { "Int32", "std::int32_t" }, { "UInt32", "std::uint32_t" },
+                                                                { "Int64", "std::int64_t" }, { "UInt64", "std::uint64_t" },
+                                                                { "Float32", "float" },      { "Float64", "double" } };
 
-class XMLVTK
-: public MeshReader
+class XMLVTK : public MeshReader
 {
 #ifdef HAVE_TINYXML2
 protected:
-   static void verifyElement( const tinyxml2::XMLElement* elem, const std::string name )
+   static void
+   verifyElement( const tinyxml2::XMLElement* elem, const std::string name )
    {
       if( ! elem )
          throw MeshReaderError( "XMLVTK", "tag <" + name + "> not found" );
       if( elem->Name() != name )
-         throw MeshReaderError( "XMLVTK", "invalid XML format - expected a <" + name + "> element, got <" + elem->Name() + ">" );
+         throw MeshReaderError( "XMLVTK",
+                                "invalid XML format - expected a <" + name + "> element, got <" + elem->Name() + ">" );
    }
 
    static const tinyxml2::XMLElement*
@@ -77,7 +71,8 @@ protected:
          return attribute;
       if( ! defaultValue.empty() )
          return defaultValue;
-      throw MeshReaderError( "XMLVTK", "element <" + std::string(elem->Name()) + "> does not have the attribute '" + name + "'" );
+      throw MeshReaderError( "XMLVTK",
+                             "element <" + std::string( elem->Name() ) + "> does not have the attribute '" + name + "'" );
    }
 
    static std::int64_t
@@ -86,7 +81,9 @@ protected:
       std::int64_t value;
       tinyxml2::XMLError status = elem->QueryInt64Attribute( name.c_str(), &value );
       if( status != tinyxml2::XML_SUCCESS )
-         throw MeshReaderError( "XMLVTK", "element <" + std::string(elem->Name()) + "> does not have the attribute '" + name + "' or it could not be converted to int64_t" );
+         throw MeshReaderError( "XMLVTK",
+                                "element <" + std::string( elem->Name() ) + "> does not have the attribute '" + name
+                                   + "' or it could not be converted to int64_t" );
       return value;
    }
 
@@ -127,7 +124,7 @@ protected:
       }
       // verify NumberOfComponents (optional)
       const std::string NumberOfComponents = getAttributeString( elem, "NumberOfComponents", "0" );
-      static const std::set< std::string > validNumbersOfComponents = {"0", "1", "2", "3"};
+      static const std::set< std::string > validNumbersOfComponents = { "0", "1", "2", "3" };
       if( validNumbersOfComponents.count( NumberOfComponents ) == 0 )
          throw MeshReaderError( "XMLVTK", "unsupported NumberOfComponents in " + elemName + ": " + NumberOfComponents );
    }
@@ -143,17 +140,23 @@ protected:
          try {
             arrayName = getAttributeString( child, "Name" );
          }
-         catch( const MeshReaderError& ) {}
+         catch( const MeshReaderError& ) {
+         }
          if( arrayName == name ) {
             if( found == nullptr )
                found = child;
             else
-               throw MeshReaderError( "XMLVTK", "the <" + std::string(parent->Name()) + "> tag contains multiple <DataArray> tags with the Name=\"" + name + "\" attribute" );
+               throw MeshReaderError( "XMLVTK",
+                                      "the <" + std::string( parent->Name() )
+                                         + "> tag contains multiple <DataArray> tags with the Name=\"" + name
+                                         + "\" attribute" );
          }
          child = child->NextSiblingElement( "DataArray" );
       }
       if( found == nullptr )
-         throw MeshReaderError( "XMLVTK", "the <" + std::string(parent->Name()) + "> tag does not contain any <DataArray> tag with the Name=\"" + name + "\" attribute" );
+         throw MeshReaderError( "XMLVTK",
+                                "the <" + std::string( parent->Name() )
+                                   + "> tag does not contain any <DataArray> tag with the Name=\"" + name + "\" attribute" );
       verifyDataArray( found );
       return found;
    }
@@ -164,13 +167,13 @@ protected:
    {
       // handle empty array
       if( ! block )
-         return std::vector<T> {};
+         return std::vector< T >{};
 
       // creating a copy of the block is rather costly, but so is ASCII parsing
       std::stringstream ss;
       ss << block;
 
-      std::vector<T> vector;
+      std::vector< T > vector;
       while( ss ) {
          // since std::uint8_t is an alias to unsigned char, we need to parse
          // bytes into a larger type, otherwise operator>> would read it as char
@@ -189,7 +192,7 @@ protected:
    {
       // handle empty array
       if( ! block )
-         return std::vector<T> {};
+         return std::vector< T >{};
 
       // skip whitespace at the beginning
       while( *block != '\0' && std::isspace( *block ) )
@@ -198,55 +201,67 @@ protected:
       if( compressor == "" ) {
          std::size_t data_size = 0;
          const T* data_ptr = nullptr;
-         std::pair<std::size_t, std::unique_ptr<std::uint8_t[]>> decoded_data = base64::decode( block, std::strlen(block) );
+         std::pair< std::size_t, std::unique_ptr< std::uint8_t[] > > decoded_data =
+            base64::decode( block, std::strlen( block ) );
 
          // check if block size was decoded separately (so decoding stopped after block size due to padding)
-         if( decoded_data.first == sizeof(HeaderType) ) {
-            const std::size_t header_length = base64::get_encoded_length(sizeof(HeaderType));
-            const HeaderType block_size = *reinterpret_cast<const HeaderType*>(decoded_data.second.get());
-            decoded_data = base64::decode( block + header_length, base64::get_encoded_length(block_size) );
-            data_size = decoded_data.first / sizeof(T);
-            data_ptr = reinterpret_cast<const T*>(decoded_data.second.get());
+         if( decoded_data.first == sizeof( HeaderType ) ) {
+            const std::size_t header_length = base64::get_encoded_length( sizeof( HeaderType ) );
+            const HeaderType block_size = *reinterpret_cast< const HeaderType* >( decoded_data.second.get() );
+            decoded_data = base64::decode( block + header_length, base64::get_encoded_length( block_size ) );
+            data_size = decoded_data.first / sizeof( T );
+            data_ptr = reinterpret_cast< const T* >( decoded_data.second.get() );
          }
          else {
-            data_size = *reinterpret_cast<const HeaderType*>(decoded_data.second.get()) / sizeof(T);
-            data_ptr = reinterpret_cast<const T*>(decoded_data.second.get() + sizeof(HeaderType));
+            data_size = *reinterpret_cast< const HeaderType* >( decoded_data.second.get() ) / sizeof( T );
+            data_ptr = reinterpret_cast< const T* >( decoded_data.second.get() + sizeof( HeaderType ) );
          }
 
-         std::vector<T> vector( data_size );
+         std::vector< T > vector( data_size );
          for( std::size_t i = 0; i < vector.size(); i++ )
-            vector[i] = data_ptr[i];
+            vector[ i ] = data_ptr[ i ];
          return vector;
       }
       else if( compressor == "vtkZLibDataCompressor" ) {
-#ifdef HAVE_ZLIB
-         std::pair<HeaderType, std::unique_ptr<T[]>> decoded_data = decompress_block< HeaderType, T >(block);
-         std::vector<T> vector( decoded_data.first );
+   #ifdef HAVE_ZLIB
+         std::pair< HeaderType, std::unique_ptr< T[] > > decoded_data = decompress_block< HeaderType, T >( block );
+         std::vector< T > vector( decoded_data.first );
          for( std::size_t i = 0; i < vector.size(); i++ )
-            vector[i] = decoded_data.second.get()[i];
+            vector[ i ] = decoded_data.second.get()[ i ];
          return vector;
-#else
-         throw MeshReaderError( "XMLVTK", "The ZLIB compression is not available in this build. Make sure that ZLIB is "
-                                          "installed and recompile the program with -DHAVE_ZLIB." );
-#endif
+   #else
+         throw MeshReaderError( "XMLVTK",
+                                "The ZLIB compression is not available in this build. Make sure that ZLIB is "
+                                "installed and recompile the program with -DHAVE_ZLIB." );
+   #endif
       }
       else
-         throw MeshReaderError( "XMLVTK", "unsupported compressor type: " + compressor + " (only vtkZLibDataCompressor is supported)" );
+         throw MeshReaderError( "XMLVTK",
+                                "unsupported compressor type: " + compressor + " (only vtkZLibDataCompressor is supported)" );
    }
 
    template< typename T >
    VariantVector
    readBinaryBlock( const char* block ) const
    {
-      if( headerType == "std::int8_t" )          return readBinaryBlock< std::int8_t,   T >( block );
-      else if( headerType == "std::uint8_t" )    return readBinaryBlock< std::uint8_t,  T >( block );
-      else if( headerType == "std::int16_t" )    return readBinaryBlock< std::int16_t,  T >( block );
-      else if( headerType == "std::uint16_t" )   return readBinaryBlock< std::uint16_t, T >( block );
-      else if( headerType == "std::int32_t" )    return readBinaryBlock< std::int32_t,  T >( block );
-      else if( headerType == "std::uint32_t" )   return readBinaryBlock< std::uint32_t, T >( block );
-      else if( headerType == "std::int64_t" )    return readBinaryBlock< std::int64_t,  T >( block );
-      else if( headerType == "std::uint64_t" )   return readBinaryBlock< std::uint64_t, T >( block );
-      else throw MeshReaderError( "XMLVTK", "unsupported header type: " + headerType );
+      if( headerType == "std::int8_t" )
+         return readBinaryBlock< std::int8_t, T >( block );
+      else if( headerType == "std::uint8_t" )
+         return readBinaryBlock< std::uint8_t, T >( block );
+      else if( headerType == "std::int16_t" )
+         return readBinaryBlock< std::int16_t, T >( block );
+      else if( headerType == "std::uint16_t" )
+         return readBinaryBlock< std::uint16_t, T >( block );
+      else if( headerType == "std::int32_t" )
+         return readBinaryBlock< std::int32_t, T >( block );
+      else if( headerType == "std::uint32_t" )
+         return readBinaryBlock< std::uint32_t, T >( block );
+      else if( headerType == "std::int64_t" )
+         return readBinaryBlock< std::int64_t, T >( block );
+      else if( headerType == "std::uint64_t" )
+         return readBinaryBlock< std::uint64_t, T >( block );
+      else
+         throw MeshReaderError( "XMLVTK", "unsupported header type: " + headerType );
    }
 
    VariantVector
@@ -257,30 +272,52 @@ protected:
       const std::string type = getAttributeString( elem, "type" );
       const std::string format = getAttributeString( elem, "format" );
       if( format == "ascii" ) {
-         if( type == "Int8" )          return readAsciiBlock< std::int8_t   >( block );
-         else if( type == "UInt8" )    return readAsciiBlock< std::uint8_t  >( block );
-         else if( type == "Int16" )    return readAsciiBlock< std::int16_t  >( block );
-         else if( type == "UInt16" )   return readAsciiBlock< std::uint16_t >( block );
-         else if( type == "Int32" )    return readAsciiBlock< std::int32_t  >( block );
-         else if( type == "UInt32" )   return readAsciiBlock< std::uint32_t >( block );
-         else if( type == "Int64" )    return readAsciiBlock< std::int64_t  >( block );
-         else if( type == "UInt64" )   return readAsciiBlock< std::uint64_t >( block );
-         else if( type == "Float32" )  return readAsciiBlock< float  >( block );
-         else if( type == "Float64" )  return readAsciiBlock< double >( block );
-         else throw MeshReaderError( "XMLVTK", "unsupported DataArray type: " + type );
+         if( type == "Int8" )
+            return readAsciiBlock< std::int8_t >( block );
+         else if( type == "UInt8" )
+            return readAsciiBlock< std::uint8_t >( block );
+         else if( type == "Int16" )
+            return readAsciiBlock< std::int16_t >( block );
+         else if( type == "UInt16" )
+            return readAsciiBlock< std::uint16_t >( block );
+         else if( type == "Int32" )
+            return readAsciiBlock< std::int32_t >( block );
+         else if( type == "UInt32" )
+            return readAsciiBlock< std::uint32_t >( block );
+         else if( type == "Int64" )
+            return readAsciiBlock< std::int64_t >( block );
+         else if( type == "UInt64" )
+            return readAsciiBlock< std::uint64_t >( block );
+         else if( type == "Float32" )
+            return readAsciiBlock< float >( block );
+         else if( type == "Float64" )
+            return readAsciiBlock< double >( block );
+         else
+            throw MeshReaderError( "XMLVTK", "unsupported DataArray type: " + type );
       }
       else if( format == "binary" ) {
-         if( type == "Int8" )          return readBinaryBlock< std::int8_t   >( block );
-         else if( type == "UInt8" )    return readBinaryBlock< std::uint8_t  >( block );
-         else if( type == "Int16" )    return readBinaryBlock< std::int16_t  >( block );
-         else if( type == "UInt16" )   return readBinaryBlock< std::uint16_t >( block );
-         else if( type == "Int32" )    return readBinaryBlock< std::int32_t  >( block );
-         else if( type == "UInt32" )   return readBinaryBlock< std::uint32_t >( block );
-         else if( type == "Int64" )    return readBinaryBlock< std::int64_t  >( block );
-         else if( type == "UInt64" )   return readBinaryBlock< std::uint64_t >( block );
-         else if( type == "Float32" )  return readBinaryBlock< float  >( block );
-         else if( type == "Float64" )  return readBinaryBlock< double >( block );
-         else throw MeshReaderError( "XMLVTK", "unsupported DataArray type: " + type );
+         if( type == "Int8" )
+            return readBinaryBlock< std::int8_t >( block );
+         else if( type == "UInt8" )
+            return readBinaryBlock< std::uint8_t >( block );
+         else if( type == "Int16" )
+            return readBinaryBlock< std::int16_t >( block );
+         else if( type == "UInt16" )
+            return readBinaryBlock< std::uint16_t >( block );
+         else if( type == "Int32" )
+            return readBinaryBlock< std::int32_t >( block );
+         else if( type == "UInt32" )
+            return readBinaryBlock< std::uint32_t >( block );
+         else if( type == "Int64" )
+            return readBinaryBlock< std::int64_t >( block );
+         else if( type == "UInt64" )
+            return readBinaryBlock< std::uint64_t >( block );
+         else if( type == "Float32" )
+            return readBinaryBlock< float >( block );
+         else if( type == "Float64" )
+            return readBinaryBlock< double >( block );
+         else
+            throw MeshReaderError( "XMLVTK", "unsupported DataArray type: " + type );
       }
       else
          throw MeshReaderError( "XMLVTK", "unsupported DataArray format: " + format );
@@ -305,18 +342,17 @@ protected:
    [[noreturn]] static void
    throw_no_tinyxml()
    {
-      throw std::runtime_error("The program was compiled without XML parsing. Make sure that TinyXML-2 is "
-                               "installed and recompile the program with -DHAVE_TINYXML2.");
+      throw std::runtime_error( "The program was compiled without XML parsing. Make sure that TinyXML-2 is "
+                                "installed and recompile the program with -DHAVE_TINYXML2." );
    }
 
 public:
    XMLVTK() = default;
 
-   XMLVTK( const std::string& fileName )
-   : MeshReader( fileName )
-   {}
+   XMLVTK( const std::string& fileName ) : MeshReader( fileName ) {}
 
-   void openVTKFile()
+   void
+   openVTKFile()
    {
 #ifdef HAVE_TINYXML2
       using namespace tinyxml2;
@@ -339,11 +375,13 @@ public:
          throw MeshReaderError( "XMLVTK", "<VTKFile> is not the only element in the file " + fileName );
 
       // verify byte order
-      const std::string systemByteOrder = (isLittleEndian()) ? "LittleEndian" : "BigEndian";
+      const std::string systemByteOrder = ( isLittleEndian() ) ? "LittleEndian" : "BigEndian";
       byteOrder = getAttributeString( elem, "byte_order" );
       if( byteOrder != systemByteOrder )
-         throw MeshReaderError( "XMLVTK", "incompatible byte_order: " + byteOrder + " (the system is " + systemByteOrder + " and the conversion "
-                                          "from BigEndian to LittleEndian or vice versa is not implemented yet)" );
+         throw MeshReaderError( "XMLVTK",
+                                "incompatible byte_order: " + byteOrder + " (the system is " + systemByteOrder
+                                   + " and the conversion "
+                                     "from BigEndian to LittleEndian or vice versa is not implemented yet)" );
 
       // verify header type
       headerType = getAttributeString( elem, "header_type", "UInt32" );
@@ -356,7 +394,8 @@ public:
       if( compressor == "<none>" )
          compressor = "";
       if( compressor != "" && compressor != "vtkZLibDataCompressor" )
-         throw MeshReaderError( "XMLVTK", "unsupported compressor type: " + compressor + " (only vtkZLibDataCompressor is supported)" );
+         throw MeshReaderError( "XMLVTK",
+                                "unsupported compressor type: " + compressor + " (only vtkZLibDataCompressor is supported)" );
 
       // get file type and the corresponding XML element
       fileType = getAttributeString( elem, "type" );
@@ -386,7 +425,8 @@ public:
 #endif
    }
 
-   virtual void reset() override
+   virtual void
+   reset() override
    {
       resetBase();
       fileType = "";
@@ -413,6 +453,6 @@ protected:
 #endif
 };
 
-} // namespace Readers
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Readers
+}  // namespace Meshes
+}  // namespace TNL

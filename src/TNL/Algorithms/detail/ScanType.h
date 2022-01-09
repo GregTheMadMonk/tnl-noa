@@ -12,16 +12,18 @@ namespace TNL {
 namespace Algorithms {
 namespace detail {
 
-enum class ScanType {
+enum class ScanType
+{
    Exclusive,
    Inclusive
 };
 
-enum class ScanPhaseType {
+enum class ScanPhaseType
+{
    WriteInFirstPhase,
    WriteInSecondPhase
 };
 
-} // namespace detail
-} // namespace Algorithms
-} // namespace TNL
+}  // namespace detail
+}  // namespace Algorithms
+}  // namespace TNL

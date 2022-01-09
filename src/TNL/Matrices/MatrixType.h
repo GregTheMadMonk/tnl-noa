@@ -17,9 +17,14 @@ namespace Matrices {
 template< bool Symmetric >
 struct MatrixType
 {
-   static constexpr bool isSymmetric() { return Symmetric; }
+   static constexpr bool
+   isSymmetric()
+   {
+      return Symmetric;
+   }
 
-   static std::string getSerializationType()
+   static std::string
+   getSerializationType()
    {
       if( isSymmetric() )
          return "Symmetric";
@@ -32,7 +37,8 @@ struct MatrixType
  *
  * It is used for specification of \ref SparseMatrix type.
  */
-struct GeneralMatrix : MatrixType< false > {};
+struct GeneralMatrix : MatrixType< false >
+{};
 
 /**
  * \brief Symmetric matrix type.
@@ -41,7 +47,8 @@ struct GeneralMatrix : MatrixType< false > {};
  * upper part is reconstructed on the fly.
  * It is used for specification of \ref SparseMatrix type.
  */
-struct SymmetricMatrix : MatrixType< true > {};
+struct SymmetricMatrix : MatrixType< true >
+{};
 
-} // namespace Matrices
-} // namespace TNL
+}  // namespace Matrices
+}  // namespace TNL

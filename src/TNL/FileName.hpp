@@ -17,97 +17,91 @@
 
 namespace TNL {
 
-inline FileName::FileName()
-: index( 0 ), digitsCount( 5 )
-{
-}
+inline FileName::FileName() : index( 0 ), digitsCount( 5 ) {}
 
-inline FileName::FileName( const String& fileNameBase )
-: fileNameBase( fileNameBase ),
-  index( 0 ),
-  digitsCount( 5 )
-{
-}
+inline FileName::FileName( const String& fileNameBase ) : fileNameBase( fileNameBase ), index( 0 ), digitsCount( 5 ) {}
 
-inline FileName::FileName( const String& fileNameBase,
-                           const String& extension )
-: fileNameBase( fileNameBase ),
-  extension( extension ),
-  index( 0 ),
-  digitsCount( 5 )
-{
-}
+inline FileName::FileName( const String& fileNameBase, const String& extension )
+: fileNameBase( fileNameBase ), extension( extension ), index( 0 ), digitsCount( 5 )
+{}
 
-inline void FileName::setFileNameBase( const String& fileNameBase )
+inline void
+FileName::setFileNameBase( const String& fileNameBase )
 {
    this->fileNameBase = fileNameBase;
 }
 
-inline void FileName::setExtension( const String& extension )
+inline void
+FileName::setExtension( const String& extension )
 {
    this->extension = extension;
 }
 
-inline void FileName::setIndex( const size_t index )
+inline void
+FileName::setIndex( const size_t index )
 {
    this->index = index;
 }
 
-inline void FileName::setDigitsCount( const size_t digitsCount )
+inline void
+FileName::setDigitsCount( const size_t digitsCount )
 {
    this->digitsCount = digitsCount;
 }
 
-inline void FileName::setDistributedSystemNodeId( size_t nodeId )
+inline void
+FileName::setDistributedSystemNodeId( size_t nodeId )
 {
    this->distributedSystemNodeId = "-@";
    this->distributedSystemNodeId += convertToString( nodeId );
 }
 
 template< typename Coordinates >
-void FileName::setDistributedSystemNodeCoordinates( const Coordinates& nodeId )
+void
+FileName::setDistributedSystemNodeCoordinates( const Coordinates& nodeId )
 {
    this->distributedSystemNodeId = "-@";
    this->distributedSystemNodeId += convertToString( nodeId[ 0 ] );
-   for( int i = 1; i < nodeId.getSize(); i++ )
-   {
+   for( int i = 1; i < nodeId.getSize(); i++ ) {
       this->distributedSystemNodeId += "-";
       this->distributedSystemNodeId += convertToString( nodeId[ i ] );
    }
 }
 
-inline void FileName::resetDistributedSystemNodeId()
+inline void
+FileName::resetDistributedSystemNodeId()
 {
    this->distributedSystemNodeId = "";
 }
 
-inline String FileName::getFileName()
+inline String
+FileName::getFileName()
 {
    std::stringstream stream;
-   stream << this->fileNameBase
-          << std::setw( this->digitsCount )
-          << std::setfill( '0' )
-          << this->index
-          << this->distributedSystemNodeId
-          << "." << this->extension;
+   stream << this->fileNameBase << std::setw( this->digitsCount ) << std::setfill( '0' ) << this->index
+          << this->distributedSystemNodeId << "." << this->extension;
    return String( stream.str().data() );
 }
 
-inline String getFileExtension( const String fileName )
+inline String
+getFileExtension( const String fileName )
 {
    const int size = fileName.getLength();
    int i = 1;
-   while( fileName[ size - i ] != '.' && i < size ) i++;
+   while( fileName[ size - i ] != '.' && i < size )
+      i++;
    return fileName.substr( size - i + 1 );
 }
 
-inline String removeFileNameExtension( String fileName )
+inline String
+removeFileNameExtension( String fileName )
 {
    const int size = fileName.getLength();
    int i = 1;
-   while( fileName[ size - i ] != '.' && size > i ) i++;
+   while( fileName[ size - i ] != '.' && size > i )
+      i++;
    fileName = fileName.substr( 0, size - i );
    return fileName;
 }
 
-} // namespace TNL
+}  // namespace TNL

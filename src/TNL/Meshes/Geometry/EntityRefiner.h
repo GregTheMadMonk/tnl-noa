@@ -34,16 +34,15 @@ struct EntityRefiner< MeshConfig, Topologies::Triangle, EntityRefinerVersion::Ed
    using GlobalIndexType = typename MeshConfig::GlobalIndexType;
 
    // returns: number of *new* points, number of *all* refined entities
-   static std::pair< GlobalIndexType, GlobalIndexType > getExtraPointsAndEntitiesCount( const MeshEntityType& entity )
+   static std::pair< GlobalIndexType, GlobalIndexType >
+   getExtraPointsAndEntitiesCount( const MeshEntityType& entity )
    {
       return { 3, 4 };
    }
 
-   template< typename AddPointFunctor,
-             typename AddCellFunctor >
-   static void decompose( const MeshEntityType& entity,
-                          AddPointFunctor&& addPoint,
-                          AddCellFunctor&& addCell )
+   template< typename AddPointFunctor, typename AddCellFunctor >
+   static void
+   decompose( const MeshEntityType& entity, AddPointFunctor&& addPoint, AddCellFunctor&& addCell )
    {
       const auto v0 = entity.template getSubentityIndex< 0 >( 0 );
       const auto v1 = entity.template getSubentityIndex< 0 >( 1 );
@@ -76,16 +75,15 @@ struct EntityRefiner< MeshConfig, Topologies::Quadrangle, EntityRefinerVersion::
    using GlobalIndexType = typename MeshConfig::GlobalIndexType;
 
    // returns: number of *new* points, number of *all* refined entities
-   static std::pair< GlobalIndexType, GlobalIndexType > getExtraPointsAndEntitiesCount( const MeshEntityType& entity )
+   static std::pair< GlobalIndexType, GlobalIndexType >
+   getExtraPointsAndEntitiesCount( const MeshEntityType& entity )
    {
       return { 5, 4 };
    }
 
-   template< typename AddPointFunctor,
-             typename AddCellFunctor >
-   static void decompose( const MeshEntityType& entity,
-                          AddPointFunctor&& addPoint,
-                          AddCellFunctor&& addCell )
+   template< typename AddPointFunctor, typename AddCellFunctor >
+   static void
+   decompose( const MeshEntityType& entity, AddPointFunctor&& addPoint, AddCellFunctor&& addCell )
    {
       const auto v0 = entity.template getSubentityIndex< 0 >( 0 );
       const auto v1 = entity.template getSubentityIndex< 0 >( 1 );
@@ -122,16 +120,15 @@ struct EntityRefiner< MeshConfig, Topologies::Tetrahedron, EntityRefinerVersion:
    using GlobalIndexType = typename MeshConfig::GlobalIndexType;
 
    // returns: number of *new* points, number of *all* refined entities
-   static std::pair< GlobalIndexType, GlobalIndexType > getExtraPointsAndEntitiesCount( const MeshEntityType& entity )
+   static std::pair< GlobalIndexType, GlobalIndexType >
+   getExtraPointsAndEntitiesCount( const MeshEntityType& entity )
    {
       return { 6, 8 };
    }
 
-   template< typename AddPointFunctor,
-             typename AddCellFunctor >
-   static void decompose( const MeshEntityType& entity,
-                          AddPointFunctor&& addPoint,
-                          AddCellFunctor&& addCell )
+   template< typename AddPointFunctor, typename AddCellFunctor >
+   static void
+   decompose( const MeshEntityType& entity, AddPointFunctor&& addPoint, AddCellFunctor&& addCell )
    {
       const auto v0 = entity.template getSubentityIndex< 0 >( 0 );
       const auto v1 = entity.template getSubentityIndex< 0 >( 1 );
@@ -174,16 +171,15 @@ struct EntityRefiner< MeshConfig, Topologies::Hexahedron, EntityRefinerVersion::
    using GlobalIndexType = typename MeshConfig::GlobalIndexType;
 
    // returns: number of *new* points, number of *all* refined entities
-   static std::pair< GlobalIndexType, GlobalIndexType > getExtraPointsAndEntitiesCount( const MeshEntityType& entity )
+   static std::pair< GlobalIndexType, GlobalIndexType >
+   getExtraPointsAndEntitiesCount( const MeshEntityType& entity )
    {
       return { 19, 8 };
    }
 
-   template< typename AddPointFunctor,
-             typename AddCellFunctor >
-   static void decompose( const MeshEntityType& entity,
-                          AddPointFunctor&& addPoint,
-                          AddCellFunctor&& addCell )
+   template< typename AddPointFunctor, typename AddCellFunctor >
+   static void
+   decompose( const MeshEntityType& entity, AddPointFunctor&& addPoint, AddCellFunctor&& addCell )
    {
       const auto v0 = entity.template getSubentityIndex< 0 >( 0 );
       const auto v1 = entity.template getSubentityIndex< 0 >( 1 );
@@ -227,7 +223,7 @@ struct EntityRefiner< MeshConfig, Topologies::Hexahedron, EntityRefinerVersion::
       const auto f4 = addPoint( 0.25 * ( v3_p + v0_p + v4_p + v7_p ) );
       const auto f5 = addPoint( 0.25 * ( v4_p + v5_p + v6_p + v7_p ) );
       // add new points: center of the cell
-      const auto cc = addPoint( 0.125 * ( v0_p + v1_p + v2_p + v3_p + v4_p + v5_p + v6_p + v7_p) );
+      const auto cc = addPoint( 0.125 * ( v0_p + v1_p + v2_p + v3_p + v4_p + v5_p + v6_p + v7_p ) );
 
       // add refined hexahedrons
       addCell( v0, b0, f0, b3, m0, f1, cc, f4 );
@@ -241,5 +237,5 @@ struct EntityRefiner< MeshConfig, Topologies::Hexahedron, EntityRefinerVersion::
    }
 };
 
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Meshes
+}  // namespace TNL

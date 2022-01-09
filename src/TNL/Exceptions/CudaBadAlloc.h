@@ -13,8 +13,7 @@
 namespace TNL {
 namespace Exceptions {
 
-struct CudaBadAlloc
-   : public std::bad_alloc
+struct CudaBadAlloc : public std::bad_alloc
 {
    CudaBadAlloc()
    {
@@ -25,12 +24,13 @@ struct CudaBadAlloc
 #endif
    }
 
-   const char* what() const throw()
+   const char*
+   what() const throw()
    {
       return "Failed to allocate memory on the CUDA device: "
              "most likely there is not enough space on the device memory.";
    }
 };
 
-} // namespace Exceptions
-} // namespace TNL
+}  // namespace Exceptions
+}  // namespace TNL

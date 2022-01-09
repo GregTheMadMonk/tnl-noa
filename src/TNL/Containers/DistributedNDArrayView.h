@@ -36,8 +36,14 @@ public:
    DistributedNDArrayView() = default;
 
    // explicit initialization by local array view, global sizes and local begins and ends
-   DistributedNDArrayView( NDArrayView localView, SizesHolderType globalSizes, LocalBeginsType localBegins, SizesHolderType localEnds, MPI_Comm communicator )
-   : localView(localView), communicator(communicator), globalSizes(globalSizes), localBegins(localBegins), localEnds(localEnds) {}
+   DistributedNDArrayView( NDArrayView localView,
+                           SizesHolderType globalSizes,
+                           LocalBeginsType localBegins,
+                           SizesHolderType localEnds,
+                           MPI_Comm communicator )
+   : localView( localView ), communicator( communicator ), globalSizes( globalSizes ), localBegins( localBegins ),
+     localEnds( localEnds )
+   {}
 
    // copy-constructor does shallow copy
    DistributedNDArrayView( const DistributedNDArrayView& ) = default;
@@ -47,14 +53,16 @@ public:
 
    // Copy-assignment does deep copy, just like regular array, but the sizes
    // must match (i.e. copy-assignment cannot resize).
-   DistributedNDArrayView& operator=( const DistributedNDArrayView& other ) = default;
+   DistributedNDArrayView&
+   operator=( const DistributedNDArrayView& other ) = default;
 
    // There is no move-assignment operator, so expressions like `a = b.getView()`
    // are resolved as copy-assignment.
 
    // Templated copy-assignment
    template< typename OtherArray >
-   DistributedNDArrayView& operator=( const OtherArray& other )
+   DistributedNDArrayView&
+   operator=( const OtherArray& other )
    {
       globalSizes = other.getSizes();
       localBegins = other.getLocalBegins();
@@ -65,7 +73,8 @@ public:
    }
 
    // methods for rebinding (reinitialization)
-   void bind( DistributedNDArrayView view )
+   void
+   bind( DistributedNDArrayView view )
    {
       localView.bind( view.localView );
       communicator = view.communicator;
@@ -75,18 +84,21 @@ public:
    }
 
    // binds to the given raw pointer and changes the indexer
-   void bind( ValueType* data, typename LocalViewType::IndexerType indexer )
+   void
+   bind( ValueType* data, typename LocalViewType::IndexerType indexer )
    {
       localView.bind( data, indexer );
    }
 
    // binds to the given raw pointer and preserves the current indexer
-   void bind( ValueType* data )
+   void
+   bind( ValueType* data )
    {
       localView.bind( data );
    }
 
-   void reset()
+   void
+   reset()
    {
       localView.reset();
       communicator = MPI_COMM_NULL;
@@ -95,57 +107,67 @@ public:
       localEnds = SizesHolderType{};
    }
 
-   static constexpr std::size_t getDimension()
+   static constexpr std::size_t
+   getDimension()
    {
       return NDArrayView::getDimension();
    }
 
-   MPI_Comm getCommunicator() const
+   MPI_Comm
+   getCommunicator() const
    {
       return communicator;
    }
 
    // Returns the *global* sizes
-   const SizesHolderType& getSizes() const
+   const SizesHolderType&
+   getSizes() const
    {
       return globalSizes;
    }
 
    // Returns the *global* size
    template< std::size_t level >
-   IndexType getSize() const
+   IndexType
+   getSize() const
    {
       return globalSizes.template getSize< level >();
    }
 
-   LocalBeginsType getLocalBegins() const
+   LocalBeginsType
+   getLocalBegins() const
    {
       return localBegins;
    }
 
-   SizesHolderType getLocalEnds() const
+   SizesHolderType
+   getLocalEnds() const
    {
       return localEnds;
    }
 
    template< std::size_t level >
-   LocalRangeType getLocalRange() const
+   LocalRangeType
+   getLocalRange() const
    {
       return LocalRangeType( localBegins.template getSize< level >(), localEnds.template getSize< level >() );
    }
 
    // returns the local storage size
-   IndexType getLocalStorageSize() const
+   IndexType
+   getLocalStorageSize() const
    {
       return localView.getStorageSize();
    }
 
-   LocalViewType getLocalView()
+   LocalViewType
+   getLocalView()
    {
       return localView;
    }
 
-   ConstLocalViewType getConstLocalView() const
+   ConstLocalViewType
+   getConstLocalView() const
    {
       return localView.getConstView();
    }
@@ -157,23 +179,25 @@ public:
    {
       static_assert( sizeof...( indices ) == SizesHolderType::getDimension(), "got wrong number of indices" );
       __ndarray_impl::assertIndicesInRange( localBegins, localEnds, OverlapsType{}, std::forward< IndexTypes >( indices )... );
-      auto getStorageIndex = [this]( auto&&... indices )
+      auto getStorageIndex = [ this ]( auto&&... indices )
       {
-         return this->localView.getStorageIndex( std::forward< decltype(indices) >( indices )... );
+         return this->localView.getStorageIndex( std::forward< decltype( indices ) >( indices )... );
       };
-      return __ndarray_impl::host_call_with_unshifted_indices< LocalBeginsType >( localBegins, getStorageIndex, std::forward< IndexTypes >( indices )... );
+      return __ndarray_impl::host_call_with_unshifted_indices< LocalBeginsType >(
+         localBegins, getStorageIndex, std::forward< IndexTypes >( indices )... );
    }
 
-   ValueType* getData()
+   ValueType*
+   getData()
    {
       return localView.getData();
    }
 
-   std::add_const_t< ValueType >* getData() const
+   std::add_const_t< ValueType >*
+   getData() const
    {
       return localView.getData();
    }
-
 
    template< typename... IndexTypes >
    __cuda_callable__
@@ -182,7 +206,8 @@ public:
    {
       static_assert( sizeof...( indices ) == getDimension(), "got wrong number of indices" );
       __ndarray_impl::assertIndicesInRange( localBegins, localEnds, OverlapsType{}, std::forward< IndexTypes >( indices )... );
-      return __ndarray_impl::call_with_unshifted_indices< LocalBeginsType >( localBegins, localView, std::forward< IndexTypes >( indices )... );
+      return __ndarray_impl::call_with_unshifted_indices< LocalBeginsType >(
+         localBegins, localView, std::forward< IndexTypes >( indices )... );
    }
 
    template< typename... IndexTypes >
@@ -192,7 +217,8 @@ public:
    {
       static_assert( sizeof...( indices ) == getDimension(), "got wrong number of indices" );
       __ndarray_impl::assertIndicesInRange( localBegins, localEnds, OverlapsType{}, std::forward< IndexTypes >( indices )... );
-      return __ndarray_impl::call_with_unshifted_indices< LocalBeginsType >( localBegins, localView, std::forward< IndexTypes >( indices )... );
+      return __ndarray_impl::call_with_unshifted_indices< LocalBeginsType >(
+         localBegins, localView, std::forward< IndexTypes >( indices )... );
    }
 
    // bracket operator for 1D arrays
@@ -214,41 +240,43 @@ public:
       return localView[ index - localBegins.template getSize< 0 >() ];
    }
 
-   ViewType getView()
+   ViewType
+   getView()
    {
       return ViewType( *this );
    }
 
-   ConstViewType getConstView() const
+   ConstViewType
+   getConstView() const
    {
       return ConstViewType( localView, globalSizes, localBegins, localEnds, communicator );
    }
 
    // TODO: overlaps should be skipped, otherwise it works only after synchronization
-   bool operator==( const DistributedNDArrayView& other ) const
+   bool
+   operator==( const DistributedNDArrayView& other ) const
    {
       // we can't run allreduce if the communicators are different
       if( communicator != other.getCommunicator() )
          return false;
-      const bool localResult =
-            globalSizes == other.globalSizes &&
-            localBegins == other.localBegins &&
-            localEnds == other.localEnds &&
-            localView == other.localView;
+      const bool localResult = globalSizes == other.globalSizes && localBegins == other.localBegins
+                            && localEnds == other.localEnds && localView == other.localView;
       bool result = true;
       if( communicator != MPI_COMM_NULL )
          MPI::Allreduce( &localResult, &result, 1, MPI_LAND, communicator );
       return result;
    }
 
-   bool operator!=( const DistributedNDArrayView& other ) const
+   bool
+   operator!=( const DistributedNDArrayView& other ) const
    {
-      return ! (*this == other);
+      return ! ( *this == other );
    }
 
    // iterate over all local elements
    template< typename Device2 = DeviceType, typename Func >
-   void forAll( Func f ) const
+   void
+   forAll( Func f ) const
    {
       __ndarray_impl::ExecutorDispatcher< PermutationType, Device2 > dispatch;
       dispatch( localBegins, localEnds, f );
@@ -256,7 +284,8 @@ public:
 
    // iterate over local elements which are not neighbours of *global* boundaries
    template< typename Device2 = DeviceType, typename Func >
-   void forInternal( Func f ) const
+   void
+   forInternal( Func f ) const
    {
       // add static sizes
       using Begins = __ndarray_impl::LocalBeginsHolder< SizesHolderType, 1 >;
@@ -278,7 +307,8 @@ public:
 
    // iterate over local elements inside the given [begins, ends) range specified by global indices
    template< typename Device2 = DeviceType, typename Func, typename Begins, typename Ends >
-   void forInternal( Func f, const Begins& begins, const Ends& ends ) const
+   void
+   forInternal( Func f, const Begins& begins, const Ends& ends ) const
    {
       // TODO: assert "localBegins <= begins <= localEnds", "localBegins <= ends <= localEnds"
       __ndarray_impl::ExecutorDispatcher< PermutationType, Device2 > dispatch;
@@ -287,7 +317,8 @@ public:
 
    // iterate over local elements which are neighbours of *global* boundaries
    template< typename Device2 = DeviceType, typename Func >
-   void forBoundary( Func f ) const
+   void
+   forBoundary( Func f ) const
    {
       // add static sizes
       using SkipBegins = __ndarray_impl::LocalBeginsHolder< SizesHolderType, 1 >;
@@ -309,7 +340,8 @@ public:
 
    // iterate over local elements outside the given [skipBegins, skipEnds) range specified by global indices
    template< typename Device2 = DeviceType, typename Func, typename SkipBegins, typename SkipEnds >
-   void forBoundary( Func f, const SkipBegins& skipBegins, const SkipEnds& skipEnds ) const
+   void
+   forBoundary( Func f, const SkipBegins& skipBegins, const SkipEnds& skipEnds ) const
    {
       // TODO: assert "localBegins <= skipBegins <= localEnds", "localBegins <= skipEnds <= localEnds"
       __ndarray_impl::BoundaryExecutorDispatcher< PermutationType, Device2 > dispatch;
@@ -318,7 +350,8 @@ public:
 
    // iterate over local elements which are not neighbours of overlaps (if all overlaps are 0, it is equivalent to forAll)
    template< typename Device2 = DeviceType, typename Func >
-   void forLocalInternal( Func f ) const
+   void
+   forLocalInternal( Func f ) const
    {
       // add overlaps to dynamic sizes
       LocalBeginsType begins;
@@ -326,7 +359,8 @@ public:
 
       // subtract overlaps from dynamic sizes
       SizesHolderType ends;
-      __ndarray_impl::SetSizesSubtractOverlapsHelper< SizesHolderType, SizesHolderType, OverlapsType >::subtract( ends, localEnds );
+      __ndarray_impl::SetSizesSubtractOverlapsHelper< SizesHolderType, SizesHolderType, OverlapsType >::subtract( ends,
+                                                                                                                  localEnds );
 
       __ndarray_impl::ExecutorDispatcher< PermutationType, Device2 > dispatch;
       dispatch( begins, ends, f );
@@ -334,15 +368,18 @@ public:
 
    // iterate over local elements which are neighbours of overlaps (if all overlaps are 0, it has no effect)
    template< typename Device2 = DeviceType, typename Func >
-   void forLocalBoundary( Func f ) const
+   void
+   forLocalBoundary( Func f ) const
    {
       // add overlaps to dynamic sizes
       LocalBeginsType skipBegins;
-      __ndarray_impl::SetSizesAddOverlapsHelper< LocalBeginsType, SizesHolderType, OverlapsType >::add( skipBegins, localBegins );
+      __ndarray_impl::SetSizesAddOverlapsHelper< LocalBeginsType, SizesHolderType, OverlapsType >::add( skipBegins,
+                                                                                                        localBegins );
 
       // subtract overlaps from dynamic sizes
       SizesHolderType skipEnds;
-      __ndarray_impl::SetSizesSubtractOverlapsHelper< SizesHolderType, SizesHolderType, OverlapsType >::subtract( skipEnds, localEnds );
+      __ndarray_impl::SetSizesSubtractOverlapsHelper< SizesHolderType, SizesHolderType, OverlapsType >::subtract( skipEnds,
+                                                                                                                  localEnds );
 
       __ndarray_impl::BoundaryExecutorDispatcher< PermutationType, Device2 > dispatch;
       dispatch( localBegins, skipBegins, skipEnds, localEnds, f );
@@ -350,11 +387,13 @@ public:
 
    // iterate over elements of overlaps (if all overlaps are 0, it has no effect)
    template< typename Device2 = DeviceType, typename Func >
-   void forOverlaps( Func f ) const
+   void
+   forOverlaps( Func f ) const
    {
       // subtract overlaps from dynamic sizes
       LocalBeginsType begins;
-      __ndarray_impl::SetSizesSubtractOverlapsHelper< LocalBeginsType, SizesHolderType, OverlapsType >::subtract( begins, localBegins );
+      __ndarray_impl::SetSizesSubtractOverlapsHelper< LocalBeginsType, SizesHolderType, OverlapsType >::subtract( begins,
+                                                                                                                  localBegins );
 
       // add overlaps to dynamic sizes
       SizesHolderType ends;
@@ -373,5 +412,5 @@ protected:
    SizesHolderType localEnds;
 };
 
-} // namespace Containers
-} // namespace TNL
+}  // namespace Containers
+}  // namespace TNL

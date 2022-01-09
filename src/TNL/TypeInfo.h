@@ -11,7 +11,7 @@
 #include <string>
 
 #if defined( __has_include )
-   #if __has_include(<cxxabi.h>)
+   #if __has_include( <cxxabi.h>)
       #define TNL_HAS_CXXABI_H
    #endif
 #elif defined( __GLIBCXX__ ) || defined( __GLIBCPP__ )
@@ -20,8 +20,8 @@
 
 #if defined( TNL_HAS_CXXABI_H )
    #include <cxxabi.h>  // abi::__cxa_demangle
-   #include <memory>  // std::unique_ptr
-   #include <cstdlib>  // std::free
+   #include <memory>    // std::unique_ptr
+   #include <cstdlib>   // std::free
 #endif
 
 namespace TNL {
@@ -33,10 +33,7 @@ demangle( const char* name )
 #if defined( TNL_HAS_CXXABI_H )
    int status = 0;
    std::size_t size = 0;
-   std::unique_ptr<char[], void (*)(void*)> result(
-      abi::__cxa_demangle( name, NULL, &size, &status ),
-      std::free
-   );
+   std::unique_ptr< char[], void ( * )( void* ) > result( abi::__cxa_demangle( name, NULL, &size, &status ), std::free );
    if( result.get() )
       return result.get();
 #endif
@@ -51,26 +48,21 @@ class HasStaticGetSerializationType
 {
 private:
    template< typename U >
-   static constexpr auto check(U*)
-   -> typename
-      std::enable_if_t<
-         ! std::is_same<
-               decltype( U::getSerializationType() ),
-               void
-            >::value,
-         std::true_type
-      >;
+   static constexpr auto
+   check( U* ) ->
+      typename std::enable_if_t< ! std::is_same< decltype( U::getSerializationType() ), void >::value, std::true_type >;
 
    template< typename >
-   static constexpr std::false_type check(...);
+   static constexpr std::false_type
+   check( ... );
 
-   using type = decltype(check<std::decay_t<T>>(0));
+   using type = decltype( check< std::decay_t< T > >( 0 ) );
 
 public:
-    static constexpr bool value = type::value;
+   static constexpr bool value = type::value;
 };
 
-} // namespace detail
+}  // namespace detail
 
 /**
  * \brief Returns a human-readable string representation of given type.
@@ -80,9 +72,10 @@ public:
  * for details.
  */
 template< typename T >
-std::string getType()
+std::string
+getType()
 {
-   return detail::demangle( typeid(T).name() );
+   return detail::demangle( typeid( T ).name() );
 }
 
 /**
@@ -93,9 +86,10 @@ std::string getType()
  * for details.
  */
 template< typename T >
-std::string getType( T&& obj )
+std::string
+getType( T&& obj )
 {
-   return detail::demangle( typeid(obj).name() );
+   return detail::demangle( typeid( obj ).name() );
 }
 
 /**
@@ -107,9 +101,9 @@ std::string getType( T&& obj )
  * which may be necessary e.g. for class templates which should have the same
  * serialization type for multiple devices.
  */
-template< typename T,
-          std::enable_if_t< ! detail::HasStaticGetSerializationType< T >::value, bool > = true >
-std::string getSerializationType()
+template< typename T, std::enable_if_t< ! detail::HasStaticGetSerializationType< T >::value, bool > = true >
+std::string
+getSerializationType()
 {
    return getType< T >();
 }
@@ -118,11 +112,11 @@ std::string getSerializationType()
  * \brief Specialization of \ref getSerializationType for types which provide a
  *        static \e getSerializationType method to override the default behaviour.
  */
-template< typename T,
-          std::enable_if_t< detail::HasStaticGetSerializationType< T >::value, bool > = true >
-std::string getSerializationType()
+template< typename T, std::enable_if_t< detail::HasStaticGetSerializationType< T >::value, bool > = true >
+std::string
+getSerializationType()
 {
    return T::getSerializationType();
 }
 
-} // namespace TNL
+}  // namespace TNL

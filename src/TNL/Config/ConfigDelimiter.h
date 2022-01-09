@@ -16,14 +16,20 @@ namespace Config {
 class ConfigDelimiter : public ConfigEntryBase
 {
 public:
-   ConfigDelimiter( const std::string& delimiter )
-   : ConfigEntryBase( "", delimiter, false )
-   {}
+   ConfigDelimiter( const std::string& delimiter ) : ConfigEntryBase( "", delimiter, false ) {}
 
-   virtual bool isDelimiter() const override { return true; };
+   virtual bool
+   isDelimiter() const override
+   {
+      return true;
+   };
 
-   virtual std::string getUIEntryType() const override { return ""; };
+   virtual std::string
+   getUIEntryType() const override
+   {
+      return "";
+   };
 };
 
-} //namespace Config
-} //namespace TNL
+}  // namespace Config
+}  // namespace TNL

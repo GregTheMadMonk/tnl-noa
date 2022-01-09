@@ -24,7 +24,11 @@ struct Plus : public std::plus< void >
     * Suitable for \ref TNL::Algorithms::reduce.
     */
    template< typename T >
-   static constexpr T getIdentity() { return 0; }
+   static constexpr T
+   getIdentity()
+   {
+      return 0;
+   }
 };
 
 /**
@@ -43,7 +47,11 @@ struct Multiplies : public std::multiplies< void >
     * Suitable for \ref TNL::Algorithms::reduce.
     */
    template< typename T >
-   static constexpr T getIdentity() { return 1; }
+   static constexpr T
+   getIdentity()
+   {
+      return 1;
+   }
 };
 
 /**
@@ -62,7 +70,8 @@ using Modulus = std::modulus< void >;
 struct UnaryPlus
 {
    template< typename T >
-   constexpr auto operator()( const T& x ) const -> decltype( +x )
+   constexpr auto
+   operator()( const T& x ) const -> decltype( +x )
    {
       return +x;
    }
@@ -84,7 +93,8 @@ struct LogicalAnd : public std::logical_and< void >
     * Suitable for \ref TNL::Algorithms::reduce.
     */
    template< typename T >
-   static constexpr T getIdentity()
+   static constexpr T
+   getIdentity()
    {
       static_assert( std::numeric_limits< T >::is_specialized,
                      "std::numeric_limits is not specialized for the requested type" );
@@ -103,7 +113,11 @@ struct LogicalOr : public std::logical_or< void >
     * Suitable for \ref TNL::Algorithms::reduce.
     */
    template< typename T >
-   static constexpr T getIdentity() { return 0; }
+   static constexpr T
+   getIdentity()
+   {
+      return 0;
+   }
 };
 
 /**
@@ -122,7 +136,11 @@ struct BitAnd : public std::bit_and< void >
     * Suitable for \ref TNL::Algorithms::reduce.
     */
    template< typename T >
-   static constexpr T getIdentity() { return ~static_cast< T >( 0 ); }
+   static constexpr T
+   getIdentity()
+   {
+      return ~static_cast< T >( 0 );
+   }
 };
 
 /**
@@ -136,7 +154,11 @@ struct BitOr : public std::bit_or< void >
     * Suitable for \ref TNL::Algorithms::reduce.
     */
    template< typename T >
-   static constexpr T getIdentity() { return 0; }
+   static constexpr T
+   getIdentity()
+   {
+      return 0;
+   }
 };
 
 /**
@@ -150,7 +172,11 @@ struct BitXor : public std::bit_xor< void >
     * Suitable for \ref TNL::Algorithms::reduce.
     */
    template< typename T >
-   static constexpr T getIdentity() { return 0; }
+   static constexpr T
+   getIdentity()
+   {
+      return 0;
+   }
 };
 
 /**
@@ -169,7 +195,8 @@ struct Min
     * Suitable for \ref TNL::Algorithms::reduce.
     */
    template< typename T >
-   static constexpr T getIdentity()
+   static constexpr T
+   getIdentity()
    {
       static_assert( std::numeric_limits< T >::is_specialized,
                      "std::numeric_limits is not specialized for the requested type" );
@@ -177,7 +204,8 @@ struct Min
    }
 
    template< typename T1, typename T2 >
-   constexpr auto operator()( const T1& lhs, const T2& rhs ) const
+   constexpr auto
+   operator()( const T1& lhs, const T2& rhs ) const
    {
       // use argument-dependent lookup and make TNL::min available for unqualified calls
       using TNL::min;
@@ -196,7 +224,8 @@ struct Max
     * Suitable for \ref TNL::Algorithms::reduce.
     */
    template< typename T >
-   static constexpr T getIdentity()
+   static constexpr T
+   getIdentity()
    {
       static_assert( std::numeric_limits< T >::is_specialized,
                      "std::numeric_limits is not specialized for the requested type" );
@@ -204,7 +233,8 @@ struct Max
    }
 
    template< typename T1, typename T2 >
-   constexpr auto operator()( const T1& lhs, const T2& rhs ) const
+   constexpr auto
+   operator()( const T1& lhs, const T2& rhs ) const
    {
       // use argument-dependent lookup and make TNL::max available for unqualified calls
       using TNL::max;
@@ -223,7 +253,8 @@ struct MinWithArg
     * Suitable for \ref TNL::Algorithms::reduce.
     */
    template< typename T >
-   static constexpr T getIdentity()
+   static constexpr T
+   getIdentity()
    {
       static_assert( std::numeric_limits< T >::is_specialized,
                      "std::numeric_limits is not specialized for the requested type" );
@@ -231,15 +262,14 @@ struct MinWithArg
    }
 
    template< typename Value, typename Index >
-   constexpr void operator()( Value& lhs, const Value& rhs, Index& lhsIdx, const Index& rhsIdx ) const
+   constexpr void
+   operator()( Value& lhs, const Value& rhs, Index& lhsIdx, const Index& rhsIdx ) const
    {
-      if( lhs > rhs )
-      {
+      if( lhs > rhs ) {
          lhs = rhs;
          lhsIdx = rhsIdx;
       }
-      else if( lhs == rhs && rhsIdx < lhsIdx )
-      {
+      else if( lhs == rhs && rhsIdx < lhsIdx ) {
          lhsIdx = rhsIdx;
       }
    }
@@ -256,7 +286,8 @@ struct MaxWithArg
     * Suitable for \ref TNL::Algorithms::reduce.
     */
    template< typename T >
-   static constexpr T getIdentity()
+   static constexpr T
+   getIdentity()
    {
       static_assert( std::numeric_limits< T >::is_specialized,
                      "std::numeric_limits is not specialized for the requested type" );
@@ -264,41 +295,42 @@ struct MaxWithArg
    }
 
    template< typename Value, typename Index >
-   constexpr void operator()( Value& lhs, const Value& rhs, Index& lhsIdx, const Index& rhsIdx ) const
+   constexpr void
+   operator()( Value& lhs, const Value& rhs, Index& lhsIdx, const Index& rhsIdx ) const
    {
-      if( lhs < rhs )
-      {
+      if( lhs < rhs ) {
          lhs = rhs;
          lhsIdx = rhsIdx;
       }
-      else if( lhs == rhs && rhsIdx < lhsIdx )
-      {
+      else if( lhs == rhs && rhsIdx < lhsIdx ) {
          lhsIdx = rhsIdx;
       }
    }
 };
 
-#define TNL_MAKE_UNARY_FUNCTIONAL(name, function)                       \
-   struct name                                                          \
-   {                                                                    \
-      template< typename T >                                            \
-      __cuda_callable__                                                 \
-      auto operator()( const T& x ) const -> decltype( function( x ) )  \
-      {                                                                 \
-         return function( x );                                          \
-      }                                                                 \
-   };                                                                   \
+#define TNL_MAKE_UNARY_FUNCTIONAL( name, function )               \
+   struct name                                                    \
+   {                                                              \
+      template< typename T >                                      \
+      __cuda_callable__                                           \
+      auto                                                        \
+      operator()( const T& x ) const -> decltype( function( x ) ) \
+      {                                                           \
+         return function( x );                                    \
+      }                                                           \
+   };
 
-#define TNL_MAKE_BINARY_FUNCTIONAL(name, function)                                  \
-   struct name                                                                      \
-   {                                                                                \
-      template< typename T1, typename T2 >                                          \
-      __cuda_callable__                                                             \
-      auto operator()( const T1& x, const T2& y ) const -> decltype( pow( x, y ) )  \
-      {                                                                             \
-         return pow( x, y );                                                        \
-      }                                                                             \
-   };                                                                               \
+#define TNL_MAKE_BINARY_FUNCTIONAL( name, function )                          \
+   struct name                                                                \
+   {                                                                          \
+      template< typename T1, typename T2 >                                    \
+      __cuda_callable__                                                       \
+      auto                                                                    \
+      operator()( const T1& x, const T2& y ) const -> decltype( pow( x, y ) ) \
+      {                                                                       \
+         return pow( x, y );                                                  \
+      }                                                                       \
+   };
 
 TNL_MAKE_UNARY_FUNCTIONAL( Abs, abs )
 TNL_MAKE_UNARY_FUNCTIONAL( Exp, exp )
@@ -335,11 +367,12 @@ struct Cast
    {
       template< typename T >
       __cuda_callable__
-      auto operator()( const T& a ) const -> ResultType
+      auto
+      operator()( const T& a ) const -> ResultType
       {
-         return static_cast<ResultType>( a );
+         return static_cast< ResultType >( a );
       }
    };
 };
 
-} // namespace TNL
+}  // namespace TNL

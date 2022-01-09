@@ -15,14 +15,12 @@
 namespace TNL {
 namespace Containers {
 
-template< typename Real,
-          typename Device = Devices::Host,
-          typename Index = int >
-class DistributedVectorView
-: public DistributedArrayView< Real, Device, Index >
+template< typename Real, typename Device = Devices::Host, typename Index = int >
+class DistributedVectorView : public DistributedArrayView< Real, Device, Index >
 {
    using BaseType = DistributedArrayView< Real, Device, Index >;
    using NonConstReal = typename std::remove_const< Real >::type;
+
 public:
    using RealType = Real;
    using DeviceType = Device;
@@ -35,15 +33,12 @@ public:
    /**
     * \brief A template which allows to quickly obtain a \ref VectorView type with changed template parameters.
     */
-   template< typename _Real,
-             typename _Device = Device,
-             typename _Index = Index >
+   template< typename _Real, typename _Device = Device, typename _Index = Index >
    using Self = DistributedVectorView< _Real, _Device, _Index >;
-
 
    // inherit all constructors and assignment operators from ArrayView
    using BaseType::DistributedArrayView;
-#if !defined(__CUDACC_VER_MAJOR__) || __CUDACC_VER_MAJOR__ < 11
+#if ! defined( __CUDACC_VER_MAJOR__ ) || __CUDACC_VER_MAJOR__ < 11
    using BaseType::operator=;
 #endif
 
@@ -54,114 +49,107 @@ public:
 
    // initialization by base class is not a copy constructor so it has to be explicit
    template< typename Real_ >  // template catches both const and non-const qualified Element
-   DistributedVectorView( const Containers::DistributedArrayView< Real_, Device, Index >& view )
-   : BaseType( view ) {}
+   DistributedVectorView( const Containers::DistributedArrayView< Real_, Device, Index >& view ) : BaseType( view )
+   {}
 
    /**
     * \brief Returns a modifiable view of the local part of the vector.
     */
-   LocalViewType getLocalView();
+   LocalViewType
+   getLocalView();
 
    /**
     * \brief Returns a non-modifiable view of the local part of the vector.
     */
-   ConstLocalViewType getConstLocalView() const;
+   ConstLocalViewType
+   getConstLocalView() const;
 
    /**
     * \brief Returns a modifiable view of the local part of the vector,
     * including ghost values.
     */
-   LocalViewType getLocalViewWithGhosts();
+   LocalViewType
+   getLocalViewWithGhosts();
 
    /**
     * \brief Returns a non-modifiable view of the local part of the vector,
     * including ghost values.
     */
-   ConstLocalViewType getConstLocalViewWithGhosts() const;
+   ConstLocalViewType
+   getConstLocalViewWithGhosts() const;
 
    /**
     * \brief Returns a modifiable view of the array view.
     */
-   ViewType getView();
+   ViewType
+   getView();
 
    /**
     * \brief Returns a non-modifiable view of the array view.
     */
-   ConstViewType getConstView() const;
+   ConstViewType
+   getConstView() const;
 
    /*
     * Usual Vector methods follow below.
     */
-   template< typename Scalar,
-             typename...,
-             typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >
-   DistributedVectorView& operator=( Scalar c );
+   template< typename Scalar, typename..., typename = std::enable_if_t< ! HasSubscriptOperator< Scalar >::value > >
+   DistributedVectorView&
+   operator=( Scalar c );
 
-   template< typename Scalar,
-             typename...,
-             typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >
-   DistributedVectorView& operator+=( Scalar c );
+   template< typename Scalar, typename..., typename = std::enable_if_t< ! HasSubscriptOperator< Scalar >::value > >
+   DistributedVectorView&
+   operator+=( Scalar c );
 
-   template< typename Scalar,
-             typename...,
-             typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >
-   DistributedVectorView& operator-=( Scalar c );
+   template< typename Scalar, typename..., typename = std::enable_if_t< ! HasSubscriptOperator< Scalar >::value > >
+   DistributedVectorView&
+   operator-=( Scalar c );
 
-   template< typename Scalar,
-             typename...,
-             typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >
-   DistributedVectorView& operator*=( Scalar c );
+   template< typename Scalar, typename..., typename = std::enable_if_t< ! HasSubscriptOperator< Scalar >::value > >
+   DistributedVectorView&
+   operator*=( Scalar c );
 
-   template< typename Scalar,
-             typename...,
-             typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >
-   DistributedVectorView& operator/=( Scalar c );
+   template< typename Scalar, typename..., typename = std::enable_if_t< ! HasSubscriptOperator< Scalar >::value > >
+   DistributedVectorView&
+   operator/=( Scalar c );
 
-   template< typename Scalar,
-             typename...,
-             typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >
-   DistributedVectorView& operator%=( Scalar c );
+   template< typename Scalar, typename..., typename = std::enable_if_t< ! HasSubscriptOperator< Scalar >::value > >
+   DistributedVectorView&
+   operator%=( Scalar c );
 
-   template< typename Vector,
-             typename...,
-             typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
-   DistributedVectorView& operator=( const Vector& vector );
+   template< typename Vector, typename..., typename = std::enable_if_t< HasSubscriptOperator< Vector >::value > >
+   DistributedVectorView&
+   operator=( const Vector& vector );
 
-   template< typename Vector,
-             typename...,
-             typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
-   DistributedVectorView& operator+=( const Vector& vector );
+   template< typename Vector, typename..., typename = std::enable_if_t< HasSubscriptOperator< Vector >::value > >
+   DistributedVectorView&
+   operator+=( const Vector& vector );
 
-   template< typename Vector,
-             typename...,
-             typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
-   DistributedVectorView& operator-=( const Vector& vector );
+   template< typename Vector, typename..., typename = std::enable_if_t< HasSubscriptOperator< Vector >::value > >
+   DistributedVectorView&
+   operator-=( const Vector& vector );
 
-   template< typename Vector,
-             typename...,
-             typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
-   DistributedVectorView& operator*=( const Vector& vector );
+   template< typename Vector, typename..., typename = std::enable_if_t< HasSubscriptOperator< Vector >::value > >
+   DistributedVectorView&
+   operator*=( const Vector& vector );
 
-   template< typename Vector,
-             typename...,
-             typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
-   DistributedVectorView& operator/=( const Vector& vector );
+   template< typename Vector, typename..., typename = std::enable_if_t< HasSubscriptOperator< Vector >::value > >
+   DistributedVectorView&
+   operator/=( const Vector& vector );
 
-   template< typename Vector,
-             typename...,
-             typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
-   DistributedVectorView& operator%=( const Vector& vector );
+   template< typename Vector, typename..., typename = std::enable_if_t< HasSubscriptOperator< Vector >::value > >
+   DistributedVectorView&
+   operator%=( const Vector& vector );
 };
 
 // Enable expression templates for DistributedVector
 namespace Expressions {
-   template< typename Real, typename Device, typename Index >
-   struct HasEnabledDistributedExpressionTemplates< DistributedVectorView< Real, Device, Index > >
-   : std::true_type
-   {};
-} // namespace Expressions
+template< typename Real, typename Device, typename Index >
+struct HasEnabledDistributedExpressionTemplates< DistributedVectorView< Real, Device, Index > > : std::true_type
+{};
+}  // namespace Expressions
 
-} // namespace Containers
-} // namespace TNL
+}  // namespace Containers
+}  // namespace TNL
 
 #include <TNL/Containers/DistributedVectorView.hpp>

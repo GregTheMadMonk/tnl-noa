@@ -7,7 +7,7 @@
 #pragma once
 
 #ifdef HAVE_JPEG_H
-#include <jpeglib.h>
+   #include <jpeglib.h>
 #endif
 
 #include <TNL/String.h>
@@ -28,65 +28,59 @@ namespace Images {
 template< typename Index = int >
 class JPEGImage : public Image< Index >
 {
-   public:
+public:
+   typedef Index IndexType;
 
-      typedef Index IndexType;
+   JPEGImage();
 
-      JPEGImage();
+   bool
+   openForRead( const String& fileName );
 
-      bool openForRead( const String& fileName );
+   template< typename MeshReal, typename Device, typename Real >
+   bool
+   read( const RegionOfInterest< Index > roi,
+         Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function );
 
-      template< typename MeshReal,
-                typename Device,
-                typename Real >
-      bool read( const RegionOfInterest< Index > roi,
-                 Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function );
+   template< typename Real, typename Device >
+   bool
+   openForWrite( const String& fileName, Meshes::Grid< 2, Real, Device, Index >& grid );
 
+   // TODO: Obsolete
+   template< typename Real, typename Device, typename Vector >
+   bool
+   write( const Meshes::Grid< 2, Real, Device, Index >& grid, Vector& vector );
 
-      template< typename Real,
-                typename Device >
-      bool openForWrite( const String& fileName,
-                         Meshes::Grid< 2, Real, Device, Index >& grid );
+   template< typename MeshReal, typename Device, typename Real >
+   bool
+   write( const Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function );
 
-      // TODO: Obsolete
-      template< typename Real,
-                typename Device,
-                typename Vector >
-      bool write( const Meshes::Grid< 2, Real, Device, Index >& grid,
-                  Vector& vector );
+   void
+   close();
 
-      template< typename MeshReal,
-                typename Device,
-                typename Real >
-      bool write( const Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function );
+   ~JPEGImage();
 
+protected:
+   bool
+   readHeader();
 
-      void close();
+   template< typename Real, typename Device >
+   bool
+   writeHeader( const Meshes::Grid< 2, Real, Device, Index >& grid );
 
-      ~JPEGImage();
+   FILE* file;
 
-   protected:
-
-      bool readHeader();
-
-      template< typename Real,
-                typename Device >
-      bool writeHeader( const Meshes::Grid< 2, Real, Device, Index >& grid );
-
-      FILE* file;
-
-      bool fileOpen;
+   bool fileOpen;
 
 #ifdef HAVE_JPEG_H
-      my_error_mgr jerr;
-      jpeg_decompress_struct decinfo;
-      jpeg_compress_struct cinfo;
-      int components;
-      J_COLOR_SPACE color_space;
+   my_error_mgr jerr;
+   jpeg_decompress_struct decinfo;
+   jpeg_compress_struct cinfo;
+   int components;
+   J_COLOR_SPACE color_space;
 #endif
 };
 
-} // namespace Images
-} // namespace TNL
+}  // namespace Images
+}  // namespace TNL
 
 #include <TNL/Images/JPEGImage_impl.h>

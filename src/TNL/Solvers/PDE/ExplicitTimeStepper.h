@@ -17,78 +17,80 @@ namespace TNL {
 namespace Solvers {
 namespace PDE {
 
-template< typename Problem,
-          template < typename OdeProblem, typename SolverMonitor > class OdeSolver >
+template< typename Problem, template< typename OdeProblem, typename SolverMonitor > class OdeSolver >
 class ExplicitTimeStepper
 {
-   public:
+public:
+   using ProblemType = Problem;
+   using RealType = typename Problem::RealType;
+   using DeviceType = typename Problem::DeviceType;
+   using IndexType = typename Problem::IndexType;
+   using MeshType = typename Problem::MeshType;
+   using DofVectorType = typename ProblemType::DofVectorType;
+   using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
+   using SolverMonitorType = IterativeSolverMonitor< RealType, IndexType >;
+   using OdeSolverType = OdeSolver< ExplicitTimeStepper< Problem, OdeSolver >, SolverMonitorType >;
+   using OdeSolverPointer = Pointers::SharedPointer< OdeSolverType, DeviceType >;
 
-      using ProblemType = Problem;
-      using RealType = typename Problem::RealType;
-      using DeviceType = typename Problem::DeviceType;
-      using IndexType = typename Problem::IndexType;
-      using MeshType = typename Problem::MeshType;
-      using DofVectorType = typename ProblemType::DofVectorType;
-      using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
-      using SolverMonitorType = IterativeSolverMonitor< RealType, IndexType >;
-      using OdeSolverType = OdeSolver< ExplicitTimeStepper< Problem, OdeSolver >, SolverMonitorType >;
-      using OdeSolverPointer = Pointers::SharedPointer< OdeSolverType, DeviceType >;
+   static_assert( ProblemType::isTimeDependent(), "The problem is not time dependent." );
 
-      static_assert( ProblemType::isTimeDependent(), "The problem is not time dependent." );
+   ExplicitTimeStepper();
 
-      ExplicitTimeStepper();
+   static void
+   configSetup( Config::ConfigDescription& config, const String& prefix = "" );
 
-      static void configSetup( Config::ConfigDescription& config,
-                               const String& prefix = "" );
+   bool
+   setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
 
-      bool setup( const Config::ParameterContainer& parameters,
-                 const String& prefix = "" );
+   bool
+   init( const MeshType& mesh );
 
-      bool init( const MeshType& mesh );
+   void
+   setSolver( OdeSolverType& odeSolver );
 
-      void setSolver( OdeSolverType& odeSolver );
+   void
+   setSolverMonitor( SolverMonitorType& solverMonitor );
 
-      void setSolverMonitor( SolverMonitorType& solverMonitor );
+   void
+   setProblem( ProblemType& problem );
 
-      void setProblem( ProblemType& problem );
+   ProblemType*
+   getProblem() const;
 
-      ProblemType* getProblem() const;
+   bool
+   setTimeStep( const RealType& tau );
 
-      bool setTimeStep( const RealType& tau );
+   bool
+   solve( const RealType& time, const RealType& stopTime, DofVectorPointer& dofVector );
 
-      bool solve( const RealType& time,
-                   const RealType& stopTime,
-                   DofVectorPointer& dofVector );
+   const RealType&
+   getTimeStep() const;
 
-      const RealType& getTimeStep() const;
+   void
+   getExplicitUpdate( const RealType& time, const RealType& tau, DofVectorPointer& _u, DofVectorPointer& _fu );
 
-      void getExplicitUpdate( const RealType& time,
-                           const RealType& tau,
-                           DofVectorPointer& _u,
-                           DofVectorPointer& _fu );
+   void
+   applyBoundaryConditions( const RealType& time, DofVectorPointer& _u );
 
-      void applyBoundaryConditions( const RealType& time,
-                                 DofVectorPointer& _u );
+   bool
+   writeEpilog( Logger& logger ) const;
 
-      bool writeEpilog( Logger& logger ) const;
+protected:
+   OdeSolverPointer odeSolver;
 
-   protected:
+   SolverMonitorType* solverMonitor;
 
-      OdeSolverPointer odeSolver;
+   Problem* problem;
 
-      SolverMonitorType* solverMonitor;
+   RealType timeStep;
 
-      Problem* problem;
+   Timer preIterateTimer, explicitUpdaterTimer, mainTimer, postIterateTimer;
 
-      RealType timeStep;
-
-      Timer preIterateTimer, explicitUpdaterTimer, mainTimer, postIterateTimer;
-
-      long long int allIterations;
+   long long int allIterations;
 };
 
-} // namespace PDE
-} // namespace Solvers
-} // namespace TNL
+}  // namespace PDE
+}  // namespace Solvers
+}  // namespace TNL
 
 #include <TNL/Solvers/PDE/ExplicitTimeStepper.hpp>

@@ -10,27 +10,25 @@
 
 namespace TNL {
 namespace Solvers {
-namespace PDE {   
+namespace PDE {
 
 class NoTimeDiscretisation
 {
-    public:
- 
-        template< typename RealType,
-                  typename IndexType,
-                  typename MatrixType >
-        __cuda_callable__ static void applyTimeDiscretisation( MatrixType& matrix,
-                                                               RealType& b,
-                                                               const IndexType index,
-                                                               const RealType& u,
-                                                               const RealType& tau,
-                                                               const RealType& rhs )
-        {
-            b += rhs;
-        }
+public:
+   template< typename RealType, typename IndexType, typename MatrixType >
+   __cuda_callable__
+   static void
+   applyTimeDiscretisation( MatrixType& matrix,
+                            RealType& b,
+                            const IndexType index,
+                            const RealType& u,
+                            const RealType& tau,
+                            const RealType& rhs )
+   {
+      b += rhs;
+   }
 };
 
-} // namespace PDE
-} // namespace Solvers
-} // namespace TNL
-
+}  // namespace PDE
+}  // namespace Solvers
+}  // namespace TNL

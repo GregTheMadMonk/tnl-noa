@@ -21,10 +21,13 @@ namespace TNL {
  * GPU device code uses the functions defined in the CUDA's math_functions.h,
  * host uses the STL functions.
  */
-template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type,
+template< typename T1,
+          typename T2,
+          typename ResultType = typename std::common_type< T1, T2 >::type,
           // enable_if is necessary to avoid ambiguity in vector expressions
-          std::enable_if_t< std::is_arithmetic<T1>::value && std::is_arithmetic<T2>::value, bool > = true >
-constexpr ResultType min( const T1& a, const T2& b )
+          std::enable_if_t< std::is_arithmetic< T1 >::value && std::is_arithmetic< T2 >::value, bool > = true >
+constexpr ResultType
+min( const T1& a, const T2& b )
 {
    // std::min is constexpr since C++14 so it can be reused directly
    return std::min( (ResultType) a, (ResultType) b );
@@ -39,8 +42,8 @@ template< typename T1, typename T2, typename T3, typename... Ts >
 constexpr typename std::common_type< T1, T2, T3, Ts... >::type
 min( T1&& val1, T2&& val2, T3&& val3, Ts&&... vs )
 {
-   return min( min( std::forward<T1>(val1), std::forward<T2>(val2) ),
-               std::forward<T3>(val3), std::forward<Ts>(vs)... );
+   return min(
+      min( std::forward< T1 >( val1 ), std::forward< T2 >( val2 ) ), std::forward< T3 >( val3 ), std::forward< Ts >( vs )... );
 }
 
 /**
@@ -49,10 +52,13 @@ min( T1&& val1, T2&& val2, T3&& val3, Ts&&... vs )
  * GPU device code uses the functions defined in the CUDA's math_functions.h,
  * host uses the STL functions.
  */
-template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type,
+template< typename T1,
+          typename T2,
+          typename ResultType = typename std::common_type< T1, T2 >::type,
           // enable_if is necessary to avoid ambiguity in vector expressions
-          std::enable_if_t< std::is_arithmetic<T1>::value && std::is_arithmetic<T2>::value, bool > = true >
-constexpr ResultType max( const T1& a, const T2& b )
+          std::enable_if_t< std::is_arithmetic< T1 >::value && std::is_arithmetic< T2 >::value, bool > = true >
+constexpr ResultType
+max( const T1& a, const T2& b )
 {
    // std::max is constexpr since C++14 so it can be reused directly
    return std::max( (ResultType) a, (ResultType) b );
@@ -68,19 +74,19 @@ __cuda_callable__
 typename std::common_type< T1, T2, T3, Ts... >::type
 max( T1&& val1, T2&& val2, T3&& val3, Ts&&... vs )
 {
-   return max( max( std::forward<T1>(val1), std::forward<T2>(val2) ),
-               std::forward<T3>(val3), std::forward<Ts>(vs)... );
+   return max(
+      max( std::forward< T1 >( val1 ), std::forward< T2 >( val2 ) ), std::forward< T3 >( val3 ), std::forward< Ts >( vs )... );
 }
 
 /**
  * \brief This function returns absolute value of given number \e n.
  */
-template< class T,
-          std::enable_if_t< std::is_arithmetic<T>::value && ! std::is_unsigned<T>::value, bool > = true >
+template< class T, std::enable_if_t< std::is_arithmetic< T >::value && ! std::is_unsigned< T >::value, bool > = true >
 __cuda_callable__
-T abs( const T& n )
+T
+abs( const T& n )
 {
-#if defined(__CUDA_ARCH__)
+#if defined( __CUDA_ARCH__ )
    if( std::is_integral< T >::value )
       return ::abs( n );
    else
@@ -93,10 +99,10 @@ T abs( const T& n )
 /**
  * \brief This function returns the absolute value of given unsigned number \e n, i.e. \e n.
  */
-template< class T,
-          std::enable_if_t< std::is_unsigned<T>::value, bool > = true >
+template< class T, std::enable_if_t< std::is_unsigned< T >::value, bool > = true >
 __cuda_callable__
-T abs( const T& n )
+T
+abs( const T& n )
 {
    return n;
 }
@@ -106,9 +112,10 @@ T abs( const T& n )
  */
 template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type >
 __cuda_callable__
-ResultType argMin( const T1& a, const T2& b )
+ResultType
+argMin( const T1& a, const T2& b )
 {
-   return ( a < b ) ?  a : b;
+   return ( a < b ) ? a : b;
 }
 
 /***
@@ -116,9 +123,10 @@ ResultType argMin( const T1& a, const T2& b )
  */
 template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type >
 __cuda_callable__
-ResultType argMax( const T1& a, const T2& b )
+ResultType
+argMax( const T1& a, const T2& b )
 {
-   return ( a > b ) ?  a : b;
+   return ( a > b ) ? a : b;
 }
 
 /***
@@ -126,9 +134,10 @@ ResultType argMax( const T1& a, const T2& b )
  */
 template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type >
 __cuda_callable__
-ResultType argAbsMin( const T1& a, const T2& b )
+ResultType
+argAbsMin( const T1& a, const T2& b )
 {
-   return ( TNL::abs( a ) < TNL::abs( b ) ) ?  a : b;
+   return ( TNL::abs( a ) < TNL::abs( b ) ) ? a : b;
 }
 
 /***
@@ -136,21 +145,25 @@ ResultType argAbsMin( const T1& a, const T2& b )
  */
 template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type >
 __cuda_callable__
-ResultType argAbsMax( const T1& a, const T2& b )
+ResultType
+argAbsMax( const T1& a, const T2& b )
 {
-   return ( TNL::abs( a ) > TNL::abs( b ) ) ?  a : b;
+   return ( TNL::abs( a ) > TNL::abs( b ) ) ? a : b;
 }
 
 /**
  * \brief This function returns the result of \e base to the power of \e exp.
  */
-template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type,
+template< typename T1,
+          typename T2,
+          typename ResultType = typename std::common_type< T1, T2 >::type,
           // enable_if is necessary to avoid ambiguity in vector expressions
-          std::enable_if_t< std::is_arithmetic<T1>::value && std::is_arithmetic<T2>::value, bool > = true >
+          std::enable_if_t< std::is_arithmetic< T1 >::value && std::is_arithmetic< T2 >::value, bool > = true >
 __cuda_callable__
-ResultType pow( const T1& base, const T2& exp )
+ResultType
+pow( const T1& base, const T2& exp )
 {
-#if defined(__CUDA_ARCH__)
+#if defined( __CUDA_ARCH__ )
    return ::pow( (ResultType) base, (ResultType) exp );
 #else
    return std::pow( (ResultType) base, (ResultType) exp );
@@ -162,9 +175,10 @@ ResultType pow( const T1& base, const T2& exp )
  */
 template< typename T >
 __cuda_callable__
-auto exp( const T& value ) -> decltype( std::exp(value) )
+auto
+exp( const T& value ) -> decltype( std::exp( value ) )
 {
-#if defined(__CUDA_ARCH__)
+#if defined( __CUDA_ARCH__ )
    return ::exp( value );
 #else
    return std::exp( value );
@@ -176,9 +190,10 @@ auto exp( const T& value ) -> decltype( std::exp(value) )
  */
 template< typename T >
 __cuda_callable__
-auto sqrt( const T& value ) -> decltype( std::sqrt(value) )
+auto
+sqrt( const T& value ) -> decltype( std::sqrt( value ) )
 {
-#if defined(__CUDA_ARCH__)
+#if defined( __CUDA_ARCH__ )
    return ::sqrt( value );
 #else
    return std::sqrt( value );
@@ -190,9 +205,10 @@ auto sqrt( const T& value ) -> decltype( std::sqrt(value) )
  */
 template< typename T >
 __cuda_callable__
-auto cbrt( const T& value ) -> decltype( std::cbrt(value) )
+auto
+cbrt( const T& value ) -> decltype( std::cbrt( value ) )
 {
-#if defined(__CUDA_ARCH__)
+#if defined( __CUDA_ARCH__ )
    return ::cbrt( value );
 #else
    return std::cbrt( value );
@@ -204,9 +220,10 @@ auto cbrt( const T& value ) -> decltype( std::cbrt(value) )
  */
 template< typename T >
 __cuda_callable__
-auto log( const T& value ) -> decltype( std::log(value) )
+auto
+log( const T& value ) -> decltype( std::log( value ) )
 {
-#if defined(__CUDA_ARCH__)
+#if defined( __CUDA_ARCH__ )
    return ::log( value );
 #else
    return std::log( value );
@@ -218,9 +235,10 @@ auto log( const T& value ) -> decltype( std::log(value) )
  */
 template< typename T >
 __cuda_callable__
-auto log10( const T& value ) -> decltype( std::log10(value) )
+auto
+log10( const T& value ) -> decltype( std::log10( value ) )
 {
-#if defined(__CUDA_ARCH__)
+#if defined( __CUDA_ARCH__ )
    return ::log10( value );
 #else
    return std::log10( value );
@@ -232,9 +250,10 @@ auto log10( const T& value ) -> decltype( std::log10(value) )
  */
 template< typename T >
 __cuda_callable__
-auto log2( const T& value ) -> decltype( std::log2(value) )
+auto
+log2( const T& value ) -> decltype( std::log2( value ) )
 {
-#if defined(__CUDA_ARCH__)
+#if defined( __CUDA_ARCH__ )
    return ::log2( value );
 #else
    return std::log2( value );
@@ -246,9 +265,10 @@ auto log2( const T& value ) -> decltype( std::log2(value) )
  */
 template< typename T >
 __cuda_callable__
-auto sin( const T& value ) -> decltype( std::sin(value) )
+auto
+sin( const T& value ) -> decltype( std::sin( value ) )
 {
-#if defined(__CUDA_ARCH__)
+#if defined( __CUDA_ARCH__ )
    return ::sin( value );
 #else
    return std::sin( value );
@@ -260,9 +280,10 @@ auto sin( const T& value ) -> decltype( std::sin(value) )
  */
 template< typename T >
 __cuda_callable__
-auto cos( const T& value ) -> decltype( std::cos(value) )
+auto
+cos( const T& value ) -> decltype( std::cos( value ) )
 {
-#if defined(__CUDA_ARCH__)
+#if defined( __CUDA_ARCH__ )
    return ::cos( value );
 #else
    return std::cos( value );
@@ -274,9 +295,10 @@ auto cos( const T& value ) -> decltype( std::cos(value) )
  */
 template< typename T >
 __cuda_callable__
-auto tan( const T& value ) -> decltype( std::tan(value) )
+auto
+tan( const T& value ) -> decltype( std::tan( value ) )
 {
-#if defined(__CUDA_ARCH__)
+#if defined( __CUDA_ARCH__ )
    return ::tan( value );
 #else
    return std::tan( value );
@@ -288,9 +310,10 @@ auto tan( const T& value ) -> decltype( std::tan(value) )
  */
 template< typename T >
 __cuda_callable__
-auto asin( const T& value ) -> decltype( std::asin(value) )
+auto
+asin( const T& value ) -> decltype( std::asin( value ) )
 {
-#if defined(__CUDA_ARCH__)
+#if defined( __CUDA_ARCH__ )
    return ::asin( value );
 #else
    return std::asin( value );
@@ -302,9 +325,10 @@ auto asin( const T& value ) -> decltype( std::asin(value) )
  */
 template< typename T >
 __cuda_callable__
-auto acos( const T& value ) -> decltype( std::acos(value) )
+auto
+acos( const T& value ) -> decltype( std::acos( value ) )
 {
-#if defined(__CUDA_ARCH__)
+#if defined( __CUDA_ARCH__ )
    return ::acos( value );
 #else
    return std::acos( value );
@@ -316,9 +340,10 @@ auto acos( const T& value ) -> decltype( std::acos(value) )
  */
 template< typename T >
 __cuda_callable__
-auto atan( const T& value ) -> decltype( std::atan(value) )
+auto
+atan( const T& value ) -> decltype( std::atan( value ) )
 {
-#if defined(__CUDA_ARCH__)
+#if defined( __CUDA_ARCH__ )
    return ::atan( value );
 #else
    return std::atan( value );
@@ -330,9 +355,10 @@ auto atan( const T& value ) -> decltype( std::atan(value) )
  */
 template< typename T >
 __cuda_callable__
-auto sinh( const T& value ) -> decltype( std::sinh(value) )
+auto
+sinh( const T& value ) -> decltype( std::sinh( value ) )
 {
-#if defined(__CUDA_ARCH__)
+#if defined( __CUDA_ARCH__ )
    return ::sinh( value );
 #else
    return std::sinh( value );
@@ -344,9 +370,10 @@ auto sinh( const T& value ) -> decltype( std::sinh(value) )
  */
 template< typename T >
 __cuda_callable__
-auto cosh( const T& value ) -> decltype( std::cosh(value) )
+auto
+cosh( const T& value ) -> decltype( std::cosh( value ) )
 {
-#if defined(__CUDA_ARCH__)
+#if defined( __CUDA_ARCH__ )
    return ::cosh( value );
 #else
    return std::cosh( value );
@@ -358,9 +385,10 @@ auto cosh( const T& value ) -> decltype( std::cosh(value) )
  */
 template< typename T >
 __cuda_callable__
-auto tanh( const T& value ) -> decltype( std::tanh(value) )
+auto
+tanh( const T& value ) -> decltype( std::tanh( value ) )
 {
-#if defined(__CUDA_ARCH__)
+#if defined( __CUDA_ARCH__ )
    return ::tanh( value );
 #else
    return std::tanh( value );
@@ -372,9 +400,10 @@ auto tanh( const T& value ) -> decltype( std::tanh(value) )
  */
 template< typename T >
 __cuda_callable__
-auto asinh( const T& value ) -> decltype( std::asinh(value) )
+auto
+asinh( const T& value ) -> decltype( std::asinh( value ) )
 {
-#if defined(__CUDA_ARCH__)
+#if defined( __CUDA_ARCH__ )
    return ::asinh( value );
 #else
    return std::asinh( value );
@@ -386,9 +415,10 @@ auto asinh( const T& value ) -> decltype( std::asinh(value) )
  */
 template< typename T >
 __cuda_callable__
-auto acosh( const T& value ) -> decltype( std::acosh(value) )
+auto
+acosh( const T& value ) -> decltype( std::acosh( value ) )
 {
-#if defined(__CUDA_ARCH__)
+#if defined( __CUDA_ARCH__ )
    return ::acosh( value );
 #else
    return std::acosh( value );
@@ -400,9 +430,10 @@ auto acosh( const T& value ) -> decltype( std::acosh(value) )
  */
 template< typename T >
 __cuda_callable__
-auto atanh( const T& value ) -> decltype( std::atanh(value) )
+auto
+atanh( const T& value ) -> decltype( std::atanh( value ) )
 {
-#if defined(__CUDA_ARCH__)
+#if defined( __CUDA_ARCH__ )
    return ::atanh( value );
 #else
    return std::atanh( value );
@@ -414,9 +445,10 @@ auto atanh( const T& value ) -> decltype( std::atanh(value) )
  */
 template< typename T >
 __cuda_callable__
-auto floor( const T& value ) -> decltype( std::floor(value) )
+auto
+floor( const T& value ) -> decltype( std::floor( value ) )
 {
-#if defined(__CUDA_ARCH__)
+#if defined( __CUDA_ARCH__ )
    return ::floor( value );
 #else
    return std::floor( value );
@@ -428,9 +460,10 @@ auto floor( const T& value ) -> decltype( std::floor(value) )
  */
 template< typename T >
 __cuda_callable__
-auto ceil( const T& value ) -> decltype( std::ceil(value) )
+auto
+ceil( const T& value ) -> decltype( std::ceil( value ) )
 {
-#if defined(__CUDA_ARCH__)
+#if defined( __CUDA_ARCH__ )
    return ::ceil( value );
 #else
    return std::ceil( value );
@@ -444,7 +477,8 @@ auto ceil( const T& value ) -> decltype( std::ceil(value) )
  */
 template< typename Type >
 __cuda_callable__
-void swap( Type& a, Type& b )
+void
+swap( Type& a, Type& b )
 {
    Type tmp( a );
    a = b;
@@ -459,13 +493,16 @@ void swap( Type& a, Type& b )
  */
 template< class T,
           // enable_if is necessary to avoid ambiguity in vector expressions
-          std::enable_if_t< ! HasSubscriptOperator<T>::value, bool > = true >
+          std::enable_if_t< ! HasSubscriptOperator< T >::value, bool > = true >
 __cuda_callable__
-T sign( const T& a )
+T
+sign( const T& a )
 {
-   if( a < ( T ) 0 ) return ( T ) -1;
-   if( a == ( T ) 0 ) return ( T ) 0;
-   return ( T ) 1;
+   if( a < (T) 0 )
+      return (T) -1;
+   if( a == (T) 0 )
+      return (T) 0;
+   return (T) 1;
 }
 
 /**
@@ -478,8 +515,8 @@ T sign( const T& a )
  */
 template< typename Real >
 __cuda_callable__
-bool isSmall( const Real& v,
-              const Real& tolerance = 1.0e-5 )
+bool
+isSmall( const Real& v, const Real& tolerance = 1.0e-5 )
 {
    return ( -tolerance <= v && v <= tolerance );
 }
@@ -491,7 +528,8 @@ bool isSmall( const Real& v,
  * \param div An integer considered as divisor.
  */
 __cuda_callable__
-inline int roundUpDivision( const int num, const int div )
+inline int
+roundUpDivision( const int num, const int div )
 {
    return num / div + ( num % div != 0 );
 }
@@ -503,9 +541,10 @@ inline int roundUpDivision( const int num, const int div )
  * \param multiple Integer.
  */
 __cuda_callable__
-inline int roundToMultiple( int number, int multiple )
+inline int
+roundToMultiple( int number, int multiple )
 {
-   return multiple*( number/ multiple + ( number % multiple != 0 ) );
+   return multiple * ( number / multiple + ( number % multiple != 0 ) );
 }
 
 /**
@@ -515,7 +554,8 @@ inline int roundToMultiple( int number, int multiple )
  * \param x Integer.
  */
 __cuda_callable__
-inline bool isPow2( int x )
+inline bool
+isPow2( int x )
 {
    return ( ( x & ( x - 1 ) ) == 0 );
 }
@@ -527,9 +567,10 @@ inline bool isPow2( int x )
  * \param x Long integer.
  */
 __cuda_callable__
-inline bool isPow2( long int x )
+inline bool
+isPow2( long int x )
 {
    return ( ( x & ( x - 1 ) ) == 0 );
 }
 
-} // namespace TNL
+}  // namespace TNL

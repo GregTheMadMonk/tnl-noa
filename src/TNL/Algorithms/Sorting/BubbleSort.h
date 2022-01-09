@@ -15,8 +15,8 @@
 #include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
-   namespace Algorithms {
-      namespace Sorting {
+namespace Algorithms {
+namespace Sorting {
 
 struct BubbleSort
 {
@@ -28,33 +28,28 @@ struct BubbleSort
 
       Index left = begin;
       Index right = end - 1;
-      while( left < right )
-      {
-         //Index lastChange = end - 1;
-         for( Index j = left; j < right - 1; j++ )
-         {
-            TNL_ASSERT_LT( j+1, end, "" );
-            if( ! compare( j, j+1 ) )
-            {
-               swap( j, j+1 );
-               //lastChange = j;
+      while( left < right ) {
+         // Index lastChange = end - 1;
+         for( Index j = left; j < right - 1; j++ ) {
+            TNL_ASSERT_LT( j + 1, end, "" );
+            if( ! compare( j, j + 1 ) ) {
+               swap( j, j + 1 );
+               // lastChange = j;
             }
          }
-         right--; //lastChange;
-         for( Index j = right; j >= left; j-- )
-         {
-            TNL_ASSERT_LT( j+1, end, "" );
-            if( ! compare( j, j+1 ) )
-            {
-               swap( j, j+1 );
-               //lastChange = j;
+         right--;  // lastChange;
+         for( Index j = right; j >= left; j-- ) {
+            TNL_ASSERT_LT( j + 1, end, "" );
+            if( ! compare( j, j + 1 ) ) {
+               swap( j, j + 1 );
+               // lastChange = j;
             }
          }
-         left++; //lastChange;
+         left++;  // lastChange;
       }
    }
 };
 
-      } // namespace Sorting
-   } // namespace Algorithms
-} //namespace TNL
+}  // namespace Sorting
+}  // namespace Algorithms
+}  // namespace TNL

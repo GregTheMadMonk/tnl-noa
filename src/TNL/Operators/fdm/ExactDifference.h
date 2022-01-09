@@ -7,33 +7,22 @@
 #pragma once
 
 namespace TNL {
-namespace Operators {   
+namespace Operators {
 
-template< int Dimension,
-          int XDerivative,
-          int YDerivative,
-          int ZDerivative >
-class ExactDifference
-   : public Functions::Domain< Dimension, Functions::SpaceDomain >
+template< int Dimension, int XDerivative, int YDerivative, int ZDerivative >
+class ExactDifference : public Functions::Domain< Dimension, Functions::SpaceDomain >
 {
-   public:
- 
-      template< typename Function >
-      __cuda_callable__
-      typename Function::RealType operator()(
-         const Function& function,
-         const typename Function::PointType& vertex,
-         const typename Function::RealType& time = 0 ) const
-      {
-         return function.template getPartialDerivative<
-            XDerivative,
-            YDerivative,
-            ZDerivative >(
-            vertex,
-            time );
-      }
+public:
+   template< typename Function >
+   __cuda_callable__
+   typename Function::RealType
+   operator()( const Function& function,
+               const typename Function::PointType& vertex,
+               const typename Function::RealType& time = 0 ) const
+   {
+      return function.template getPartialDerivative< XDerivative, YDerivative, ZDerivative >( vertex, time );
+   }
 };
 
-} // namespace Operators
-} // namespace TNL
-
+}  // namespace Operators
+}  // namespace TNL

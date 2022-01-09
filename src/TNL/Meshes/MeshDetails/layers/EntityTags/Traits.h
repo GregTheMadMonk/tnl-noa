@@ -15,15 +15,13 @@ namespace EntityTags {
 template< typename MeshConfig,
           typename Device,
           typename DimensionTag,
-          bool sensible = (DimensionTag::value <= MeshConfig::meshDimension) >
+          bool sensible = ( DimensionTag::value <= MeshConfig::meshDimension ) >
 struct WeakStorageTrait
 {
    static constexpr bool entityTagsEnabled = MeshConfig::entityTagsStorage( DimensionTag::value );
 };
 
-template< typename MeshConfig,
-          typename Device,
-          typename DimensionTag >
+template< typename MeshConfig, typename Device, typename DimensionTag >
 struct WeakStorageTrait< MeshConfig, Device, DimensionTag, false >
 {
    static constexpr bool entityTagsEnabled = false;
@@ -37,6 +35,6 @@ enum EntityTags : std::uint8_t
    GhostEntity = 2,
 };
 
-} // namespace EntityTags
-} // namespace Meshes
-} // namespace TNL
+}  // namespace EntityTags
+}  // namespace Meshes
+}  // namespace TNL

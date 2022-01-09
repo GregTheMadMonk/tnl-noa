@@ -36,11 +36,7 @@ template< typename Device,
           typename ResetFunction,
           typename Monitor = TNL::Solvers::IterativeSolverMonitor< double, int > >
 std::tuple< int, double, double >
-timeFunction( ComputeFunction compute,
-              ResetFunction reset,
-              int maxLoops,
-              const double& minTime,
-              Monitor && monitor = Monitor() )
+timeFunction( ComputeFunction compute, ResetFunction reset, int maxLoops, const double& minTime, Monitor&& monitor = Monitor() )
 {
    // the timer is constructed zero-initialized and stopped
    Timer timer;
@@ -56,10 +52,7 @@ timeFunction( ComputeFunction compute,
    results.setValue( 0.0 );
 
    int loops;
-   for( loops = 0;
-        loops < maxLoops || sum( results ) < minTime;
-        loops++ )
-   {
+   for( loops = 0; loops < maxLoops || sum( results ) < minTime; loops++ ) {
       // abuse the monitor's "time" for loops
       monitor.setTime( loops + 1 );
       reset();
@@ -88,18 +81,17 @@ timeFunction( ComputeFunction compute,
    if( loops > 1 )
       stddev = 1.0 / std::sqrt( loops - 1 ) * l2Norm( results - mean );
    else
-      stddev = std::numeric_limits<double>::quiet_NaN();
+      stddev = std::numeric_limits< double >::quiet_NaN();
    return std::make_tuple( loops, mean, stddev );
 }
 
-inline std::map< std::string, std::string > getHardwareMetadata()
+inline std::map< std::string, std::string >
+getHardwareMetadata()
 {
    const int cpu_id = 0;
    const CacheSizes cacheSizes = SystemInfo::getCPUCacheSizes( cpu_id );
-   const std::string cacheInfo = std::to_string( cacheSizes.L1data ) + ", "
-                               + std::to_string( cacheSizes.L1instruction ) + ", "
-                               + std::to_string( cacheSizes.L2 ) + ", "
-                               + std::to_string( cacheSizes.L3 );
+   const std::string cacheInfo = std::to_string( cacheSizes.L1data ) + ", " + std::to_string( cacheSizes.L1instruction ) + ", "
+                               + std::to_string( cacheSizes.L2 ) + ", " + std::to_string( cacheSizes.L3 );
 #ifdef HAVE_CUDA
    const int activeGPU = Cuda::DeviceInfo::getActiveDevice();
    const std::string deviceArch = std::to_string( Cuda::DeviceInfo::getArchitectureMajor( activeGPU ) ) + "."
@@ -114,38 +106,39 @@ inline std::map< std::string, std::string > getHardwareMetadata()
       nproc = TNL::MPI::GetSize();
 #endif
 
-   std::map< std::string, std::string > metadata {
-       { "host name", SystemInfo::getHostname() },
-       { "architecture", SystemInfo::getArchitecture() },
-       { "system", SystemInfo::getSystemName() },
-       { "system release", SystemInfo::getSystemRelease() },
-       { "start time", SystemInfo::getCurrentTime() },
+   std::map< std::string, std::string > metadata{
+      { "host name", SystemInfo::getHostname() },
+      { "architecture", SystemInfo::getArchitecture() },
+      { "system", SystemInfo::getSystemName() },
+      { "system release", SystemInfo::getSystemRelease() },
+      { "start time", SystemInfo::getCurrentTime() },
 #ifdef HAVE_MPI
-       { "number of MPI processes", std::to_string( nproc ) },
+      { "number of MPI processes", std::to_string( nproc ) },
 #endif
-       { "OpenMP enabled", std::to_string( Devices::Host::isOMPEnabled() ) },
-       { "OpenMP threads", std::to_string( Devices::Host::getMaxThreadsCount() ) },
-       { "CPU model name", SystemInfo::getCPUModelName( cpu_id ) },
-       { "CPU cores", std::to_string( SystemInfo::getNumberOfCores( cpu_id ) ) },
-       { "CPU threads per core", std::to_string( SystemInfo::getNumberOfThreads( cpu_id ) / SystemInfo::getNumberOfCores( cpu_id ) ) },
-       { "CPU max frequency (MHz)", std::to_string( SystemInfo::getCPUMaxFrequency( cpu_id ) / 1e3 ) },
-       { "CPU cache sizes (L1d, L1i, L2, L3) (kiB)", cacheInfo },
+      { "OpenMP enabled", std::to_string( Devices::Host::isOMPEnabled() ) },
+      { "OpenMP threads", std::to_string( Devices::Host::getMaxThreadsCount() ) },
+      { "CPU model name", SystemInfo::getCPUModelName( cpu_id ) },
+      { "CPU cores", std::to_string( SystemInfo::getNumberOfCores( cpu_id ) ) },
+      { "CPU threads per core",
+        std::to_string( SystemInfo::getNumberOfThreads( cpu_id ) / SystemInfo::getNumberOfCores( cpu_id ) ) },
+      { "CPU max frequency (MHz)", std::to_string( SystemInfo::getCPUMaxFrequency( cpu_id ) / 1e3 ) },
+      { "CPU cache sizes (L1d, L1i, L2, L3) (kiB)", cacheInfo },
 #ifdef HAVE_CUDA
-       { "GPU name", Cuda::DeviceInfo::getDeviceName( activeGPU ) },
-       { "GPU architecture", deviceArch },
-       { "GPU CUDA cores", std::to_string( Cuda::DeviceInfo::getCudaCores( activeGPU ) ) },
-       { "GPU clock rate (MHz)", std::to_string( (double) Cuda::DeviceInfo::getClockRate( activeGPU ) / 1e3 ) },
-       { "GPU global memory (GB)", std::to_string( (double) Cuda::DeviceInfo::getGlobalMemory( activeGPU ) / 1e9 ) },
-       { "GPU memory clock rate (MHz)", std::to_string( (double) Cuda::DeviceInfo::getMemoryClockRate( activeGPU ) / 1e3 ) },
-       { "GPU memory ECC enabled", std::to_string( Cuda::DeviceInfo::getECCEnabled( activeGPU ) ) },
+      { "GPU name", Cuda::DeviceInfo::getDeviceName( activeGPU ) },
+      { "GPU architecture", deviceArch },
+      { "GPU CUDA cores", std::to_string( Cuda::DeviceInfo::getCudaCores( activeGPU ) ) },
+      { "GPU clock rate (MHz)", std::to_string( (double) Cuda::DeviceInfo::getClockRate( activeGPU ) / 1e3 ) },
+      { "GPU global memory (GB)", std::to_string( (double) Cuda::DeviceInfo::getGlobalMemory( activeGPU ) / 1e9 ) },
+      { "GPU memory clock rate (MHz)", std::to_string( (double) Cuda::DeviceInfo::getMemoryClockRate( activeGPU ) / 1e3 ) },
+      { "GPU memory ECC enabled", std::to_string( Cuda::DeviceInfo::getECCEnabled( activeGPU ) ) },
 #endif
    };
 
    return metadata;
 }
 
-inline void writeMapAsJson( const std::map< std::string, std::string >& data,
-                            std::ostream& out )
+inline void
+writeMapAsJson( const std::map< std::string, std::string >& data, std::ostream& out )
 {
    out << "{\n";
    for( auto it = data.begin(); it != data.end(); ) {
@@ -160,9 +153,8 @@ inline void writeMapAsJson( const std::map< std::string, std::string >& data,
    out << "}\n" << std::flush;
 }
 
-inline void writeMapAsJson( const std::map< std::string, std::string >& data,
-                            std::string filename,
-                            std::string newExtension = "" )
+inline void
+writeMapAsJson( const std::map< std::string, std::string >& data, std::string filename, std::string newExtension = "" )
 {
    namespace fs = std::experimental::filesystem;
 
@@ -178,5 +170,5 @@ inline void writeMapAsJson( const std::map< std::string, std::string >& data,
    writeMapAsJson( data, file );
 }
 
-} // namespace Benchmarks
-} // namespace TNL
+}  // namespace Benchmarks
+}  // namespace TNL

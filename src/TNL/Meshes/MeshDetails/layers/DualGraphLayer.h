@@ -13,9 +13,7 @@
 namespace TNL {
 namespace Meshes {
 
-template< typename MeshConfig,
-          typename Device,
-          bool enabled = MeshConfig::dualGraphStorage() >
+template< typename MeshConfig, typename Device, bool enabled = MeshConfig::dualGraphStorage() >
 class DualGraphLayer
 {
 public:
@@ -37,56 +35,63 @@ public:
       operator=( other );
    }
 
-   DualGraphLayer& operator=( const DualGraphLayer& ) = default;
+   DualGraphLayer&
+   operator=( const DualGraphLayer& ) = default;
 
-   DualGraphLayer& operator=( DualGraphLayer&& ) = default;
+   DualGraphLayer&
+   operator=( DualGraphLayer&& ) = default;
 
    template< typename Device_ >
-   DualGraphLayer& operator=( const DualGraphLayer< MeshConfig, Device_ >& other )
+   DualGraphLayer&
+   operator=( const DualGraphLayer< MeshConfig, Device_ >& other )
    {
       neighborCounts = other.getNeighborCounts();
       graph = other.getDualGraph();
       return *this;
    }
 
-   bool operator==( const DualGraphLayer& other ) const
+   bool
+   operator==( const DualGraphLayer& other ) const
    {
-      return neighborCounts == other.getNeighborCounts() &&
-             graph == other.getDualGraph();
+      return neighborCounts == other.getNeighborCounts() && graph == other.getDualGraph();
    }
 
    __cuda_callable__
-   const NeighborCountsArray& getNeighborCounts() const
-   {
-      return neighborCounts;
-   }
-
-   __cuda_callable__
-   NeighborCountsArray& getNeighborCounts()
+   const NeighborCountsArray&
+   getNeighborCounts() const
    {
       return neighborCounts;
    }
 
    __cuda_callable__
-   const DualGraph& getDualGraph() const
+   NeighborCountsArray&
+   getNeighborCounts()
+   {
+      return neighborCounts;
+   }
+
+   __cuda_callable__
+   const DualGraph&
+   getDualGraph() const
    {
       return graph;
    }
 
    __cuda_callable__
-   DualGraph& getDualGraph()
+   DualGraph&
+   getDualGraph()
    {
       return graph;
    }
 
    // algorithm inspired by the CreateGraphDual function in METIS
    template< typename Mesh >
-   void initializeDualGraph( const Mesh& mesh,
-                             // when this parameter is <= 0, it will be replaced with MeshConfig::dualGraphMinCommonVertices
-                             LocalIndexType minCommon = 0 )
+   void
+   initializeDualGraph( const Mesh& mesh,
+                        // when this parameter is <= 0, it will be replaced with MeshConfig::dualGraphMinCommonVertices
+                        LocalIndexType minCommon = 0 )
    {
-      static_assert( std::is_same< MeshConfig, typename Mesh::Config >::value,
-                     "mismatched MeshConfig type" );
+      static_assert( std::is_same< MeshConfig, typename Mesh::Config >::value, "mismatched MeshConfig type" );
       static_assert( MeshConfig::superentityStorage( 0, Mesh::getMeshDimension() ),
                      "The dual graph cannot be initialized when links from vertices to cells are not stored in the mesh." );
       static_assert( MeshConfig::dualGraphMinCommonVertices >= 1,
@@ -106,7 +111,7 @@ public:
       LocalIndexArray marker( cellsCount );
       marker.setValue( 0 );
 
-      auto findNeighbors = [&] ( const GlobalIndexType k )
+      auto findNeighbors = [ & ]( const GlobalIndexType k )
       {
          const LocalIndexType subvertices = mesh.template getSubentitiesCount< Mesh::getMeshDimension(), 0 >( k );
 
@@ -133,7 +138,7 @@ public:
             const LocalIndexType neighborSubvertices = mesh.template getSubentitiesCount< Mesh::getMeshDimension(), 0 >( nk );
             const LocalIndexType overlap = marker[ nk ];
             if( overlap >= minCommon || overlap >= subvertices - 1 || overlap >= neighborSubvertices - 1 )
-              neighbors[ compacted++ ] = nk;
+               neighbors[ compacted++ ] = nk;
             marker[ nk ] = 0;
          }
 
@@ -149,10 +154,10 @@ public:
       graph.setRowCapacities( neighborCounts );
 
       // fill in neighbor indices
-      for( GlobalIndexType k = 0; k < cellsCount; k++) {
+      for( GlobalIndexType k = 0; k < cellsCount; k++ ) {
          auto row = graph.getRow( k );
          const LocalIndexType nnbrs = findNeighbors( k );
-         for( LocalIndexType j = 0; j < nnbrs; j++)
+         for( LocalIndexType j = 0; j < nnbrs; j++ )
             row.setElement( j, neighbors[ j ], true );
       }
    }
@@ -162,22 +167,22 @@ protected:
    DualGraph graph;
 };
 
-template< typename MeshConfig,
-          typename Device >
+template< typename MeshConfig, typename Device >
 class DualGraphLayer< MeshConfig, Device, false >
 {
 public:
    template< typename Device_ >
-   DualGraphLayer& operator=( const DualGraphLayer< MeshConfig, Device_ >& other )
+   DualGraphLayer&
+   operator=( const DualGraphLayer< MeshConfig, Device_ >& other )
    {
       return *this;
    }
 
    template< typename Mesh >
-   void initializeDualGraph( const Mesh& mesh,
-                             int minCommon = 0 )
+   void
+   initializeDualGraph( const Mesh& mesh, int minCommon = 0 )
    {}
 };
 
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Meshes
+}  // namespace TNL

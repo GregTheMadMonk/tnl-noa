@@ -28,51 +28,47 @@ namespace Matrices {
  * \par Output
  * \include MatrixWriterReaderExample.out
  */
-template< typename Matrix,
-          typename Device = typename Matrix::DeviceType >
+template< typename Matrix, typename Device = typename Matrix::DeviceType >
 class MatrixReader
 {
-   public:
+public:
+   /**
+    * \brief Type of matrix elements values.
+    */
+   using RealType = typename Matrix::RealType;
 
-      /**
-       * \brief Type of matrix elements values.
-       */
-      using RealType = typename Matrix::RealType;
+   /**
+    * \brief Device where the matrix is allocated.
+    */
+   using DeviceType = typename Matrix::RealType;
 
-      /**
-       * \brief Device where the matrix is allocated.
-       */
-      using DeviceType = typename Matrix::RealType;
+   /**
+    * \brief Type used for indexing of matrix elements.
+    */
+   using IndexType = typename Matrix::IndexType;
 
-      /**
-       * \brief Type used for indexing of matrix elements.
-       */
-      using IndexType = typename Matrix::IndexType;
+   /**
+    * \brief Method for importing matrix from file with given filename.
+    *
+    * \param fileName is the name of the source file.
+    * \param matrix is the target matrix.
+    * \param verbose controls verbosity of the matrix import.
+    */
+   static void
+   readMtx( const String& fileName, Matrix& matrix, bool verbose = false );
 
-      /**
-       * \brief Method for importing matrix from file with given filename.
-       *
-       * \param fileName is the name of the source file.
-       * \param matrix is the target matrix.
-       * \param verbose controls verbosity of the matrix import.
-       */
-      static void readMtx( const String& fileName,
-                           Matrix& matrix,
-                           bool verbose = false );
+   /**
+    * \brief Method for importing matrix from STL input stream.
+    *
+    * \param file is the input stream.
+    * \param matrix is the target matrix.
+    * \param verbose controls verbosity of the matrix import.
+    */
+   static void
+   readMtx( std::istream& file, Matrix& matrix, bool verbose = false );
 
-      /**
-       * \brief Method for importing matrix from STL input stream.
-       *
-       * \param file is the input stream.
-       * \param matrix is the target matrix.
-       * \param verbose controls verbosity of the matrix import.
-       */
-      static void readMtx( std::istream& file,
-                           Matrix& matrix,
-                           bool verbose = false );
-
-   protected:
-      using HostMatrix = typename Matrix::template Self< RealType, TNL::Devices::Host >;
+protected:
+   using HostMatrix = typename Matrix::template Self< RealType, TNL::Devices::Host >;
 };
 
 /// This is to prevent from appearing in Doxygen documentation.
@@ -80,95 +76,79 @@ class MatrixReader
 template< typename Matrix >
 class MatrixReader< Matrix, TNL::Devices::Host >
 {
-   public:
+public:
+   /**
+    * \brief Type of matrix elements values.
+    */
+   typedef typename Matrix::RealType RealType;
 
-      /**
-       * \brief Type of matrix elements values.
-       */
-      typedef typename Matrix::RealType RealType;
+   /**
+    * \brief Device where the matrix is allocated.
+    */
+   typedef typename Matrix::DeviceType DeviceType;
 
-      /**
-       * \brief Device where the matrix is allocated.
-       */
-      typedef typename Matrix::DeviceType DeviceType;
+   /**
+    * \brief Type used for indexing of matrix elements.
+    */
+   typedef typename Matrix::IndexType IndexType;
 
-      /**
-       * \brief Type used for indexing of matrix elements.
-       */
-      typedef typename Matrix::IndexType IndexType;
+   /**
+    * \brief Method for importing matrix from file with given filename.
+    *
+    * \param fileName is the name of the source file.
+    * \param matrix is the target matrix.
+    * \param verbose controls verbosity of the matrix import.
+    *
+    * \par Example
+    * \include Matrices/MatrixWriterReaderExample.cpp
+    * \par Output
+    * \include Matrices/MatrixWriterReaderExample.out
+    *
+    */
+   static void
+   readMtx( const String& fileName, Matrix& matrix, bool verbose = false );
 
-      /**
-       * \brief Method for importing matrix from file with given filename.
-       *
-       * \param fileName is the name of the source file.
-       * \param matrix is the target matrix.
-       * \param verbose controls verbosity of the matrix import.
-       *
-       * \par Example
-       * \include Matrices/MatrixWriterReaderExample.cpp
-       * \par Output
-       * \include Matrices/MatrixWriterReaderExample.out
-       *
-       */
-      static void readMtx( const String& fileName,
-                           Matrix& matrix,
-                           bool verbose = false );
+   /**
+    * \brief Method for importing matrix from STL input stream.
+    *
+    * \param file is the input stream.
+    * \param matrix is the target matrix.
+    * \param verbose controls verbosity of the matrix import.
+    */
+   static void
+   readMtx( std::istream& file, Matrix& matrix, bool verbose = false );
 
-      /**
-       * \brief Method for importing matrix from STL input stream.
-       *
-       * \param file is the input stream.
-       * \param matrix is the target matrix.
-       * \param verbose controls verbosity of the matrix import.
-       */
-      static void readMtx( std::istream& file,
-                           Matrix& matrix,
-                           bool verbose = false );
+protected:
+   static void
+   verifyMtxFile( std::istream& file, const Matrix& matrix, bool verbose = false );
 
-   protected:
+   static bool
+   findLineByElement( std::istream& file, const IndexType& row, const IndexType& column, String& line, IndexType& lineNumber );
 
-      static void verifyMtxFile( std::istream& file,
-                                 const Matrix& matrix,
-                                 bool verbose = false );
+   static void
+   checkMtxHeader( const String& header, bool& symmetric );
 
-      static bool findLineByElement( std::istream& file,
-                                    const IndexType& row,
-                                    const IndexType& column,
-                                    String& line,
-                                    IndexType& lineNumber );
+   static void
+   readMtxHeader( std::istream& file, IndexType& rows, IndexType& columns, bool& symmetricMatrix, bool verbose );
 
+   static void
+   computeCompressedRowLengthsFromMtxFile( std::istream& file,
+                                           Containers::Vector< int, DeviceType, int >& rowLengths,
+                                           const int columns,
+                                           const int rows,
+                                           bool symmetricSourceMatrix,
+                                           bool symmetricTargetMatrix,
+                                           bool verbose );
 
-      static void checkMtxHeader( const String& header,
-                                  bool& symmetric );
+   static void
+   readMatrixElementsFromMtxFile( std::istream& file, Matrix& matrix, bool symmetricMatrix, bool verbose );
 
-      static void readMtxHeader( std::istream& file,
-                                 IndexType& rows,
-                                 IndexType& columns,
-                                 bool& symmetricMatrix,
-                                 bool verbose );
-
-      static void computeCompressedRowLengthsFromMtxFile( std::istream& file,
-                                                Containers::Vector< int, DeviceType, int >& rowLengths,
-                                                const int columns,
-                                                const int rows,
-                                                bool symmetricSourceMatrix,
-                                                bool symmetricTargetMatrix,
-                                                bool verbose );
-
-      static void readMatrixElementsFromMtxFile( std::istream& file,
-                                                 Matrix& matrix,
-                                                 bool symmetricMatrix,
-                                                 bool verbose );
-
-      static void parseMtxLineWithElement( const String& line,
-                                           IndexType& row,
-                                           IndexType& column,
-                                           RealType& value );
+   static void
+   parseMtxLineWithElement( const String& line, IndexType& row, IndexType& column, RealType& value );
 };
 /// \endcond
 
-
-} // namespace Matrices
-} // namespace TNL
+}  // namespace Matrices
+}  // namespace TNL
 
 #include <TNL/Matrices/MatrixReader.hpp>

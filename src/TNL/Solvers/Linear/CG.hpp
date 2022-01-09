@@ -14,8 +14,7 @@ namespace Linear {
 
 template< typename Matrix >
 bool
-CG< Matrix >::
-solve( ConstVectorViewType b, VectorViewType x )
+CG< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
 {
    this->setSize( x );
    this->resetIterations();
@@ -45,22 +44,21 @@ solve( ConstVectorViewType b, VectorViewType x )
       // p_0 = z_0
       p = z;
       // s1 = (r_0, z_0)
-      s1 = (r, z);
+      s1 = ( r, z );
    }
    else {
       // p_0 = r_0
       p = r;
       // s1 = (r_0, r_0)
-      s1 = (r, r);
+      s1 = ( r, r );
    }
 
-   this->setResidue( std::sqrt(s1) / normb );
+   this->setResidue( std::sqrt( s1 ) / normb );
 
-   while( this->nextIteration() )
-   {
+   while( this->nextIteration() ) {
       // s2 = (A * p_j, p_j)
       this->matrix->vectorProduct( p, Ap );
-      s2 = (Ap, p);
+      s2 = ( Ap, p );
 
       // if s2 = 0 => p = 0 => r = 0 => we have the solution (provided A != 0)
       if( s2 == 0.0 ) {
@@ -82,17 +80,19 @@ solve( ConstVectorViewType b, VectorViewType x )
          this->preconditioner->solve( r, z );
          // beta_j = (r_{j+1}, z_{j+1}) / (r_j, z_j)
          s2 = s1;
-         s1 = (r, z);
+         s1 = ( r, z );
       }
       else {
          // beta_j = (r_{j+1}, r_{j+1}) / (r_j, r_j)
          s2 = s1;
-         s1 = (r, r);
+         s1 = ( r, r );
       }
 
       // if s2 = 0 => r = 0 => we have the solution
-      if( s2 == 0.0 ) beta = 0.0;
-      else beta = s1 / s2;
+      if( s2 == 0.0 )
+         beta = 0.0;
+      else
+         beta = s1 / s2;
 
       if( this->preconditioner )
          // p_{j+1} = z_{j+1} + beta_j * p_j
@@ -101,14 +101,14 @@ solve( ConstVectorViewType b, VectorViewType x )
          // p_{j+1} = r_{j+1} + beta_j * p_j
          p = r + beta * p;
 
-      this->setResidue( std::sqrt(s1) / normb );
+      this->setResidue( std::sqrt( s1 ) / normb );
    }
    return this->checkConvergence();
 }
 
 template< typename Matrix >
-void CG< Matrix >::
-setSize( const VectorViewType& x )
+void
+CG< Matrix >::setSize( const VectorViewType& x )
 {
    r.setLike( x );
    p.setLike( x );
@@ -116,6 +116,6 @@ setSize( const VectorViewType& x )
    z.setLike( x );
 }
 
-} // namespace Linear
-} // namespace Solvers
-} // namespace TNL
+}  // namespace Linear
+}  // namespace Solvers
+}  // namespace TNL

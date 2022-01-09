@@ -32,8 +32,10 @@ struct CudaHost
    CudaHost( const CudaHost& ) = default;
    CudaHost( CudaHost&& ) = default;
 
-   CudaHost& operator=( const CudaHost& ) = default;
-   CudaHost& operator=( CudaHost&& ) = default;
+   CudaHost&
+   operator=( const CudaHost& ) = default;
+   CudaHost&
+   operator=( CudaHost&& ) = default;
 
    template< class U >
    CudaHost( const CudaHost< U >& )
@@ -44,18 +46,21 @@ struct CudaHost
    {}
 
    template< class U >
-   CudaHost& operator=( const CudaHost< U >& )
+   CudaHost&
+   operator=( const CudaHost< U >& )
    {
       return *this;
    }
 
    template< class U >
-   CudaHost& operator=( CudaHost< U >&& )
+   CudaHost&
+   operator=( CudaHost< U >&& )
    {
       return *this;
    }
 
-   value_type* allocate( size_type n )
+   value_type*
+   allocate( size_type n )
    {
 #ifdef HAVE_CUDA
       TNL_CHECK_CUDA_DEVICE;
@@ -67,7 +72,8 @@ struct CudaHost
       // on all devices visible to the application, in which case the pointer returned by cudaMallocHost can
       // be used directly by all devices without having to call cudaHostGetDevicePointer. See the reference:
       // https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__MEMORY.html#group__CUDART__MEMORY_1gc00502b44e5f1bdc0b424487ebb08db0
-      if( cudaMallocHost( (void**) &result, n * sizeof(value_type), cudaHostAllocPortable | cudaHostAllocMapped ) != cudaSuccess )
+      if( cudaMallocHost( (void**) &result, n * sizeof( value_type ), cudaHostAllocPortable | cudaHostAllocMapped )
+          != cudaSuccess )
          throw Exceptions::CudaBadAlloc();
       TNL_CHECK_CUDA_DEVICE;
       return result;
@@ -76,7 +82,8 @@ struct CudaHost
 #endif
    }
 
-   void deallocate(value_type* ptr, size_type)
+   void
+   deallocate( value_type* ptr, size_type )
    {
 #ifdef HAVE_CUDA
       TNL_CHECK_CUDA_DEVICE;
@@ -88,17 +95,19 @@ struct CudaHost
    }
 };
 
-template<class T1, class T2>
-bool operator==(const CudaHost<T1>&, const CudaHost<T2>&)
+template< class T1, class T2 >
+bool
+operator==( const CudaHost< T1 >&, const CudaHost< T2 >& )
 {
    return true;
 }
 
-template<class T1, class T2>
-bool operator!=(const CudaHost<T1>& lhs, const CudaHost<T2>& rhs)
+template< class T1, class T2 >
+bool
+operator!=( const CudaHost< T1 >& lhs, const CudaHost< T2 >& rhs )
 {
-   return !(lhs == rhs);
+   return ! ( lhs == rhs );
 }
 
-} // namespace Allocators
-} // namespace TNL
+}  // namespace Allocators
+}  // namespace TNL

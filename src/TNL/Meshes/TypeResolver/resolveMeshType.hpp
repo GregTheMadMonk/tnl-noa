@@ -16,9 +16,7 @@
 namespace TNL {
 namespace Meshes {
 
-template< typename ConfigTag,
-          typename Device,
-          typename Functor >
+template< typename ConfigTag, typename Device, typename Functor >
 bool
 resolveMeshType( Functor&& functor,
                  const std::string& fileName,
@@ -49,9 +47,7 @@ resolveMeshType( Functor&& functor,
    }
 }
 
-template< typename ConfigTag,
-          typename Device,
-          typename Functor >
+template< typename ConfigTag, typename Device, typename Functor >
 bool
 resolveAndLoadMesh( Functor&& functor,
                     const std::string& fileName,
@@ -59,9 +55,9 @@ resolveAndLoadMesh( Functor&& functor,
                     const std::string& realType,
                     const std::string& globalIndexType )
 {
-   auto wrapper = [&]( auto& reader, auto&& mesh ) -> bool
+   auto wrapper = [ & ]( auto& reader, auto&& mesh ) -> bool
    {
-      using MeshType = std::decay_t< decltype(mesh) >;
+      using MeshType = std::decay_t< decltype( mesh ) >;
       std::cout << "Loading a mesh from the file " << fileName << " ..." << std::endl;
       try {
          reader.loadMesh( mesh );
@@ -70,16 +66,14 @@ resolveAndLoadMesh( Functor&& functor,
          std::cerr << "Failed to load the mesh from the file " << fileName << ". The error is:\n" << e.what() << std::endl;
          return false;
       }
-      return functor( reader, std::forward<MeshType>(mesh) );
+      return functor( reader, std::forward< MeshType >( mesh ) );
    };
    return resolveMeshType< ConfigTag, Device >( wrapper, fileName, fileFormat, realType, globalIndexType );
 }
 
 template< typename Mesh >
 bool
-loadMesh( Mesh& mesh,
-          const std::string& fileName,
-          const std::string& fileFormat )
+loadMesh( Mesh& mesh, const std::string& fileName, const std::string& fileFormat )
 {
    std::cout << "Loading a mesh from the file " << fileName << " ..." << std::endl;
 
@@ -100,9 +94,7 @@ loadMesh( Mesh& mesh,
 
 template< typename MeshConfig >
 bool
-loadMesh( Mesh< MeshConfig, Devices::Cuda >& mesh,
-          const std::string& fileName,
-          const std::string& fileFormat )
+loadMesh( Mesh< MeshConfig, Devices::Cuda >& mesh, const std::string& fileName, const std::string& fileFormat )
 {
    Mesh< MeshConfig, Devices::Host > hostMesh;
    if( ! loadMesh( hostMesh, fileName, fileFormat ) )
@@ -111,5 +103,5 @@ loadMesh( Mesh< MeshConfig, Devices::Cuda >& mesh,
    return true;
 }
 
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Meshes
+}  // namespace TNL

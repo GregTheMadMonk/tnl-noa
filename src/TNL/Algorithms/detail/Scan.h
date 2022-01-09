@@ -23,9 +23,7 @@ struct Scan;
 template< ScanType Type, ScanPhaseType PhaseType >
 struct Scan< Devices::Sequential, Type, PhaseType >
 {
-   template< typename InputArray,
-             typename OutputArray,
-             typename Reduction >
+   template< typename InputArray, typename OutputArray, typename Reduction >
    // returns the last value of inclusive scan (reduction of the whole input)
    static typename OutputArray::ValueType
    perform( const InputArray& input,
@@ -36,9 +34,7 @@ struct Scan< Devices::Sequential, Type, PhaseType >
             Reduction&& reduction,
             typename OutputArray::ValueType identity );
 
-   template< typename InputArray,
-             typename OutputArray,
-             typename Reduction >
+   template< typename InputArray, typename OutputArray, typename Reduction >
    static auto
    performFirstPhase( const InputArray& input,
                       OutputArray& output,
@@ -48,10 +44,7 @@ struct Scan< Devices::Sequential, Type, PhaseType >
                       Reduction&& reduction,
                       typename OutputArray::ValueType identity );
 
-   template< typename InputArray,
-             typename OutputArray,
-             typename BlockShifts,
-             typename Reduction >
+   template< typename InputArray, typename OutputArray, typename BlockShifts, typename Reduction >
    static void
    performSecondPhase( const InputArray& input,
                        OutputArray& output,
@@ -67,9 +60,7 @@ struct Scan< Devices::Sequential, Type, PhaseType >
 template< ScanType Type, ScanPhaseType PhaseType >
 struct Scan< Devices::Host, Type, PhaseType >
 {
-   template< typename InputArray,
-             typename OutputArray,
-             typename Reduction >
+   template< typename InputArray, typename OutputArray, typename Reduction >
    static void
    perform( const InputArray& input,
             OutputArray& output,
@@ -79,9 +70,7 @@ struct Scan< Devices::Host, Type, PhaseType >
             Reduction&& reduction,
             typename OutputArray::ValueType identity );
 
-   template< typename InputArray,
-             typename OutputArray,
-             typename Reduction >
+   template< typename InputArray, typename OutputArray, typename Reduction >
    static auto
    performFirstPhase( const InputArray& input,
                       OutputArray& output,
@@ -91,10 +80,7 @@ struct Scan< Devices::Host, Type, PhaseType >
                       Reduction&& reduction,
                       typename OutputArray::ValueType identity );
 
-   template< typename InputArray,
-             typename OutputArray,
-             typename BlockShifts,
-             typename Reduction >
+   template< typename InputArray, typename OutputArray, typename BlockShifts, typename Reduction >
    static void
    performSecondPhase( const InputArray& input,
                        OutputArray& output,
@@ -110,9 +96,7 @@ struct Scan< Devices::Host, Type, PhaseType >
 template< ScanType Type, ScanPhaseType PhaseType >
 struct Scan< Devices::Cuda, Type, PhaseType >
 {
-   template< typename InputArray,
-             typename OutputArray,
-             typename Reduction >
+   template< typename InputArray, typename OutputArray, typename Reduction >
    static void
    perform( const InputArray& input,
             OutputArray& output,
@@ -122,9 +106,7 @@ struct Scan< Devices::Cuda, Type, PhaseType >
             Reduction&& reduction,
             typename OutputArray::ValueType identity );
 
-   template< typename InputArray,
-             typename OutputArray,
-             typename Reduction >
+   template< typename InputArray, typename OutputArray, typename Reduction >
    static auto
    performFirstPhase( const InputArray& input,
                       OutputArray& output,
@@ -134,10 +116,7 @@ struct Scan< Devices::Cuda, Type, PhaseType >
                       Reduction&& reduction,
                       typename OutputArray::ValueType identity );
 
-   template< typename InputArray,
-             typename OutputArray,
-             typename BlockShifts,
-             typename Reduction >
+   template< typename InputArray, typename OutputArray, typename BlockShifts, typename Reduction >
    static void
    performSecondPhase( const InputArray& input,
                        OutputArray& output,
@@ -150,8 +129,8 @@ struct Scan< Devices::Cuda, Type, PhaseType >
                        typename OutputArray::ValueType shift );
 };
 
-} // namespace detail
-} // namespace Algorithms
-} // namespace TNL
+}  // namespace detail
+}  // namespace Algorithms
+}  // namespace TNL
 
 #include "Scan.hpp"

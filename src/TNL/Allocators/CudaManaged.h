@@ -34,8 +34,10 @@ struct CudaManaged
    CudaManaged( const CudaManaged& ) = default;
    CudaManaged( CudaManaged&& ) = default;
 
-   CudaManaged& operator=( const CudaManaged& ) = default;
-   CudaManaged& operator=( CudaManaged&& ) = default;
+   CudaManaged&
+   operator=( const CudaManaged& ) = default;
+   CudaManaged&
+   operator=( CudaManaged&& ) = default;
 
    template< class U >
    CudaManaged( const CudaManaged< U >& )
@@ -46,23 +48,26 @@ struct CudaManaged
    {}
 
    template< class U >
-   CudaManaged& operator=( const CudaManaged< U >& )
+   CudaManaged&
+   operator=( const CudaManaged< U >& )
    {
       return *this;
    }
 
    template< class U >
-   CudaManaged& operator=( CudaManaged< U >&& )
+   CudaManaged&
+   operator=( CudaManaged< U >&& )
    {
       return *this;
    }
 
-   value_type* allocate( size_type n )
+   value_type*
+   allocate( size_type n )
    {
 #ifdef HAVE_CUDA
       TNL_CHECK_CUDA_DEVICE;
       value_type* result = nullptr;
-      if( cudaMallocManaged( &result, n * sizeof(value_type) ) != cudaSuccess )
+      if( cudaMallocManaged( &result, n * sizeof( value_type ) ) != cudaSuccess )
          throw Exceptions::CudaBadAlloc();
       TNL_CHECK_CUDA_DEVICE;
       return result;
@@ -71,7 +76,8 @@ struct CudaManaged
 #endif
    }
 
-   void deallocate(value_type* ptr, size_type)
+   void
+   deallocate( value_type* ptr, size_type )
    {
 #ifdef HAVE_CUDA
       TNL_CHECK_CUDA_DEVICE;
@@ -83,17 +89,19 @@ struct CudaManaged
    }
 };
 
-template<class T1, class T2>
-bool operator==(const CudaManaged<T1>&, const CudaManaged<T2>&)
+template< class T1, class T2 >
+bool
+operator==( const CudaManaged< T1 >&, const CudaManaged< T2 >& )
 {
    return true;
 }
 
-template<class T1, class T2>
-bool operator!=(const CudaManaged<T1>& lhs, const CudaManaged<T2>& rhs)
+template< class T1, class T2 >
+bool
+operator!=( const CudaManaged< T1 >& lhs, const CudaManaged< T2 >& rhs )
 {
-   return !(lhs == rhs);
+   return ! ( lhs == rhs );
 }
 
-} // namespace Allocators
-} // namespace TNL
+}  // namespace Allocators
+}  // namespace TNL

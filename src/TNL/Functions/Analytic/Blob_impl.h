@@ -12,15 +12,12 @@ namespace TNL {
 namespace Functions {
 namespace Analytic {
 
-template< typename Real,
-          int Dimension >
+template< typename Real, int Dimension >
 bool
-BlobBase< Real, Dimension >::
-setup( const Config::ParameterContainer& parameters,
-       const String& prefix )
+BlobBase< Real, Dimension >::setup( const Config::ParameterContainer& parameters, const String& prefix )
 {
    this->height = parameters.getParameter< double >( prefix + "height" );
- 
+
    return true;
 }
 
@@ -30,20 +27,15 @@ setup( const Config::ParameterContainer& parameters,
 
 template< typename Real >
 Blob< 1, Real >::Blob()
-{
-}
+{}
 
 template< typename Real >
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder >
+template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
 __cuda_callable__
 Real
-Blob< 1, Real >::
-getPartialDerivative( const PointType& v,
-                      const Real& time ) const
+Blob< 1, Real >::getPartialDerivative( const PointType& v, const Real& time ) const
 {
-   //const RealType& x = v.x();
+   // const RealType& x = v.x();
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
       return 0.0;
    if( XDiffOrder == 0 )
@@ -54,9 +46,7 @@ getPartialDerivative( const PointType& v,
 template< typename Real >
 __cuda_callable__
 Real
-Blob< 1, Real >::
-operator()( const PointType& v,
-            const Real& time ) const
+Blob< 1, Real >::operator()( const PointType& v, const Real& time ) const
 {
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );
 }
@@ -66,18 +56,13 @@ operator()( const PointType& v,
  */
 template< typename Real >
 Blob< 2, Real >::Blob()
-{
-}
+{}
 
 template< typename Real >
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder >
+template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
 __cuda_callable__
 Real
-Blob< 2, Real >::
-getPartialDerivative( const PointType& v,
-                      const Real& time ) const
+Blob< 2, Real >::getPartialDerivative( const PointType& v, const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -91,9 +76,7 @@ getPartialDerivative( const PointType& v,
 template< typename Real >
 __cuda_callable__
 Real
-Blob< 2, Real >::
-operator()( const PointType& v,
-            const Real& time ) const
+Blob< 2, Real >::operator()( const PointType& v, const Real& time ) const
 {
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );
 }
@@ -103,22 +86,17 @@ operator()( const PointType& v,
  */
 template< typename Real >
 Blob< 3, Real >::Blob()
-{
-}
+{}
 
 template< typename Real >
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder >
+template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
 __cuda_callable__
 Real
-Blob< 3, Real >::
-getPartialDerivative( const PointType& v,
-                      const Real& time ) const
+Blob< 3, Real >::getPartialDerivative( const PointType& v, const Real& time ) const
 {
-   //const RealType& x = v.x();
-   //const RealType& y = v.y();
-   //const RealType& z = v.z();
+   // const RealType& x = v.x();
+   // const RealType& y = v.y();
+   // const RealType& z = v.z();
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
       return 0.0;
    return 0.0;
@@ -127,13 +105,11 @@ getPartialDerivative( const PointType& v,
 template< typename Real >
 __cuda_callable__
 Real
-Blob< 3, Real >::
-operator()( const PointType& v,
-            const Real& time ) const
+Blob< 3, Real >::operator()( const PointType& v, const Real& time ) const
 {
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );
 }
 
-} // namespace Analytic
-} // namespace Functions
-} // namepsace TNL
+}  // namespace Analytic
+}  // namespace Functions
+}  // namespace TNL

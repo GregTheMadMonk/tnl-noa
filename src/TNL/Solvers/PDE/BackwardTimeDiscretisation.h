@@ -4,35 +4,32 @@
 //
 // SPDX-License-Identifier: MIT
 
-
 #pragma once
 
 #include <TNL/Devices/Cuda.h>
 
 namespace TNL {
 namespace Solvers {
-namespace PDE {   
+namespace PDE {
 
 class BackwardTimeDiscretisation
 {
-    public:
- 
-        template< typename RealType,
-                  typename IndexType,
-                  typename MatrixType >
-        __cuda_callable__ static void applyTimeDiscretisation( MatrixType& matrix,
-                                                               RealType& b,
-                                                               const IndexType index,
-                                                               const RealType& u,
-                                                               const RealType& tau,
-                                                               const RealType& rhs )
-        {
-            b += u + tau * rhs;
-            matrix.addElement( index, index, 1.0, 1.0 );
-        }
+public:
+   template< typename RealType, typename IndexType, typename MatrixType >
+   __cuda_callable__
+   static void
+   applyTimeDiscretisation( MatrixType& matrix,
+                            RealType& b,
+                            const IndexType index,
+                            const RealType& u,
+                            const RealType& tau,
+                            const RealType& rhs )
+   {
+      b += u + tau * rhs;
+      matrix.addElement( index, index, 1.0, 1.0 );
+   }
 };
 
-} // namespace PDE
-} // namespace Solvers
-} // namespace TNL
-
+}  // namespace PDE
+}  // namespace Solvers
+}  // namespace TNL

@@ -18,25 +18,20 @@
 #include <TNL/Algorithms/detail/CudaMultireductionKernel.h>
 
 #ifdef CUDA_REDUCTION_PROFILING
-#include <TNL/Timer.h>
-#include <iostream>
+   #include <TNL/Timer.h>
+   #include <iostream>
 #endif
 
 namespace TNL {
 namespace Algorithms {
 
-template< typename Result,
-          typename DataFetcher,
-          typename Reduction,
-          typename Index >
-void constexpr
-Multireduction< Devices::Sequential >::
-reduce( const Result identity,
-        DataFetcher dataFetcher,
-        const Reduction reduction,
-        const Index size,
-        const int n,
-        Result* result )
+template< typename Result, typename DataFetcher, typename Reduction, typename Index >
+void constexpr Multireduction< Devices::Sequential >::reduce( const Result identity,
+                                                              DataFetcher dataFetcher,
+                                                              const Reduction reduction,
+                                                              const Index size,
+                                                              const int n,
+                                                              Result* result )
 {
    TNL_ASSERT_GT( size, 0, "The size of datasets must be positive." );
    TNL_ASSERT_GT( n, 0, "The number of datasets must be positive." );
@@ -57,7 +52,7 @@ reduce( const Result identity,
          for( int k = 0; k < n; k++ ) {
             Result* _r = r + 4 * k;
             for( int i = 0; i < block_size; i += 4 ) {
-               _r[ 0 ] = reduction( _r[ 0 ], dataFetcher( offset + i,     k ) );
+               _r[ 0 ] = reduction( _r[ 0 ], dataFetcher( offset + i, k ) );
                _r[ 1 ] = reduction( _r[ 1 ], dataFetcher( offset + i + 1, k ) );
                _r[ 2 ] = reduction( _r[ 2 ], dataFetcher( offset + i + 2, k ) );
                _r[ 3 ] = reduction( _r[ 3 ], dataFetcher( offset + i + 3, k ) );
@@ -102,18 +97,14 @@ reduce( const Result identity,
    }
 }
 
-template< typename Result,
-          typename DataFetcher,
-          typename Reduction,
-          typename Index >
+template< typename Result, typename DataFetcher, typename Reduction, typename Index >
 void
-Multireduction< Devices::Host >::
-reduce( const Result identity,
-        DataFetcher dataFetcher,
-        const Reduction reduction,
-        const Index size,
-        const int n,
-        Result* result )
+Multireduction< Devices::Host >::reduce( const Result identity,
+                                         DataFetcher dataFetcher,
+                                         const Reduction reduction,
+                                         const Index size,
+                                         const int n,
+                                         Result* result )
 {
    TNL_ASSERT_GT( size, 0, "The size of datasets must be positive." );
    TNL_ASSERT_GT( n, 0, "The number of datasets must be positive." );
@@ -124,7 +115,7 @@ reduce( const Result identity,
 
    if( Devices::Host::isOMPEnabled() && blocks >= 2 ) {
       const int threads = TNL::min( blocks, Devices::Host::getMaxThreadsCount() );
-#pragma omp parallel num_threads(threads)
+      #pragma omp parallel num_threads(threads)
       {
          // first thread initializes the result array
          #pragma omp single nowait
@@ -145,7 +136,7 @@ reduce( const Result identity,
             for( int k = 0; k < n; k++ ) {
                Result* _r = r + 4 * k;
                for( int i = 0; i < block_size; i += 4 ) {
-                  _r[ 0 ] = reduction( _r[ 0 ], dataFetcher( offset + i,     k ) );
+                  _r[ 0 ] = reduction( _r[ 0 ], dataFetcher( offset + i, k ) );
                   _r[ 1 ] = reduction( _r[ 1 ], dataFetcher( offset + i + 1, k ) );
                   _r[ 2 ] = reduction( _r[ 2 ], dataFetcher( offset + i + 2, k ) );
                   _r[ 3 ] = reduction( _r[ 3 ], dataFetcher( offset + i + 3, k ) );
@@ -184,59 +175,59 @@ reduce( const Result identity,
       Multireduction< Devices::Sequential >::reduce( identity, dataFetcher, reduction, size, n, result );
 }
 
-template< typename Result,
-          typename DataFetcher,
-          typename Reduction,
-          typename Index >
+template< typename Result, typename DataFetcher, typename Reduction, typename Index >
 void
-Multireduction< Devices::Cuda >::
-reduce( const Result identity,
-        DataFetcher dataFetcher,
-        const Reduction reduction,
-        const Index size,
-        const int n,
-        Result* hostResult )
+Multireduction< Devices::Cuda >::reduce( const Result identity,
+                                         DataFetcher dataFetcher,
+                                         const Reduction reduction,
+                                         const Index size,
+                                         const int n,
+                                         Result* hostResult )
 {
    TNL_ASSERT_GT( size, 0, "The size of datasets must be positive." );
    TNL_ASSERT_GT( n, 0, "The number of datasets must be positive." );
 
-   #ifdef CUDA_REDUCTION_PROFILING
-      Timer timer;
-      timer.reset();
-      timer.start();
-   #endif
+#ifdef CUDA_REDUCTION_PROFILING
+   Timer timer;
+   timer.reset();
+   timer.start();
+#endif
 
    // start the reduction on the GPU
    Result* deviceAux1 = nullptr;
    const int reducedSize = detail::CudaMultireductionKernelLauncher( identity, dataFetcher, reduction, size, n, deviceAux1 );
 
-   #ifdef CUDA_REDUCTION_PROFILING
-      timer.stop();
-      std::cout << "   Multireduction of " << n << " datasets on GPU to size " << reducedSize << " took " << timer.getRealTime() << " sec. " << std::endl;
-      timer.reset();
-      timer.start();
-   #endif
+#ifdef CUDA_REDUCTION_PROFILING
+   timer.stop();
+   std::cout << "   Multireduction of " << n << " datasets on GPU to size " << reducedSize << " took " << timer.getRealTime()
+             << " sec. " << std::endl;
+   timer.reset();
+   timer.start();
+#endif
 
    // transfer the reduced data from device to host
    std::unique_ptr< Result[] > resultArray{ new Result[ n * reducedSize ] };
    MultiDeviceMemoryOperations< void, Devices::Cuda >::copy( resultArray.get(), deviceAux1, n * reducedSize );
 
-   #ifdef CUDA_REDUCTION_PROFILING
-      timer.stop();
-      std::cout << "   Transferring data to CPU took " << timer.getRealTime() << " sec. " << std::endl;
-      timer.reset();
-      timer.start();
-   #endif
+#ifdef CUDA_REDUCTION_PROFILING
+   timer.stop();
+   std::cout << "   Transferring data to CPU took " << timer.getRealTime() << " sec. " << std::endl;
+   timer.reset();
+   timer.start();
+#endif
 
    // finish the reduction on the host
-   auto dataFetcherFinish = [&] ( int i, int k ) { return resultArray[ i + k * reducedSize ]; };
+   auto dataFetcherFinish = [ & ]( int i, int k )
+   {
+      return resultArray[ i + k * reducedSize ];
+   };
    Multireduction< Devices::Sequential >::reduce( identity, dataFetcherFinish, reduction, reducedSize, n, hostResult );
 
-   #ifdef CUDA_REDUCTION_PROFILING
-      timer.stop();
-      std::cout << "   Multireduction of small data set on CPU took " << timer.getRealTime() << " sec. " << std::endl;
-   #endif
+#ifdef CUDA_REDUCTION_PROFILING
+   timer.stop();
+   std::cout << "   Multireduction of small data set on CPU took " << timer.getRealTime() << " sec. " << std::endl;
+#endif
 };
 
-} // namespace Algorithms
-} // namespace TNL
+}  // namespace Algorithms
+}  // namespace TNL

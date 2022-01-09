@@ -4,27 +4,38 @@
 //
 // SPDX-License-Identifier: MIT
 
-
 #pragma once
 
 namespace TNL {
-namespace Functions {   
+namespace Functions {
 
-enum DomainType { NonspaceDomain, SpaceDomain, MeshDomain, MeshInteriorDomain, MeshBoundaryDomain };
-
-template< int Dimension,
-          DomainType DomainType_ = SpaceDomain >
-class Domain
+enum DomainType
 {
-   public:
- 
-      typedef void DeviceType;
- 
-      static constexpr int getDomainDimension() { return Dimension; }
- 
-      static constexpr DomainType getDomainType() { return DomainType_; }
+   NonspaceDomain,
+   SpaceDomain,
+   MeshDomain,
+   MeshInteriorDomain,
+   MeshBoundaryDomain
 };
 
-} // namespace Functions
-} // namespace TNL
+template< int Dimension, DomainType DomainType_ = SpaceDomain >
+class Domain
+{
+public:
+   typedef void DeviceType;
 
+   static constexpr int
+   getDomainDimension()
+   {
+      return Dimension;
+   }
+
+   static constexpr DomainType
+   getDomainType()
+   {
+      return DomainType_;
+   }
+};
+
+}  // namespace Functions
+}  // namespace TNL

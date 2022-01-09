@@ -15,13 +15,13 @@ namespace Problems {
 
 class CommonData
 {
-   public:
-   
-      bool setup( const Config::ParameterContainer& parameters )
-      {
-         return true;
-      }
+public:
+   bool
+   setup( const Config::ParameterContainer& parameters )
+   {
+      return true;
+   }
 };
 
-} // namespace Problems
-} // namespace TNL
+}  // namespace Problems
+}  // namespace TNL

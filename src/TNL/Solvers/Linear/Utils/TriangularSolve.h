@@ -25,7 +25,8 @@ namespace Linear {
  * necessary was explicitly allocated.
  */
 template< bool fullStorage = true, typename Matrix, typename Vector1, typename Vector2 >
-void triangularSolveLower( const Matrix& L, Vector1& x, const Vector2& b )
+void
+triangularSolveLower( const Matrix& L, Vector1& x, const Vector2& b )
 {
    TNL_ASSERT_EQ( b.getSize(), L.getRows(), "wrong size of the right hand side" );
    TNL_ASSERT_EQ( x.getSize(), L.getRows(), "wrong size of the solution vector" );
@@ -71,9 +72,9 @@ void triangularSolveLower( const Matrix& L, Vector1& x, const Vector2& b )
  * zeros. This is useful for Ellpack-based formats or if more space than
  * necessary was explicitly allocated.
  */
-template< bool reversedRows = false, bool fullStorage = true,
-          typename Matrix, typename Vector1, typename Vector2 >
-void triangularSolveUpper( const Matrix& U, Vector1& x, const Vector2& b )
+template< bool reversedRows = false, bool fullStorage = true, typename Matrix, typename Vector1, typename Vector2 >
+void
+triangularSolveUpper( const Matrix& U, Vector1& x, const Vector2& b )
 {
    TNL_ASSERT_EQ( b.getSize(), U.getRows(), "wrong size of the right hand side" );
    TNL_ASSERT_EQ( x.getSize(), U.getRows(), "wrong size of the solution vector" );
@@ -86,7 +87,7 @@ void triangularSolveUpper( const Matrix& U, Vector1& x, const Vector2& b )
    // GOTCHA: the loop with IndexType i = N - 1; i >= 0; i-- does not work for unsigned integer types
    for( IndexType k = 0; k < N; k++ ) {
       const IndexType i = N - 1 - k;
-      const IndexType U_idx = (reversedRows) ? k : i;
+      const IndexType U_idx = ( reversedRows ) ? k : i;
 
       RealType x_i = b[ i ];
 
@@ -96,7 +97,7 @@ void triangularSolveUpper( const Matrix& U, Vector1& x, const Vector2& b )
       const auto U_ii = U_i.getValue( 0 );
 
       // loop for j = i+1, ..., N-1; but only over the non-zero entries
-      for( IndexType c_j = 1; c_j < U_entries ; c_j++ ) {
+      for( IndexType c_j = 1; c_j < U_entries; c_j++ ) {
          const auto j = U_i.getColumnIndex( c_j );
          // skip padding zeros
          if( fullStorage == false && j >= N )
@@ -108,6 +109,6 @@ void triangularSolveUpper( const Matrix& U, Vector1& x, const Vector2& b )
    }
 }
 
-} // namespace Linear
-} // namespace Solvers
-} // namespace TNL
+}  // namespace Linear
+}  // namespace Solvers
+}  // namespace TNL

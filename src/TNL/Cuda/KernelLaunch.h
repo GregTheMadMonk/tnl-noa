@@ -34,18 +34,22 @@ struct LaunchConfiguration
    constexpr LaunchConfiguration( LaunchConfiguration&& ) = default;
 
    constexpr LaunchConfiguration( dim3 gridSize, dim3 blockSize, std::size_t dynamicSharedMemorySize = 0U )
-     : gridSize( gridSize ), blockSize( blockSize ), dynamicSharedMemorySize( dynamicSharedMemorySize )
+   : gridSize( gridSize ), blockSize( blockSize ), dynamicSharedMemorySize( dynamicSharedMemorySize )
    {}
 };
 
 template< bool synchronous = true, typename RawKernel, typename... KernelParameters >
 inline void
-launchKernel( RawKernel kernel_function, cudaStream_t stream_id, LaunchConfiguration launch_configuration, KernelParameters&&... parameters )
+launchKernel( RawKernel kernel_function,
+              cudaStream_t stream_id,
+              LaunchConfiguration launch_configuration,
+              KernelParameters&&... parameters )
 {
-   static_assert( ::std::is_function< RawKernel >::value ||
-                     ( ::std::is_pointer< RawKernel >::value && ::std::is_function< ::std::remove_pointer_t< RawKernel > >::value ),
-                  "Only a plain function or function pointer can be launched as a CUDA kernel. "
-                  "You are attempting to launch something else." );
+   static_assert(
+      ::std::is_function< RawKernel >::value
+         || ( ::std::is_pointer< RawKernel >::value && ::std::is_function< ::std::remove_pointer_t< RawKernel > >::value ),
+      "Only a plain function or function pointer can be launched as a CUDA kernel. "
+      "You are attempting to launch something else." );
 
    if( kernel_function == nullptr )
       throw std::logic_error( "cannot call a function via nullptr" );
@@ -70,7 +74,8 @@ launchKernel( RawKernel kernel_function, cudaStream_t stream_id, LaunchConfigura
 #endif
 
 #ifdef __CUDACC__
-   // FIXME: clang-format 13.0.0 is still inserting spaces between "<<<" and ">>>": https://github.com/llvm/llvm-project/issues/52881
+   // FIXME: clang-format 13.0.0 is still inserting spaces between "<<<" and ">>>":
+   // https://github.com/llvm/llvm-project/issues/52881
    // clang-format off
    kernel_function <<<
          launch_configuration.gridSize,
@@ -87,8 +92,8 @@ launchKernel( RawKernel kernel_function, cudaStream_t stream_id, LaunchConfigura
    // to add the kernel function type to the error message
    const cudaError_t status = cudaGetLastError();
    if( status != cudaSuccess ) {
-      std::string msg =
-         "detected after launching kernel " + TNL::getType( kernel_function ) + "\nSource: line " + std::to_string( __LINE__ ) + " in " + __FILE__;
+      std::string msg = "detected after launching kernel " + TNL::getType( kernel_function ) + "\nSource: line "
+                      + std::to_string( __LINE__ ) + " in " + __FILE__;
       throw Exceptions::CudaRuntimeError( status, msg );
    }
 #else
@@ -98,17 +103,23 @@ launchKernel( RawKernel kernel_function, cudaStream_t stream_id, LaunchConfigura
 
 template< typename RawKernel, typename... KernelParameters >
 inline void
-launchKernelSync( RawKernel kernel_function, cudaStream_t stream_id, LaunchConfiguration launch_configuration, KernelParameters&&... parameters )
+launchKernelSync( RawKernel kernel_function,
+                  cudaStream_t stream_id,
+                  LaunchConfiguration launch_configuration,
+                  KernelParameters&&... parameters )
 {
    launchKernel< true >( kernel_function, stream_id, launch_configuration, std::forward< KernelParameters >( parameters )... );
 }
 
 template< typename RawKernel, typename... KernelParameters >
 inline void
-launchKernelAsync( RawKernel kernel_function, cudaStream_t stream_id, LaunchConfiguration launch_configuration, KernelParameters&&... parameters )
+launchKernelAsync( RawKernel kernel_function,
+                   cudaStream_t stream_id,
+                   LaunchConfiguration launch_configuration,
+                   KernelParameters&&... parameters )
 {
    launchKernel< false >( kernel_function, stream_id, launch_configuration, std::forward< KernelParameters >( parameters )... );
 }
 
-} // namespace Cuda
-} // namespace TNL
+}  // namespace Cuda
+}  // namespace TNL

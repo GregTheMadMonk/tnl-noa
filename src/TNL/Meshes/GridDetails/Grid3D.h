@@ -17,13 +17,10 @@
 namespace TNL {
 namespace Meshes {
 
-template< typename Real,
-          typename Device,
-          typename Index >
+template< typename Real, typename Device, typename Index >
 class Grid< 3, Real, Device, Index >
 {
-   public:
-
+public:
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index GlobalIndexType;
@@ -33,10 +30,13 @@ class Grid< 3, Real, Device, Index >
    // TODO: deprecated and to be removed (GlobalIndexType shall be used instead)
    typedef Index IndexType;
 
-   static constexpr int getMeshDimension() { return 3; };
+   static constexpr int
+   getMeshDimension()
+   {
+      return 3;
+   };
 
-   template< int EntityDimension,
-             typename Config = GridEntityCrossStencilStorage< 1 > >
+   template< int EntityDimension, typename Config = GridEntityCrossStencilStorage< 1 > >
    using EntityType = GridEntity< Grid, EntityDimension, Config >;
 
    typedef EntityType< getMeshDimension(), GridEntityCrossStencilStorage< 1 > > Cell;
@@ -60,61 +60,75 @@ class Grid< 3, Real, Device, Index >
     * \param ySize Size of dimesion y.
     * \param zSize Size of dimesion z.
     */
-   void setDimensions( const Index xSize, const Index ySize, const Index zSize );
+   void
+   setDimensions( const Index xSize, const Index ySize, const Index zSize );
 
    /**
     * \brief See Grid1D::setDimensions( const CoordinatesType& dimensions ).
     */
-   void setDimensions( const CoordinatesType& );
+   void
+   setDimensions( const CoordinatesType& );
 
    /**
     * \brief See Grid1D::getDimensions().
     */
    __cuda_callable__
-   const CoordinatesType& getDimensions() const;
+   const CoordinatesType&
+   getDimensions() const;
 
-   void setLocalBegin( const CoordinatesType& begin );
-
-   __cuda_callable__
-   const CoordinatesType& getLocalBegin() const;
-
-   void setLocalEnd( const CoordinatesType& end );
+   void
+   setLocalBegin( const CoordinatesType& begin );
 
    __cuda_callable__
-   const CoordinatesType& getLocalEnd() const;
+   const CoordinatesType&
+   getLocalBegin() const;
 
-   void setInteriorBegin( const CoordinatesType& begin );
-
-   __cuda_callable__
-   const CoordinatesType& getInteriorBegin() const;
-
-   void setInteriorEnd( const CoordinatesType& end );
+   void
+   setLocalEnd( const CoordinatesType& end );
 
    __cuda_callable__
-   const CoordinatesType& getInteriorEnd() const;
+   const CoordinatesType&
+   getLocalEnd() const;
+
+   void
+   setInteriorBegin( const CoordinatesType& begin );
+
+   __cuda_callable__
+   const CoordinatesType&
+   getInteriorBegin() const;
+
+   void
+   setInteriorEnd( const CoordinatesType& end );
+
+   __cuda_callable__
+   const CoordinatesType&
+   getInteriorEnd() const;
 
    /**
     * \brief See Grid1D::setDomain().
     */
-   void setDomain( const PointType& origin,
-                   const PointType& proportions );
+   void
+   setDomain( const PointType& origin, const PointType& proportions );
 
    /**
     * \brief See Grid1D::setOrigin()
     */
-   void setOrigin( const PointType& origin);
+   void
+   setOrigin( const PointType& origin );
 
    /**
     * \brief See Grid1D::getOrigin().
     */
    __cuda_callable__
-   inline const PointType& getOrigin() const;
+   inline const PointType&
+   getOrigin() const;
 
    /**
     * \brief See Grid1D::getProportions().
     */
    __cuda_callable__
-   inline const PointType& getProportions() const;
+   inline const PointType&
+   getProportions() const;
 
    /**
     * \brief Gets number of entities in this grid.
@@ -122,7 +136,8 @@ class Grid< 3, Real, Device, Index >
     */
    template< int EntityDimension >
    __cuda_callable__
-   IndexType getEntitiesCount() const;
+   IndexType
+   getEntitiesCount() const;
 
    /**
     * \brief Gets number of entities in this grid.
@@ -130,32 +145,37 @@ class Grid< 3, Real, Device, Index >
     */
    template< typename Entity >
    __cuda_callable__
-   IndexType getEntitiesCount() const;
+   IndexType
+   getEntitiesCount() const;
 
    /**
     * \brief See Grid1D::getEntity().
     */
    template< typename Entity >
    __cuda_callable__
-   inline Entity getEntity( const IndexType& entityIndex ) const;
+   inline Entity
+   getEntity( const IndexType& entityIndex ) const;
 
    /**
     * \brief See Grid1D::getEntityIndex().
     */
    template< typename Entity >
    __cuda_callable__
-   inline Index getEntityIndex( const Entity& entity ) const;
+   inline Index
+   getEntityIndex( const Entity& entity ) const;
 
    /**
     * \brief See Grid1D::getSpaceSteps().
     */
    __cuda_callable__
-   inline const PointType& getSpaceSteps() const;
+   inline const PointType&
+   getSpaceSteps() const;
 
    /**
     * \brief See Grid1D::setSpaceSteps().
     */
-   inline void setSpaceSteps(const PointType& steps);
+   inline void
+   setSpaceSteps( const PointType& steps );
 
    /**
     * \brief Returns product of space steps to the xPow.
@@ -165,48 +185,54 @@ class Grid< 3, Real, Device, Index >
     */
    template< int xPow, int yPow, int zPow >
    __cuda_callable__
-   const RealType& getSpaceStepsProducts() const;
+   const RealType&
+   getSpaceStepsProducts() const;
 
    /**
     * \brief Returns the number of x-normal faces.
     */
    __cuda_callable__
-   IndexType getNumberOfNxFaces() const;
+   IndexType
+   getNumberOfNxFaces() const;
 
    /**
     * \brief Returns the number of x-normal and y-normal faces.
     */
    __cuda_callable__
-   IndexType getNumberOfNxAndNyFaces() const;
+   IndexType
+   getNumberOfNxAndNyFaces() const;
 
    /**
     * \breif Returns the measure (volume) of a cell in this grid.
     */
    __cuda_callable__
-   inline const RealType& getCellMeasure() const;
+   inline const RealType&
+   getCellMeasure() const;
 
    /**
     * \brief See Grid1D::getSmallestSpaceStep().
     */
    __cuda_callable__
-   RealType getSmallestSpaceStep() const;
+   RealType
+   getSmallestSpaceStep() const;
 
-   void writeProlog( Logger& logger ) const;
+   void
+   writeProlog( Logger& logger ) const;
 
-   protected:
+protected:
+   void
+   computeProportions();
 
-   void computeProportions();
+   void
+   computeSpaceStepPowers();
 
-   void computeSpaceStepPowers();
-
-   void computeSpaceSteps();
+   void
+   computeSpaceSteps();
 
    CoordinatesType dimensions, localBegin, localEnd, interiorBegin, interiorEnd;
 
-   IndexType numberOfCells,
-          numberOfNxFaces, numberOfNyFaces, numberOfNzFaces, numberOfNxAndNyFaces, numberOfFaces,
-          numberOfDxEdges, numberOfDyEdges, numberOfDzEdges, numberOfDxAndDyEdges, numberOfEdges,
-          numberOfVertices;
+   IndexType numberOfCells, numberOfNxFaces, numberOfNyFaces, numberOfNzFaces, numberOfNxAndNyFaces, numberOfFaces,
+      numberOfDxEdges, numberOfDyEdges, numberOfDzEdges, numberOfDxAndDyEdges, numberOfEdges, numberOfVertices;
 
    PointType origin, proportions;
 
@@ -223,7 +249,7 @@ class Grid< 3, Real, Device, Index >
    friend class NeighborGridEntityGetter;
 };
 
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Meshes
+}  // namespace TNL
 
 #include <TNL/Meshes/GridDetails/Grid3D_impl.h>

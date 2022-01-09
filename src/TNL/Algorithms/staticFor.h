@@ -15,32 +15,28 @@ namespace Algorithms {
 namespace detail {
 
 // special dispatch for `begin >= end` (i.e. empty loop)
-template< typename Index, Index begin, Index end,  typename Func >
-constexpr std::enable_if_t< (begin >= end) >
-static_for_dispatch( Func &&f )
+template< typename Index, Index begin, Index end, typename Func >
+constexpr std::enable_if_t< ( begin >= end ) >
+static_for_dispatch( Func&& f )
 {}
 
 #if __cplusplus >= 201703L
 
 // C++17 version using fold expression
-template< typename Index, Index begin,  typename Func, Index... idx, typename... ArgTypes >
-constexpr void static_for_impl( Func &&f, std::integer_sequence< Index, idx... >, ArgTypes&&... args )
+template< typename Index, Index begin, typename Func, Index... idx, typename... ArgTypes >
+constexpr void
+static_for_impl( Func&& f, std::integer_sequence< Index, idx... >, ArgTypes&&... args )
 {
-   ( f( std::integral_constant< Index, begin + idx >{},
-        std::forward< ArgTypes >( args )... ),
-     ... );
+   ( f( std::integral_constant< Index, begin + idx >{}, std::forward< ArgTypes >( args )... ), ... );
 }
 
 // general dispatch for `begin < end`
-template< typename Index, Index begin, Index end,  typename Func, typename... ArgTypes >
-constexpr std::enable_if_t< (begin < end) >
-static_for_dispatch( Func &&f, ArgTypes&&... args )
+template< typename Index, Index begin, Index end, typename Func, typename... ArgTypes >
+constexpr std::enable_if_t< ( begin < end ) >
+static_for_dispatch( Func&& f, ArgTypes&&... args )
 {
    static_for_impl< Index, begin >(
-         std::forward< Func >( f ),
-         std::make_integer_sequence< Index, end - begin >{},
-         std::forward< ArgTypes >( args )...
-   );
+      std::forward< Func >( f ), std::make_integer_sequence< Index, end - begin >{}, std::forward< ArgTypes >( args )... );
 }
 
 #else
@@ -51,29 +47,26 @@ static_for_dispatch( Func &&f, ArgTypes&&... args )
 // the recursion depth.)
 
 // special dispatch for 1 iteration
-template< typename Index, Index begin, Index end,  typename Func, typename... ArgTypes >
-constexpr std::enable_if_t< (begin < end && end - begin == 1) >
-static_for_dispatch( Func &&f, ArgTypes&&... args )
+template< typename Index, Index begin, Index end, typename Func, typename... ArgTypes >
+constexpr std::enable_if_t< ( begin < end && end - begin == 1 ) >
+static_for_dispatch( Func&& f, ArgTypes&&... args )
 {
-   f( std::integral_constant< Index, begin >{},
-      std::forward< ArgTypes >( args )... );
+   f( std::integral_constant< Index, begin >{}, std::forward< ArgTypes >( args )... );
 }
 
 // general dispatch for at least 2 iterations
-template< typename Index, Index begin, Index end,  typename Func, typename... ArgTypes >
-constexpr std::enable_if_t< (begin < end && end - begin >= 2) >
-static_for_dispatch( Func &&f, ArgTypes&&... args )
+template< typename Index, Index begin, Index end, typename Func, typename... ArgTypes >
+constexpr std::enable_if_t< ( begin < end && end - begin >= 2 ) >
+static_for_dispatch( Func&& f, ArgTypes&&... args )
 {
-   constexpr Index mid = begin + (end - begin) / 2;
-   static_for_dispatch< Index, begin, mid >( std::forward< Func >( f ),
-                                             std::forward< ArgTypes >( args )... );
-   static_for_dispatch< Index, mid, end >( std::forward< Func >( f ),
-                                           std::forward< ArgTypes >( args )... );
+   constexpr Index mid = begin + ( end - begin ) / 2;
+   static_for_dispatch< Index, begin, mid >( std::forward< Func >( f ), std::forward< ArgTypes >( args )... );
+   static_for_dispatch< Index, mid, end >( std::forward< Func >( f ), std::forward< ArgTypes >( args )... );
 }
 
 #endif
 
-} // namespace detail
+}  // namespace detail
 
 /**
  * \brief Generic loop with constant bounds and indices usable in constant
@@ -110,12 +103,12 @@ static_for_dispatch( Func &&f, ArgTypes&&... args )
  * \par Output
  * \include staticForExample.out
  */
-template< typename Index, Index begin, Index end,  typename Func, typename... ArgTypes >
-constexpr void staticFor( Func&& f, ArgTypes&&... args )
+template< typename Index, Index begin, Index end, typename Func, typename... ArgTypes >
+constexpr void
+staticFor( Func&& f, ArgTypes&&... args )
 {
-   detail::static_for_dispatch< Index, begin, end >( std::forward< Func >( f ),
-                                                     std::forward< ArgTypes >( args )... );
+   detail::static_for_dispatch< Index, begin, end >( std::forward< Func >( f ), std::forward< ArgTypes >( args )... );
 }
 
-} // namespace Algorithms
-} // namespace TNL
+}  // namespace Algorithms
+}  // namespace TNL

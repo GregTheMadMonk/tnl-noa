@@ -11,7 +11,7 @@
 #include <memory>
 #include <utility>
 #include <stdexcept>
-#include <cmath>    // std::ceil
+#include <cmath>  // std::ceil
 
 namespace TNL {
 /**
@@ -31,17 +31,17 @@ namespace base64 {
 inline std::size_t
 get_encoded_length( std::size_t byte_length )
 {
-   std::size_t encoded = std::ceil(byte_length * (4.0 / 3.0));
+   std::size_t encoded = std::ceil( byte_length * ( 4.0 / 3.0 ) );
    // base64 uses padding to a multiple of 4
    if( encoded % 4 == 0 )
       return encoded;
-   return encoded + 4 - (encoded % 4);
+   return encoded + 4 - ( encoded % 4 );
 }
 
 /**
  * \brief Static table for base64 encoding.
  */
-static constexpr unsigned char encoding_table[65] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+static constexpr unsigned char encoding_table[ 65 ] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 /**
  * \brief Static table for base64 decoding.
@@ -57,22 +57,17 @@ static constexpr unsigned char encoding_table[65] = "ABCDEFGHIJKLMNOPQRSTUVWXYZa
  * decoding_table[(int) '='] = 0;
  * \endcode
  */
-static constexpr std::uint8_t decoding_table[256] = {
-   128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128,
-   128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128,
-   128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128,  62, 128, 128, 128,  63,
-    52,  53,  54,  55,  56,  57,  58,  59,  60,  61, 128, 128, 128,   0, 128, 128,
-   128,   0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14,
-    15,  16,  17,  18,  19,  20,  21,  22,  23,  24,  25, 128, 128, 128, 128, 128,
-   128,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,
-    41,  42,  43,  44,  45,  46,  47,  48,  49,  50,  51, 128, 128, 128, 128, 128,
-   128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128,
-   128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128,
-   128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128,
-   128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128,
-   128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128,
-   128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128,
-   128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128,
+static constexpr std::uint8_t decoding_table[ 256 ] = {
+   128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128,
+   128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 62,  128, 128, 128, 63,
+   52,  53,  54,  55,  56,  57,  58,  59,  60,  61,  128, 128, 128, 0,   128, 128, 128, 0,   1,   2,   3,   4,   5,   6,
+   7,   8,   9,   10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23,  24,  25,  128, 128, 128, 128, 128,
+   128, 26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  43,  44,  45,  46,  47,  48,
+   49,  50,  51,  128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128,
+   128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128,
+   128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128,
+   128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128,
+   128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128,
    128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128
 };
 
@@ -83,11 +78,11 @@ static constexpr std::uint8_t decoding_table[256] = {
  * \param data_size Length of the input data (in bytes).
  * \return A \ref std::unique_ptr to the encoded data.
  */
-inline std::unique_ptr<char[]>
+inline std::unique_ptr< char[] >
 encode( const std::uint8_t* data, std::size_t data_size )
 {
    const std::size_t output_length = get_encoded_length( data_size );
-   std::unique_ptr<char[]> encoded_data{new char[output_length + 1]};
+   std::unique_ptr< char[] > encoded_data{ new char[ output_length + 1 ] };
 
    const std::uint8_t* end = data + data_size;
    const std::uint8_t* in = data;
@@ -95,22 +90,22 @@ encode( const std::uint8_t* data, std::size_t data_size )
    char* pos = out;
 
    while( end - in >= 3 ) {
-      *pos++ = encoding_table[in[0] >> 2];
-      *pos++ = encoding_table[((in[0] & 0x03) << 4) | (in[1] >> 4)];
-      *pos++ = encoding_table[((in[1] & 0x0f) << 2) | (in[2] >> 6)];
-      *pos++ = encoding_table[in[2] & 0x3f];
+      *pos++ = encoding_table[ in[ 0 ] >> 2 ];
+      *pos++ = encoding_table[ ( ( in[ 0 ] & 0x03 ) << 4 ) | ( in[ 1 ] >> 4 ) ];
+      *pos++ = encoding_table[ ( ( in[ 1 ] & 0x0f ) << 2 ) | ( in[ 2 ] >> 6 ) ];
+      *pos++ = encoding_table[ in[ 2 ] & 0x3f ];
       in += 3;
    }
 
    if( end - in ) {
-      *pos++ = encoding_table[in[0] >> 2];
+      *pos++ = encoding_table[ in[ 0 ] >> 2 ];
       if( end - in == 1 ) {
-         *pos++ = encoding_table[(in[0] & 0x03) << 4];
+         *pos++ = encoding_table[ ( in[ 0 ] & 0x03 ) << 4 ];
          *pos++ = '=';
       }
       else {
-         *pos++ = encoding_table[((in[0] & 0x03) << 4) | (in[1] >> 4)];
-         *pos++ = encoding_table[(in[1] & 0x0f) << 2];
+         *pos++ = encoding_table[ ( ( in[ 0 ] & 0x03 ) << 4 ) | ( in[ 1 ] >> 4 ) ];
+         *pos++ = encoding_table[ ( in[ 1 ] & 0x0f ) << 2 ];
       }
       *pos++ = '=';
    }
@@ -131,30 +126,30 @@ encode( const std::uint8_t* data, std::size_t data_size )
 inline std::ptrdiff_t
 decode_block( const char* input, std::size_t input_length, std::uint8_t* output, std::size_t output_length )
 {
-   const std::size_t min_buffer_size = std::ceil(input_length * (3.0 / 4.0));
+   const std::size_t min_buffer_size = std::ceil( input_length * ( 3.0 / 4.0 ) );
    if( output_length < min_buffer_size )
-      throw std::logic_error( "base64: insufficient output buffer size " + std::to_string(output_length)
-                              + " (needed at least " + std::to_string(min_buffer_size) + " bytes)" );
+      throw std::logic_error( "base64: insufficient output buffer size " + std::to_string( output_length )
+                              + " (needed at least " + std::to_string( min_buffer_size ) + " bytes)" );
 
    std::size_t count = 0;
    int pad = 0;
-   std::uint8_t block[4];
+   std::uint8_t block[ 4 ];
    std::uint8_t* pos = output;
 
-   for (std::size_t i = 0; i < input_length; i++) {
-      const std::uint8_t tmp = decoding_table[(int) input[i]];
+   for( std::size_t i = 0; i < input_length; i++ ) {
+      const std::uint8_t tmp = decoding_table[ (int) input[ i ] ];
       if( tmp == 128 )
          continue;
 
-      if( input[i] == '=' )
+      if( input[ i ] == '=' )
          pad++;
-      block[count] = tmp;
+      block[ count ] = tmp;
       count++;
 
       if( count == 4 ) {
-         *pos++ = (block[0] << 2) | (block[1] >> 4);
-         *pos++ = (block[1] << 4) | (block[2] >> 2);
-         *pos++ = (block[2] << 6) | block[3];
+         *pos++ = ( block[ 0 ] << 2 ) | ( block[ 1 ] >> 4 );
+         *pos++ = ( block[ 1 ] << 4 ) | ( block[ 2 ] >> 2 );
+         *pos++ = ( block[ 2 ] << 6 ) | block[ 3 ];
          count = 0;
          if( pad > 2 )
             // invalid padding
@@ -181,14 +176,14 @@ decode_block( const char* input, std::size_t input_length, std::uint8_t* output,
  * \return A pair of the decoded data length and a \ref std::unique_ptr to the
  *         decoded data.
  */
-inline std::pair< std::size_t, std::unique_ptr<std::uint8_t[]> >
+inline std::pair< std::size_t, std::unique_ptr< std::uint8_t[] > >
 decode( const char* data, const std::size_t data_size )
 {
-   const std::size_t buffer_size = std::ceil(data_size * (3.0 / 4.0));
-   std::unique_ptr<std::uint8_t[]> decoded_data{new std::uint8_t[buffer_size + 1]};
+   const std::size_t buffer_size = std::ceil( data_size * ( 3.0 / 4.0 ) );
+   std::unique_ptr< std::uint8_t[] > decoded_data{ new std::uint8_t[ buffer_size + 1 ] };
 
    const std::size_t decoded_length_data = decode_block( data, data_size, decoded_data.get(), buffer_size );
-   return {decoded_length_data, std::move(decoded_data)};
+   return { decoded_length_data, std::move( decoded_data ) };
 }
 
 /**
@@ -201,12 +196,13 @@ template< typename HeaderType = std::uint64_t, typename T >
 void
 write_encoded_block( const T* data, const std::size_t data_length, std::ostream& output_stream )
 {
-   const HeaderType size = data_length * sizeof(T);
-   std::unique_ptr<char[]> encoded_size = base64::encode( reinterpret_cast<const std::uint8_t*>(&size), sizeof(HeaderType) );
+   const HeaderType size = data_length * sizeof( T );
+   std::unique_ptr< char[] > encoded_size =
+      base64::encode( reinterpret_cast< const std::uint8_t* >( &size ), sizeof( HeaderType ) );
    output_stream << encoded_size.get();
-   std::unique_ptr<char[]> encoded_data = base64::encode( reinterpret_cast<const std::uint8_t*>(data), size );
+   std::unique_ptr< char[] > encoded_data = base64::encode( reinterpret_cast< const std::uint8_t* >( data ), size );
    output_stream << encoded_data.get();
 }
 
-} // namespace base64
-} // namespace TNL
+}  // namespace base64
+}  // namespace TNL

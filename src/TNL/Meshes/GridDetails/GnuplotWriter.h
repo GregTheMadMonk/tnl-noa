@@ -14,37 +14,35 @@ namespace Meshes {
 
 class GnuplotWriter
 {
-   public:
+public:
+   template< typename Element >
+   static void
+   write( std::ostream& str, const Element& d )
+   {
+      str << d;
+   }
 
-      template< typename Element >
-      static void write( std::ostream& str,
-                         const Element& d )
-      {
-         str << d;
-      }
+   template< typename Real >
+   static void
+   write( std::ostream& str, const Containers::StaticVector< 1, Real >& d )
+   {
+      str << d.x() << " ";
+   }
 
-      template< typename Real >
-      static void write( std::ostream& str,
-                         const Containers::StaticVector< 1, Real >& d )
-      {
-         str << d.x() << " ";
-      }
+   template< typename Real >
+   static void
+   write( std::ostream& str, const Containers::StaticVector< 2, Real >& d )
+   {
+      str << d.x() << " " << d.y() << " ";
+   }
 
-      template< typename Real >
-      static void write( std::ostream& str,
-                         const Containers::StaticVector< 2, Real >& d )
-      {
-         str << d.x() << " " << d.y() << " ";
-      }
-
-      template< typename Real >
-      static void write( std::ostream& str,
-                         const Containers::StaticVector< 3, Real >& d )
-      {
-         str << d.x() << " " << d.y() << " " << d. z() << " ";
-      }
-
+   template< typename Real >
+   static void
+   write( std::ostream& str, const Containers::StaticVector< 3, Real >& d )
+   {
+      str << d.x() << " " << d.y() << " " << d.z() << " ";
+   }
 };
 
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Meshes
+}  // namespace TNL

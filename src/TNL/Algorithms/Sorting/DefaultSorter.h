@@ -17,8 +17,8 @@
 #include <TNL/Algorithms/Sorting/STLSort.h>
 
 namespace TNL {
-   namespace Algorithms {
-      namespace Sorting {
+namespace Algorithms {
+namespace Sorting {
 
 template< typename Device >
 struct DefaultSorter;
@@ -62,6 +62,6 @@ struct DefaultInplaceSorter< Devices::Cuda >
    using SorterType = Algorithms::Sorting::BitonicSort;
 };
 
-      } // namespace Sorting
-   } // namespace Algorithms
-} // namespace TNL
+}  // namespace Sorting
+}  // namespace Algorithms
+}  // namespace TNL

@@ -7,7 +7,7 @@
 #pragma once
 
 #ifdef HAVE_PNG_H
-#include <png.h>
+   #include <png.h>
 #endif
 
 #include <TNL/String.h>
@@ -21,64 +21,59 @@ namespace Images {
 template< typename Index = int >
 class PNGImage : public Image< Index >
 {
-   public:
+public:
+   using IndexType = Index;
 
-      using IndexType = Index;
+   PNGImage();
 
-      PNGImage();
+   bool
+   openForRead( const String& fileName );
 
-      bool openForRead( const String& fileName );
+   template< typename MeshReal, typename Device, typename Real >
+   bool
+   read( const RegionOfInterest< Index > roi,
+         Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function );
 
-      template< typename MeshReal,
-                typename Device,
-                typename Real >
-      bool read( const RegionOfInterest< Index > roi,
-                 Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function );
+   template< typename Real, typename Device >
+   bool
+   openForWrite( const String& fileName, Meshes::Grid< 2, Real, Device, Index >& grid );
 
-      template< typename Real,
-                typename Device >
-      bool openForWrite( const String& fileName,
-                         Meshes::Grid< 2, Real, Device, Index >& grid );
+   // TODO: Obsolete
+   template< typename Real, typename Device, typename Vector >
+   bool
+   write( const Meshes::Grid< 2, Real, Device, Index >& grid, Vector& vector );
 
-      // TODO: Obsolete
-      template< typename Real,
-                typename Device,
-                typename Vector >
-      bool write( const Meshes::Grid< 2, Real, Device, Index >& grid,
-                  Vector& vector );
+   template< typename MeshReal, typename Device, typename Real >
+   bool
+   write( const Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function );
 
-      template< typename MeshReal,
-                typename Device,
-                typename Real >
-      bool write( const Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function );
+   void
+   close();
 
+   ~PNGImage();
 
-      void close();
+protected:
+   bool
+   readHeader();
 
-      ~PNGImage();
+   template< typename Real, typename Device >
+   bool
+   writeHeader( const Meshes::Grid< 2, Real, Device, Index >& grid );
 
-   protected:
+   FILE* file;
 
-      bool readHeader();
-
-      template< typename Real,
-                typename Device >
-      bool writeHeader( const Meshes::Grid< 2, Real, Device, Index >& grid );
-
-      FILE* file;
-
-      bool fileOpen;
+   bool fileOpen;
 
 #ifdef HAVE_PNG_H
-      png_structp png_ptr;
+   png_structp png_ptr;
 
-      png_infop info_ptr, end_info;
+   png_infop info_ptr, end_info;
 
-      png_byte color_type, bit_depth;
+   png_byte color_type, bit_depth;
 #endif
 };
 
-} // namespace Images
-} // namespace TNL
+}  // namespace Images
+}  // namespace TNL
 
 #include <TNL/Images/PNGImage_impl.h>

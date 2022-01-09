@@ -11,11 +11,10 @@
 #include <TNL/Algorithms/Segments/Kernels/details/CSRAdaptiveKernelParameters.h>
 
 namespace TNL {
-   namespace Algorithms {
-      namespace Segments {
+namespace Algorithms {
+namespace Segments {
 
-template< typename Index,
-          typename Device >
+template< typename Index, typename Device >
 struct CSRAdaptiveKernelView
 {
    using IndexType = Index;
@@ -27,43 +26,49 @@ struct CSRAdaptiveKernelView
 
    static constexpr int MaxValueSizeLog = detail::CSRAdaptiveKernelParameters<>::MaxValueSizeLog;
 
-   static int getSizeValueLog( const int& i ) { return detail::CSRAdaptiveKernelParameters<>::getSizeValueLog( i ); };
+   static int
+   getSizeValueLog( const int& i )
+   {
+      return detail::CSRAdaptiveKernelParameters<>::getSizeValueLog( i );
+   };
 
    CSRAdaptiveKernelView() = default;
 
-   void setBlocks( BlocksType& blocks, const int idx );
+   void
+   setBlocks( BlocksType& blocks, const int idx );
 
-   ViewType getView();
+   ViewType
+   getView();
 
-   ConstViewType getConstView() const;
+   ConstViewType
+   getConstView() const;
 
-   static TNL::String getKernelType();
+   static TNL::String
+   getKernelType();
 
-   template< typename OffsetsView,
-             typename Fetch,
-             typename Reduction,
-             typename ResultKeeper,
-             typename Real,
-             typename... Args >
-   void reduceSegments( const OffsetsView& offsets,
-                        Index first,
-                        Index last,
-                        Fetch& fetch,
-                        const Reduction& reduction,
-                        ResultKeeper& keeper,
-                        const Real& zero,
-                        Args... args ) const;
+   template< typename OffsetsView, typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+   void
+   reduceSegments( const OffsetsView& offsets,
+                   Index first,
+                   Index last,
+                   Fetch& fetch,
+                   const Reduction& reduction,
+                   ResultKeeper& keeper,
+                   const Real& zero,
+                   Args... args ) const;
 
-   CSRAdaptiveKernelView& operator=( const CSRAdaptiveKernelView< Index, Device >& kernelView );
+   CSRAdaptiveKernelView&
+   operator=( const CSRAdaptiveKernelView< Index, Device >& kernelView );
 
-   void printBlocks( int idx ) const;
+   void
+   printBlocks( int idx ) const;
 
-   protected:
-      BlocksView blocksArray[ MaxValueSizeLog ];
+protected:
+   BlocksView blocksArray[ MaxValueSizeLog ];
 };
 
-      } // namespace Segments
-   }  // namespace Algorithms
-} // namespace TNL
+}  // namespace Segments
+}  // namespace Algorithms
+}  // namespace TNL
 
 #include <TNL/Algorithms/Segments/Kernels/CSRAdaptiveKernelView.hpp>

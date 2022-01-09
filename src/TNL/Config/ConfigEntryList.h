@@ -21,5 +21,5 @@ public:
    using ConfigEntry< EntryType, std::vector< EntryType > >::ConfigEntry;
 };
 
-} // namespace Config
-} // namespace TNL
+}  // namespace Config
+}  // namespace TNL

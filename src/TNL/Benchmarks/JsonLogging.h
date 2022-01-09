@@ -15,20 +15,19 @@
 namespace TNL {
 namespace Benchmarks {
 
-class JsonLogging
-: public Logging
+class JsonLogging : public Logging
 {
 public:
    // inherit constructors
    using Logging::Logging;
 
-   void writeHeader( const HeaderElements& headerElements, const WidthHints& widths )
+   void
+   writeHeader( const HeaderElements& headerElements, const WidthHints& widths )
    {
       TNL_ASSERT_EQ( headerElements.size(), widths.size(), "elements must have equal sizes" );
-      if( verbose && header_changed )
-      {
-         for( auto & lg : metadataColumns ) {
-            const int width = (metadataWidths.count( lg.first )) ? metadataWidths[ lg.first ] : 14;
+      if( verbose && header_changed ) {
+         for( auto& lg : metadataColumns ) {
+            const int width = ( metadataWidths.count( lg.first ) ) ? metadataWidths[ lg.first ] : 14;
             std::cout << std::setw( width ) << lg.first;
          }
          for( std::size_t i = 0; i < headerElements.size(); i++ )
@@ -38,10 +37,11 @@ public:
       }
    }
 
-   void writeRow( const HeaderElements& headerElements,
-                  const RowElements& rowElements,
-                  const WidthHints& widths,
-                  const std::string& errorMessage )
+   void
+   writeRow( const HeaderElements& headerElements,
+             const RowElements& rowElements,
+             const WidthHints& widths,
+             const std::string& errorMessage )
    {
       TNL_ASSERT_EQ( headerElements.size(), rowElements.size(), "elements must have equal sizes" );
       TNL_ASSERT_EQ( headerElements.size(), widths.size(), "elements must have equal sizes" );
@@ -50,10 +50,9 @@ public:
 
       // write common logs
       int idx( 0 );
-      for( auto lg : this->metadataColumns )
-      {
+      for( auto lg : this->metadataColumns ) {
          if( verbose ) {
-            const int width = (metadataWidths.count( lg.first )) ? metadataWidths[ lg.first ] : 14;
+            const int width = ( metadataWidths.count( lg.first ) ) ? metadataWidths[ lg.first ] : 14;
             std::cout << std::setw( width ) << lg.second;
          }
          if( idx++ > 0 )
@@ -62,8 +61,7 @@ public:
       }
 
       std::size_t i = 0;
-      for( auto el : rowElements )
-      {
+      for( auto el : rowElements ) {
          if( verbose )
             std::cout << std::setw( widths[ i ] ) << el;
          if( idx++ > 0 )
@@ -88,7 +86,7 @@ public:
               const WidthHints& columnWidthHints,
               const std::string& errorMessage = "" ) override
    {
-      setMetadataElement({ "performer", performer });
+      setMetadataElement( { "performer", performer } );
       writeHeader( headerElements, columnWidthHints );
       writeRow( headerElements, rowElements, columnWidthHints, errorMessage );
    }
@@ -100,8 +98,7 @@ public:
 
       // write common logs
       int idx( 0 );
-      for( auto lg : this->metadataColumns )
-      {
+      for( auto lg : this->metadataColumns ) {
          if( idx++ > 0 )
             log << ", ";
          log << "\"" << lg.first << "\": \"" << lg.second << "\"";
@@ -129,5 +126,5 @@ protected:
    }
 };
 
-} // namespace Benchmarks
-} // namespace TNL
+}  // namespace Benchmarks
+}  // namespace TNL

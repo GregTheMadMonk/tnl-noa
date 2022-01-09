@@ -11,30 +11,26 @@ namespace Matrices {
 
 template< typename ValuesView, typename Indexer, typename DiagonalsOffsetsView >
 __cuda_callable__
-MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsOffsetsView >::
-MultidiagonalMatrixRowView( const IndexType rowIdx,
-                            const DiagonalsOffsetsView& diagonalsOffsets,
-                            const ValuesViewType& values,
-                            const IndexerType& indexer )
+MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsOffsetsView >::MultidiagonalMatrixRowView(
+   const IndexType rowIdx,
+   const DiagonalsOffsetsView& diagonalsOffsets,
+   const ValuesViewType& values,
+   const IndexerType& indexer )
 : rowIdx( rowIdx ), diagonalsOffsets( diagonalsOffsets ), values( values ), indexer( indexer )
+{}
+
+template< typename ValuesView, typename Indexer, typename DiagonalsOffsetsView >
+__cuda_callable__
+auto
+MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsOffsetsView >::getSize() const -> IndexType
 {
+   return diagonalsOffsets.getSize();  // indexer.getRowSize( rowIdx );
 }
 
 template< typename ValuesView, typename Indexer, typename DiagonalsOffsetsView >
 __cuda_callable__
 auto
-MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsOffsetsView >::
-getSize() const -> IndexType
-{
-   return diagonalsOffsets.getSize();//indexer.getRowSize( rowIdx );
-}
-
-
-template< typename ValuesView, typename Indexer, typename DiagonalsOffsetsView >
-__cuda_callable__
-auto
-MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsOffsetsView >::
-getRowIndex() const -> const IndexType&
+MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsOffsetsView >::getRowIndex() const -> const IndexType&
 {
    return this->rowIdx;
 }
@@ -42,8 +38,8 @@ getRowIndex() const -> const IndexType&
 template< typename ValuesView, typename Indexer, typename DiagonalsOffsetsView >
 __cuda_callable__
 auto
-MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsOffsetsView >::
-getColumnIndex( const IndexType localIdx ) const -> const IndexType
+MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsOffsetsView >::getColumnIndex( const IndexType localIdx ) const
+   -> const IndexType
 {
    TNL_ASSERT_GE( localIdx, 0, "" );
    TNL_ASSERT_LT( localIdx, indexer.getDiagonals(), "" );
@@ -53,8 +49,8 @@ getColumnIndex( const IndexType localIdx ) const -> const IndexType
 template< typename ValuesView, typename Indexer, typename DiagonalsOffsetsView >
 __cuda_callable__
 auto
-MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsOffsetsView >::
-getValue( const IndexType localIdx ) const -> const RealType&
+MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsOffsetsView >::getValue( const IndexType localIdx ) const
+   -> const RealType&
 {
    return this->values[ this->indexer.getGlobalIndex( rowIdx, localIdx ) ];
 }
@@ -62,8 +58,7 @@ getValue( const IndexType localIdx ) const -> const RealType&
 template< typename ValuesView, typename Indexer, typename DiagonalsOffsetsView >
 __cuda_callable__
 auto
-MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsOffsetsView >::
-getValue( const IndexType localIdx ) -> RealType&
+MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsOffsetsView >::getValue( const IndexType localIdx ) -> RealType&
 {
    return this->values[ this->indexer.getGlobalIndex( rowIdx, localIdx ) ];
 }
@@ -71,9 +66,8 @@ getValue( const IndexType localIdx ) -> RealType&
 template< typename ValuesView, typename Indexer, typename DiagonalsOffsetsView >
 __cuda_callable__
 void
-MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsOffsetsView >::
-setElement( const IndexType localIdx,
-            const RealType& value )
+MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsOffsetsView >::setElement( const IndexType localIdx,
+                                                                                     const RealType& value )
 {
    this->values[ indexer.getGlobalIndex( rowIdx, localIdx ) ] = value;
 }
@@ -81,8 +75,7 @@ setElement( const IndexType localIdx,
 template< typename ValuesView, typename Indexer, typename DiagonalsOffsetsView >
 __cuda_callable__
 auto
-MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsOffsetsView >::
-begin() -> IteratorType
+MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsOffsetsView >::begin() -> IteratorType
 {
    return IteratorType( *this, 0 );
 }
@@ -90,8 +83,7 @@ begin() -> IteratorType
 template< typename ValuesView, typename Indexer, typename DiagonalsOffsetsView >
 __cuda_callable__
 auto
-MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsOffsetsView >::
-end() -> IteratorType
+MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsOffsetsView >::end() -> IteratorType
 {
    return IteratorType( *this, this->getSize() );
 }
@@ -99,8 +91,7 @@ end() -> IteratorType
 template< typename ValuesView, typename Indexer, typename DiagonalsOffsetsView >
 __cuda_callable__
 auto
-MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsOffsetsView >::
-cbegin() const -> const IteratorType
+MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsOffsetsView >::cbegin() const -> const IteratorType
 {
    return IteratorType( *this, 0 );
 }
@@ -108,11 +99,10 @@ cbegin() const -> const IteratorType
 template< typename ValuesView, typename Indexer, typename DiagonalsOffsetsView >
 __cuda_callable__
 auto
-MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsOffsetsView >::
-cend() const -> const IteratorType
+MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsOffsetsView >::cend() const -> const IteratorType
 {
    return IteratorType( *this, this->getSize() );
 }
 
-} // namespace Matrices
-} // namespace TNL
+}  // namespace Matrices
+}  // namespace TNL

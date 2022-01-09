@@ -13,12 +13,10 @@
 #include <TNL/Algorithms/Segments/detail/LambdaAdapter.h>
 
 namespace TNL {
-   namespace Algorithms {
-      namespace Segments {
+namespace Algorithms {
+namespace Segments {
 
-template< typename Index,
-          typename Device,
-          int ThreadsInBlock = 128 >
+template< typename Index, typename Device, int ThreadsInBlock = 128 >
 struct CSRHybridKernel
 {
    using IndexType = Index;
@@ -27,35 +25,37 @@ struct CSRHybridKernel
    using ConstViewType = CSRHybridKernel< Index, Device, ThreadsInBlock >;
 
    template< typename Offsets >
-   void init( const Offsets& offsets );
+   void
+   init( const Offsets& offsets );
 
-   void reset();
+   void
+   reset();
 
-   ViewType getView();
+   ViewType
+   getView();
 
-   ConstViewType getConstView() const;
+   ConstViewType
+   getConstView() const;
 
-   static TNL::String getKernelType();
+   static TNL::String
+   getKernelType();
 
-   template< typename OffsetsView,
-             typename Fetch,
-             typename Reduction,
-             typename ResultKeeper,
-             typename Real >
-   void reduceSegments( const OffsetsView& offsets,
-                                  Index first,
-                                  Index last,
-                                  Fetch& fetch,
-                                  const Reduction& reduction,
-                                  ResultKeeper& keeper,
-                                  const Real& zero ) const;
+   template< typename OffsetsView, typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+   void
+   reduceSegments( const OffsetsView& offsets,
+                   Index first,
+                   Index last,
+                   Fetch& fetch,
+                   const Reduction& reduction,
+                   ResultKeeper& keeper,
+                   const Real& zero ) const;
 
-   protected:
-      int threadsPerSegment;
+protected:
+   int threadsPerSegment;
 };
 
-      } // namespace Segments
-   }  // namespace Algorithms
-} // namespace TNL
+}  // namespace Segments
+}  // namespace Algorithms
+}  // namespace TNL
 
 #include <TNL/Algorithms/Segments/Kernels/CSRHybridKernel.hpp>

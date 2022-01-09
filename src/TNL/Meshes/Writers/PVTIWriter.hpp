@@ -23,19 +23,20 @@ PVTIWriter< Grid >::writeMetadata( int cycle, double time )
    if( ! vtkfileOpen )
       writeHeader();
    if( pImageDataOpen )
-      throw std::logic_error("The <PImageData> tag is already open, but writeMetadata should be called before writeImageData.");
+      throw std::logic_error(
+         "The <PImageData> tag is already open, but writeMetadata should be called before writeImageData." );
 
    if( cycle >= 0 || time >= 0 )
       metadata << "<FieldData>\n";
 
    if( cycle >= 0 ) {
-      metadata << "<DataArray type=\"Int32\" Name=\"CYCLE\" NumberOfTuples=\"1\" format=\"ascii\">"
-          << cycle << "</DataArray>\n";
+      metadata << "<DataArray type=\"Int32\" Name=\"CYCLE\" NumberOfTuples=\"1\" format=\"ascii\">" << cycle
+               << "</DataArray>\n";
    }
    if( time >= 0 ) {
       metadata.precision( std::numeric_limits< double >::digits10 );
-      metadata << "<DataArray type=\"Float64\" Name=\"TIME\" NumberOfTuples=\"1\" format=\"ascii\">"
-          << time << "</DataArray>\n";
+      metadata << "<DataArray type=\"Float64\" Name=\"TIME\" NumberOfTuples=\"1\" format=\"ascii\">" << time
+               << "</DataArray>\n";
    }
 
    if( cycle >= 0 || time >= 0 )
@@ -46,19 +47,18 @@ template< typename Grid >
 void
 PVTIWriter< Grid >::writeImageData( const DistributedMeshes::DistributedMesh< Grid >& distributedGrid )
 {
-   writeImageData( distributedGrid.getGlobalGrid(), distributedGrid.getGhostLevels() ); // TODO: ..., Grid::Config::dualGraphMinCommonVertices );
+   writeImageData( distributedGrid.getGlobalGrid(),
+                   distributedGrid.getGhostLevels() );  // TODO: ..., Grid::Config::dualGraphMinCommonVertices );
 }
 
 template< typename Grid >
 void
-PVTIWriter< Grid >::writeImageData( const Grid& globalGrid,
-                                    const unsigned GhostLevel,
-                                    const unsigned MinCommonVertices )
+PVTIWriter< Grid >::writeImageData( const Grid& globalGrid, const unsigned GhostLevel, const unsigned MinCommonVertices )
 {
    if( ! vtkfileOpen )
       writeHeader();
    if( pImageDataOpen )
-      throw std::logic_error("The <PImageData> tag is already open.");
+      throw std::logic_error( "The <PImageData> tag is already open." );
 
    std::stringstream extent, origin, spacing;
 
@@ -101,7 +101,7 @@ PVTIWriter< Grid >::writeImageData( const Grid& globalGrid,
 }
 
 template< typename Grid >
-   template< int EntityDimension >
+template< int EntityDimension >
 void
 PVTIWriter< Grid >::writeEntities( const DistributedMeshes::DistributedMesh< Grid >& distributedMesh )
 {
@@ -109,47 +109,42 @@ PVTIWriter< Grid >::writeEntities( const DistributedMeshes::DistributedMesh< Gri
 }
 
 template< typename Grid >
-   template< int EntityDimension >
+template< int EntityDimension >
 void
-PVTIWriter< Grid >::writeEntities( const Grid& grid,
-                                   const unsigned GhostLevel,
-                                   const unsigned MinCommonVertices )
+PVTIWriter< Grid >::writeEntities( const Grid& grid, const unsigned GhostLevel, const unsigned MinCommonVertices )
 {
    writeImageData( grid, GhostLevel, MinCommonVertices );
 }
 
 template< typename Grid >
-   template< typename ValueType >
+template< typename ValueType >
 void
-PVTIWriter< Grid >::writePPointData( const std::string& name,
-                                     const int numberOfComponents )
+PVTIWriter< Grid >::writePPointData( const std::string& name, const int numberOfComponents )
 {
    if( ! vtkfileOpen )
-      throw std::logic_error("The VTKFile has not been opened yet - call writeEntities first.");
+      throw std::logic_error( "The VTKFile has not been opened yet - call writeEntities first." );
    openPPointData();
    writePDataArray< ValueType >( name, numberOfComponents );
 }
 
 template< typename Grid >
-   template< typename ValueType >
+template< typename ValueType >
 void
-PVTIWriter< Grid >::writePCellData( const std::string& name,
-                                    const int numberOfComponents )
+PVTIWriter< Grid >::writePCellData( const std::string& name, const int numberOfComponents )
 {
    if( ! vtkfileOpen )
-      throw std::logic_error("The VTKFile has not been opened yet - call writeEntities first.");
+      throw std::logic_error( "The VTKFile has not been opened yet - call writeEntities first." );
    openPCellData();
    writePDataArray< ValueType >( name, numberOfComponents );
 }
 
 template< typename Grid >
-   template< typename ValueType >
+template< typename ValueType >
 void
-PVTIWriter< Grid >::writePDataArray( const std::string& name,
-                                     const int numberOfComponents )
+PVTIWriter< Grid >::writePDataArray( const std::string& name, const int numberOfComponents )
 {
    if( numberOfComponents != 0 && numberOfComponents != 1 && numberOfComponents != 3 )
-      throw std::logic_error("Unsupported numberOfComponents parameter: " + std::to_string(numberOfComponents));
+      throw std::logic_error( "Unsupported numberOfComponents parameter: " + std::to_string( numberOfComponents ) );
 
    str << "<PDataArray type=\"" << VTK::getTypeName( ValueType{} ) << "\" ";
    str << "Name=\"" << name << "\" ";
@@ -169,8 +164,8 @@ PVTIWriter< Grid >::addPiece( const std::string& mainFileName,
    const fs::path mainPath = mainFileName;
    const fs::path basename = mainPath.stem();
    if( mainPath.extension() != ".pvti" )
-      throw std::logic_error("The mainFileName parameter must be the name of the "
-                             ".pvti file (i.e., it must have the .pvti suffix).");
+      throw std::logic_error( "The mainFileName parameter must be the name of the "
+                              ".pvti file (i.e., it must have the .pvti suffix)." );
 
    // close PCellData and PPointData sections
    closePCellData();
@@ -179,7 +174,7 @@ PVTIWriter< Grid >::addPiece( const std::string& mainFileName,
    // prepare the extent
    std::stringstream extent;
    for( int j = 0; j < Grid::getMeshDimension(); j++ )
-      extent << globalBegin[ j ] <<  " " << globalEnd[ j ] << " ";
+      extent << globalBegin[ j ] << " " << globalEnd[ j ] << " ";
    // VTK knows only 3D grids
    for( int j = Grid::getMeshDimension(); j < 3; j++ )
       extent << "0 0 ";
@@ -189,7 +184,7 @@ PVTIWriter< Grid >::addPiece( const std::string& mainFileName,
    fs::create_directory( subdirectory );
 
    // write <Piece> tag
-   const std::string subfile = "subdomain." + std::to_string(subdomainIndex) + ".vti";
+   const std::string subfile = "subdomain." + std::to_string( subdomainIndex ) + ".vti";
    const std::string source = basename / subfile;
    str << "<Piece Extent=\"" << extent.str() << "\" Source=\"" << source << "\"/>\n";
 
@@ -204,7 +199,8 @@ PVTIWriter< Grid >::addPiece( const std::string& mainFileName,
 {
    const MPI_Comm communicator = distributedMesh.getCommunicator();
    const typename Grid::CoordinatesType& globalBegin = distributedMesh.getGlobalBegin() - distributedMesh.getLowerOverlap();
-   const typename Grid::CoordinatesType& globalEnd = globalBegin + distributedMesh.getLocalSize() + distributedMesh.getUpperOverlap();
+   const typename Grid::CoordinatesType& globalEnd =
+      globalBegin + distributedMesh.getLocalSize() + distributedMesh.getUpperOverlap();
 
    // exchange globalBegin and globalEnd among the ranks
    const int nproc = MPI::GetSize( communicator );
@@ -217,10 +213,18 @@ PVTIWriter< Grid >::addPiece( const std::string& mainFileName,
    typename Grid::CoordinatesType globalBegins[ nproc ];
    typename Grid::CoordinatesType globalEnds[ nproc ];
    // NOTE: exchanging general data types does not work with MPI
-   //MPI::Alltoall( beginsForScatter, 1, globalBegins, 1, communicator );
-   //MPI::Alltoall( endsForScatter, 1, globalEnds, 1, communicator );
-   MPI::Alltoall( (char*) beginsForScatter, sizeof(typename Grid::CoordinatesType), (char*) globalBegins, sizeof(typename Grid::CoordinatesType), communicator );
-   MPI::Alltoall( (char*) endsForScatter, sizeof(typename Grid::CoordinatesType), (char*) globalEnds, sizeof(typename Grid::CoordinatesType), communicator );
+   // MPI::Alltoall( beginsForScatter, 1, globalBegins, 1, communicator );
+   // MPI::Alltoall( endsForScatter, 1, globalEnds, 1, communicator );
+   MPI::Alltoall( (char*) beginsForScatter,
+                  sizeof( typename Grid::CoordinatesType ),
+                  (char*) globalBegins,
+                  sizeof( typename Grid::CoordinatesType ),
+                  communicator );
+   MPI::Alltoall( (char*) endsForScatter,
+                  sizeof( typename Grid::CoordinatesType ),
+                  (char*) globalEnds,
+                  sizeof( typename Grid::CoordinatesType ),
+                  communicator );
 
    // add pieces for all ranks, return the source for the current rank
    std::string source;
@@ -274,7 +278,7 @@ void
 PVTIWriter< Grid >::openPCellData()
 {
    if( pCellDataClosed )
-      throw std::logic_error("The <PCellData> tag has already been closed.");
+      throw std::logic_error( "The <PCellData> tag has already been closed." );
    closePPointData();
    if( ! pCellDataOpen ) {
       str << "<PCellData>\n";
@@ -298,7 +302,7 @@ void
 PVTIWriter< Grid >::openPPointData()
 {
    if( pPointDataClosed )
-      throw std::logic_error("The <PPointData> tag has already been closed.");
+      throw std::logic_error( "The <PPointData> tag has already been closed." );
    closePCellData();
    if( ! pPointDataOpen ) {
       str << "<PPointData>\n";
@@ -317,6 +321,6 @@ PVTIWriter< Grid >::closePPointData()
    }
 }
 
-} // namespace Writers
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Writers
+}  // namespace Meshes
+}  // namespace TNL

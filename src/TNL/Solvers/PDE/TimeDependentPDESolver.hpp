@@ -15,41 +15,28 @@ namespace TNL {
 namespace Solvers {
 namespace PDE {
 
-template< typename Problem,
-          typename TimeStepper >
-TimeDependentPDESolver< Problem, TimeStepper >::
-TimeDependentPDESolver()
-: problem( 0 ),
-  initialTime( 0.0 ),
-  finalTime( 0.0 ),
-  snapshotPeriod( 0.0 ),
-  timeStep( 1.0 )
-{
-}
+template< typename Problem, typename TimeStepper >
+TimeDependentPDESolver< Problem, TimeStepper >::TimeDependentPDESolver()
+: problem( 0 ), initialTime( 0.0 ), finalTime( 0.0 ), snapshotPeriod( 0.0 ), timeStep( 1.0 )
+{}
 
-
-template< typename Problem,
-          typename TimeStepper >
+template< typename Problem, typename TimeStepper >
 void
-TimeDependentPDESolver< Problem, TimeStepper >::
-configSetup( Config::ConfigDescription& config,
-             const String& prefix )
+TimeDependentPDESolver< Problem, TimeStepper >::configSetup( Config::ConfigDescription& config, const String& prefix )
 {
    BaseType::configSetup( config, prefix );
    config.addEntry< String >( prefix + "initial-condition", "File name with the initial condition.", "init.vti" );
    config.addRequiredEntry< double >( prefix + "final-time", "Stop time of the time dependent problem." );
    config.addEntry< double >( prefix + "initial-time", "Initial time of the time dependent problem.", 0 );
-   config.addRequiredEntry< double >( prefix + "snapshot-period", "Time period for writing the problem status.");
+   config.addRequiredEntry< double >( prefix + "snapshot-period", "Time period for writing the problem status." );
    config.addEntry< double >( prefix + "time-step", "The time step for the time discretisation.", 1.0 );
-   config.addEntry< double >( prefix + "time-step-order", "The time step is set to time-step*pow( space-step, time-step-order).", 0.0 );
+   config.addEntry< double >(
+      prefix + "time-step-order", "The time step is set to time-step*pow( space-step, time-step-order).", 0.0 );
 }
 
-template< typename Problem,
-          typename TimeStepper >
+template< typename Problem, typename TimeStepper >
 bool
-TimeDependentPDESolver< Problem, TimeStepper >::
-setup( const Config::ParameterContainer& parameters,
-       const String& prefix )
+TimeDependentPDESolver< Problem, TimeStepper >::setup( const Config::ParameterContainer& parameters, const String& prefix )
 {
    BaseType::setup( parameters, prefix );
 
@@ -72,8 +59,7 @@ setup( const Config::ParameterContainer& parameters,
    /****
     * Set-up common data
     */
-   if( ! this->commonDataPointer->setup( parameters ) )
-   {
+   if( ! this->commonDataPointer->setup( parameters ) ) {
       std::cerr << "The problem common data initiation failed!" << std::endl;
       return false;
    }
@@ -82,8 +68,7 @@ setup( const Config::ParameterContainer& parameters,
    /****
     * Setup the problem
     */
-   if( ! problem->setup( parameters, prefix ) )
-   {
+   if( ! problem->setup( parameters, prefix ) ) {
       std::cerr << "The problem initiation failed!" << std::endl;
       return false;
    }
@@ -109,9 +94,9 @@ setup( const Config::ParameterContainer& parameters,
     */
    bool status = true;
    status &= this->setFinalTime( parameters.getParameter< double >( "final-time" ) );
-             this->setInitialTime( parameters.getParameter< double >( "initial-time" ) );
+   this->setInitialTime( parameters.getParameter< double >( "initial-time" ) );
    status &= this->setSnapshotPeriod( parameters.getParameter< double >( "snapshot-period" ) );
-   status &= this->setTimeStep( parameters.getParameter< double >( "time-step") );
+   status &= this->setTimeStep( parameters.getParameter< double >( "time-step" ) );
    status &= this->setTimeStepOrder( parameters.getParameter< double >( "time-step-order" ) );
    if( ! status )
       return false;
@@ -125,12 +110,9 @@ setup( const Config::ParameterContainer& parameters,
    return true;
 }
 
-template< typename Problem,
-          typename TimeStepper >
+template< typename Problem, typename TimeStepper >
 bool
-TimeDependentPDESolver< Problem, TimeStepper >::
-writeProlog( Logger& logger,
-             const Config::ParameterContainer& parameters )
+TimeDependentPDESolver< Problem, TimeStepper >::writeProlog( Logger& logger, const Config::ParameterContainer& parameters )
 {
    logger.writeHeader( problem->getPrologHeader() );
    problem->writeProlog( logger, parameters );
@@ -142,13 +124,14 @@ writeProlog( Logger& logger,
    logger.writeSeparator();
    logger.writeParameter< String >( "Time discretisation:", "time-discretisation", parameters );
    if( MPI::GetSize() > 1 )
-      logger.writeParameter< double >( "Initial time step:", this->getRefinedTimeStep( distributedMeshPointer->getLocalMesh(), this->timeStep ) );
+      logger.writeParameter< double >( "Initial time step:",
+                                       this->getRefinedTimeStep( distributedMeshPointer->getLocalMesh(), this->timeStep ) );
    else
       logger.writeParameter< double >( "Initial time step:", this->getRefinedTimeStep( *meshPointer, this->timeStep ) );
    logger.writeParameter< double >( "Initial time:", "initial-time", parameters );
    logger.writeParameter< double >( "Final time:", "final-time", parameters );
    logger.writeParameter< double >( "Snapshot period:", "snapshot-period", parameters );
-   const String& solverName = parameters. getParameter< String >( "discrete-solver" );
+   const String& solverName = parameters.getParameter< String >( "discrete-solver" );
    logger.writeParameter< String >( "Discrete solver:", "discrete-solver", parameters );
    if( solverName == "merson" )
       logger.writeParameter< double >( "Adaptivity:", "merson-adaptivity", parameters, 1 );
@@ -168,65 +151,52 @@ writeProlog( Logger& logger,
    return BaseType::writeProlog( logger, parameters );
 }
 
-template< typename Problem,
-          typename TimeStepper >
+template< typename Problem, typename TimeStepper >
 void
-TimeDependentPDESolver< Problem, TimeStepper >::
-setProblem( ProblemType& problem )
+TimeDependentPDESolver< Problem, TimeStepper >::setProblem( ProblemType& problem )
 {
    this->problem = &problem;
 }
 
-template< typename Problem,
-          typename TimeStepper >
+template< typename Problem, typename TimeStepper >
 void
-TimeDependentPDESolver< Problem, TimeStepper >::
-setInitialTime( const RealType& initialTime )
+TimeDependentPDESolver< Problem, TimeStepper >::setInitialTime( const RealType& initialTime )
 {
    this->initialTime = initialTime;
 }
 
-template< typename Problem,
-          typename TimeStepper >
+template< typename Problem, typename TimeStepper >
 const typename Problem::RealType&
-TimeDependentPDESolver< Problem, TimeStepper >::
-getInitialTime() const
+TimeDependentPDESolver< Problem, TimeStepper >::getInitialTime() const
 {
    return this->initialTime;
 }
 
-template< typename Problem,
-          typename TimeStepper >
+template< typename Problem, typename TimeStepper >
 bool
-TimeDependentPDESolver< Problem, TimeStepper >::
-setFinalTime( const RealType& finalTime )
+TimeDependentPDESolver< Problem, TimeStepper >::setFinalTime( const RealType& finalTime )
 {
-   if( finalTime <= this->initialTime )
-   {
-      std::cerr << "Final time for TimeDependentPDESolver must larger than the initial time which is now " << this->initialTime << "." << std::endl;
+   if( finalTime <= this->initialTime ) {
+      std::cerr << "Final time for TimeDependentPDESolver must larger than the initial time which is now " << this->initialTime
+                << "." << std::endl;
       return false;
    }
    this->finalTime = finalTime;
    return true;
 }
 
-template< typename Problem,
-          typename TimeStepper >
+template< typename Problem, typename TimeStepper >
 const typename Problem::RealType&
-TimeDependentPDESolver< Problem, TimeStepper >::
-getFinalTime() const
+TimeDependentPDESolver< Problem, TimeStepper >::getFinalTime() const
 {
    return this->finalTime;
 }
 
-template< typename Problem,
-          typename TimeStepper >
+template< typename Problem, typename TimeStepper >
 bool
-TimeDependentPDESolver< Problem, TimeStepper >::
-setSnapshotPeriod( const RealType& period )
+TimeDependentPDESolver< Problem, TimeStepper >::setSnapshotPeriod( const RealType& period )
 {
-   if( period <= 0 )
-   {
+   if( period <= 0 ) {
       std::cerr << "Snapshot tau for TimeDependentPDESolver must be positive value." << std::endl;
       return false;
    }
@@ -234,23 +204,18 @@ setSnapshotPeriod( const RealType& period )
    return true;
 }
 
-template< typename Problem,
-          typename TimeStepper >
+template< typename Problem, typename TimeStepper >
 const typename Problem::RealType&
-TimeDependentPDESolver< Problem, TimeStepper >::
-getSnapshotPeriod() const
+TimeDependentPDESolver< Problem, TimeStepper >::getSnapshotPeriod() const
 {
    return this->snapshotPeriod;
 }
 
-template< typename Problem,
-          typename TimeStepper >
+template< typename Problem, typename TimeStepper >
 bool
-TimeDependentPDESolver< Problem, TimeStepper >::
-setTimeStep( const RealType& timeStep )
+TimeDependentPDESolver< Problem, TimeStepper >::setTimeStep( const RealType& timeStep )
 {
-   if( timeStep <= 0 )
-   {
+   if( timeStep <= 0 ) {
       std::cerr << "The time step for TimeDependentPDESolver must be positive value." << std::endl;
       return false;
    }
@@ -258,25 +223,20 @@ setTimeStep( const RealType& timeStep )
    return true;
 }
 
-template< typename Problem,
-          typename TimeStepper >
+template< typename Problem, typename TimeStepper >
 const typename Problem::RealType&
-TimeDependentPDESolver< Problem, TimeStepper >::
-getTimeStep() const
+TimeDependentPDESolver< Problem, TimeStepper >::getTimeStep() const
 {
    return this->timeStep;
 }
 
-template< typename Problem,
-          typename TimeStepper >
+template< typename Problem, typename TimeStepper >
 bool
-TimeDependentPDESolver< Problem, TimeStepper >::
-solve()
+TimeDependentPDESolver< Problem, TimeStepper >::solve()
 {
    TNL_ASSERT_TRUE( problem, "No problem was set in PDESolver." );
 
-   if( snapshotPeriod == 0 )
-   {
+   if( snapshotPeriod == 0 ) {
       std::cerr << "No snapshot tau was set in TimeDependentPDESolver." << std::endl;
       return false;
    }
@@ -288,8 +248,7 @@ solve()
    this->computeTimer->reset();
 
    this->ioTimer->start();
-   if( ! this->problem->makeSnapshot( t, step, this->dofsPointer ) )
-   {
+   if( ! this->problem->makeSnapshot( t, step, this->dofsPointer ) ) {
       std::cerr << "Making the snapshot failed." << std::endl;
       return false;
    }
@@ -299,7 +258,7 @@ solve()
    /****
     * Initialize the time stepper
     */
-   this->timeStepper.setProblem( * ( this->problem ) );
+   this->timeStepper.setProblem( *( this->problem ) );
    if( MPI::GetSize() > 1 ) {
       this->timeStepper.init( distributedMeshPointer->getLocalMesh() );
       this->timeStepper.setTimeStep( this->getRefinedTimeStep( distributedMeshPointer->getLocalMesh(), this->timeStep ) );
@@ -308,19 +267,16 @@ solve()
       this->timeStepper.init( *meshPointer );
       this->timeStepper.setTimeStep( this->getRefinedTimeStep( *meshPointer, this->timeStep ) );
    }
-   while( step < allSteps )
-   {
-      RealType tau = min( this->snapshotPeriod,
-                          this->finalTime - t );
+   while( step < allSteps ) {
+      RealType tau = min( this->snapshotPeriod, this->finalTime - t );
       if( ! this->timeStepper.solve( t, t + tau, this->dofsPointer ) )
          return false;
-      step ++;
+      step++;
       t += tau;
 
       this->ioTimer->start();
       this->computeTimer->stop();
-      if( ! this->problem->makeSnapshot( t, step, this->dofsPointer ) )
-      {
+      if( ! this->problem->makeSnapshot( t, step, this->dofsPointer ) ) {
          std::cerr << "Making the snapshot failed." << std::endl;
          return false;
       }
@@ -334,16 +290,13 @@ solve()
    return true;
 }
 
-template< typename Problem,
-          typename TimeStepper >
+template< typename Problem, typename TimeStepper >
 bool
-TimeDependentPDESolver< Problem, TimeStepper >::
-writeEpilog( Logger& logger ) const
+TimeDependentPDESolver< Problem, TimeStepper >::writeEpilog( Logger& logger ) const
 {
-   return ( this->timeStepper.writeEpilog( logger ) &&
-      this->problem->writeEpilog( logger ) );
+   return ( this->timeStepper.writeEpilog( logger ) && this->problem->writeEpilog( logger ) );
 }
 
-} // namespace PDE
-} // namespace Solvers
-} // namespace TNL
+}  // namespace PDE
+}  // namespace Solvers
+}  // namespace TNL

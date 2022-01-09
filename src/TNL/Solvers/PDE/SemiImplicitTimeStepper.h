@@ -21,8 +21,7 @@ namespace PDE {
 template< typename Problem >
 class SemiImplicitTimeStepper
 {
-   public:
-
+public:
    typedef Problem ProblemType;
    typedef typename Problem::RealType RealType;
    typedef typename Problem::DeviceType DeviceType;
@@ -39,32 +38,37 @@ class SemiImplicitTimeStepper
    using PreconditionerType = typename LinearSolverType::PreconditionerType;
    using PreconditionerPointer = std::shared_ptr< PreconditionerType >;
 
-   static void configSetup( Config::ConfigDescription& config,
-                            const String& prefix = "" );
+   static void
+   configSetup( Config::ConfigDescription& config, const String& prefix = "" );
 
-   bool setup( const Config::ParameterContainer& parameters,
-              const String& prefix = "" );
+   bool
+   setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
 
-   bool init( const MeshType& mesh );
+   bool
+   init( const MeshType& mesh );
 
-   void setProblem( ProblemType& problem );
+   void
+   setProblem( ProblemType& problem );
 
-   ProblemType* getProblem() const;
+   ProblemType*
+   getProblem() const;
 
-   void setSolverMonitor( SolverMonitorType& solverMonitor );
+   void
+   setSolverMonitor( SolverMonitorType& solverMonitor );
 
-   bool setTimeStep( const RealType& timeStep );
+   bool
+   setTimeStep( const RealType& timeStep );
 
-   const RealType& getTimeStep() const;
+   const RealType&
+   getTimeStep() const;
 
-   bool solve( const RealType& time,
-               const RealType& stopTime,
-               DofVectorPointer& dofVectorPointer );
+   bool
+   solve( const RealType& time, const RealType& stopTime, DofVectorPointer& dofVectorPointer );
 
-   bool writeEpilog( Logger& logger ) const;
+   bool
+   writeEpilog( Logger& logger ) const;
 
-   protected:
-
+protected:
    // raw pointers with setters
    Problem* problem = nullptr;
    SolverMonitorType* solverMonitor = nullptr;
@@ -84,8 +88,8 @@ class SemiImplicitTimeStepper
    long long int allIterations = 0;
 };
 
-} // namespace PDE
-} // namespace Solvers
-} // namespace TNL
+}  // namespace PDE
+}  // namespace Solvers
+}  // namespace TNL
 
 #include <TNL/Solvers/PDE/SemiImplicitTimeStepper.hpp>

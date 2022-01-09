@@ -7,9 +7,9 @@
 #pragma once
 
 #ifdef HAVE_DCMTK_H
-#define HAVE_CONFIG_H
-#include <dcmtk/dcmdata/dcfilefo.h>
-#include <dcmtk/dcmdata/dcdeftag.h>
+   #define HAVE_CONFIG_H
+   #include <dcmtk/dcmdata/dcfilefo.h>
+   #include <dcmtk/dcmdata/dcdeftag.h>
 #endif
 
 namespace TNL {
@@ -21,70 +21,75 @@ class DicomHeader;
   (accesses information via DicomHeader class)
   ***/
 struct ImagePositionToPatient
-    {
-    double x, y,z;
-    };
+{
+   double x, y, z;
+};
 
 struct DirectionCosines
-    {
-    double x, y, z;
-    };
+{
+   double x, y, z;
+};
 
 struct ImageOrientationToPatient
-    {
-    DirectionCosines row;
-    DirectionCosines column;
-    };
+{
+   DirectionCosines row;
+   DirectionCosines column;
+};
 
 struct PixelSpacing
-    {
-    double x, y;
-    };
+{
+   double x, y;
+};
 
 class DicomImageInfo
 {
-   public:
+public:
+   inline DicomImageInfo( DicomHeader& DicomHeader );
 
-      inline DicomImageInfo( DicomHeader &DicomHeader);
+   inline virtual ~DicomImageInfo();
 
-      inline virtual ~DicomImageInfo();
+   inline ImagePositionToPatient
+   getImagePositionToPatient();
 
-      inline ImagePositionToPatient getImagePositionToPatient();
+   inline ImageOrientationToPatient
+   getImageOrientationToPatient();
 
-      inline ImageOrientationToPatient getImageOrientationToPatient();
+   inline double
+   getSliceThickness();
 
-      inline double getSliceThickness();
+   inline double
+   getSliceLocation();
 
-      inline double getSliceLocation();
+   inline PixelSpacing
+   getPixelSpacing();
 
-      inline PixelSpacing getPixelSpacing();
+   inline int
+   getNumberOfSlices();
 
-      inline int getNumberOfSlices();
+private:
+   DicomHeader& dicomHeader;
 
-   private:
+   bool
+   retrieveInfo();
 
-      DicomHeader &dicomHeader;
+   bool isObjectRetrieved;
 
-      bool retrieveInfo();
+   double sliceLocation;
 
-      bool isObjectRetrieved;
+   double sliceThickness;
 
-      double sliceLocation;
+   ImagePositionToPatient imagePositionToPatient;
 
-      double sliceThickness;
+   ImageOrientationToPatient imageOrientationToPatient;
 
-      ImagePositionToPatient imagePositionToPatient;
+   PixelSpacing pixelSpacing;
 
-      ImageOrientationToPatient imageOrientationToPatient;
+   int numberOfSlices;
 
-      PixelSpacing pixelSpacing;
-
-      int numberOfSlices;
-
-      int width, height, depth;
+   int width, height, depth;
 };
 
-} // namespace Images
-} // namespace TNL
+}  // namespace Images
+}  // namespace TNL
 
 #include <TNL/Images/DicomImageInfo_impl.h>

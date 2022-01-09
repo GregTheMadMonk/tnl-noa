@@ -26,26 +26,27 @@ namespace ODE {
  */
 
 template< typename Problem, typename SolverMonitor >
-Merson< Problem, SolverMonitor >::Merson()
-: adaptivity( 0.00001 )
+Merson< Problem, SolverMonitor >::Merson() : adaptivity( 0.00001 )
 {
-   if( std::is_same< DeviceType, Devices::Host >::value )
-   {
+   if( std::is_same< DeviceType, Devices::Host >::value ) {
       this->openMPErrorEstimateBuffer.setSize( std::max( 1, Devices::Host::getMaxThreadsCount() ) );
    }
 };
 
 template< typename Problem, typename SolverMonitor >
-void Merson< Problem, SolverMonitor >::configSetup( Config::ConfigDescription& config,
-                                                const String& prefix )
+void
+Merson< Problem, SolverMonitor >::configSetup( Config::ConfigDescription& config, const String& prefix )
 {
-   //ExplicitSolver< Problem >::configSetup( config, prefix );
-   config.addEntry< double >( prefix + "merson-adaptivity", "Time step adaptivity controlling coefficient (the smaller the more precise the computation is, zero means no adaptivity).", 1.0e-4 );
+   // ExplicitSolver< Problem >::configSetup( config, prefix );
+   config.addEntry< double >( prefix + "merson-adaptivity",
+                              "Time step adaptivity controlling coefficient (the smaller the more precise the computation is, "
+                              "zero means no adaptivity).",
+                              1.0e-4 );
 };
 
 template< typename Problem, typename SolverMonitor >
-bool Merson< Problem, SolverMonitor >::setup( const Config::ParameterContainer& parameters,
-                                         const String& prefix )
+bool
+Merson< Problem, SolverMonitor >::setup( const Config::ParameterContainer& parameters, const String& prefix )
 {
    ExplicitSolver< Problem, SolverMonitor >::setup( parameters, prefix );
    if( parameters.checkParameter( prefix + "merson-adaptivity" ) )
@@ -54,21 +55,21 @@ bool Merson< Problem, SolverMonitor >::setup( const Config::ParameterContainer& 
 }
 
 template< typename Problem, typename SolverMonitor >
-void Merson< Problem, SolverMonitor >::setAdaptivity( const RealType& a )
+void
+Merson< Problem, SolverMonitor >::setAdaptivity( const RealType& a )
 {
    this->adaptivity = a;
 };
 
 template< typename Problem, typename SolverMonitor >
-bool Merson< Problem, SolverMonitor >::solve( DofVectorPointer& _u )
+bool
+Merson< Problem, SolverMonitor >::solve( DofVectorPointer& _u )
 {
-   if( ! this->problem )
-   {
+   if( ! this->problem ) {
       std::cerr << "No problem was set for the Merson ODE solver." << std::endl;
       return false;
    }
-   if( this->getTau() == 0.0 )
-   {
+   if( this->getTau() == 0.0 ) {
       std::cerr << "The time step for the Merson ODE solver is zero." << std::endl;
       return false;
    }
@@ -100,14 +101,14 @@ bool Merson< Problem, SolverMonitor >::solve( DofVectorPointer& _u )
    RealType currentTau = min( this->getTau(), this->getMaxTau() );
    if( time + currentTau > this->getStopTime() )
       currentTau = this->getStopTime() - time;
-   if( currentTau == 0.0 ) return true;
+   if( currentTau == 0.0 )
+      return true;
    this->resetIterations();
    this->setResidue( this->getConvergenceResidue() + 1.0 );
 
    /////
    // Start the main loop
-   while( this->checkNextIteration() )
-   {
+   while( this->checkNextIteration() ) {
       /////
       // Compute Runge-Kutta coefficients
       RealType tau_3 = currentTau / 3.0;
@@ -146,25 +147,23 @@ bool Merson< Problem, SolverMonitor >::solve( DofVectorPointer& _u )
       /////
       // Compute an error of the approximation.
       RealType error( 0.0 );
-      if( adaptivity != 0.0 )
-      {
-         const RealType localError =
-            max( currentTau / 3.0 * abs( 0.2 * k1 -0.9 * k3 + 0.8 * k4 -0.1 * k5 ) );
-            MPI::Allreduce( &localError, &error, 1, MPI_MAX, MPI_COMM_WORLD );
+      if( adaptivity != 0.0 ) {
+         const RealType localError = max( currentTau / 3.0 * abs( 0.2 * k1 - 0.9 * k3 + 0.8 * k4 - 0.1 * k5 ) );
+         MPI::Allreduce( &localError, &error, 1, MPI_MAX, MPI_COMM_WORLD );
       }
 
-      if( adaptivity == 0.0 || error < adaptivity )
-      {
+      if( adaptivity == 0.0 || error < adaptivity ) {
          RealType lastResidue = this->getResidue();
          time += currentTau;
 
-         this->setResidue( addAndReduceAbs( u, currentTau / 6.0 * ( k1 + 4.0 * k4 + k5 ),
-            std::plus<>{}, ( RealType ) 0.0 ) / ( currentTau * ( RealType ) u.getSize() ) );
+         this->setResidue( addAndReduceAbs( u, currentTau / 6.0 * ( k1 + 4.0 * k4 + k5 ), std::plus<>{}, (RealType) 0.0 )
+                           / ( currentTau * (RealType) u.getSize() ) );
 
          /////
          // When time is close to stopTime the new residue
          // may be inaccurate significantly.
-         if( abs( time - this->stopTime ) < 1.0e-7 ) this->setResidue( lastResidue );
+         if( abs( time - this->stopTime ) < 1.0e-7 )
+            this->setResidue( lastResidue );
 
          if( ! this->nextIteration() )
             return false;
@@ -172,8 +171,7 @@ bool Merson< Problem, SolverMonitor >::solve( DofVectorPointer& _u )
 
       /////
       // Compute the new time step.
-      if( adaptivity != 0.0 && error != 0.0 )
-      {
+      if( adaptivity != 0.0 && error != 0.0 ) {
          currentTau *= 0.8 * ::pow( adaptivity / error, 0.2 );
          currentTau = min( currentTau, this->getMaxTau() );
 #ifdef USE_MPI
@@ -181,20 +179,22 @@ bool Merson< Problem, SolverMonitor >::solve( DofVectorPointer& _u )
 #endif
       }
       if( time + currentTau > this->getStopTime() )
-         currentTau = this->getStopTime() - time; //we don't want to keep such tau
-      else this->tau = currentTau;
+         currentTau = this->getStopTime() - time;  // we don't want to keep such tau
+      else
+         this->tau = currentTau;
 
       /////
       // Check stop conditions.
-      if( time >= this->getStopTime() ||
-          ( this->getConvergenceResidue() != 0.0 && this->getResidue() < this->getConvergenceResidue() ) )
+      if( time >= this->getStopTime()
+          || ( this->getConvergenceResidue() != 0.0 && this->getResidue() < this->getConvergenceResidue() ) )
          return true;
    }
    return this->checkConvergence();
 };
 
 template< typename Problem, typename SolverMonitor >
-void Merson< Problem, SolverMonitor >::writeGrids( const DofVectorPointer& u )
+void
+Merson< Problem, SolverMonitor >::writeGrids( const DofVectorPointer& u )
 {
    std::cout << "Writing Merson solver grids ...";
    File( "Merson-u.tnl", std::ios_base::out ) << *u;
@@ -207,6 +207,6 @@ void Merson< Problem, SolverMonitor >::writeGrids( const DofVectorPointer& u )
    getchar();
 }
 
-} // namespace ODE
-} // namespace Solvers
-} // namespace TNL
+}  // namespace ODE
+}  // namespace Solvers
+}  // namespace TNL

@@ -14,54 +14,34 @@ namespace Meshes {
 /****
  * Grid 2D, cells
  */
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename GridEntity >
-   template< typename EntitiesProcessor,
-             typename UserData >
+template< typename Real, typename Device, typename Index, typename GridEntity >
+template< typename EntitiesProcessor, typename UserData >
 void
-Traverser< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 2 >::
-processBoundaryEntities( const GridPointer& gridPointer,
-                         UserData& userData ) const
+Traverser< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 2 >::processBoundaryEntities( const GridPointer& gridPointer,
+                                                                                             UserData& userData ) const
 {
    /****
     * Boundary cells
     */
    static_assert( GridEntity::getEntityDimension() == 2, "The entity has wrong dimension." );
 
-   if( gridPointer->getLocalBegin() < gridPointer->getInteriorBegin() && gridPointer->getInteriorEnd() < gridPointer->getLocalEnd() )
+   if( gridPointer->getLocalBegin() < gridPointer->getInteriorBegin()
+       && gridPointer->getInteriorEnd() < gridPointer->getLocalEnd() )
    {
       // 4 boundaries (left, right, down, up)
       GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true, 1, 1 >(
-         gridPointer,
-         gridPointer->getInteriorBegin() - 1,
-         gridPointer->getInteriorEnd() + 1,
-         userData,
-         asynchronousMode,
-         0 );
+         gridPointer, gridPointer->getInteriorBegin() - 1, gridPointer->getInteriorEnd() + 1, userData, asynchronousMode, 0 );
    }
-   else
-   {
+   else {
       const CoordinatesType begin = gridPointer->getLocalBegin();
       const CoordinatesType end = gridPointer->getLocalEnd();
       const CoordinatesType skipBegin = gridPointer->getInteriorBegin();
       const CoordinatesType skipEnd = gridPointer->getInteriorEnd();
 
       GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-         gridPointer,
-         begin,
-         CoordinatesType( end.x(), skipBegin.y() ),
-         userData,
-         asynchronousMode,
-         0 );
+         gridPointer, begin, CoordinatesType( end.x(), skipBegin.y() ), userData, asynchronousMode, 0 );
       GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-         gridPointer,
-         CoordinatesType( begin.x(), skipEnd.y() ),
-         end,
-         userData,
-         asynchronousMode,
-         0 );
+         gridPointer, CoordinatesType( begin.x(), skipEnd.y() ), end, userData, asynchronousMode, 0 );
       GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
          gridPointer,
          CoordinatesType( begin.x(), skipBegin.y() ),
@@ -79,16 +59,11 @@ processBoundaryEntities( const GridPointer& gridPointer,
    }
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename GridEntity >
-   template< typename EntitiesProcessor,
-             typename UserData >
+template< typename Real, typename Device, typename Index, typename GridEntity >
+template< typename EntitiesProcessor, typename UserData >
 void
-Traverser< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 2 >::
-processInteriorEntities( const GridPointer& gridPointer,
-                         UserData& userData ) const
+Traverser< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 2 >::processInteriorEntities( const GridPointer& gridPointer,
+                                                                                             UserData& userData ) const
 {
    /****
     * Interior cells
@@ -96,24 +71,14 @@ processInteriorEntities( const GridPointer& gridPointer,
    static_assert( GridEntity::getEntityDimension() == 2, "The entity has wrong dimensions." );
 
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-      gridPointer,
-      gridPointer->getInteriorBegin(),
-      gridPointer->getInteriorEnd(),
-      userData,
-      asynchronousMode,
-      0 );
+      gridPointer, gridPointer->getInteriorBegin(), gridPointer->getInteriorEnd(), userData, asynchronousMode, 0 );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename GridEntity >
-   template< typename EntitiesProcessor,
-             typename UserData >
+template< typename Real, typename Device, typename Index, typename GridEntity >
+template< typename EntitiesProcessor, typename UserData >
 void
-Traverser< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 2 >::
-processAllEntities( const GridPointer& gridPointer,
-                    UserData& userData ) const
+Traverser< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 2 >::processAllEntities( const GridPointer& gridPointer,
+                                                                                        UserData& userData ) const
 {
    /****
     * All cells
@@ -121,138 +86,119 @@ processAllEntities( const GridPointer& gridPointer,
    static_assert( GridEntity::getEntityDimension() == 2, "The entity has wrong dimension." );
 
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-      gridPointer,
-      gridPointer->getLocalBegin(),
-      gridPointer->getLocalEnd(),
-      userData,
-      asynchronousMode,
-      0 );
+      gridPointer, gridPointer->getLocalBegin(), gridPointer->getLocalEnd(), userData, asynchronousMode, 0 );
 }
 
 /****
  * Grid 2D, faces
  */
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename GridEntity >
-   template< typename EntitiesProcessor,
-             typename UserData >
+template< typename Real, typename Device, typename Index, typename GridEntity >
+template< typename EntitiesProcessor, typename UserData >
 void
-Traverser< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 1 >::
-processBoundaryEntities( const GridPointer& gridPointer,
-                         UserData& userData ) const
+Traverser< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 1 >::processBoundaryEntities( const GridPointer& gridPointer,
+                                                                                             UserData& userData ) const
 {
    /****
     * Boundary faces
     */
    static_assert( GridEntity::getEntityDimension() == 1, "The entity has wrong dimension." );
 
-   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true, 1, 0, CoordinatesType, CoordinatesType >(
-      gridPointer,
-      CoordinatesType( 0, 0 ),
-      gridPointer->getDimensions() + CoordinatesType( 1, 0 ),
-      userData,
-      asynchronousMode,
-      1,
-      CoordinatesType( 1, 0 ),
-      CoordinatesType( 0, 1 ) );
+   GridTraverser< GridType >::
+      template processEntities< GridEntity, EntitiesProcessor, UserData, true, 1, 0, CoordinatesType, CoordinatesType >(
+         gridPointer,
+         CoordinatesType( 0, 0 ),
+         gridPointer->getDimensions() + CoordinatesType( 1, 0 ),
+         userData,
+         asynchronousMode,
+         1,
+         CoordinatesType( 1, 0 ),
+         CoordinatesType( 0, 1 ) );
 
-   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true, 0, 1, CoordinatesType, CoordinatesType >(
-      gridPointer,
-      CoordinatesType( 0, 0 ),
-      gridPointer->getDimensions() + CoordinatesType( 0, 1 ),
-      userData,
-      asynchronousMode,
-      0,
-      CoordinatesType( 0, 1 ),
-      CoordinatesType( 1, 0 ) );
+   GridTraverser< GridType >::
+      template processEntities< GridEntity, EntitiesProcessor, UserData, true, 0, 1, CoordinatesType, CoordinatesType >(
+         gridPointer,
+         CoordinatesType( 0, 0 ),
+         gridPointer->getDimensions() + CoordinatesType( 0, 1 ),
+         userData,
+         asynchronousMode,
+         0,
+         CoordinatesType( 0, 1 ),
+         CoordinatesType( 1, 0 ) );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename GridEntity >
-   template< typename EntitiesProcessor,
-             typename UserData >
+template< typename Real, typename Device, typename Index, typename GridEntity >
+template< typename EntitiesProcessor, typename UserData >
 void
-Traverser< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 1 >::
-processInteriorEntities( const GridPointer& gridPointer,
-                         UserData& userData ) const
+Traverser< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 1 >::processInteriorEntities( const GridPointer& gridPointer,
+                                                                                             UserData& userData ) const
 {
    /****
     * Interior faces
     */
    static_assert( GridEntity::getEntityDimension() == 1, "The entity has wrong dimension." );
 
-   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false, 1, 1, CoordinatesType, CoordinatesType >(
-      gridPointer,
-      CoordinatesType( 1, 0 ),
-      gridPointer->getDimensions(),
-      userData,
-      asynchronousMode,
-      1,
-      CoordinatesType( 1, 0 ),
-      CoordinatesType( 0, 1 ) );
+   GridTraverser< GridType >::
+      template processEntities< GridEntity, EntitiesProcessor, UserData, false, 1, 1, CoordinatesType, CoordinatesType >(
+         gridPointer,
+         CoordinatesType( 1, 0 ),
+         gridPointer->getDimensions(),
+         userData,
+         asynchronousMode,
+         1,
+         CoordinatesType( 1, 0 ),
+         CoordinatesType( 0, 1 ) );
 
-   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false, 1, 1, CoordinatesType, CoordinatesType >(
-      gridPointer,
-      CoordinatesType( 0, 1 ),
-      gridPointer->getDimensions(),
-      userData,
-      asynchronousMode,
-      0,
-      CoordinatesType( 0, 1 ),
-      CoordinatesType( 1, 0 ) );
+   GridTraverser< GridType >::
+      template processEntities< GridEntity, EntitiesProcessor, UserData, false, 1, 1, CoordinatesType, CoordinatesType >(
+         gridPointer,
+         CoordinatesType( 0, 1 ),
+         gridPointer->getDimensions(),
+         userData,
+         asynchronousMode,
+         0,
+         CoordinatesType( 0, 1 ),
+         CoordinatesType( 1, 0 ) );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename GridEntity >
-   template< typename EntitiesProcessor,
-             typename UserData >
+template< typename Real, typename Device, typename Index, typename GridEntity >
+template< typename EntitiesProcessor, typename UserData >
 void
-Traverser< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 1 >::
-processAllEntities( const GridPointer& gridPointer,
-                    UserData& userData ) const
+Traverser< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 1 >::processAllEntities( const GridPointer& gridPointer,
+                                                                                        UserData& userData ) const
 {
    /****
     * All faces
     */
    static_assert( GridEntity::getEntityDimension() == 1, "The entity has wrong dimension." );
 
-   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false, 1, 1, CoordinatesType, CoordinatesType >(
-      gridPointer,
-      CoordinatesType( 0, 0 ),
-      gridPointer->getDimensions() + CoordinatesType( 1, 0 ),
-      userData,
-      asynchronousMode,
-      1,
-      CoordinatesType( 1, 0 ),
-      CoordinatesType( 0, 1 ) );
+   GridTraverser< GridType >::
+      template processEntities< GridEntity, EntitiesProcessor, UserData, false, 1, 1, CoordinatesType, CoordinatesType >(
+         gridPointer,
+         CoordinatesType( 0, 0 ),
+         gridPointer->getDimensions() + CoordinatesType( 1, 0 ),
+         userData,
+         asynchronousMode,
+         1,
+         CoordinatesType( 1, 0 ),
+         CoordinatesType( 0, 1 ) );
 
-   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false, 1, 1, CoordinatesType, CoordinatesType >(
-      gridPointer,
-      CoordinatesType( 0, 0 ),
-      gridPointer->getDimensions() + CoordinatesType( 0, 1 ),
-      userData,
-      asynchronousMode,
-      0,
-      CoordinatesType( 0, 1 ),
-      CoordinatesType( 1, 0 ) );
+   GridTraverser< GridType >::
+      template processEntities< GridEntity, EntitiesProcessor, UserData, false, 1, 1, CoordinatesType, CoordinatesType >(
+         gridPointer,
+         CoordinatesType( 0, 0 ),
+         gridPointer->getDimensions() + CoordinatesType( 0, 1 ),
+         userData,
+         asynchronousMode,
+         0,
+         CoordinatesType( 0, 1 ),
+         CoordinatesType( 1, 0 ) );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename GridEntity >
-   template< typename EntitiesProcessor,
-             typename UserData >
+template< typename Real, typename Device, typename Index, typename GridEntity >
+template< typename EntitiesProcessor, typename UserData >
 void
-Traverser< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 0 >::
-processBoundaryEntities( const GridPointer& gridPointer,
-                         UserData& userData ) const
+Traverser< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 0 >::processBoundaryEntities( const GridPointer& gridPointer,
+                                                                                             UserData& userData ) const
 {
    /****
     * Boundary vertices
@@ -268,16 +214,11 @@ processBoundaryEntities( const GridPointer& gridPointer,
       0 );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename GridEntity >
-   template< typename EntitiesProcessor,
-             typename UserData >
+template< typename Real, typename Device, typename Index, typename GridEntity >
+template< typename EntitiesProcessor, typename UserData >
 void
-Traverser< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 0 >::
-processInteriorEntities( const GridPointer& gridPointer,
-                         UserData& userData ) const
+Traverser< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 0 >::processInteriorEntities( const GridPointer& gridPointer,
+                                                                                             UserData& userData ) const
 {
    /****
     * Interior vertices
@@ -285,24 +226,14 @@ processInteriorEntities( const GridPointer& gridPointer,
    static_assert( GridEntity::getEntityDimension() == 0, "The entity has wrong dimension." );
 
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-      gridPointer,
-      CoordinatesType( 1, 1 ),
-      gridPointer->getDimensions(),
-      userData,
-      asynchronousMode,
-      0 );
+      gridPointer, CoordinatesType( 1, 1 ), gridPointer->getDimensions(), userData, asynchronousMode, 0 );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename GridEntity >
-   template< typename EntitiesProcessor,
-             typename UserData >
+template< typename Real, typename Device, typename Index, typename GridEntity >
+template< typename EntitiesProcessor, typename UserData >
 void
-Traverser< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 0 >::
-processAllEntities( const GridPointer& gridPointer,
-                    UserData& userData ) const
+Traverser< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 0 >::processAllEntities( const GridPointer& gridPointer,
+                                                                                        UserData& userData ) const
 {
    /****
     * All vertices
@@ -318,5 +249,5 @@ processAllEntities( const GridPointer& gridPointer,
       0 );
 }
 
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Meshes
+}  // namespace TNL

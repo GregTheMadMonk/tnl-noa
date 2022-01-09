@@ -74,7 +74,7 @@ private:
    template< typename >
    static constexpr std::false_type check(...);
 
-   using type = decltype(check<std::decay_t<T>>(0));
+   using type = decltype(check<std::decay_t<T> >(0));
 
 public:
    static constexpr bool value = type::value;
@@ -101,7 +101,7 @@ private:
    template< typename >
    static constexpr std::false_type check(...);
 
-   using type = decltype(check<std::decay_t<T>>(0));
+   using type = decltype(check<std::decay_t<T> >(0));
 
 public:
    static constexpr bool value = type::value;
@@ -128,7 +128,7 @@ private:
    template< typename >
    static constexpr std::false_type check(...);
 
-   using type = decltype(check<std::decay_t<T>>(0));
+   using type = decltype(check<std::decay_t<T> >(0));
 
 public:
    static constexpr bool value = type::value;

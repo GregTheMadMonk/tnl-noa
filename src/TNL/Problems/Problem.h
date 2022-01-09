@@ -9,17 +9,14 @@
 namespace TNL {
 namespace Problems {
 
-template< typename Real,
-          typename Device,
-          typename Index >
+template< typename Real, typename Device, typename Index >
 class Problem
 {
-   public:
-
-      typedef Real RealType;
-      typedef Device DeviceType;
-      typedef Index IndexType;
+public:
+   typedef Real RealType;
+   typedef Device DeviceType;
+   typedef Index IndexType;
 };
 
-} // namespace Problems
-} // namespace TNL
+}  // namespace Problems
+}  // namespace TNL

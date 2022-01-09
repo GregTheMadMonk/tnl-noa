@@ -30,12 +30,11 @@ writeReal( std::ostream& str, const Real value )
    str << value << ' ';
 }
 
-template< typename Mesh,
-          int EntityDimension, 
-          int SubDimension >
+template< typename Mesh, int EntityDimension, int SubDimension >
 struct MeshEntitiesFPMAWriter
 {
-   static void exec( const Mesh& mesh, std::ostream& str )
+   static void
+   exec( const Mesh& mesh, std::ostream& str )
    {
       using Index = typename Mesh::GlobalIndexType;
 
@@ -52,7 +51,7 @@ struct MeshEntitiesFPMAWriter
    }
 };
 
-} // namespace details
+}  // namespace details
 
 template< typename Mesh >
 void
@@ -62,7 +61,6 @@ FPMAWriter< Mesh >::writeEntities( const Mesh& mesh )
    EntitiesWriter< 2, 0 >::exec( mesh, str );
    EntitiesWriter< 3, 2 >::exec( mesh, str );
 }
-
 
 template< typename Mesh >
 void
@@ -78,6 +76,6 @@ FPMAWriter< Mesh >::writePoints( const Mesh& mesh )
    }
 }
 
-} // namespace Writers
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Writers
+}  // namespace Meshes
+}  // namespace TNL

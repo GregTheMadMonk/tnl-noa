@@ -16,22 +16,23 @@ namespace Devices {
 class Cuda
 {
 public:
-   static inline void configSetup( Config::ConfigDescription& config, const String& prefix = "" )
+   static inline void
+   configSetup( Config::ConfigDescription& config, const String& prefix = "" )
    {
 #ifdef HAVE_CUDA
       config.addEntry< int >( prefix + "cuda-device", "Choose CUDA device to run the computation.", 0 );
 #else
-      config.addEntry< int >( prefix + "cuda-device", "Choose CUDA device to run the computation (not supported on this system).", 0 );
+      config.addEntry< int >(
+         prefix + "cuda-device", "Choose CUDA device to run the computation (not supported on this system).", 0 );
 #endif
    }
 
-   static inline bool setup( const Config::ParameterContainer& parameters,
-                             const String& prefix = "" )
+   static inline bool
+   setup( const Config::ParameterContainer& parameters, const String& prefix = "" )
    {
 #ifdef HAVE_CUDA
       int cudaDevice = parameters.getParameter< int >( prefix + "cuda-device" );
-      if( cudaSetDevice( cudaDevice ) != cudaSuccess )
-      {
+      if( cudaSetDevice( cudaDevice ) != cudaSuccess ) {
          std::cerr << "I cannot activate CUDA device number " << cudaDevice << "." << std::endl;
          return false;
       }
@@ -40,5 +41,5 @@ public:
    }
 };
 
-} // namespace Devices
-} // namespace TNL
+}  // namespace Devices
+}  // namespace TNL

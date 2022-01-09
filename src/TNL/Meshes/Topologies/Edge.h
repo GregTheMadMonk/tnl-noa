@@ -24,7 +24,6 @@ struct Edge
    static constexpr int dimension = 1;
 };
 
-
 template<>
 struct Subtopology< Edge, 0 >
 {
@@ -33,6 +32,6 @@ struct Subtopology< Edge, 0 >
    static constexpr int count = 2;
 };
 
-} // namespace Topologies
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Topologies
+}  // namespace Meshes
+}  // namespace TNL

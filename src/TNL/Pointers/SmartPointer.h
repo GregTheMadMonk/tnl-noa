@@ -17,12 +17,12 @@ namespace Pointers {
 
 class SmartPointer
 {
-   public:
+public:
+   virtual bool
+   synchronize() = 0;
 
-      virtual bool synchronize() = 0;
-
-      virtual ~SmartPointer() = default;
+   virtual ~SmartPointer() = default;
 };
 
-} // namespace Pointers
-} // namespace TNL
+}  // namespace Pointers
+}  // namespace TNL

@@ -14,8 +14,7 @@
 namespace TNL {
 namespace Exceptions {
 
-class FileDeserializationError
-   : public std::runtime_error
+class FileDeserializationError : public std::runtime_error
 {
 public:
    FileDeserializationError( const std::string& fileName, const std::string& details )
@@ -23,5 +22,5 @@ public:
    {}
 };
 
-} // namespace Exceptions
-} // namespace TNL
+}  // namespace Exceptions
+}  // namespace TNL

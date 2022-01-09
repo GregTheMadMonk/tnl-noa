@@ -15,8 +15,7 @@ namespace TNL {
 namespace Cuda {
 
 inline int
-DeviceInfo::
-getNumberOfDevices()
+DeviceInfo::getNumberOfDevices()
 {
 #ifdef HAVE_CUDA
    int devices;
@@ -28,8 +27,7 @@ getNumberOfDevices()
 }
 
 inline int
-DeviceInfo::
-getActiveDevice()
+DeviceInfo::getActiveDevice()
 {
 #ifdef HAVE_CUDA
    int device;
@@ -41,8 +39,7 @@ getActiveDevice()
 }
 
 inline String
-DeviceInfo::
-getDeviceName( int deviceNum )
+DeviceInfo::getDeviceName( int deviceNum )
 {
 #ifdef HAVE_CUDA
    cudaDeviceProp properties;
@@ -54,8 +51,7 @@ getDeviceName( int deviceNum )
 }
 
 inline int
-DeviceInfo::
-getArchitectureMajor( int deviceNum )
+DeviceInfo::getArchitectureMajor( int deviceNum )
 {
 #ifdef HAVE_CUDA
    cudaDeviceProp properties;
@@ -67,8 +63,7 @@ getArchitectureMajor( int deviceNum )
 }
 
 inline int
-DeviceInfo::
-getArchitectureMinor( int deviceNum )
+DeviceInfo::getArchitectureMinor( int deviceNum )
 {
 #ifdef HAVE_CUDA
    cudaDeviceProp properties;
@@ -80,8 +75,7 @@ getArchitectureMinor( int deviceNum )
 }
 
 inline int
-DeviceInfo::
-getClockRate( int deviceNum )
+DeviceInfo::getClockRate( int deviceNum )
 {
 #ifdef HAVE_CUDA
    cudaDeviceProp properties;
@@ -93,8 +87,7 @@ getClockRate( int deviceNum )
 }
 
 inline std::size_t
-DeviceInfo::
-getGlobalMemory( int deviceNum )
+DeviceInfo::getGlobalMemory( int deviceNum )
 {
 #ifdef HAVE_CUDA
    cudaDeviceProp properties;
@@ -106,8 +99,7 @@ getGlobalMemory( int deviceNum )
 }
 
 inline std::size_t
-DeviceInfo::
-getFreeGlobalMemory()
+DeviceInfo::getFreeGlobalMemory()
 {
 #ifdef HAVE_CUDA
    std::size_t free = 0;
@@ -120,8 +112,7 @@ getFreeGlobalMemory()
 }
 
 inline int
-DeviceInfo::
-getMemoryClockRate( int deviceNum )
+DeviceInfo::getMemoryClockRate( int deviceNum )
 {
 #ifdef HAVE_CUDA
    cudaDeviceProp properties;
@@ -133,8 +124,7 @@ getMemoryClockRate( int deviceNum )
 }
 
 inline bool
-DeviceInfo::
-getECCEnabled( int deviceNum )
+DeviceInfo::getECCEnabled( int deviceNum )
 {
 #ifdef HAVE_CUDA
    cudaDeviceProp properties;
@@ -146,8 +136,7 @@ getECCEnabled( int deviceNum )
 }
 
 inline int
-DeviceInfo::
-getCudaMultiprocessors( int deviceNum )
+DeviceInfo::getCudaMultiprocessors( int deviceNum )
 {
 #ifdef HAVE_CUDA
    // results are cached because they are used for configuration of some kernels
@@ -165,19 +154,16 @@ getCudaMultiprocessors( int deviceNum )
 }
 
 inline int
-DeviceInfo::
-getCudaCoresPerMultiprocessors( int deviceNum )
+DeviceInfo::getCudaCoresPerMultiprocessors( int deviceNum )
 {
 #ifdef HAVE_CUDA
    int major = DeviceInfo::getArchitectureMajor( deviceNum );
    int minor = DeviceInfo::getArchitectureMinor( deviceNum );
-   switch( major )
-   {
-      case 1:   // Tesla generation, G80, G8x, G9x classes
+   switch( major ) {
+      case 1:  // Tesla generation, G80, G8x, G9x classes
          return 8;
-      case 2:   // Fermi generation
-         switch( minor )
-         {
+      case 2:  // Fermi generation
+         switch( minor ) {
             case 0:  // GF100 class
                return 32;
             case 1:  // GF10x class
@@ -185,13 +171,12 @@ getCudaCoresPerMultiprocessors( int deviceNum )
             default:
                return -1;
          }
-      case 3: // Kepler generation -- GK10x, GK11x classes
+      case 3:  // Kepler generation -- GK10x, GK11x classes
          return 192;
-      case 5: // Maxwell generation -- GM10x, GM20x classes
+      case 5:  // Maxwell generation -- GM10x, GM20x classes
          return 128;
-      case 6: // Pascal generation
-         switch( minor )
-         {
+      case 6:  // Pascal generation
+         switch( minor ) {
             case 0:  // GP100 class
                return 64;
             case 1:  // GP10x classes
@@ -200,11 +185,10 @@ getCudaCoresPerMultiprocessors( int deviceNum )
             default:
                return -1;
          }
-      case 7: // Volta and Turing generations
+      case 7:  // Volta and Turing generations
          return 64;
-      case 8: // Ampere generation
-         switch( minor )
-         {
+      case 8:  // Ampere generation
+         switch( minor ) {
             case 0:  // GA100 class
                return 64;
             case 6:
@@ -221,20 +205,17 @@ getCudaCoresPerMultiprocessors( int deviceNum )
 }
 
 inline int
-DeviceInfo::
-getCudaCores( int deviceNum )
+DeviceInfo::getCudaCores( int deviceNum )
 {
 #ifdef HAVE_CUDA
-   return DeviceInfo::getCudaMultiprocessors( deviceNum ) *
-          DeviceInfo::getCudaCoresPerMultiprocessors( deviceNum );
+   return DeviceInfo::getCudaMultiprocessors( deviceNum ) * DeviceInfo::getCudaCoresPerMultiprocessors( deviceNum );
 #else
    throw Exceptions::CudaSupportMissing();
 #endif
 }
 
 inline int
-DeviceInfo::
-getRegistersPerMultiprocessor( int deviceNum )
+DeviceInfo::getRegistersPerMultiprocessor( int deviceNum )
 {
 #ifdef HAVE_CUDA
    // results are cached because they are used for configuration of some kernels
@@ -251,5 +232,5 @@ getRegistersPerMultiprocessor( int deviceNum )
 #endif
 }
 
-} // namespace Cuda
-} // namespace TNL
+}  // namespace Cuda
+}  // namespace TNL

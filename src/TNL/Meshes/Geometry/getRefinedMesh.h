@@ -20,10 +20,11 @@ namespace Meshes {
 template< EntityRefinerVersion RefinerVersion,
           typename MeshConfig,
           std::enable_if_t< std::is_same< typename MeshConfig::CellTopology, Topologies::Triangle >::value
-                         || std::is_same< typename MeshConfig::CellTopology, Topologies::Quadrangle >::value
-                         || std::is_same< typename MeshConfig::CellTopology, Topologies::Tetrahedron >::value
-                         || std::is_same< typename MeshConfig::CellTopology, Topologies::Hexahedron >::value, bool > = true >
-auto // returns MeshBuilder
+                               || std::is_same< typename MeshConfig::CellTopology, Topologies::Quadrangle >::value
+                               || std::is_same< typename MeshConfig::CellTopology, Topologies::Tetrahedron >::value
+                               || std::is_same< typename MeshConfig::CellTopology, Topologies::Hexahedron >::value,
+                            bool > = true >
+auto  // returns MeshBuilder
 refineMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
 {
    using namespace TNL;
@@ -46,13 +47,16 @@ refineMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
    // starting indices at which every cell will start writing new refined points and cells
    using IndexPair = std::pair< GlobalIndexType, GlobalIndexType >;
    Array< IndexPair, Devices::Host > indices( inCellsCount + 1 );
-   auto setCounts = [&] ( GlobalIndexType i ) {
+   auto setCounts = [ & ]( GlobalIndexType i )
+   {
       const auto cell = inMesh.template getEntity< CellDimension >( i );
       indices[ i ] = EntityRefiner::getExtraPointsAndEntitiesCount( cell );
    };
    ParallelFor< Devices::Host >::exec( GlobalIndexType{ 0 }, inCellsCount, setCounts );
-   indices[ inCellsCount ] = { 0, 0 }; // extend exclusive prefix sum by one element to also get result of reduce at the same time
-   auto reduction = [] ( const IndexPair& a, const IndexPair& b ) -> IndexPair {
+   indices[ inCellsCount ] = { 0,
+                               0 };  // extend exclusive prefix sum by one element to also get result of reduce at the same time
+   auto reduction = []( const IndexPair& a, const IndexPair& b ) -> IndexPair
+   {
       return { a.first + b.first, a.second + b.second };
    };
    inplaceExclusiveScan( indices, 0, indices.getSize(), reduction, std::make_pair( 0, 0 ) );
@@ -62,19 +66,22 @@ refineMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
    meshBuilder.setEntitiesCount( outPointsCount, outCellsCount );
 
    // Copy the points from inMesh to outMesh
-   auto copyPoint = [&] ( GlobalIndexType i ) mutable {
+   auto copyPoint = [ & ]( GlobalIndexType i ) mutable
+   {
       meshBuilder.setPoint( i, inMesh.getPoint( i ) );
    };
    ParallelFor< Devices::Host >::exec( GlobalIndexType{ 0 }, inPointsCount, copyPoint );
 
    // Refine each cell
-   auto refineCell = [&] ( GlobalIndexType i ) mutable {
+   auto refineCell = [ & ]( GlobalIndexType i ) mutable
+   {
       const auto cell = inMesh.template getEntity< CellDimension >( i );
       const auto& indexPair = indices[ i ];
 
       // Lambda for adding new points
       GlobalIndexType setPointIndex = inPointsCount + indexPair.first;
-      auto addPoint = [&] ( const PointType& point ) {
+      auto addPoint = [ & ]( const PointType& point )
+      {
          const auto pointIdx = setPointIndex++;
          meshBuilder.setPoint( pointIdx, point );
          return pointIdx;
@@ -82,7 +89,8 @@ refineMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
 
       // Lambda for adding new cells
       GlobalIndexType setCellIndex = indexPair.second;
-      auto addCell = [&] ( auto... vertexIndices ) {
+      auto addCell = [ & ]( auto... vertexIndices )
+      {
          auto entitySeed = meshBuilder.getCellSeed( setCellIndex++ );
          entitySeed.setCornerIds( vertexIndices... );
       };
@@ -97,10 +105,11 @@ refineMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
 template< EntityRefinerVersion RefinerVersion,
           typename MeshConfig,
           std::enable_if_t< std::is_same< typename MeshConfig::CellTopology, Topologies::Triangle >::value
-                         || std::is_same< typename MeshConfig::CellTopology, Topologies::Quadrangle >::value
-                         || std::is_same< typename MeshConfig::CellTopology, Topologies::Tetrahedron >::value
-                         || std::is_same< typename MeshConfig::CellTopology, Topologies::Hexahedron >::value, bool > = true >
-auto // returns Mesh
+                               || std::is_same< typename MeshConfig::CellTopology, Topologies::Quadrangle >::value
+                               || std::is_same< typename MeshConfig::CellTopology, Topologies::Tetrahedron >::value
+                               || std::is_same< typename MeshConfig::CellTopology, Topologies::Hexahedron >::value,
+                            bool > = true >
+auto  // returns Mesh
 getRefinedMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
 {
    using Mesh = Mesh< MeshConfig, Devices::Host >;
@@ -112,5 +121,5 @@ getRefinedMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
    return outMesh;
 }
 
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Meshes
+}  // namespace TNL
