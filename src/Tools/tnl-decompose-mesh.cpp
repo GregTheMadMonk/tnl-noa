@@ -38,30 +38,30 @@ namespace BuildConfigTags {
 /****
  * Turn off all grids.
  */
-template<> struct GridRealTag< DecomposeMeshConfigTag, float > { enum { enabled = false }; };
-template<> struct GridRealTag< DecomposeMeshConfigTag, double > { enum { enabled = false }; };
-template<> struct GridRealTag< DecomposeMeshConfigTag, long double > { enum { enabled = false }; };
+template<> struct GridRealTag< DecomposeMeshConfigTag, float > { static constexpr bool enabled = false; };
+template<> struct GridRealTag< DecomposeMeshConfigTag, double > { static constexpr bool enabled = false; };
+template<> struct GridRealTag< DecomposeMeshConfigTag, long double > { static constexpr bool enabled = false; };
 
 /****
  * Unstructured meshes.
  */
-template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Edge > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Triangle > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Quadrangle > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Tetrahedron > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Hexahedron > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Edge > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Triangle > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Quadrangle > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Tetrahedron > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Hexahedron > { static constexpr bool enabled = true; };
 
 // Meshes are enabled only for the space dimension equal to the cell dimension.
 template< typename CellTopology, int SpaceDimension >
 struct MeshSpaceDimensionTag< DecomposeMeshConfigTag, CellTopology, SpaceDimension >
-{ enum { enabled = ( SpaceDimension == CellTopology::dimension ) }; };
+{ static constexpr bool enabled = SpaceDimension == CellTopology::dimension; };
 
 // Meshes are enabled only for types explicitly listed below.
-template<> struct MeshRealTag< DecomposeMeshConfigTag, float > { enum { enabled = true }; };
-template<> struct MeshRealTag< DecomposeMeshConfigTag, double > { enum { enabled = true }; };
-template<> struct MeshGlobalIndexTag< DecomposeMeshConfigTag, int > { enum { enabled = true }; };
-template<> struct MeshGlobalIndexTag< DecomposeMeshConfigTag, long int > { enum { enabled = true }; };
-template<> struct MeshLocalIndexTag< DecomposeMeshConfigTag, short int > { enum { enabled = true }; };
+template<> struct MeshRealTag< DecomposeMeshConfigTag, float > { static constexpr bool enabled = true; };
+template<> struct MeshRealTag< DecomposeMeshConfigTag, double > { static constexpr bool enabled = true; };
+template<> struct MeshGlobalIndexTag< DecomposeMeshConfigTag, int > { static constexpr bool enabled = true; };
+template<> struct MeshGlobalIndexTag< DecomposeMeshConfigTag, long int > { static constexpr bool enabled = true; };
+template<> struct MeshLocalIndexTag< DecomposeMeshConfigTag, short int > { static constexpr bool enabled = true; };
 
 // Config tag specifying the MeshConfig template to use.
 template<>

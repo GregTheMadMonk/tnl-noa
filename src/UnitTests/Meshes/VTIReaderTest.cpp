@@ -5,6 +5,7 @@
 #include <TNL/Meshes/Writers/VTIWriter.h>
 #include <TNL/Meshes/TypeResolver/resolveMeshType.h>
 
+#include "data/loader.h"
 #include "MeshReaderTest.h"
 
 using namespace TNL::Meshes;
@@ -18,13 +19,13 @@ namespace Meshes {
 namespace BuildConfigTags {
 
 // enable all index types in the GridTypeResolver
-template<> struct GridIndexTag< MyConfigTag, short int >{ enum { enabled = true }; };
-template<> struct GridIndexTag< MyConfigTag, int >{ enum { enabled = true }; };
-template<> struct GridIndexTag< MyConfigTag, long int >{ enum { enabled = true }; };
+template<> struct GridIndexTag< MyConfigTag, short int >{ static constexpr bool enabled = true; };
+template<> struct GridIndexTag< MyConfigTag, int >{ static constexpr bool enabled = true; };
+template<> struct GridIndexTag< MyConfigTag, long int >{ static constexpr bool enabled = true; };
 
 // disable float and long double (RealType is not stored in VTI and double is the default)
-template<> struct GridRealTag< MyConfigTag, float > { enum { enabled = false }; };
-template<> struct GridRealTag< MyConfigTag, long double > { enum { enabled = false }; };
+template<> struct GridRealTag< MyConfigTag, float > { static constexpr bool enabled = false; };
+template<> struct GridRealTag< MyConfigTag, long double > { static constexpr bool enabled = false; };
 
 } // namespace BuildConfigTags
 } // namespace Meshes
@@ -76,6 +77,42 @@ TEST( VTIReaderTest, Grid3D )
    test_resolveAndLoadMesh< Writers::VTIWriter, MyConfigTag >( grid, TEST_FILE_NAME );
    test_meshfunction< Readers::VTIReader, Writers::VTIWriter >( grid, TEST_FILE_NAME, "PointData" );
    test_meshfunction< Readers::VTIReader, Writers::VTIWriter >( grid, TEST_FILE_NAME, "CellData" );
+}
+
+// ASCII data, produced by TNL writer
+TEST( VTIReaderTest, Grid2D_vti )
+{
+   using GridType = Grid< 2, double, TNL::Devices::Host, int >;
+   const GridType mesh = loadMeshFromFile< GridType, Readers::VTIReader >( "quadrangles/grid_2x3.vti" );
+
+   // test that the mesh was actually loaded
+   const auto vertices = mesh.template getEntitiesCount< 0 >();
+   const auto cells = mesh.template getEntitiesCount< GridType::getMeshDimension() >();
+   EXPECT_EQ( vertices, 12 );
+   EXPECT_EQ( cells, 6 );
+
+   test_reader< Readers::VTIReader, Writers::VTIWriter >( mesh, TEST_FILE_NAME );
+   test_resolveAndLoadMesh< Writers::VTIWriter, MyConfigTag >( mesh, TEST_FILE_NAME );
+   test_meshfunction< Readers::VTIReader, Writers::VTIWriter >( mesh, TEST_FILE_NAME, "PointData" );
+   test_meshfunction< Readers::VTIReader, Writers::VTIWriter >( mesh, TEST_FILE_NAME, "CellData" );
+}
+
+// ASCII data, produced by TNL writer
+TEST( VTIReaderTest, Grid3D_vti )
+{
+   using GridType = Grid< 3, double, TNL::Devices::Host, long int >;
+   const GridType mesh = loadMeshFromFile< GridType, Readers::VTIReader >( "hexahedrons/grid_2x3x4.vti" );
+
+   // test that the mesh was actually loaded
+   const auto vertices = mesh.template getEntitiesCount< 0 >();
+   const auto cells = mesh.template getEntitiesCount< GridType::getMeshDimension() >();
+   EXPECT_EQ( vertices, 60 );
+   EXPECT_EQ( cells, 24 );
+
+   test_reader< Readers::VTIReader, Writers::VTIWriter >( mesh, TEST_FILE_NAME );
+   test_resolveAndLoadMesh< Writers::VTIWriter, MyConfigTag >( mesh, TEST_FILE_NAME );
+   test_meshfunction< Readers::VTIReader, Writers::VTIWriter >( mesh, TEST_FILE_NAME, "PointData" );
+   test_meshfunction< Readers::VTIReader, Writers::VTIWriter >( mesh, TEST_FILE_NAME, "CellData" );
 }
 #endif
 

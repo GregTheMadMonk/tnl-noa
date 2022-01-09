@@ -366,6 +366,17 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
                                   const IndexType columns ) override;
 
       /**
+       * \brief Set number of columns of this matrix.
+       *
+       * Unlike \ref setDimensions, the storage is not reset in this operation.
+       * It is the user's responsibility to update the column indices stored in
+       * the matrix to be consistent with the new number of columns.
+       *
+       * \param columns is the number of matrix columns.
+       */
+      virtual void setColumnsWithoutReset( const IndexType columns );
+
+      /**
        * \brief Set the number of matrix rows and columns by the given matrix.
        *
        * \tparam Matrix is matrix type. This can be any matrix having methods

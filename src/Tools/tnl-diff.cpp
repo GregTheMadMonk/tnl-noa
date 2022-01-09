@@ -22,14 +22,14 @@ namespace BuildConfigTags {
 /****
  * Turn off support for float and long double.
  */
-//template<> struct GridRealTag< TNLDiffBuildConfigTag, float > { enum { enabled = false }; };
-template<> struct GridRealTag< TNLDiffBuildConfigTag, long double > { enum { enabled = false }; };
+//template<> struct GridRealTag< TNLDiffBuildConfigTag, float > { static constexpr bool enabled = false; };
+template<> struct GridRealTag< TNLDiffBuildConfigTag, long double > { static constexpr bool enabled = false; };
 
 /****
  * Turn off support for short int and long int indexing.
  */
-template<> struct GridIndexTag< TNLDiffBuildConfigTag, short int >{ enum { enabled = false }; };
-template<> struct GridIndexTag< TNLDiffBuildConfigTag, long int >{ enum { enabled = false }; };
+template<> struct GridIndexTag< TNLDiffBuildConfigTag, short int >{ static constexpr bool enabled = false; };
+template<> struct GridIndexTag< TNLDiffBuildConfigTag, long int >{ static constexpr bool enabled = false; };
 
 } // namespace BuildConfigTags
 } // namespace Meshes

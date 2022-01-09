@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <ostream>
+
 #include <TNL/Meshes/VTKTraits.h>
 
 namespace TNL {
@@ -17,25 +19,12 @@ namespace Meshes {
 //! \brief Namespace for mesh writers.
 namespace Writers {
 
-namespace details {
-
-template< typename Mesh, int EntityDimension > struct MeshEntitiesVTKWriter;
-template< typename Mesh, int EntityDimension > struct MeshEntityTypesVTKWriter;
-
-} // namespace details
-
 template< typename Mesh >
 class VTKWriter
 {
    static_assert( Mesh::getMeshDimension() <= 3, "The VTK format supports only 1D, 2D and 3D meshes." );
    // TODO: check also space dimension when grids allow it
 //   static_assert( Mesh::getSpaceDimension() <= 3, "The VTK format supports only 1D, 2D and 3D meshes." );
-
-   template< int EntityDimension >
-   using EntitiesWriter = details::MeshEntitiesVTKWriter< Mesh, EntityDimension >;
-
-   template< int EntityDimension >
-   using EntityTypesWriter = details::MeshEntityTypesVTKWriter< Mesh, EntityDimension >;
 
 public:
 
@@ -57,17 +46,17 @@ public:
 
    template< typename Array >
    void writePointData( const Array& array,
-                        const String& name,
+                        const std::string& name,
                         const int numberOfComponents = 1 );
 
    template< typename Array >
    void writeCellData( const Array& array,
-                       const String& name,
+                       const std::string& name,
                        const int numberOfComponents = 1 );
 
    template< typename Array >
    void writeDataArray( const Array& array,
-                        const String& name,
+                        const std::string& name,
                         const int numberOfComponents = 1 );
 
 protected:

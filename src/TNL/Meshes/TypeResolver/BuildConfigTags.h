@@ -35,81 +35,80 @@ namespace BuildConfigTags {
 // Configuration for structured grids
 
 // 1, 2, and 3 dimensions are enabled by default
-template< typename ConfigTag, int Dimension > struct GridDimensionTag { enum { enabled = ( Dimension > 0 && Dimension <= 3 ) }; };
+template< typename ConfigTag, int Dimension > struct GridDimensionTag { static constexpr bool enabled = Dimension > 0 && Dimension <= 3; };
 
 // Grids are enabled only for the `float` and `double` real types by default.
-template< typename ConfigTag, typename Real > struct GridRealTag { enum { enabled = false }; };
-template< typename ConfigTag > struct GridRealTag< ConfigTag, float > { enum { enabled = true }; };
-template< typename ConfigTag > struct GridRealTag< ConfigTag, double > { enum { enabled = true }; };
+template< typename ConfigTag, typename Real > struct GridRealTag { static constexpr bool enabled = false; };
+template< typename ConfigTag > struct GridRealTag< ConfigTag, float > { static constexpr bool enabled = true; };
+template< typename ConfigTag > struct GridRealTag< ConfigTag, double > { static constexpr bool enabled = true; };
 
 // Grids are enabled on all available devices by default.
-template< typename ConfigTag, typename Device > struct GridDeviceTag { enum { enabled = true }; };
+template< typename ConfigTag, typename Device > struct GridDeviceTag { static constexpr bool enabled = true; };
 #ifndef HAVE_CUDA
-template< typename ConfigTag > struct GridDeviceTag< ConfigTag, Devices::Cuda > { enum { enabled = false }; };
+template< typename ConfigTag > struct GridDeviceTag< ConfigTag, Devices::Cuda > { static constexpr bool enabled = false; };
 #endif
 
 // Grids are enabled only for the `int` and `long int` index types by default.
-template< typename ConfigTag, typename Index > struct GridIndexTag { enum { enabled = false }; };
-template< typename ConfigTag > struct GridIndexTag< ConfigTag, int > { enum { enabled = true }; };
-template< typename ConfigTag > struct GridIndexTag< ConfigTag, long int > { enum { enabled = true }; };
+template< typename ConfigTag, typename Index > struct GridIndexTag { static constexpr bool enabled = false; };
+template< typename ConfigTag > struct GridIndexTag< ConfigTag, int > { static constexpr bool enabled = true; };
+template< typename ConfigTag > struct GridIndexTag< ConfigTag, long int > { static constexpr bool enabled = true; };
 
 // The Grid is enabled for allowed dimensions and Real, Device and Index types.
 //
 // By specializing this tag you can enable or disable custom combinations of
 // the grid template parameters. The default configuration is identical to the
 // individual per-type tags.
-template< typename ConfigTag, typename MeshType > struct GridTag { enum { enabled = false }; };
+template< typename ConfigTag, typename MeshType > struct GridTag { static constexpr bool enabled = false; };
 
 template< typename ConfigTag, int Dimension, typename Real, typename Device, typename Index >
 struct GridTag< ConfigTag, Grid< Dimension, Real, Device, Index > >
 {
-   enum { enabled = GridDimensionTag< ConfigTag, Dimension >::enabled  &&
+   static constexpr bool enabled = GridDimensionTag< ConfigTag, Dimension >::enabled  &&
                     GridRealTag< ConfigTag, Real >::enabled &&
                     GridDeviceTag< ConfigTag, Device >::enabled &&
-                    GridIndexTag< ConfigTag, Index >::enabled
-   };
+                    GridIndexTag< ConfigTag, Index >::enabled;
 };
 
 
 // Configuration for unstructured meshes
 
 // Meshes are enabled on all available devices by default.
-template< typename ConfigTag, typename Device > struct MeshDeviceTag { enum { enabled = false }; };
-template< typename ConfigTag > struct MeshDeviceTag< ConfigTag, Devices::Host > { enum { enabled = true }; };
+template< typename ConfigTag, typename Device > struct MeshDeviceTag { static constexpr bool enabled = false; };
+template< typename ConfigTag > struct MeshDeviceTag< ConfigTag, Devices::Host > { static constexpr bool enabled = true; };
 #ifdef HAVE_CUDA
-template< typename ConfigTag > struct MeshDeviceTag< ConfigTag, Devices::Cuda > { enum { enabled = true }; };
+template< typename ConfigTag > struct MeshDeviceTag< ConfigTag, Devices::Cuda > { static constexpr bool enabled = true; };
 #endif
 
 // All available cell topologies are disabled by default.
-template< typename ConfigTag, typename CellTopology > struct MeshCellTopologyTag { enum { enabled = false }; };
-//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Edge > { enum { enabled = true }; };
-//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Triangle > { enum { enabled = true }; };
-//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Quadrangle > { enum { enabled = true }; };
-//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Tetrahedron > { enum { enabled = true }; };
-//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Hexahedron > { enum { enabled = true }; };
-//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Polygon > { enum { enabled = true }; };
-//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Wedge > { enum { enabled = true }; };
-//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Pyramid > { enum { enabled = true }; };
-//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Polyhedron > { enum { enabled = true }; };
+template< typename ConfigTag, typename CellTopology > struct MeshCellTopologyTag { static constexpr bool enabled = false; };
+//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Edge > { static constexpr bool enabled = true; };
+//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Triangle > { static constexpr bool enabled = true; };
+//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Quadrangle > { static constexpr bool enabled = true; };
+//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Tetrahedron > { static constexpr bool enabled = true; };
+//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Hexahedron > { static constexpr bool enabled = true; };
+//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Polygon > { static constexpr bool enabled = true; };
+//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Wedge > { static constexpr bool enabled = true; };
+//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Pyramid > { static constexpr bool enabled = true; };
+//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Polyhedron > { static constexpr bool enabled = true; };
 // TODO: Simplex has not been tested yet
-//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Simplex > { enum { enabled = true }; };
+//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Simplex > { static constexpr bool enabled = true; };
 
 // All sensible space dimensions are enabled by default.
-template< typename ConfigTag, typename CellTopology, int SpaceDimension > struct MeshSpaceDimensionTag { enum { enabled = ( SpaceDimension >= CellTopology::dimension && SpaceDimension <= 3 ) }; };
+template< typename ConfigTag, typename CellTopology, int SpaceDimension > struct MeshSpaceDimensionTag { static constexpr bool enabled = SpaceDimension >= CellTopology::dimension && SpaceDimension <= 3; };
 
 // Meshes are enabled only for the `float` and `double` real types by default.
-template< typename ConfigTag, typename Real > struct MeshRealTag { enum { enabled = false }; };
-template< typename ConfigTag > struct MeshRealTag< ConfigTag, float > { enum { enabled = true }; };
-template< typename ConfigTag > struct MeshRealTag< ConfigTag, double > { enum { enabled = true }; };
+template< typename ConfigTag, typename Real > struct MeshRealTag { static constexpr bool enabled = false; };
+template< typename ConfigTag > struct MeshRealTag< ConfigTag, float > { static constexpr bool enabled = true; };
+template< typename ConfigTag > struct MeshRealTag< ConfigTag, double > { static constexpr bool enabled = true; };
 
 // Meshes are enabled only for the `int` and `long int` global index types by default.
-template< typename ConfigTag, typename GlobalIndex > struct MeshGlobalIndexTag { enum { enabled = false }; };
-template< typename ConfigTag > struct MeshGlobalIndexTag< ConfigTag, int > { enum { enabled = true }; };
-template< typename ConfigTag > struct MeshGlobalIndexTag< ConfigTag, long int > { enum { enabled = true }; };
+template< typename ConfigTag, typename GlobalIndex > struct MeshGlobalIndexTag { static constexpr bool enabled = false; };
+template< typename ConfigTag > struct MeshGlobalIndexTag< ConfigTag, int > { static constexpr bool enabled = true; };
+template< typename ConfigTag > struct MeshGlobalIndexTag< ConfigTag, long int > { static constexpr bool enabled = true; };
 
 // Meshes are enabled only for the `short int` local index type by default.
-template< typename ConfigTag, typename LocalIndex > struct MeshLocalIndexTag { enum { enabled = false }; };
-template< typename ConfigTag > struct MeshLocalIndexTag< ConfigTag, short int > { enum { enabled = true }; };
+template< typename ConfigTag, typename LocalIndex > struct MeshLocalIndexTag { static constexpr bool enabled = false; };
+template< typename ConfigTag > struct MeshLocalIndexTag< ConfigTag, short int > { static constexpr bool enabled = true; };
 
 // Config tag specifying the MeshConfig to use.
 template< typename ConfigTag >
@@ -138,14 +137,13 @@ struct MeshConfigTemplateTag
 template< typename ConfigTag, typename Device, typename CellTopology, int SpaceDimension, typename Real, typename GlobalIndex, typename LocalIndex >
 struct MeshTag
 {
-   enum { enabled =
+   static constexpr bool enabled =
             MeshDeviceTag< ConfigTag, Device >::enabled &&
             MeshCellTopologyTag< ConfigTag, CellTopology >::enabled &&
             MeshSpaceDimensionTag< ConfigTag, CellTopology, SpaceDimension >::enabled &&
             MeshRealTag< ConfigTag, Real >::enabled &&
             MeshGlobalIndexTag< ConfigTag, GlobalIndex >::enabled &&
-            MeshLocalIndexTag< ConfigTag, LocalIndex >::enabled
-   };
+            MeshLocalIndexTag< ConfigTag, LocalIndex >::enabled;
 };
 
 } // namespace BuildConfigTags

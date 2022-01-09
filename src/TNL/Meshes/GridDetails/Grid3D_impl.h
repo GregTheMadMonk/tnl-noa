@@ -12,7 +12,6 @@
 
 #include <fstream>
 #include <iomanip>
-#include <TNL/String.h>
 #include <TNL/Assert.h>
 #include <TNL/Meshes/GridDetails/GridEntityGetter_impl.h>
 #include <TNL/Meshes/GridDetails/NeighborGridEntityGetter3D_impl.h>

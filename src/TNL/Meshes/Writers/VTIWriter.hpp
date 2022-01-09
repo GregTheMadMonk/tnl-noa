@@ -121,7 +121,7 @@ template< typename Mesh >
    template< typename Array >
 void
 VTIWriter< Mesh >::writePointData( const Array& array,
-                                   const String& name,
+                                   const std::string& name,
                                    const int numberOfComponents )
 {
    if( ! pieceOpen )
@@ -137,7 +137,7 @@ template< typename Mesh >
    template< typename Array >
 void
 VTIWriter< Mesh >::writeCellData( const Array& array,
-                                  const String& name,
+                                  const std::string& name,
                                   const int numberOfComponents )
 {
    if( ! pieceOpen )
@@ -153,7 +153,7 @@ template< typename Mesh >
    template< typename Array >
 void
 VTIWriter< Mesh >::writeDataArray( const Array& array,
-                                   const String& name,
+                                   const std::string& name,
                                    const int numberOfComponents )
 {
    // use a host buffer if direct access to the array elements is not possible

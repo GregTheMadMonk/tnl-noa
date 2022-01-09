@@ -125,7 +125,7 @@ PVTIWriter< Grid >::writeEntities( const Grid& grid,
 template< typename Grid >
    template< typename ValueType >
 void
-PVTIWriter< Grid >::writePPointData( const String& name,
+PVTIWriter< Grid >::writePPointData( const std::string& name,
                                      const int numberOfComponents )
 {
    if( ! vtkfileOpen )
@@ -137,7 +137,7 @@ PVTIWriter< Grid >::writePPointData( const String& name,
 template< typename Grid >
    template< typename ValueType >
 void
-PVTIWriter< Grid >::writePCellData( const String& name,
+PVTIWriter< Grid >::writePCellData( const std::string& name,
                                     const int numberOfComponents )
 {
    if( ! vtkfileOpen )
@@ -149,7 +149,7 @@ PVTIWriter< Grid >::writePCellData( const String& name,
 template< typename Grid >
    template< typename ValueType >
 void
-PVTIWriter< Grid >::writePDataArray( const String& name,
+PVTIWriter< Grid >::writePDataArray( const std::string& name,
                                      const int numberOfComponents )
 {
    if( numberOfComponents != 0 && numberOfComponents != 1 && numberOfComponents != 3 )
@@ -162,12 +162,17 @@ PVTIWriter< Grid >::writePDataArray( const String& name,
 
 template< typename Grid >
 std::string
-PVTIWriter< Grid >::addPiece( const String& mainFileName,
+PVTIWriter< Grid >::addPiece( const std::string& mainFileName,
                               const unsigned subdomainIndex,
                               const typename Grid::CoordinatesType& globalBegin,
                               const typename Grid::CoordinatesType& globalEnd )
 {
-   if( ! mainFileName.endsWith( ".pvti" ) )
+   namespace fs = std::experimental::filesystem;
+
+   // get the basename of the main file (filename without extension)
+   const fs::path mainPath = mainFileName;
+   const fs::path basename = mainPath.stem();
+   if( mainPath.extension() != ".pvti" )
       throw std::logic_error("The mainFileName parameter must be the name of the "
                              ".pvti file (i.e., it must have the .pvti suffix).");
 
@@ -182,12 +187,6 @@ PVTIWriter< Grid >::addPiece( const String& mainFileName,
    // VTK knows only 3D grids
    for( int j = Grid::getMeshDimension(); j < 3; j++ )
       extent << "0 0 ";
-
-   namespace fs = std::experimental::filesystem;
-
-   // get the basename of the main file (filename without extension)
-   const fs::path mainPath = mainFileName.getString();
-   const fs::path basename = mainPath.stem();
 
    // create subdirectory for subdomains
    const fs::path subdirectory = mainPath.parent_path() / basename;
@@ -204,7 +203,7 @@ PVTIWriter< Grid >::addPiece( const String& mainFileName,
 
 template< typename Grid >
 std::string
-PVTIWriter< Grid >::addPiece( const String& mainFileName,
+PVTIWriter< Grid >::addPiece( const std::string& mainFileName,
                               const DistributedMeshes::DistributedMesh< Grid >& distributedMesh )
 {
    const MPI_Comm communicator = distributedMesh.getCommunicator();

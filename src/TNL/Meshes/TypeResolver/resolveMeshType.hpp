@@ -26,7 +26,9 @@ template< typename ConfigTag,
 bool
 resolveMeshType( Functor&& functor,
                  const std::string& fileName,
-                 const std::string& fileFormat )
+                 const std::string& fileFormat,
+                 const std::string& realType,
+                 const std::string& globalIndexType )
 {
    std::cout << "Detecting mesh from file " << fileName << " ..." << std::endl;
 
@@ -35,6 +37,11 @@ resolveMeshType( Functor&& functor,
       return false;
 
    reader->detectMesh();
+
+   if( realType != "auto" )
+      reader->forceRealType( realType );
+   if( globalIndexType != "auto" )
+      reader->forceGlobalIndexType( globalIndexType );
 
    if( reader->getMeshType() == "Meshes::Grid" || reader->getMeshType() == "Meshes::DistributedGrid" )
       return GridTypeResolver< ConfigTag, Device >::run( *reader, functor );
@@ -52,7 +59,9 @@ template< typename ConfigTag,
 bool
 resolveAndLoadMesh( Functor&& functor,
                     const std::string& fileName,
-                    const std::string& fileFormat )
+                    const std::string& fileFormat,
+                    const std::string& realType,
+                    const std::string& globalIndexType )
 {
    auto wrapper = [&]( auto& reader, auto&& mesh ) -> bool
    {
@@ -67,7 +76,7 @@ resolveAndLoadMesh( Functor&& functor,
       }
       return functor( reader, std::forward<MeshType>(mesh) );
    };
-   return resolveMeshType< ConfigTag, Device >( wrapper, fileName, fileFormat );
+   return resolveMeshType< ConfigTag, Device >( wrapper, fileName, fileFormat, realType, globalIndexType );
 }
 
 template< typename Mesh >

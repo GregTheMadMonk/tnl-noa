@@ -20,6 +20,7 @@
 #include <TNL/Meshes/Geometry/isPlanar.h>
 #include <TNL/Meshes/Geometry/getDecomposedMesh.h>
 #include <TNL/Meshes/Geometry/getPlanarMesh.h>
+#include <TNL/Meshes/Geometry/getRefinedMesh.h>
 
 #include <TNL/Meshes/Writers/VTKWriter.h>
 
@@ -28,41 +29,41 @@ namespace MeshGeometryTest {
 using namespace TNL;
 using namespace TNL::Meshes;
 
-class TestPolygon2DMeshConfig : public DefaultConfig< Topologies::Polygon >
+template< typename... Ts >
+struct TestMeshConfigBase : public DefaultConfig< Ts... >
 {
-public:
    static constexpr bool subentityStorage( int entityDimension, int subentityDimension ) { return true; }
    static constexpr bool superentityStorage( int entityDimension, int superentityDimension ) { return true; }
 };
 
-class TestPolygon3DMeshConfig : public DefaultConfig< Topologies::Polygon >
+struct TestTriangleMeshConfig : public TestMeshConfigBase< Topologies::Triangle >
+{};
+
+struct TestQuadrangleMeshConfig : public TestMeshConfigBase< Topologies::Quadrangle >
+{};
+
+struct TestTetrahedronMeshConfig : public TestMeshConfigBase< Topologies::Tetrahedron >
+{};
+
+struct TestHexahedronMeshConfig : public TestMeshConfigBase< Topologies::Hexahedron >
+{};
+
+struct TestPolygon2DMeshConfig : public TestMeshConfigBase< Topologies::Polygon >
+{};
+
+struct TestPolygon3DMeshConfig : public TestMeshConfigBase< Topologies::Polygon >
 {
-public:
    static constexpr int spaceDimension = 3;
-   static constexpr bool subentityStorage( int entityDimension, int subentityDimension ) { return true; }
-   static constexpr bool superentityStorage( int entityDimension, int superentityDimension ) { return true; }
 };
 
-class TestWedgeMeshConfig : public DefaultConfig< Topologies::Wedge >
-{
-public:
-   static constexpr bool subentityStorage( int entityDimension, int subentityDimension ) { return true; }
-   static constexpr bool superentityStorage( int entityDimension, int superentityDimension ) { return true; }
-};
+struct TestWedgeMeshConfig : public TestMeshConfigBase< Topologies::Wedge >
+{};
 
-class TestPyramidMeshConfig : public DefaultConfig< Topologies::Pyramid >
-{
-public:
-   static constexpr bool subentityStorage( int entityDimension, int subentityDimension ) { return true; }
-   static constexpr bool superentityStorage( int entityDimension, int superentityDimension ) { return true; }
-};
+struct TestPyramidMeshConfig : public TestMeshConfigBase< Topologies::Pyramid >
+{};
 
-class TestPolyhedronMeshConfig : public DefaultConfig< Topologies::Polyhedron >
-{
-public:
-   static constexpr bool subentityStorage( int entityDimension, int subentityDimension ) { return true; }
-   static constexpr bool superentityStorage( int entityDimension, int superentityDimension ) { return true; }
-};
+struct TestPolyhedronMeshConfig : public TestMeshConfigBase< Topologies::Polyhedron >
+{};
 
 TEST( MeshGeometryTest, Polygon2DAreaTest )
 {
@@ -1106,6 +1107,199 @@ TEST( MeshGeometryTest, PolyhedronGetPlanarMeshTest )
       EXPECT_EQ( planarMesh.getEntitiesCount< 3 >(), 2 );
    }
 }
+
+TEST( MeshGeometryTest, TriangleGetRefinedMeshTest )
+{
+   using TriangleTestMesh = Mesh< TestTriangleMeshConfig >;
+   using PointType = typename TriangleTestMesh::PointType;
+
+   /****
+    * We set-up the following situation
+            point2   edge3       point3
+               |\-------------------|
+               | \                  |
+               |  \   triangle1     |
+               |   \                |
+
+                      ....
+            edge1     edge0        edge4
+                      ....
+
+
+               |   triangle0     \  |
+               |                  \ |
+               ---------------------|
+            point0   edge2        point1
+    */
+
+   PointType point0( 0.0, 0.0 ),
+             point1( 1.0, 0.0 ),
+             point2( 0.0, 1.0 ),
+             point3( 1.0, 1.0 );
+
+   MeshBuilder< TriangleTestMesh > meshBuilder;
+   meshBuilder.setEntitiesCount( 4, 2 );
+
+   meshBuilder.setPoint( 0, point0 );
+   meshBuilder.setPoint( 1, point1 );
+   meshBuilder.setPoint( 2, point2 );
+   meshBuilder.setPoint( 3, point3 );
+
+   meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 1, 1 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 2, 2 );
+   meshBuilder.getCellSeed( 1 ).setCornerId( 0, 1 );
+   meshBuilder.getCellSeed( 1 ).setCornerId( 1, 2 );
+   meshBuilder.getCellSeed( 1 ).setCornerId( 2, 3 );
+
+   TriangleTestMesh mesh;
+   ASSERT_TRUE( meshBuilder.build( mesh ) );
+   const TriangleTestMesh refinedMesh = getRefinedMesh< EntityRefinerVersion::EdgeBisection >( mesh );
+
+   EXPECT_EQ( refinedMesh.getEntitiesCount< 2 >(),  8 );
+   EXPECT_EQ( refinedMesh.getEntitiesCount< 1 >(), 16 );
+   EXPECT_EQ( refinedMesh.getEntitiesCount< 0 >(),  9 );
+};
+
+TEST( MeshGeometryTest, QuadrangleGetRefinedMeshTest )
+{
+   using QuadrangleTestMesh = Mesh< TestQuadrangleMeshConfig >;
+   using PointType = typename QuadrangleTestMesh::PointType;
+
+   PointType point0( 0.0, 0.0 ),
+             point1( 1.0, 0.0 ),
+             point2( 0.0, 1.0 ),
+             point3( 1.0, 1.0 ),
+             point4( 0.0, 2.0 ),
+             point5( 1.0, 2.0 );
+
+   MeshBuilder< QuadrangleTestMesh > meshBuilder;
+   meshBuilder.setEntitiesCount( 6, 2 );
+
+   meshBuilder.setPoint( 0, point0 );
+   meshBuilder.setPoint( 1, point1 );
+   meshBuilder.setPoint( 2, point2 );
+   meshBuilder.setPoint( 3, point3 );
+   meshBuilder.setPoint( 4, point4 );
+   meshBuilder.setPoint( 5, point5 );
+
+   meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 1, 1 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 2, 3 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 3, 2 );
+   meshBuilder.getCellSeed( 1 ).setCornerId( 0, 2 );
+   meshBuilder.getCellSeed( 1 ).setCornerId( 1, 3 );
+   meshBuilder.getCellSeed( 1 ).setCornerId( 2, 5 );
+   meshBuilder.getCellSeed( 1 ).setCornerId( 3, 4 );
+
+   QuadrangleTestMesh mesh;
+   ASSERT_TRUE( meshBuilder.build( mesh ) );
+   const QuadrangleTestMesh refinedMesh = getRefinedMesh< EntityRefinerVersion::EdgeBisection >( mesh );
+
+   EXPECT_EQ( refinedMesh.getEntitiesCount< 2 >(),  8 );
+   EXPECT_EQ( refinedMesh.getEntitiesCount< 1 >(), 22 );
+   EXPECT_EQ( refinedMesh.getEntitiesCount< 0 >(), 15 );
+};
+
+TEST( MeshGeometryTest, TetrahedronGetRefinedMeshTest )
+{
+   using TetrahedronTestMesh = Mesh< TestTetrahedronMeshConfig >;
+   using PointType = typename TetrahedronTestMesh::PointType;
+
+   PointType point0( 0.0, 0.0, 0.0 ),
+             point1( 1.0, 0.0, 0.0 ),
+             point2( 0.0, 1.0, 0.0 ),
+             point3( 0.0, 0.0, 1.0 ),
+             point4( 1.0, 1.0, 1.0 );
+
+   MeshBuilder< TetrahedronTestMesh > meshBuilder;
+   meshBuilder.setEntitiesCount( 5, 2 );
+
+   meshBuilder.setPoint( 0, point0 );
+   meshBuilder.setPoint( 1, point1 );
+   meshBuilder.setPoint( 2, point2 );
+   meshBuilder.setPoint( 3, point3 );
+   meshBuilder.setPoint( 4, point4 );
+
+   meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 1, 1 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 2, 2 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 3, 3 );
+   meshBuilder.getCellSeed( 1 ).setCornerId( 0, 1 );
+   meshBuilder.getCellSeed( 1 ).setCornerId( 1, 2 );
+   meshBuilder.getCellSeed( 1 ).setCornerId( 2, 3 );
+   meshBuilder.getCellSeed( 1 ).setCornerId( 3, 4 );
+
+   TetrahedronTestMesh mesh;
+   ASSERT_TRUE( meshBuilder.build( mesh ) );
+   const TetrahedronTestMesh refinedMesh = getRefinedMesh< EntityRefinerVersion::EdgeBisection >( mesh );
+
+   EXPECT_EQ( refinedMesh.getEntitiesCount< 3 >(), 16 );
+   EXPECT_EQ( refinedMesh.getEntitiesCount< 2 >(), 44 );
+   EXPECT_EQ( refinedMesh.getEntitiesCount< 1 >(), 41 );
+   EXPECT_EQ( refinedMesh.getEntitiesCount< 0 >(), 14 );
+};
+
+TEST( MeshGeometryTest, HexahedronGetRefinedMeshTest )
+{
+   using HexahedronTestMesh = Mesh< TestHexahedronMeshConfig >;
+   using PointType = typename HexahedronTestMesh::PointType;
+
+   PointType point0( 0.0, 0.0, 0.0 ),
+             point1( 1.0, 0.0, 0.0 ),
+             point2( 1.0, 1.0, 0.0 ),
+             point3( 0.0, 1.0, 0.0 ),
+             point4( 0.0, 0.0, 1.0 ),
+             point5( 1.0, 0.0, 1.0 ),
+             point6( 1.0, 1.0, 1.0 ),
+             point7( 0.0, 1.0, 1.0 ),
+             point8( 0.0, 0.0, 2.0 ),
+             point9( 1.0, 0.0, 2.0 ),
+             point10( 1.0, 1.0, 2.0 ),
+             point11( 0.0, 1.0, 2.0 );
+
+   MeshBuilder< HexahedronTestMesh > meshBuilder;
+   meshBuilder.setEntitiesCount( 12, 2 );
+
+   meshBuilder.setPoint( 0, point0 );
+   meshBuilder.setPoint( 1, point1 );
+   meshBuilder.setPoint( 2, point2 );
+   meshBuilder.setPoint( 3, point3 );
+   meshBuilder.setPoint( 4, point4 );
+   meshBuilder.setPoint( 5, point5 );
+   meshBuilder.setPoint( 6, point6 );
+   meshBuilder.setPoint( 7, point7 );
+   meshBuilder.setPoint( 8, point8 );
+   meshBuilder.setPoint( 9, point9 );
+   meshBuilder.setPoint( 10, point10 );
+   meshBuilder.setPoint( 11, point11 );
+
+   meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 1, 1 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 2, 2 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 3, 3 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 4, 4 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 5, 5 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 6, 6 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 7, 7 );
+   meshBuilder.getCellSeed( 1 ).setCornerId( 0, 4 );
+   meshBuilder.getCellSeed( 1 ).setCornerId( 1, 5 );
+   meshBuilder.getCellSeed( 1 ).setCornerId( 2, 6 );
+   meshBuilder.getCellSeed( 1 ).setCornerId( 3, 7 );
+   meshBuilder.getCellSeed( 1 ).setCornerId( 4, 8 );
+   meshBuilder.getCellSeed( 1 ).setCornerId( 5, 9 );
+   meshBuilder.getCellSeed( 1 ).setCornerId( 6, 10 );
+   meshBuilder.getCellSeed( 1 ).setCornerId( 7, 11 );
+
+   HexahedronTestMesh mesh;
+   ASSERT_TRUE( meshBuilder.build( mesh ) );
+   const HexahedronTestMesh refinedMesh = getRefinedMesh< EntityRefinerVersion::EdgeBisection >( mesh );
+
+   EXPECT_EQ( refinedMesh.getEntitiesCount< 3 >(), 16 );
+   EXPECT_EQ( refinedMesh.getEntitiesCount< 2 >(), 68 );
+   EXPECT_EQ( refinedMesh.getEntitiesCount< 1 >(), 96 );
+   EXPECT_EQ( refinedMesh.getEntitiesCount< 0 >(), 45 );
+};
 
 } // namespace MeshTest
 

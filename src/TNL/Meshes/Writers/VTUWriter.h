@@ -12,17 +12,13 @@
 
 #pragma once
 
+#include <ostream>
+
 #include <TNL/Meshes/VTKTraits.h>
 
 namespace TNL {
 namespace Meshes {
 namespace Writers {
-
-namespace details {
-
-template< typename Mesh, int EntityDimension > struct MeshEntitiesVTUCollector;
-
-} // namespace details
 
 template< typename Mesh >
 class VTUWriter
@@ -30,9 +26,6 @@ class VTUWriter
    static_assert( Mesh::getMeshDimension() <= 3, "The VTK format supports only 1D, 2D and 3D meshes." );
    // TODO: check also space dimension when grids allow it
 //   static_assert( Mesh::getSpaceDimension() <= 3, "The VTK format supports only 1D, 2D and 3D meshes." );
-
-   template< int EntityDimension >
-   using EntitiesCollector = details::MeshEntitiesVTUCollector< Mesh, EntityDimension >;
 
    using HeaderType = std::uint64_t;
 public:
@@ -52,17 +45,17 @@ public:
 
    template< typename Array >
    void writePointData( const Array& array,
-                        const String& name,
+                        const std::string& name,
                         const int numberOfComponents = 1 );
 
    template< typename Array >
    void writeCellData( const Array& array,
-                       const String& name,
+                       const std::string& name,
                        const int numberOfComponents = 1 );
 
    template< typename Array >
    void writeDataArray( const Array& array,
-                        const String& name,
+                        const std::string& name,
                         const int numberOfComponents = 1 );
 
    ~VTUWriter();

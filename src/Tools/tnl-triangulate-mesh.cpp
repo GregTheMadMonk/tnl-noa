@@ -15,32 +15,32 @@ namespace BuildConfigTags {
 /****
  * Turn off all grids.
  */
-template<> struct GridRealTag< MeshTriangulatorConfigTag, float > { enum { enabled = false }; };
-template<> struct GridRealTag< MeshTriangulatorConfigTag, double > { enum { enabled = false }; };
-template<> struct GridRealTag< MeshTriangulatorConfigTag, long double > { enum { enabled = false }; };
+template<> struct GridRealTag< MeshTriangulatorConfigTag, float > { static constexpr bool enabled = false; };
+template<> struct GridRealTag< MeshTriangulatorConfigTag, double > { static constexpr bool enabled = false; };
+template<> struct GridRealTag< MeshTriangulatorConfigTag, long double > { static constexpr bool enabled = false; };
 
 /****
  * Unstructured meshes.
  */
-template<> struct MeshCellTopologyTag< MeshTriangulatorConfigTag, Topologies::Polygon > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MeshTriangulatorConfigTag, Topologies::Polyhedron > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< MeshTriangulatorConfigTag, Topologies::Polygon > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< MeshTriangulatorConfigTag, Topologies::Polyhedron > { static constexpr bool enabled = true; };
 
 // Meshes are enabled only for the space dimension equal to the cell dimension.
 template< typename CellTopology, int SpaceDimension >
 struct MeshSpaceDimensionTag< MeshTriangulatorConfigTag, CellTopology, SpaceDimension >
-{ enum { enabled = ( SpaceDimension == CellTopology::dimension ) }; };
+{ static constexpr bool enabled = SpaceDimension == CellTopology::dimension; };
 
 // Polygonal Meshes are enable for the space dimension equal to 2 or 3
 template< int SpaceDimension >
 struct MeshSpaceDimensionTag< MeshTriangulatorConfigTag, Topologies::Polygon, SpaceDimension >
-{ enum { enabled = ( SpaceDimension >= 2 && SpaceDimension <= 3 ) }; };
+{ static constexpr bool enabled = SpaceDimension >= 2 && SpaceDimension <= 3; };
 
 // Meshes are enabled only for types explicitly listed below.
-template<> struct MeshRealTag< MeshTriangulatorConfigTag, float > { enum { enabled = true }; };
-template<> struct MeshRealTag< MeshTriangulatorConfigTag, double > { enum { enabled = true }; };
-template<> struct MeshGlobalIndexTag< MeshTriangulatorConfigTag, long int > { enum { enabled = true }; };
-template<> struct MeshGlobalIndexTag< MeshTriangulatorConfigTag, int > { enum { enabled = true }; };
-template<> struct MeshLocalIndexTag< MeshTriangulatorConfigTag, short int > { enum { enabled = true }; };
+template<> struct MeshRealTag< MeshTriangulatorConfigTag, float > { static constexpr bool enabled = true; };
+template<> struct MeshRealTag< MeshTriangulatorConfigTag, double > { static constexpr bool enabled = true; };
+template<> struct MeshGlobalIndexTag< MeshTriangulatorConfigTag, long int > { static constexpr bool enabled = true; };
+template<> struct MeshGlobalIndexTag< MeshTriangulatorConfigTag, int > { static constexpr bool enabled = true; };
+template<> struct MeshLocalIndexTag< MeshTriangulatorConfigTag, short int > { static constexpr bool enabled = true; };
 
 // Config tag specifying the MeshConfig template to use.
 template<>
@@ -90,7 +90,7 @@ struct MeshConfigTemplateTag< MeshTriangulatorConfigTag >
 } // namespace TNL
 
 template< typename Mesh >
-auto getDecomposedMeshHelper( const Mesh& mesh, const String& decompositionType )
+auto getDecomposedMeshHelper( const Mesh& mesh, const std::string& decompositionType )
 {
    using namespace TNL::Meshes;
 
@@ -117,35 +117,52 @@ auto getDecomposedMeshHelper( const Mesh& mesh, const String& decompositionType 
 }
 
 template< typename Mesh >
-bool triangulateMesh( const Mesh& mesh, const String& outputFileName, const String& outputFormat, const String& decompositionType )
+bool triangulateMesh( const Mesh& mesh, const std::string& outputFileName, const std::string& outputFormat, const std::string& decompositionType )
 {
    const auto decomposedMesh = getDecomposedMeshHelper( mesh, decompositionType );
 
-   if( outputFormat == "vtk" ) {
+   std::string format = outputFormat;
+   if( outputFormat == "auto" ) {
+      namespace fs = std::experimental::filesystem;
+      format = fs::path( outputFileName ).extension();
+      if( format.length() > 0 )
+         // remove dot from the extension
+         format = format.substr(1);
+   }
+
+   if( format == "vtk" ) {
       using Writer = Meshes::Writers::VTKWriter< decltype( decomposedMesh ) >;
       std::ofstream file( outputFileName );
       Writer writer( file );
       writer.template writeEntities< Mesh::getMeshDimension() >( decomposedMesh );
+      return true;
    }
-   else if( outputFormat == "vtu" ) {
+   if( format == "vtu" ) {
       using Writer = Meshes::Writers::VTUWriter< decltype( decomposedMesh ) >;
       std::ofstream file( outputFileName );
       Writer writer( file );
       writer.template writeEntities< Mesh::getMeshDimension() >( decomposedMesh );
+      return true;
    }
 
-   return true;
+   if( outputFormat == "auto" )
+      std::cerr << "File '" << outputFileName << "' has unsupported format (based on the file extension): " << format << ".";
+   else
+      std::cerr << "Unsupported output file format: " << outputFormat << ".";
+   std::cerr << " Supported formats are 'vtk' and 'vtu'." << std::endl;
+   return false;
 }
 
 void configSetup( Config::ConfigDescription& config )
 {
    config.addDelimiter( "General settings:" );
-   config.addRequiredEntry< String >( "input-file", "Input file with the mesh." );
-   config.addRequiredEntry< String >( "output-file", "Output mesh file path." );
-   config.addRequiredEntry< String >( "output-file-format", "Output mesh file format." );
+   config.addRequiredEntry< std::string >( "input-file", "Input file with the mesh." );
+   config.addEntry< std::string >( "input-file-format", "Input mesh file format.", "auto" );
+   config.addRequiredEntry< std::string >( "output-file", "Output mesh file path." );
+   config.addRequiredEntry< std::string >( "output-file-format", "Output mesh file format." );
    config.addEntryEnum( "vtk" );
    config.addEntryEnum( "vtu" );
-   config.addRequiredEntry< String >( "decomposition-type", "Type of decomposition to use." );
+   config.addRequiredEntry< std::string >( "decomposition-type", "Type of decomposition to use." );
    config.addEntryEnum( "cc" );
    config.addEntryEnum( "cp" );
    config.addEntryEnum( "pc" );
@@ -162,15 +179,16 @@ int main( int argc, char* argv[] )
    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
       return EXIT_FAILURE;
 
-   const String inputFileName = parameters.getParameter< String >( "input-file" );
-   const String inputFileFormat = "auto";
-   const String outputFileName = parameters.getParameter< String >( "output-file" );
-   const String outputFileFormat = parameters.getParameter< String >( "output-file-format" );
-   const String decompositionType = parameters.getParameter< String >( "decomposition-type" );
+   const std::string inputFileName = parameters.getParameter< std::string >( "input-file" );
+   const std::string inputFileFormat = parameters.getParameter< std::string >( "input-file-format" );
+   const std::string outputFileName = parameters.getParameter< std::string >( "output-file" );
+   const std::string outputFileFormat = parameters.getParameter< std::string >( "output-file-format" );
+   const std::string decompositionType = parameters.getParameter< std::string >( "decomposition-type" );
 
    auto wrapper = [&] ( auto& reader, auto&& mesh ) -> bool
    {
       return triangulateMesh( mesh, outputFileName, outputFileFormat, decompositionType );
    };
-   return ! Meshes::resolveAndLoadMesh< MeshTriangulatorConfigTag, Devices::Host >( wrapper, inputFileName, inputFileFormat );
+   const bool status = Meshes::resolveAndLoadMesh< MeshTriangulatorConfigTag, Devices::Host >( wrapper, inputFileName, inputFileFormat );
+   return static_cast< int >( ! status );
 }

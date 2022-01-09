@@ -174,7 +174,7 @@ public:
 
       MeshBuilder meshBuilder;
       meshBuilder.setEntitiesCount( NumberOfPoints, NumberOfCells, NumberOfFaces );
- 
+
       // assign points
       visit( [&meshBuilder](auto&& array) {
                PointType p;
@@ -196,7 +196,7 @@ public:
                // let's just assume that the connectivity and offsets arrays have the same type...
                using mpark::get;
                const auto& offsets = get< std::decay_t<decltype(connectivity)> >( faceOffsetsArray );
-               
+
                // Set corners counts
                NeighborCountsArray cornersCounts( NumberOfFaces );
                std::size_t offsetStart = 0;
@@ -252,6 +252,10 @@ public:
       // reset arrays since they are not needed anymore
       pointsArray = faceConnectivityArray = cellConnectivityArray = faceOffsetsArray = cellOffsetsArray = typesArray = {};
 
+      // deduplicate faces (important for VTK formats, not for FPMA)
+      if( NumberOfFaces > 0 )
+         meshBuilder.deduplicateFaces();
+
       if( ! meshBuilder.build( mesh ) )
          throw MeshReaderError( "MeshReader", "MeshBuilder failed" );
    }
@@ -295,20 +299,41 @@ public:
    std::string
    getRealType() const
    {
-      return pointsType;
+      if( forcedRealType.empty() )
+         return pointsType;
+      return forcedRealType;
    }
 
    std::string
    getGlobalIndexType() const
    {
-      return connectivityType;
+      if( forcedGlobalIndexType.empty() )
+         return connectivityType;
+      return forcedGlobalIndexType;
    }
 
    std::string
    getLocalIndexType() const
    {
-      // not stored in any file format
-      return "short int";
+      return forcedLocalIndexType;
+   }
+
+   void
+   forceRealType( std::string realType )
+   {
+      forcedRealType = std::move( realType );
+   }
+
+   void
+   forceGlobalIndexType( std::string globalIndexType )
+   {
+      forcedGlobalIndexType = std::move( globalIndexType );
+   }
+
+   void
+   forceLocalIndexType( std::string localIndexType )
+   {
+      forcedLocalIndexType = std::move( localIndexType );
    }
 
 protected:
@@ -324,6 +349,12 @@ protected:
    int meshDimension, spaceDimension;
    VTK::EntityShape cellShape = VTK::EntityShape::Vertex;
 
+   // string representation of mesh types (forced means specified by the user, otherwise
+   // the type detected by detectMesh takes precedence)
+   std::string forcedRealType = "";
+   std::string forcedGlobalIndexType = "";
+   std::string forcedLocalIndexType = "short int";  // not stored in any file format
+
    // intermediate representation of a grid (this is relevant only for TNL::Meshes::Grid)
    std::vector< std::int64_t > gridExtent;
    std::vector< double > gridOrigin, gridSpacing;
@@ -333,8 +364,6 @@ protected:
    VariantVector pointsArray, cellConnectivityArray, cellOffsetsArray,
                  faceConnectivityArray, faceOffsetsArray,
                  typesArray;
-
-
 
    // string representation of each array's value type
    std::string pointsType, connectivityType, offsetsType, typesType;
@@ -346,11 +375,24 @@ protected:
       meshDimension = spaceDimension = 0;
       cellShape = VTK::EntityShape::Vertex;
 
-      gridExtent = {};
-      gridOrigin = gridSpacing = {};
+      reset_std_vectors( gridExtent, gridOrigin, gridSpacing );
 
       pointsArray = cellConnectivityArray = cellOffsetsArray = faceConnectivityArray = faceOffsetsArray = typesArray = {};
       pointsType = connectivityType = offsetsType = typesType = "";
+   }
+
+   template< typename T >
+   void reset_std_vectors( std::vector< T >& v )
+   {
+      v.clear();
+      v.shrink_to_fit();
+   }
+
+   template< typename T, typename... Ts >
+   void reset_std_vectors( std::vector< T >& v, std::vector< Ts >&... vs )
+   {
+      reset_std_vectors( v );
+      reset_std_vectors( vs... );
    }
 };
 

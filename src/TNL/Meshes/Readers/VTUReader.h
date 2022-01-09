@@ -96,28 +96,20 @@ class VTUReader
                cellShape = (VTK::EntityShape) array[0];
                meshDimension = getEntityDimension( cellShape );
                using PolygonShapeGroupChecker = VTK::EntityShapeGroupChecker< VTK::EntityShape::Polygon >;
-               //TODO: uncomment line below later for polyhedrals
-               //using PolyhedralShapeGroupChecker = VTK::EntityShapeGroupChecker< VTK::EntityShape::Polyhedral >;
+               using PolyhedronShapeGroupChecker = VTK::EntityShapeGroupChecker< VTK::EntityShape::Polyhedron >;
 
                // TODO: check only entities of the same dimension (edges, faces and cells separately)
-               for( auto c : array )
-               {
+               for( auto c : array ) {
                   VTK::EntityShape entityShape = (VTK::EntityShape) c;
-                  if( entityShape != cellShape )
-                  {
+                  if( entityShape != cellShape ) {
                      if( PolygonShapeGroupChecker::bothBelong( cellShape, entityShape ) )
-                     {
                         cellShape = PolygonShapeGroupChecker::GeneralShape;
-                     }
-                     //TODO: add group check for polyhedrals later
-                     /*else if( PolyhedralEntityShapeGroupChecker::bothBelong( cellShape, entityShape ) )
-                     {
-                        cellShape = PolyhedralEntityShapeGroupChecker::GeneralShape;
-                     }*/
-                     else
-                     {
-                        throw MeshReaderError( "VTUReader", "Mixed unstructured meshes are not supported. There are cells with type "
-                                                         + VTK::getShapeName(cellShape) + " and " + VTK::getShapeName(entityShape) + "." );
+                     else if( PolyhedronShapeGroupChecker::bothBelong( cellShape, entityShape ) )
+                        cellShape = PolyhedronShapeGroupChecker::GeneralShape;
+                     else {
+                        const std::string msg = "Unsupported unstructured meshes with mixed entities: there are cells with type "
+                                              + VTK::getShapeName(cellShape) + " and " + VTK::getShapeName(entityShape) + ".";
+                        throw MeshReaderError( "VTUReader", msg );
                      }
                   }
                }
@@ -148,6 +140,95 @@ class VTUReader
             },
             cellConnectivityArray
          );
+
+      if( cellShape == VTK::EntityShape::Polyhedron ) {
+         // NOTE: the data format for polyhedral meshes in VTK files is not documented well (almost not at all).
+         // Here are some references:
+         // - https://itk.org/Wiki/VTK/Polyhedron_Support
+         // - https://vtk.org/doc/nightly/html/classvtkPolyhedron.html
+         // - https://github.com/nschloe/meshio/pull/916
+         // - https://github.com/nschloe/meshio/blob/b358a88b7c1158d5ee2b2c873f67ba1cb0647686/src/meshio/vtu/_vtu.py#L33-L102
+
+         const XMLElement* faces = getDataArrayByName( cells, "faces" );
+         const XMLElement* faceOffsets = getDataArrayByName( cells, "faceoffsets" );
+         const VariantVector vtk_facesArray = readDataArray( faces, "faces" );
+         const VariantVector vtk_faceOffsetsArray = readDataArray( faceOffsets, "faceoffsets" );
+         const std::string facesType = VTKDataTypes.at( getAttributeString( faces, "type" ) );
+         const std::string faceOffsetsType = VTKDataTypes.at( getAttributeString( faceOffsets, "type" ) );
+         if( facesType != faceOffsetsType )
+            throw MeshReaderError( "VTUReader", "type of the faces array does not match the type of the faceoffsets array" );
+         if( faceOffsetsType != offsetsType )
+            throw MeshReaderError( "VTUReader", "type of the faceoffsets array does not match the type of the offsets array" );
+
+         // validate face offsets
+         std::size_t max_offset = 0;
+         visit( [this, &max_offset](auto&& array) mutable {
+                  if( array.size() != NumberOfCells )
+                     throw MeshReaderError( "VTUReader", "size of the faceoffsets data array does not match the NumberOfCells attribute" );
+                  for( auto c : array ) {
+                     // NOTE: VTK stores -1 for cells that are not a polyhedron. We would need to populate
+                     if( c < 0 )
+                        continue;
+                     if( c <= (decltype(c)) max_offset )
+                        throw MeshReaderError( "VTUReader", "the faceoffsets array is not monotonically increasing" );
+                     max_offset = c;
+                  }
+               },
+               vtk_faceOffsetsArray
+            );
+         // validate faces
+         visit( [this, max_offset, &vtk_faceOffsetsArray](auto&& vtk_faces) {
+                  if( vtk_faces.size() != max_offset )
+                     throw MeshReaderError( "VTUReader", "size of the faces data array does not match the faceoffsets array" );
+                  // let's just assume that the connectivity and offsets arrays have the same type...
+                  using mpark::get;
+                  const auto& vtk_faceOffsets = get< std::decay_t<decltype(vtk_faces)> >( vtk_faceOffsetsArray );
+
+                  // We need to translate the VTK faces and faceoffsets arrays
+                  // into the format suitable for MeshReader (which uses the
+                  // format from FPMA). The data format for the faces array is:
+                  //    num_faces_cell_0,
+                  //      num_nodes_face_0, node_ind_0, node_ind_1, ..
+                  //      num_nodes_face_1, node_ind_0, node_ind_1, ..
+                  //      ...
+                  //    num_faces_cell_1,
+                  //      ...
+                  // See https://vtk.org/Wiki/VTK/Polyhedron_Support for more.
+                  std::decay_t<decltype(vtk_faces)> cellOffsets, cellConnectivity, faceOffsets, faceConnectivity;
+                  std::make_signed_t< std::size_t > cell_off_begin = 0;
+                  std::size_t faceIndex = 0;
+                  for( std::size_t cell = 0; cell < vtk_faceOffsets.size(); cell++ ) {
+                     const std::make_signed_t< std::size_t > cell_off_end = vtk_faceOffsets[ cell ];
+                     // TODO: VTK stores -1 for cells that are not a polyhedron. We would need to populate
+                     // faceOffsetsArray and faceConnectivityArray with values based on the cell topology.
+                     if( cell_off_end < 0 )
+                        throw MeshReaderError( "VTUReader", "found invalid offset in the faceoffsets array: " + std::to_string(cell_off_end) );
+                     if( static_cast< std::size_t >( cell_off_end ) > vtk_faces.size() )
+                        throw MeshReaderError( "VTUReader", "not enough face indices for cell no " + std::to_string(cell) );
+                     // faces[cell_off_begin : cell_off_end] -> face data for cell
+                     const std::size_t num_faces = vtk_faces.at( cell_off_begin++ );
+                     for( std::size_t f = 0; f < num_faces; f++ ) {
+                        const std::size_t num_vertices = vtk_faces.at( cell_off_begin++ );
+                        for( std::size_t v = 0; v < num_vertices; v++ )
+                           faceConnectivity.push_back( vtk_faces.at( cell_off_begin++ ) );
+                        faceOffsets.push_back( faceConnectivity.size() );
+                        cellConnectivity.push_back( faceIndex++ );
+                     }
+                     cellOffsets.push_back( cellConnectivity.size() );
+
+                     if( cell_off_begin != cell_off_end )
+                        throw MeshReaderError( "VTUReader", "error while parsing the faces data array: did not reach the end offset for cell " + std::to_string(cell) );
+                  }
+
+                  this->NumberOfFaces = faceIndex;
+                  this->cellOffsetsArray = std::move( cellOffsets );
+                  this->cellConnectivityArray = std::move( cellConnectivity );
+                  this->faceOffsetsArray = std::move( faceOffsets );
+                  this->faceConnectivityArray = std::move( faceConnectivity );
+               },
+               vtk_facesArray
+            );
+      }
    }
 #endif
 

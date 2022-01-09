@@ -12,7 +12,6 @@
 
 #include <utility>
 
-#include <TNL/String.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Meshes/TypeResolver/GridTypeResolver.h>
 

@@ -1,15 +1,3 @@
-/***************************************************************************
-                          VerticesPerEntity.h  -  description
-                             -------------------
-    begin                : Mar 18, 2020
-    copyright            : (C) 2020 by Tomas Oberhuber et al.
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
-// Implemented by: Jakub Klinkovský
-
 #pragma once
 
 #include <TNL/TypeTraits.h>
@@ -18,8 +6,7 @@
 namespace TNL {
 namespace Meshes {
 namespace Writers {
-
-namespace details {
+namespace detail {
 
 template< typename T, typename Enable = void >
 struct has_entity_topology : std::false_type {};
@@ -29,10 +16,8 @@ struct has_entity_topology< T, typename enable_if_type< typename T::EntityTopolo
 : std::true_type
 {};
 
-} // namespace details
-
 template< typename Entity,
-          bool _is_mesh_entity = details::has_entity_topology< Entity >::value >
+          bool _is_mesh_entity = has_entity_topology< Entity >::value >
 struct VerticesPerEntity
 {
    static constexpr int count = Topologies::Subtopology< typename Entity::EntityTopology, 0 >::count;
@@ -59,6 +44,7 @@ public:
                    8;
 };
 
+} // namespace detail
 } // namespace Writers
 } // namespace Meshes
 } // namespace TNL

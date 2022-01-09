@@ -67,15 +67,12 @@ public:
       if( pointsType != "float" && pointsType != "double" )
          throw MeshReaderError( "VTKReader", "unsupported data type for POINTS: " + pointsType );
 
-      // global index type is not stored in legacy VTK files
-      // (binary VTK files don't support int64)
-      connectivityType = offsetsType = "std::int32_t";
       // only std::uint8_t makes sense for entity types
       typesType = "std::uint8_t";
 
       // arrays holding the data from the VTK file
       std::vector< double > pointsArray;
-      std::vector< std::int32_t > connectivityArray, offsetsArray;
+      std::vector< std::int64_t > cellConnectivityArray, cellOffsetsArray;
       std::vector< std::uint8_t > typesArray;
 
       // read points
@@ -159,29 +156,20 @@ public:
 
       // validate cell types
       using PolygonShapeGroupChecker = VTK::EntityShapeGroupChecker< VTK::EntityShape::Polygon >;
-      //TODO: add EntityShapeGroup for polyhedrons and uncomment line below
-      //using PolyhedralShapeGroupChecker = VTK::EntityShapeGroupChecker< VTK::EntityShape::Polyhedral >;
+      using PolyhedronShapeGroupChecker = VTK::EntityShapeGroupChecker< VTK::EntityShape::Polyhedron >;
       cellShape = (VTK::EntityShape) cellTypes[0];
 
-      for( auto c : cellTypes )
-      {
+      for( auto c : cellTypes ) {
          auto entityShape = (VTK::EntityShape) c;
-         if( cellShape != entityShape )
-         {
-            //in case input mesh includes mixed shapes, use more general cellShape ( polygon for 2D, polyhedrals for 3D )
+         if( cellShape != entityShape ) {
+            // if the input mesh includes mixed shapes, use more general cellShape (polygon for 2D, polyhedron for 3D)
             if( PolygonShapeGroupChecker::bothBelong( cellShape, entityShape ) )
-            {
                cellShape = PolygonShapeGroupChecker::GeneralShape;
-            }
-            //TODO: add group check for polyhedrals later
-            /*else if( PolyhedralEntityShapeGroupChecker::bothBelong( cellShape, entityShape ) )
-            {
-               cellShape = PolyhedralEntityShapeGroupChecker::GeneralShape;
-            }*/
-            else
-            {
-               const std::string msg = "Mixed unstructured meshes are not supported. There are cells with type "
-                                  + VTK::getShapeName(cellShape) + " and " + VTK::getShapeName(entityShape) + ".";
+            else if( PolyhedronShapeGroupChecker::bothBelong( cellShape, entityShape ) )
+               cellShape = PolyhedronShapeGroupChecker::GeneralShape;
+            else {
+               const std::string msg = "Unsupported unstructured meshes with mixed entities: there are cells with type "
+                                     + VTK::getShapeName(cellShape) + " and " + VTK::getShapeName(entityShape) + ".";
                reset();
                throw MeshReaderError( "VTKReader", msg );
             }
@@ -194,38 +182,167 @@ public:
       inputFile.seekg( sectionPositions["CELLS"] );
       getline( inputFile, line );
 
-      // read entities
-      for( std::size_t entityIndex = 0; entityIndex < NumberOfEntities; entityIndex++ ) {
-         if( ! inputFile )
-            throw MeshReaderError( "VTKReader", "unable to read enough cells, the file may be invalid or corrupted"
-                                                " (entityIndex = " + std::to_string(entityIndex) + ")" );
+      if( formatVersion == "2.0" ) {
+         // read entities
+         for( std::size_t entityIndex = 0; entityIndex < NumberOfEntities; entityIndex++ ) {
+            if( ! inputFile )
+               throw MeshReaderError( "VTKReader", "unable to read enough cells, the file may be invalid or corrupted"
+                                                   " (entityIndex = " + std::to_string(entityIndex) + ")" );
 
-         VTK::EntityShape entityShape = (VTK::EntityShape) typesArray[ entityIndex ];
+            const VTK::EntityShape entityShape = (VTK::EntityShape) typesArray[ entityIndex ];
 
-         // TODO: Polyhedrons will require to create polygon subentity seeds from given entityShapes
-         //       and add their entries to faceConnectivityArray and faceOffsetsArray.
-         //       CellConnectivityArray and cellOffsetsArray will contain indices addressing created polygon subentities.
-         if( entityShape == cellShape ||
-             PolygonShapeGroupChecker::bothBelong( cellShape, entityShape ) ) {
-            iss.clear();
-            iss.str( line );
-            // read number of subvertices
-            const std::int32_t subvertices = readValue< std::int32_t >( dataFormat, inputFile );
-            for( int v = 0; v < subvertices; v++ ) {
-               // legacy VTK files do not support 64-bit integers, even in the BINARY format
-               const std::int32_t vid = readValue< std::int32_t >( dataFormat, inputFile );
-               if( ! inputFile )
-                  throw MeshReaderError( "VTKReader", "unable to read enough cells, the file may be invalid or corrupted"
-                                                      " (entityIndex = " + std::to_string(entityIndex) + ", subvertex = " + std::to_string(v) + ")" );
-               connectivityArray.push_back( vid );
+            if( entityShape == VTK::EntityShape::Polyhedron )
+               throw MeshReaderError( "VTKReader", "Reading polyhedrons from a DataFile version 2.0 is not supported. "
+                                                   "Convert the file to version 5.1 (e.g. using Paraview) and try again." );
+
+            if( entityShape == cellShape || PolygonShapeGroupChecker::bothBelong( cellShape, entityShape ) ) {
+               // read number of subvertices
+               const std::int32_t subvertices = readValue< std::int32_t >( dataFormat, inputFile );
+               for( int v = 0; v < subvertices; v++ ) {
+                  // legacy VTK files do not support 64-bit integers, even in the BINARY format
+                  const std::int32_t vid = readValue< std::int32_t >( dataFormat, inputFile );
+                  if( ! inputFile )
+                     throw MeshReaderError( "VTKReader", "unable to read enough cells, the file may be invalid or corrupted"
+                                                         " (entityIndex = " + std::to_string(entityIndex) + ", subvertex = " + std::to_string(v) + ")" );
+                  cellConnectivityArray.push_back( vid );
+               }
+               cellOffsetsArray.push_back( cellConnectivityArray.size() );
             }
-            offsetsArray.push_back( connectivityArray.size() );
+            else {
+               // skip the entity
+               const std::int32_t subvertices = readValue< std::int32_t >( dataFormat, inputFile );
+               for( int v = 0; v < subvertices; v++ )
+                  skipValue( dataFormat, inputFile, "int" );
+            }
          }
-         else {
-            // skip the entity
-            const std::int32_t subvertices = readValue< std::int32_t >( dataFormat, inputFile );
-            for( int v = 0; v < subvertices; v++ )
-               skipValue( dataFormat, inputFile, "int" );
+      }
+      else if( formatVersion == "5.1" ) {
+         // parse the rest of the line: CELLS <offsets_count> <connectivity_count>
+         std::int64_t offsets_count = 0;
+         std::int64_t connectivity_count = 0;
+         iss.clear();
+         iss.str( line );
+         iss >> aux >> offsets_count >> connectivity_count;
+         if( offsets_count < 1 )
+            throw MeshReaderError( "VTKReader", "invalid offsets count: " + std::to_string( offsets_count ) );
+
+         // find to the OFFSETS section
+         if( ! sectionPositions.count( "OFFSETS" ) )
+            throw MeshReaderError( "VTKReader", "unable to find the OFFSETS section, the file may be invalid or corrupted" );
+         inputFile.seekg( sectionPositions["OFFSETS"] );
+
+         // read all offsets into an auxiliary array
+         std::vector< std::int64_t > allOffsetsArray;
+         getline( inputFile, line );
+         iss.clear();
+         iss.str( line );
+         std::string aux, datatype;
+         iss >> aux >> datatype;
+         for( std::int64_t entityIndex = 0; entityIndex < offsets_count; entityIndex++ ) {
+            std::int64_t value;
+            if( datatype == "vtktypeint32" )
+               value = readValue< std::int32_t >( dataFormat, inputFile );
+            else if( datatype == "vtktypeint64" )
+               value = readValue< std::int64_t >( dataFormat, inputFile );
+            else
+               throw MeshReaderError( "VTKReader", "found data type which is not implemented in the reader: " + datatype );
+            if( ! inputFile )
+               throw MeshReaderError( "VTKReader", "unable to read enough offsets, the file may be invalid or corrupted"
+                                                   " (entityIndex = " + std::to_string(entityIndex) + ")" );
+            allOffsetsArray.push_back( value );
+         }
+
+         // find to the CONNECTIVITY section
+         if( ! sectionPositions.count( "CONNECTIVITY" ) )
+            throw MeshReaderError( "VTKReader", "unable to find the CONNECTIVITY section, the file may be invalid or corrupted" );
+         inputFile.seekg( sectionPositions["CONNECTIVITY"] );
+
+         // get datatype
+         getline( inputFile, line );
+         iss.clear();
+         iss.str( line );
+         iss >> aux >> datatype;
+
+         // arrays for polyhedral mesh
+         std::vector< std::int64_t > faceConnectivityArray, faceOffsetsArray;
+         std::int64_t faceIndex = 0;
+
+         // read connectivity
+         for( std::size_t entityIndex = 0; entityIndex < NumberOfEntities; entityIndex++ ) {
+            if( ! inputFile )
+               throw MeshReaderError( "VTKReader", "unable to read enough cells, the file may be invalid or corrupted"
+                                                   " (entityIndex = " + std::to_string(entityIndex) + ")" );
+
+            const VTK::EntityShape entityShape = (VTK::EntityShape) typesArray[ entityIndex ];
+            const std::int64_t offsetBegin = allOffsetsArray[ entityIndex ];
+            const std::int64_t offsetEnd = allOffsetsArray[ entityIndex + 1 ];
+
+            // TODO: Polyhedrons will require to create polygon subentity seeds from given entityShapes
+            //       and add their entries to faceConnectivityArray and faceOffsetsArray.
+            //       CellConnectivityArray and cellOffsetsArray will contain indices addressing created polygon subentities.
+            if( cellShape == VTK::EntityShape::Polyhedron && entityShape != cellShape && PolyhedronShapeGroupChecker::bothBelong( cellShape, entityShape ) )
+               throw MeshReaderError( "VTKReader", "Converting a mixed mesh to polyhedral mesh is not implemented yet." );
+
+            if( entityShape == cellShape && cellShape == VTK::EntityShape::Polyhedron ) {
+               // read connectivity for current cell into extra array
+               std::vector< std::int64_t > cell_connectivity;
+               for( int v = 0; v < offsetEnd - offsetBegin; v++ ) {
+                  std::int64_t value;
+                  if( datatype == "vtktypeint32" )
+                     value = readValue< std::int32_t >( dataFormat, inputFile );
+                  else if( datatype == "vtktypeint64" )
+                     value = readValue< std::int64_t >( dataFormat, inputFile );
+                  else
+                     throw MeshReaderError( "VTKReader", "found data type which is not implemented in the reader: " + datatype );
+                  if( ! inputFile )
+                     throw MeshReaderError( "VTKReader", "unable to read enough cells, the file may be invalid or corrupted"
+                                                         " (entityIndex = " + std::to_string(entityIndex) + ", subvertex = " + std::to_string(v) + ")" );
+                  cell_connectivity.push_back( value );
+               }
+               // connectivity[offsetBegin : offsetEnd] describes the faces of
+               // the cell in the following format (similar to VTU's faces array)
+               //    num_faces_cell_0,
+               //      num_nodes_face_0, node_ind_0, node_ind_1, ..
+               //      num_nodes_face_1, node_ind_0, node_ind_1, ..
+               //      ...
+               std::size_t i = 1;  // skip num_faces for the cell
+               while( i < cell_connectivity.size() ) {
+                  const std::int64_t num_nodes = cell_connectivity.at( i++ );
+                  for( std::int64_t n = 0; n < num_nodes; n++ )
+                     faceConnectivityArray.push_back( cell_connectivity.at( i++ ) );
+                  faceOffsetsArray.push_back( faceConnectivityArray.size() );
+                  cellConnectivityArray.push_back( faceIndex++ );
+               }
+               cellOffsetsArray.push_back( cellConnectivityArray.size() );
+            }
+            else if( entityShape == cellShape || PolygonShapeGroupChecker::bothBelong( cellShape, entityShape ) ) {
+               for( int v = 0; v < offsetEnd - offsetBegin; v++ ) {
+                  std::int64_t vid;
+                  if( datatype == "vtktypeint32" )
+                     vid = readValue< std::int32_t >( dataFormat, inputFile );
+                  else if( datatype == "vtktypeint64" )
+                     vid = readValue< std::int64_t >( dataFormat, inputFile );
+                  else
+                     throw MeshReaderError( "VTKReader", "found data type which is not implemented in the reader: " + datatype );
+                  if( ! inputFile )
+                     throw MeshReaderError( "VTKReader", "unable to read enough cells, the file may be invalid or corrupted"
+                                                         " (entityIndex = " + std::to_string(entityIndex) + ", subvertex = " + std::to_string(v) + ")" );
+                  cellConnectivityArray.push_back( vid );
+               }
+               cellOffsetsArray.push_back( cellConnectivityArray.size() );
+            }
+            else {
+               // skip the entity
+               for( int v = 0; v < offsetEnd - offsetBegin; v++ )
+                  skipValue( dataFormat, inputFile, datatype );
+            }
+         }
+
+         // set the arrays to the base class
+         if( faceIndex > 0 ) {
+            this->NumberOfFaces = faceIndex;
+            this->faceConnectivityArray = std::move( faceConnectivityArray );
+            this->faceOffsetsArray = std::move( faceOffsetsArray );
          }
       }
 
@@ -234,8 +351,8 @@ public:
 
       // set the arrays to the base class
       this->pointsArray = std::move(pointsArray);
-      this->cellConnectivityArray = std::move(connectivityArray);
-      this->cellOffsetsArray = std::move(offsetsArray);
+      this->cellConnectivityArray = std::move(cellConnectivityArray);
+      this->cellOffsetsArray = std::move(cellOffsetsArray);
       this->typesArray = std::move(typesArray);
 
       // indicate success by setting the mesh type
@@ -264,6 +381,7 @@ public:
 
 protected:
    // output of parseHeader
+   std::string formatVersion;
    VTK::FileFormat dataFormat = VTK::FileFormat::ascii;
    std::string dataset;
 
@@ -281,8 +399,12 @@ protected:
 
       // check header
       getline( str, line );
-      if( line != "# vtk DataFile Version 2.0" )
+      static const std::string prefix = "# vtk DataFile Version ";
+      formatVersion = line.substr( prefix.length() );
+      if( line.substr( 0, prefix.length() ) != prefix )
          throw MeshReaderError( "VTKReader", "failed to parse the VTK file header: unsupported VTK header '" + line + "'" );
+      if( formatVersion != "2.0" && formatVersion != "5.1" )
+         throw MeshReaderError( "VTKReader", "unsupported VTK DataFile Version: '" + formatVersion + "'" );
 
       // skip title
       if( ! str )
@@ -312,6 +434,22 @@ protected:
       if( tmp != "DATASET" )
          throw MeshReaderError( "VTKReader", "wrong dataset specification: '" + line + "'" );
       iss >> dataset;
+   }
+
+   void skip_meta( std::istream& str )
+   {
+      // skip possible metadata
+      // https://vtk.org/doc/nightly/html/IOLegacyInformationFormat.html
+      std::string line;
+      while( true ) {
+         getline( str, line );
+         if( ! str )
+            throw MeshReaderError( "VTKReader", "failed to parse a METADATA section: is it terminated by a blank line?" );
+         // strip whitespace
+         line.erase( std::remove_if( line.begin(), line.end(), isspace ), line.end() );
+         if( line.empty() )
+            break;
+      }
    }
 
    void findSections( std::istream& str )
@@ -349,7 +487,14 @@ protected:
                std::int32_t components = 0;
                std::int32_t tuples = 0;
                std::string datatype;
-               iss >> aux >> components >> tuples >> datatype;
+               iss >> aux;
+               if( aux == "METADATA" ) {
+                  // skip metadata and read again
+                  skip_meta( str );
+                  i--;
+                  continue;
+               }
+               iss >> components >> tuples >> datatype;
                if( ! iss )
                   throw MeshReaderError( "VTKReader", "failed to extract FieldData information from line '" + line + "'" );
                // skip the points coordinates
@@ -370,14 +515,74 @@ protected:
             // skip end of line (or any whitespace)
             str >> std::ws;
          }
+         // METADATA is a thing since version 5.1 of the file format (or something else newer than 2.0)
+         else if( name == "METADATA" ) {
+            sectionPositions.insert( {"METADATA", currentPosition} );
+            skip_meta( str );
+         }
          else if( name == "CELLS" ) {
             sectionPositions.insert( {"CELLS", currentPosition} );
-            // parse the rest of the line: CELLS <cells_count> <values_count>
-            std::int32_t values_count = 0;
-            iss >> cells_count >> values_count;
-            // skip the values
-            for( std::int32_t j = 0; j < values_count; j++ )
-               skipValue( dataFormat, str, "int" );
+            if( formatVersion == "2.0" ) {
+               // index type is not stored in legacy VTK DataFile version 2.0
+               // (binary files don't support int64)
+               connectivityType = offsetsType = "std::int32_t";
+               // parse the rest of the line: CELLS <cells_count> <values_count>
+               std::int32_t values_count = 0;
+               iss >> cells_count >> values_count;
+               // skip the values
+               for( std::int32_t j = 0; j < values_count; j++ )
+                  skipValue( dataFormat, str, "int" );
+            }
+            else if( formatVersion == "5.1" ) {
+               // parse the rest of the line: CELLS <offsets_count> <connectivity_count>
+               std::int32_t offsets_count = 0;
+               std::int32_t connectivity_count = 0;
+               iss >> offsets_count >> connectivity_count;
+               if( offsets_count < 1 )
+                  throw MeshReaderError( "VTKReader", "invalid offsets count: " + std::to_string( offsets_count ) );
+               cells_count = offsets_count - 1;
+               // drop all whitespace (empty lines etc) before saving a position and reading a line
+               str >> std::ws;
+               const std::ios::pos_type offsetsPosition = str.tellg();
+               // skip offsets
+               str >> std::ws;
+               getline( str, line );
+               iss.clear();
+               iss.str( line );
+               std::string aux, datatype;
+               iss >> aux >> datatype;
+               if( aux != "OFFSETS" )
+                  throw MeshReaderError( "VTKReader", "expected OFFSETS section, found '" + aux + "'" );
+               sectionPositions.insert( {"OFFSETS", offsetsPosition} );
+               if( datatype == "vtktypeint32" )
+                  offsetsType = "std::int32_t";
+               else if( datatype == "vtktypeint64" )
+                  offsetsType = "std::int64_t";
+               else
+                  throw MeshReaderError( "VTKReader", "unsupported datatype for OFFSETS: " + datatype );
+               for( std::int32_t j = 0; j < offsets_count; j++ )
+                  skipValue( dataFormat, str, datatype );
+               // drop all whitespace (empty lines etc) before saving a position and reading a line
+               str >> std::ws;
+               const std::ios::pos_type connectivityPosition = str.tellg();
+               // skip connectivity
+               str >> std::ws;
+               getline( str, line );
+               iss.clear();
+               iss.str( line );
+               iss >> aux >> datatype;
+               if( aux != "CONNECTIVITY" )
+                  throw MeshReaderError( "VTKReader", "expected CONNECTIVITY section, found '" + aux + "'" );
+               sectionPositions.insert( {"CONNECTIVITY", connectivityPosition} );
+               if( datatype == "vtktypeint32" )
+                  connectivityType = "std::int32_t";
+               else if( datatype == "vtktypeint64" )
+                  connectivityType = "std::int64_t";
+               else
+                  throw MeshReaderError( "VTKReader", "unsupported datatype for CONNECTIVITY: " + datatype );
+               for( std::int32_t j = 0; j < connectivity_count; j++ )
+                  skipValue( dataFormat, str, datatype );
+            }
             // skip end of line (or any whitespace)
             str >> std::ws;
          }
@@ -415,6 +620,12 @@ protected:
                std::istringstream iss( line );
                std::string type;
                iss >> type;
+
+               // handle switching between CELL_DATA and POINT_DATA
+               if( ( name == "CELL_DATA" && type == "POINT_DATA" ) || ( name == "POINT_DATA" && type == "CELL_DATA" ) ) {
+                  name = type;
+                  continue;
+               }
 
                const std::int32_t elements = (name == "CELL_DATA") ? cells_count : points_count;
 
@@ -462,7 +673,14 @@ protected:
                      std::int32_t components = 0;
                      std::int32_t tuples = 0;
                      std::string datatype;
-                     iss >> array_name >> components >> tuples >> datatype;
+                     iss >> array_name;
+                     if( array_name == "METADATA" ) {
+                        // skip metadata and read again
+                        skip_meta( str );
+                        i--;
+                        continue;
+                     }
+                     iss >> components >> tuples >> datatype;
                      if( ! iss )
                         throw MeshReaderError( "VTKReader", "failed to extract FieldData information from line '" + line + "'" );
                      sectionPositions.insert( {name + "::" + array_name, currentPosition} );
@@ -472,6 +690,10 @@ protected:
                      // skip end of line (or any whitespace)
                      str >> std::ws;
                   }
+                  continue;
+               }
+               else if( type == "METADATA" ) {
+                  skip_meta( str );
                   continue;
                }
                else {
@@ -491,6 +713,9 @@ protected:
             throw MeshReaderError( "VTKReader", "parsing error: unexpected section start at byte " + std::to_string(currentPosition)
                                     + " (section name is '" + name + "')" );
       }
+
+      // clear errors bits on the input stream
+      str.clear();
    }
 
    VariantVector
@@ -563,8 +788,12 @@ protected:
 
    static void skipValue( VTK::FileFormat format, std::istream& str, std::string datatype )
    {
-      if( datatype == "int" )
+      if( datatype == "int" )  // implicit in vtk DataFile Version 2.0
          readValue< std::int32_t >( format, str );
+      else if( datatype == "vtktypeint32" )  // vtk DataFile Version 5.1
+         readValue< std::int32_t >( format, str );
+      else if( datatype == "vtktypeint64" )  // vtk DataFile Version 5.1
+         readValue< std::int64_t >( format, str );
       else if( datatype == "float" )
          readValue< float >( format, str );
       else if( datatype == "double" )

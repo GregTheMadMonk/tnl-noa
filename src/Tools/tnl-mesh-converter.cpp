@@ -10,10 +10,11 @@
 
 #include <TNL/Config/parseCommandLine.h>
 #include <TNL/Meshes/TypeResolver/resolveMeshType.h>
+#include <TNL/Meshes/Writers/FPMAWriter.h>
 #include <TNL/Meshes/Writers/VTKWriter.h>
 #include <TNL/Meshes/Writers/VTUWriter.h>
-//#include <TNL/Meshes/Writers/VTIWriter.h>
-//#include <TNL/Meshes/Writers/NetgenWriter.h>
+#include <TNL/Meshes/Writers/VTIWriter.h>
+#include <TNL/Meshes/Writers/NetgenWriter.h>
 
 using namespace TNL;
 
@@ -26,38 +27,39 @@ namespace BuildConfigTags {
 /****
  * Turn off support for float and long double.
  */
-template<> struct GridRealTag< MeshConverterConfigTag, float > { enum { enabled = false }; };
-template<> struct GridRealTag< MeshConverterConfigTag, long double > { enum { enabled = false }; };
+template<> struct GridRealTag< MeshConverterConfigTag, float > { static constexpr bool enabled = false; };
+template<> struct GridRealTag< MeshConverterConfigTag, long double > { static constexpr bool enabled = false; };
 
 /****
  * Turn off support for short int and long int indexing.
  */
-template<> struct GridIndexTag< MeshConverterConfigTag, short int >{ enum { enabled = false }; };
-template<> struct GridIndexTag< MeshConverterConfigTag, long int >{ enum { enabled = false }; };
+template<> struct GridIndexTag< MeshConverterConfigTag, short int >{ static constexpr bool enabled = false; };
+template<> struct GridIndexTag< MeshConverterConfigTag, long int >{ static constexpr bool enabled = false; };
 
 /****
  * Unstructured meshes.
  */
-template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Edge > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Triangle > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Quadrangle > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Polygon > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Tetrahedron > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Hexahedron > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Wedge > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Pyramid > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Edge > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Triangle > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Quadrangle > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Polygon > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Tetrahedron > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Hexahedron > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Wedge > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Pyramid > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Polyhedron > { static constexpr bool enabled = true; };
 
 // Meshes are enabled only for the space dimension equal to the cell dimension.
 template< typename CellTopology, int SpaceDimension >
 struct MeshSpaceDimensionTag< MeshConverterConfigTag, CellTopology, SpaceDimension >
-{ enum { enabled = ( SpaceDimension == CellTopology::dimension ) }; };
+{ static constexpr bool enabled = SpaceDimension == CellTopology::dimension; };
 
 // Meshes are enabled only for types explicitly listed below.
-template<> struct MeshRealTag< MeshConverterConfigTag, float > { enum { enabled = true }; };
-template<> struct MeshRealTag< MeshConverterConfigTag, double > { enum { enabled = true }; };
-template<> struct MeshGlobalIndexTag< MeshConverterConfigTag, int > { enum { enabled = true }; };
-template<> struct MeshGlobalIndexTag< MeshConverterConfigTag, long int > { enum { enabled = true }; };
-template<> struct MeshLocalIndexTag< MeshConverterConfigTag, short int > { enum { enabled = true }; };
+template<> struct MeshRealTag< MeshConverterConfigTag, float > { static constexpr bool enabled = true; };
+template<> struct MeshRealTag< MeshConverterConfigTag, double > { static constexpr bool enabled = true; };
+template<> struct MeshGlobalIndexTag< MeshConverterConfigTag, int > { static constexpr bool enabled = true; };
+template<> struct MeshGlobalIndexTag< MeshConverterConfigTag, long int > { static constexpr bool enabled = true; };
+template<> struct MeshLocalIndexTag< MeshConverterConfigTag, short int > { static constexpr bool enabled = true; };
 
 // Config tag specifying the MeshConfig template to use.
 template<>
@@ -68,19 +70,18 @@ struct MeshConfigTemplateTag< MeshConverterConfigTag >
              typename Real = double,
              typename GlobalIndex = int,
              typename LocalIndex = GlobalIndex >
-   struct MeshConfig
+   struct MeshConfig : public DefaultConfig< Cell, SpaceDimension, Real, GlobalIndex, LocalIndex >
    {
-      using CellTopology = Cell;
-      using RealType = Real;
-      using GlobalIndexType = GlobalIndex;
-      using LocalIndexType = LocalIndex;
-
-      static constexpr int spaceDimension = SpaceDimension;
-      static constexpr int meshDimension = Cell::dimension;
-
       static constexpr bool subentityStorage( int entityDimension, int subentityDimension )
       {
-         return subentityDimension == 0 && entityDimension == meshDimension;
+         // faces must be stored for polyhedral meshes
+         if( std::is_same< Cell, TNL::Meshes::Topologies::Polyhedron >::value ) {
+            if( subentityDimension == 0 && entityDimension == Cell::dimension - 1 )
+               return true;
+            if( subentityDimension == Cell::dimension - 1 && entityDimension == Cell::dimension )
+               return true;
+         }
+         return subentityDimension == 0 && entityDimension == Cell::dimension;
       }
 
       static constexpr bool superentityStorage( int entityDimension, int superentityDimension )
@@ -104,50 +105,130 @@ struct MeshConfigTemplateTag< MeshConverterConfigTag >
 } // namespace Meshes
 } // namespace TNL
 
+// specialization for polyhedral meshes
+template< typename Mesh,
+          std::enable_if_t< std::is_same< typename Mesh::Cell::EntityTopology, TNL::Meshes::Topologies::Polyhedron >::value, bool > = true >
+bool writeMesh( const Mesh& mesh, std::ostream& out, const std::string& format )
+{
+   if( format == "fpma" ) {
+      using Writer = Meshes::Writers::FPMAWriter< Mesh >;
+      Writer writer( out );
+      writer.writeEntities( mesh );
+      return true;
+   }
+   if( format == "vtk" ) {
+      using Writer = Meshes::Writers::VTKWriter< Mesh >;
+      Writer writer( out );
+      writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
+      return true;
+   }
+   if( format == "vtu" ) {
+      using Writer = Meshes::Writers::VTUWriter< Mesh >;
+      Writer writer( out );
+      writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
+      return true;
+   }
+   return false;
+}
+
+// specialization for unstructured meshes except polyhedral
+template< typename Mesh,
+          std::enable_if_t< ! std::is_same< typename Mesh::Cell::EntityTopology, TNL::Meshes::Topologies::Polyhedron >::value, bool > = true >
+bool writeMesh( const Mesh& mesh, std::ostream& out, const std::string& format )
+{
+   if( format == "vtk" ) {
+      using Writer = Meshes::Writers::VTKWriter< Mesh >;
+      Writer writer( out );
+      writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
+      return true;
+   }
+   if( format == "vtu" ) {
+      using Writer = Meshes::Writers::VTUWriter< Mesh >;
+      Writer writer( out );
+      writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
+      return true;
+   }
+   if( format == "ng" ) {
+      using NetgenWriter = Meshes::Writers::NetgenWriter< Mesh >;
+      NetgenWriter::writeMesh( mesh, out );
+      return true;
+   }
+   return false;
+}
+
+// specialization for grids
+template< int Dimension, typename Real, typename Device, typename Index >
+bool writeMesh( const TNL::Meshes::Grid< Dimension, Real, Device, Index >& mesh,
+                std::ostream& out,
+                const std::string& format )
+{
+   using Mesh = TNL::Meshes::Grid< Dimension, Real, Device, Index >;
+   if( format == "vtk" ) {
+      using Writer = Meshes::Writers::VTKWriter< Mesh >;
+      Writer writer( out );
+      writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
+      return true;
+   }
+   if( format == "vtu" ) {
+      using Writer = Meshes::Writers::VTUWriter< Mesh >;
+      Writer writer( out );
+      writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
+      return true;
+   }
+   if( format == "vti" ) {
+      using Writer = Meshes::Writers::VTIWriter< Mesh >;
+      Writer writer( out );
+      writer.writeImageData( mesh );
+      return true;
+   }
+   return false;
+}
 
 template< typename Mesh >
-bool convertMesh( const Mesh& mesh, const String& inputFileName, const String& outputFileName, const String& outputFormat )
+bool convertMesh( const Mesh& mesh, const std::string& inputFileName, const std::string& outputFileName, const std::string& outputFormat )
 {
-   if( outputFormat == "vtk" ) {
-      using Writer = Meshes::Writers::VTKWriter< Mesh >;
-      std::ofstream file( outputFileName );
-      Writer writer( file );
-      writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
+   std::string format = outputFormat;
+   if( outputFormat == "auto" ) {
+      namespace fs = std::experimental::filesystem;
+      format = fs::path( outputFileName ).extension();
+      if( format.length() > 0 )
+         // remove dot from the extension
+         format = format.substr(1);
    }
-   else if( outputFormat == "vtu" ) {
-      using Writer = Meshes::Writers::VTUWriter< Mesh >;
-      std::ofstream file( outputFileName );
-      Writer writer( file );
-      writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
-   }
-   // FIXME: VTIWriter is not specialized for meshes
-//   else if( outputFormat == "vti" ) {
-//      using Writer = Meshes::Writers::VTIWriter< Mesh >;
-//      std::ofstream file( outputFileName );
-//      Writer writer( file );
-//      writer.writeImageData( mesh );
-//   }
-   // FIXME: NetgenWriter is not specialized for grids
-//   else if( outputFormat == "netgen" ) {
-//      using NetgenWriter = Meshes::Writers::NetgenWriter< Mesh >;
-//      std::fstream file( outputFileName );
-//      NetgenWriter::writeMesh( mesh, file );
-//   }
 
-   return true;
+   std::ofstream file( outputFileName );
+   if( writeMesh( mesh, file, format ) )
+      return true;
+
+   if( outputFormat == "auto" )
+      std::cerr << "File '" << outputFileName << "' has unsupported format (based on the file extension): " << format << ".";
+   else
+      std::cerr << "Unsupported output file format: " << outputFormat << ".";
+   std::cerr << " Supported formats are 'vtk', 'vtu', 'vti' (only grids), 'ng' (only static unstructured meshes) and 'fpma' (only polyhedral meshes)." << std::endl;
+   return false;
 }
 
 void configSetup( Config::ConfigDescription& config )
 {
    config.addDelimiter( "General settings:" );
-   config.addRequiredEntry< String >( "input-file", "Input file with the mesh." );
-   config.addEntry< String >( "input-file-format", "Input mesh file format.", "auto" );
-   config.addRequiredEntry< String >( "output-file", "Output mesh file path." );
-   config.addRequiredEntry< String >( "output-file-format", "Output mesh file format." );
+   config.addRequiredEntry< std::string >( "input-file", "Input file with the mesh." );
+   config.addEntry< std::string >( "input-file-format", "Input mesh file format.", "auto" );
+   config.addEntry< std::string >( "real-type", "Type to use for the representation of spatial coordinates in the output mesh. When 'auto', the real type from the input mesh is used.", "auto" );
+   config.addEntryEnum( "auto" );
+   config.addEntryEnum( "float" );
+   config.addEntryEnum( "double" );
+   config.addEntry< std::string >( "global-index-type", "Type to use for the representation of global indices in the output mesh. When 'auto', the global index type from the input mesh is used.", "auto" );
+   config.addEntryEnum( "auto" );
+   config.addEntryEnum( "std::int32_t" );
+   config.addEntryEnum( "std::int64_t" );
+   config.addRequiredEntry< std::string >( "output-file", "Output mesh file path." );
+   config.addEntry< std::string >( "output-file-format", "Output mesh file format.", "auto" );
+   config.addEntryEnum( "auto" );
    config.addEntryEnum( "vtk" );
    config.addEntryEnum( "vtu" );
-//   config.addEntryEnum( "vti" );
-//   config.addEntryEnum( "netgen" );
+   config.addEntryEnum( "vti" );
+   config.addEntryEnum( "ng" );
+   config.addEntryEnum( "fpma" );
 }
 
 int main( int argc, char* argv[] )
@@ -160,14 +241,17 @@ int main( int argc, char* argv[] )
    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
       return EXIT_FAILURE;
 
-   const String inputFileName = parameters.getParameter< String >( "input-file" );
-   const String inputFileFormat = parameters.getParameter< String >( "input-file-format" );
-   const String outputFileName = parameters.getParameter< String >( "output-file" );
-   const String outputFileFormat = parameters.getParameter< String >( "output-file-format" );
+   const std::string inputFileName = parameters.getParameter< std::string >( "input-file" );
+   const std::string inputFileFormat = parameters.getParameter< std::string >( "input-file-format" );
+   const std::string realType = parameters.getParameter< std::string >( "real-type" );
+   const std::string globalIndexType = parameters.getParameter< std::string >( "global-index-type" );
+   const std::string outputFileName = parameters.getParameter< std::string >( "output-file" );
+   const std::string outputFileFormat = parameters.getParameter< std::string >( "output-file-format" );
 
    auto wrapper = [&] ( auto& reader, auto&& mesh ) -> bool
    {
       return convertMesh( mesh, inputFileName, outputFileName, outputFileFormat );
    };
-   return ! Meshes::resolveAndLoadMesh< MeshConverterConfigTag, Devices::Host >( wrapper, inputFileName, inputFileFormat );
+   const bool status = Meshes::resolveAndLoadMesh< MeshConverterConfigTag, Devices::Host >( wrapper, inputFileName, inputFileFormat, realType, globalIndexType );
+   return static_cast< int >( ! status );
 }

@@ -27,14 +27,14 @@ namespace Meshes {
 namespace BuildConfigTags {
 
 // Configure real types
-template<> struct GridRealTag< TnlInitConfigTag, float > { enum { enabled = true }; };
-template<> struct GridRealTag< TnlInitConfigTag, double > { enum { enabled = true }; };
-template<> struct GridRealTag< TnlInitConfigTag, long double > { enum { enabled = false }; };
+template<> struct GridRealTag< TnlInitConfigTag, float > { static constexpr bool enabled = true; };
+template<> struct GridRealTag< TnlInitConfigTag, double > { static constexpr bool enabled = true; };
+template<> struct GridRealTag< TnlInitConfigTag, long double > { static constexpr bool enabled = false; };
 
 // Configure index types
-template<> struct GridIndexTag< TnlInitConfigTag, short int >{ enum { enabled = false }; };
-template<> struct GridIndexTag< TnlInitConfigTag, int >{ enum { enabled = true }; };
-template<> struct GridIndexTag< TnlInitConfigTag, long int >{ enum { enabled = true }; };
+template<> struct GridIndexTag< TnlInitConfigTag, short int >{ static constexpr bool enabled = false; };
+template<> struct GridIndexTag< TnlInitConfigTag, int >{ static constexpr bool enabled = true; };
+template<> struct GridIndexTag< TnlInitConfigTag, long int >{ static constexpr bool enabled = true; };
 
 // Unstructured meshes are disabled, only grids can be on input.
 

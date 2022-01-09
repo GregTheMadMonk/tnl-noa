@@ -45,25 +45,25 @@ public:
                        const unsigned MinCommonVertices = 0 );
 
    template< typename ValueType >
-   void writePPointData( const String& name,
+   void writePPointData( const std::string& name,
                          const int numberOfComponents = 1 );
 
    template< typename ValueType >
-   void writePCellData( const String& name,
+   void writePCellData( const std::string& name,
                         const int numberOfComponents = 1 );
 
    template< typename ValueType >
-   void writePDataArray( const String& name,
+   void writePDataArray( const std::string& name,
                          const int numberOfComponents = 1 );
 
    // add a single piece and return its source path
    // (useful for sequential writing, e.g. from tnl-decompose-mesh)
-   std::string addPiece( const String& mainFileName,
+   std::string addPiece( const std::string& mainFileName,
                          const unsigned subdomainIndex );
 
    // add all pieces and return the source path for the current rank
    // (useful for parallel writing)
-   std::string addPiece( const String& mainFileName,
+   std::string addPiece( const std::string& mainFileName,
                          const MPI_Comm communicator );
 
    ~PVTUWriter();

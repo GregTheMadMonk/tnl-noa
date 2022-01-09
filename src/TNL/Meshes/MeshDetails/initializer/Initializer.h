@@ -70,7 +70,7 @@ class Initializer
    protected:
       // must be declared before its use in expression with decltype()
       Mesh< MeshConfig >* mesh = nullptr;
-      
+
    public:
       using MeshType          = Mesh< MeshConfig >;
       using MeshTraitsType    = MeshTraits< MeshConfig >;
@@ -92,14 +92,13 @@ class Initializer
                        CellSeedMatrixType& cellSeeds,
                        MeshType& mesh )
       {
-         // copy points
+         // move points
          mesh.template setEntitiesCount< 0 >( points.getSize() );
-         mesh.getPoints().swap( points );
-         points.reset();
+         mesh.getPoints() = std::move( points );
 
          this->mesh = &mesh;
          this->cellSeeds = &cellSeeds;
-         
+
          if( faceSeeds.empty() )
             BaseType::initEntities( *this, cellSeeds, mesh );
          else
@@ -227,7 +226,7 @@ protected:
          initializer.template setEntitiesCount< DimensionTag::value >( initializer.getCellSeeds().getEntitiesCount() );
          BaseType::initEntities( initializer, faceSeeds, mesh );
       }
-      
+
       using BaseType::findEntitySeedIndex;
 };
 
@@ -256,7 +255,7 @@ protected:
    using SeedIndexedSet        = typename MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::SeedIndexedSetType;
    using SeedMatrixType        = typename EntityTraitsType::SeedMatrixType;
    using NeighborCountsArray   = typename MeshTraitsType::NeighborCountsArray;
-   
+
    public:
 
       void createSeeds( InitializerType& initializer, MeshType& mesh )
@@ -280,6 +279,12 @@ protected:
 
       void initEntities( InitializerType& initializer, MeshType& mesh )
       {
+         // skip initialization of entities which do not store their subvertices
+         // (and hence do not participate in any other incidence matrix)
+         if( ! MeshConfig::subentityStorage( DimensionTag::value, 0 ) ) {
+            BaseType::initEntities( initializer, mesh );
+            return;
+         }
          //std::cout << " Initiating entities with dimension " << DimensionTag::value << " ... " << std::endl;
 
          // create seeds and set entities count

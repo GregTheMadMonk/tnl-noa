@@ -1,49 +1,44 @@
 add_subdirectory(tnl-quickstart)
 
-ADD_EXECUTABLE(tnl-decompose-grid tnl-decompose-grid.cpp )
-ADD_EXECUTABLE(tnl-grid-setup tnl-grid-setup.cpp )
-ADD_EXECUTABLE(tnl-grid-to-mesh tnl-grid-to-mesh.cpp )
-ADD_EXECUTABLE(tnl-mesh-converter tnl-mesh-converter.cpp )
-ADD_EXECUTABLE(tnl-triangulate-mesh tnl-triangulate-mesh.cpp )
-ADD_EXECUTABLE(tnl-planar-correct-mesh tnl-planar-correct-mesh.cpp )
-ADD_EXECUTABLE(tnl-game-of-life tnl-game-of-life.cpp )
+set( MESH_TOOLS
+         tnl-init
+         tnl-diff
+         tnl-decompose-grid
+         tnl-grid-to-mesh
+         tnl-mesh-converter
+         tnl-triangulate-mesh
+         tnl-planar-correct-mesh
+         tnl-refine-mesh
+         tnl-game-of-life
+)
+set( CUDA_MESH_TOOLS )
 if( BUILD_CUDA )
-   CUDA_ADD_EXECUTABLE(tnl-test-distributed-mesh tnl-test-distributed-mesh.cu )
+   set( CUDA_MESH_TOOLS  ${CUDA_MESH_TOOLS} tnl-test-distributed-mesh )
 else()
-   ADD_EXECUTABLE(tnl-test-distributed-mesh tnl-test-distributed-mesh.cpp )
-endif()
-ADD_EXECUTABLE(tnl-init tnl-init.cpp )
-ADD_EXECUTABLE(tnl-diff tnl-diff.cpp )
-
-ADD_EXECUTABLE(tnl-image-converter tnl-image-converter.cpp )
-if( PNG_FOUND )
-   target_link_libraries(tnl-image-converter ${PNG_LIBRARIES} )
-endif()
-if( JPEG_FOUND )
-   target_link_libraries(tnl-image-converter ${JPEG_LIBRARIES} )
+   set( MESH_TOOLS  ${MESH_TOOLS} tnl-test-distributed-mesh )
 endif()
 
-ADD_EXECUTABLE(tnl-dicom-reader tnl-dicom-reader.cpp )
-if( DCMTK_FOUND )
-   target_link_libraries(tnl-dicom-reader ${DCMTK_LIBRARIES} )
-endif()
+foreach( target IN ITEMS ${MESH_TOOLS} )
+   add_executable( ${target} ${target}.cpp )
+endforeach()
+foreach( target IN ITEMS ${CUDA_MESH_TOOLS} )
+   cuda_add_executable( ${target} ${target}.cu )
+endforeach()
 
 find_package( ZLIB )
-if( ZLIB_FOUND )
-   foreach( target IN ITEMS tnl-init tnl-diff tnl-decompose-grid tnl-grid-to-mesh tnl-mesh-converter tnl-triangulate-mesh tnl-planar-correct-mesh tnl-game-of-life tnl-test-distributed-mesh )
-      target_compile_definitions(${target} PUBLIC "-DHAVE_ZLIB")
-      target_include_directories(${target} PUBLIC ${ZLIB_INCLUDE_DIRS})
-      target_link_libraries(${target} ${ZLIB_LIBRARIES})
-   endforeach()
-endif()
-
 find_package( tinyxml2 QUIET )
-if( tinyxml2_FOUND )
-   foreach( target IN ITEMS tnl-init tnl-diff tnl-decompose-grid tnl-grid-to-mesh tnl-mesh-converter tnl-triangulate-mesh tnl-planar-correct-mesh tnl-game-of-life tnl-test-distributed-mesh )
-      target_compile_definitions(${target} PUBLIC "-DHAVE_TINYXML2")
-      target_link_libraries(${target} tinyxml2::tinyxml2)
-   endforeach()
-endif()
+foreach( target IN ITEMS ${MESH_TOOLS} ${CUDA_MESH_TOOLS} )
+   if( ZLIB_FOUND )
+      target_compile_definitions( ${target} PUBLIC "-DHAVE_ZLIB" )
+      target_include_directories( ${target} PUBLIC ${ZLIB_INCLUDE_DIRS} )
+      target_link_libraries( ${target} ${ZLIB_LIBRARIES} )
+   endif()
+   if( tinyxml2_FOUND )
+      target_compile_definitions( ${target} PUBLIC "-DHAVE_TINYXML2" )
+      target_link_libraries( ${target} tinyxml2::tinyxml2 )
+   endif()
+   install( TARGETS ${target} DESTINATION bin )
+endforeach()
 
 find_package( METIS QUIET )
 if( METIS_FOUND )
@@ -62,27 +57,33 @@ if( METIS_FOUND )
    install( TARGETS tnl-decompose-mesh DESTINATION bin )
 endif()
 
+
+add_executable( tnl-grid-setup tnl-grid-setup.cpp )
+
+add_executable( tnl-image-converter tnl-image-converter.cpp )
+if( PNG_FOUND )
+   target_link_libraries( tnl-image-converter ${PNG_LIBRARIES} )
+endif()
+if( JPEG_FOUND )
+   target_link_libraries( tnl-image-converter ${JPEG_LIBRARIES} )
+endif()
+
+add_executable( tnl-dicom-reader tnl-dicom-reader.cpp )
+if( DCMTK_FOUND )
+   target_link_libraries( tnl-dicom-reader ${DCMTK_LIBRARIES} )
+endif()
+
 IF( BUILD_CUDA )
-   CUDA_ADD_EXECUTABLE( tnl-cuda-arch tnl-cuda-arch.cu )
-   INSTALL( TARGETS tnl-cuda-arch
-            DESTINATION bin )
+   cuda_add_executable( tnl-cuda-arch tnl-cuda-arch.cu )
+   install( TARGETS tnl-cuda-arch DESTINATION bin )
 ENDIF()
 
-INSTALL( TARGETS tnl-init
-                 tnl-diff
-                 tnl-decompose-grid
-                 tnl-grid-setup
-                 tnl-grid-to-mesh
-                 tnl-mesh-converter
-                 tnl-triangulate-mesh
-                 tnl-planar-correct-mesh
-                 tnl-game-of-life
-                 tnl-test-distributed-mesh
-                 tnl-dicom-reader
+install( TARGETS tnl-grid-setup
                  tnl-image-converter
+                 tnl-dicom-reader
          DESTINATION bin )
 
-INSTALL( PROGRAMS tnl-err2eoc
+install( PROGRAMS tnl-err2eoc
                   tnl-benchmark-to-html.py
                   tnl-log-to-html.py
          DESTINATION bin )

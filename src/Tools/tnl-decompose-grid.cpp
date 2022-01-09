@@ -26,12 +26,12 @@ namespace BuildConfigTags {
 /****
  * Turn on all grids.
  */
-template<> struct GridRealTag< DecomposeGridConfigTag, float > { enum { enabled = true }; };
-template<> struct GridRealTag< DecomposeGridConfigTag, double > { enum { enabled = true }; };
-template<> struct GridRealTag< DecomposeGridConfigTag, long double > { enum { enabled = true }; };
+template<> struct GridRealTag< DecomposeGridConfigTag, float > { static constexpr bool enabled = true; };
+template<> struct GridRealTag< DecomposeGridConfigTag, double > { static constexpr bool enabled = true; };
+template<> struct GridRealTag< DecomposeGridConfigTag, long double > { static constexpr bool enabled = true; };
 
-template<> struct GridIndexTag< DecomposeGridConfigTag, int > { enum { enabled = true }; };
-template<> struct GridIndexTag< DecomposeGridConfigTag, long int > { enum { enabled = true }; };
+template<> struct GridIndexTag< DecomposeGridConfigTag, int > { static constexpr bool enabled = true; };
+template<> struct GridIndexTag< DecomposeGridConfigTag, long int > { static constexpr bool enabled = true; };
 
 } // namespace BuildConfigTags
 } // namespace Meshes

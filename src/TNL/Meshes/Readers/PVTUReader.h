@@ -249,7 +249,7 @@ public:
    {
       resetBase();
       ghostLevels = 0;
-      pieceSources = {};
+      reset_std_vectors( pieceSources );
       localReader.reset();
       pointTags = cellTags = pointGlobalIndices = cellGlobalIndices = {};
    }
