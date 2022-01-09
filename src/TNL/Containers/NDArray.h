@@ -344,7 +344,7 @@ public:
    // implement dynamic array interface
    using AllocatorType = Allocator;
 
-   NDArray( const NDArray& allocator )
+   NDArray( const AllocatorType& allocator )
    {
       // set empty array containing the specified allocator
       this->getStorageArray() = Array< Value, Device, Index, Allocator >( allocator );
@@ -423,7 +423,7 @@ public:
    // implement dynamic array interface
    using AllocatorType = Allocator;
 
-   SlicedNDArray( const SlicedNDArray& allocator )
+   SlicedNDArray( const AllocatorType& allocator )
    {
       // set empty array containing the specified allocator
       this->getStorageArray() = Array< Value, Device, Index, Allocator >( allocator );
