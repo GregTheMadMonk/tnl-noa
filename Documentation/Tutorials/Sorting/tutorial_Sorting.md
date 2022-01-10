@@ -1,4 +1,4 @@
-\page tutorial_Sorting Sorting tutorial
+# Sorting tutorial
 
 [TOC]
 

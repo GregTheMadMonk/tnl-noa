@@ -47,11 +47,11 @@ several modules:
   using external libraries (see below).
 
 See also [Comparison with other libraries](
-https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/comparison_with_other_libraries.html).
+https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/md_Pages_comparison_with_other_libraries.html).
 
 [allocators]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/namespaceTNL_1_1Allocators.html
 [devices]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/namespaceTNL_1_1Devices.html
-[core concepts]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/core_concepts.html
+[core concepts]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/md_Pages_core_concepts.html
 [containers]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/namespaceTNL_1_1Containers.html
 [vectors]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/classTNL_1_1Containers_1_1Vector.html
 [matrices]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/namespaceTNL_1_1Matrices.html

@@ -1,4 +1,4 @@
-\page core_concepts  Core concepts
+# Core concepts
 
 TNL is based on the following core concepts:
 

@@ -1,8 +1,8 @@
-\page tutorial_Linear_solvers  Linear solvers tutorial
+# Linear solvers tutorial
 
 [TOC]
 
-# Introduction
+## Introduction
 
 Solvers of linear systems are one of the most important algorithms in scientific computations. TNL offers the followiing iterative methods:
 
@@ -28,9 +28,9 @@ The iterative solvers (not the stationary solvers like \ref TNL::Solvers::Linear
    1. [ILU(0)](https://en.wikipedia.org/wiki/Incomplete_LU_factorization) \ref TNL::Solvers::Linear::Preconditioners::ILU0
    2. [ILUT (ILU with thresholding)](https://www-users.cse.umn.edu/~saad/PDF/umsi-92-38.pdf) \ref TNL::Solvers::Linear::Preconditioners::ILUT
 
-# Iterative solvers of linear systems
+## Iterative solvers of linear systems
 
-## Basic setup
+### Basic setup
 
 All iterative solvers for linear systems can be found in the namespace \ref TNL::Solvers::Linear. The following example shows the use the iterative solvers:
 
@@ -58,7 +58,7 @@ The result looks as follows:
 
 \include IterativeLinearSolverExample.out
 
-## Setup with a solver monitor
+### Setup with a solver monitor
 
 Solution of large linear systems may take a lot of time. In such situations, it is useful to be able to monitor the convergence of the solver of the solver status in general. For this purpose, TNL offers solver monitors. The solver monitor prints (or somehow visualizes) the number of iterations, the residue of the current solution approximation or some other metrics. Sometimes such information is printed after each iteration or after every ten iterations. The problem of this approach is the fact that one iteration of the solver may take only few milliseconds but also several minutes. In the former case, the monitor creates overwhelming amount of output which may even slowdown the solver. In the later case, the user waits long time for update of the solver status. The monitor in TNL rather runs in separate thread and it refreshes the status of the solver in preset time periods. The use of the iterative solver monitor is demonstrated in the following example.
 
@@ -80,7 +80,7 @@ The result looks as follows:
 
 \include IterativeLinearSolverWithTimerExample.out
 
-## Setup with preconditioner
+### Setup with preconditioner
 
 Preconditioners of iterative solvers can significantly improve the performance of the solver. In the case of the linear systems, they are used mainly with the Krylov subspace methods. Preconditioners cannot be used with the starionary methods (\ref TNL::Solvers::Linear::Jacobi and \ref TNL::Solvers::Linear::SOR). The following example shows how to setup an iterative solver of linear systems with preconditioning.
 
@@ -92,7 +92,7 @@ The result looks as follows:
 
 \include IterativeLinearSolverWithPreconditionerExample.out
 
-## Choosing the solver and preconditioner type at runtime
+### Choosing the solver and preconditioner type at runtime
 
 When developing a numerical solver, one often has to search for a combination of various methods and algorithms that fit given requirements the best. To make this easier, TNL offers choosing the type of both linear solver and preconditioner at runtime by means of functions \ref TNL::Solvers::getLinearSolver and \ref TNL::Solvers::getPreconditioner. The following example shows how to use these functions:
 

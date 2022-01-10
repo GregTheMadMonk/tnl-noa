@@ -1,4 +1,4 @@
-\page tutorial_Arrays  Arrays tutorial
+# Arrays tutorial
 
 [TOC]
 
@@ -94,7 +94,7 @@ Output:
 
 ### Arrays and flexible reduction
 
-Arrays also offer simpler way to do the flexible parallel reduction. See the section about [the flexible parallel reduction](tutorial_ReductionAndScan.html#flexible_parallel_reduction) to understand how it works. Flexible reduction for arrays just simplifies access to the array elements. See the following example:
+Arrays also offer simpler way to do the flexible parallel reduction. See the section about [the flexible parallel reduction](../ReductionAndScan/tutorial_ReductionAndScan.md) to understand how it works. Flexible reduction for arrays just simplifies access to the array elements. See the following example:
 
 \include ArrayExample_reduceElements.cpp
 
