@@ -1,4 +1,4 @@
-\page comparison_with_other_libraries  Comparison with other libraries
+# Comparison with other libraries
 
 ## Memory space and execution model
 

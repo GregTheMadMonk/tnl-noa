@@ -1,4 +1,4 @@
-\page tutorial_Segments  Segments tutorial
+# Segments tutorial
 
 [TOC]
 

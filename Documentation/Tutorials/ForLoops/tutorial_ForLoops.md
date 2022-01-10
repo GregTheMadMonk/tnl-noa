@@ -1,4 +1,4 @@
-\page tutorial_ForLoops For loops
+# For loops tutorial
 
 [TOC]
 

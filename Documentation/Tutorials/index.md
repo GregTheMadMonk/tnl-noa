@@ -1,15 +1,13 @@
-\page Tutorials
+\page Tutorials Tutorials
 
-## Tutorials
-
-1. [General concepts](tutorial_GeneralConcepts.html)
-2. [Arrays](tutorial_Arrays.html)
-3. [Vectors](tutorial_Vectors.html)
-4. [Flexible parallel reduction and scan](tutorial_ReductionAndScan.html)
-5. [For loops](tutorial_ForLoops.html)
-6. [Sorting](tutorial_Sorting.html)
-7. [Cross-device pointers](tutorial_Pointers.html)
-8. [Matrices](tutorial_Matrices.html)
-9. [Linear solvers](tutorial_Linear_solvers.html)
-10. [Segments aka sparse formats](tutorial_Segments.html)
-11. [Unstructured meshes](tutorial_Meshes.html)
+1. [General concepts](./GeneralConcepts/tutorial_GeneralConcepts.md)
+2. [Arrays](./Arrays/tutorial_Arrays.md)
+3. [Vectors](./Vectors/tutorial_Vectors.md)
+4. [Flexible parallel reduction and scan](./ReductionAndScan/tutorial_ReductionAndScan.md)
+5. [For loops](./ForLoops/tutorial_ForLoops.md)
+6. [Sorting](./Sorting/tutorial_Sorting.md)
+7. [Cross-device pointers](./Pointers/tutorial_Pointers.md)
+8. [Matrices](./Matrices/tutorial_Matrices.md)
+9. [Linear solvers](./Solvers/Linear/tutorial_Linear_solvers.md)
+10. [Segments aka sparse formats](./Segments/tutorial_Segments.md)
+11. [Unstructured meshes](./Meshes/tutorial_Meshes.md)

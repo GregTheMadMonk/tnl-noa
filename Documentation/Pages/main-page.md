@@ -11,8 +11,6 @@ and distributed systems, which can be managed via a unified interface.
 Similarly to the STL, features provided by the TNL can be grouped into
 several modules:
 
-> TODO: Each topic in this list should have a separate page or tutorial.
-
 - _Core concepts_.
   The main concepts used in TNL are the _memory space_, which represents the
   part of memory where given data is allocated, and the _execution model_,
@@ -23,7 +21,7 @@ several modules:
   either the host CPU or an accelerator (GPU), and for each there are many ways
   to manage parallel execution. The usage of memory spaces is abstracted with
   \ref TNL::Allocators "allocators" and the execution model is represented by
-  \ref TNL::Devices "devices". See the \ref core_concepts "Core concepts" page
+  \ref TNL::Devices "devices". See the [Core concepts](core-concepts.md) page
   for details.
 - \ref TNL::Containers "Containers".
   TNL provides generic containers such as array, multidimensional array or array
@@ -49,7 +47,7 @@ several modules:
   exports from several file formats such as DICOM, PNG, and JPEG are provided
   using external libraries (see below).
 
-See also \ref comparison_with_other_libraries "Comparison with other libraries".
+See also [Comparison with other libraries](comparison-with-other-libraries.md).
 
 TNL also provides several optional components:
 <a name="optional-components"></a>
