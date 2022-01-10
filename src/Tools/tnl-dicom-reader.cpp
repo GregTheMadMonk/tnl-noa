@@ -1,13 +1,3 @@
-/***************************************************************************
-                          tnl-dicom-reader.cpp  -  description
-                             -------------------
-    begin                : Jul 19, 2015
-    copyright            : (C) 2015 by Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #include <TNL/Config/parseCommandLine.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Images/DicomSeries.h>

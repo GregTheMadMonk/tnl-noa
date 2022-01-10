@@ -1,16 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
- * File:   tnlFastSweepingMethod2D_impl.h
- * Author: oberhuber
- *
- * Created on July 14, 2016, 10:32 AM
- */
-
 #pragma once
 
 #include <TNL/Functions/MeshFunction.h>

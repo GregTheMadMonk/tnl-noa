@@ -1,13 +1,3 @@
-/***************************************************************************
-                          ParallelForTest.h  -  description
-                             -------------------
-    begin                : Jul 16, 2019
-    copyright            : (C) 2019 by Tomas Oberhuber et al.
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #pragma once
 
 #include <TNL/Devices/Host.h>

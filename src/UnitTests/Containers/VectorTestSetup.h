@@ -1,13 +1,3 @@
-/***************************************************************************
-                          VectorTestSetup.h  -  description
-                             -------------------
-    begin                : Apr 30, 2019
-    copyright            : (C) 2019 by Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #pragma once
 
 #ifdef HAVE_GTEST

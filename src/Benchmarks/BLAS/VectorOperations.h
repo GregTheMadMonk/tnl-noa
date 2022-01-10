@@ -1,13 +1,3 @@
-/***************************************************************************
-                          VectorOperations.h  -  description
-                             -------------------
-    begin                : Nov 8, 2012
-    copyright            : (C) 2012 by Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #pragma once
 
 #include <TNL/Devices/Host.h>

@@ -1,13 +1,9 @@
-/***************************************************************************
-                          DistributedGrid.h  -  description
-                             -------------------
-    begin                : July 07, 2018
-    copyright            : (C) 2018 by Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
+// Copyright (c) 2004-2022 Tomáš Oberhuber et al.
+//
+// This file is part of TNL - Template Numerical Library (https://tnl-project.org/)
+//
+// SPDX-License-Identifier: MIT
 
-
-/* See Copyright Notice in tnl/Copyright */
 
 #pragma once
 

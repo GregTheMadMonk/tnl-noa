@@ -1,13 +1,3 @@
-/***************************************************************************
-                          SegmentsTest_SlicedEllpack.h -  description
-                             -------------------
-    begin                : Dec 9, 2019
-    copyright            : (C) 2019 by Tomas Oberhuber et al.
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #include <TNL/Algorithms/Segments/SlicedEllpack.h>
 
 #include "SegmentsTest.hpp"

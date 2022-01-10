@@ -1,13 +1,3 @@
-/***************************************************************************
-                          GridTraversersBenchmarkHelper_3D.h  -  description
-                             -------------------
-    begin                : Jan 6, 2019
-    copyright            : (C) 2019 by oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 // Implemented by: Tomas Oberhuber
 
 #pragma once

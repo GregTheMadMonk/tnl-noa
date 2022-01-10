@@ -1,12 +1,8 @@
-/***************************************************************************
-                          ParameterContainer.h  -  description
-                             -------------------
-    begin                : 2007/06/15
-    copyright            : (C) 2007 by Tomas Oberhuber et al.
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
+// Copyright (c) 2004-2022 Tomáš Oberhuber et al.
+//
+// This file is part of TNL - Template Numerical Library (https://tnl-project.org/)
+//
+// SPDX-License-Identifier: MIT
 
 // Implemented by: Tomáš Oberhuber, Jakub Klinkovský
 

@@ -1,13 +1,3 @@
-/***************************************************************************
-                          tnl-grid-setup.cpp  -  description
-                             -------------------
-    begin                : Nov 20, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #include "tnl-grid-setup.h"
 #include <TNL/Config/parseCommandLine.h>
 

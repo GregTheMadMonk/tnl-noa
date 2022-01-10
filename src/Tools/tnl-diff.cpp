@@ -1,13 +1,3 @@
-   /***************************************************************************
-                          tnl-diff.cpp  -  description
-                             -------------------
-    begin                : Nov 17, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #include "tnl-diff.h"
 #include <TNL/Config/parseCommandLine.h>
 #include <TNL/Meshes/Grid.h>

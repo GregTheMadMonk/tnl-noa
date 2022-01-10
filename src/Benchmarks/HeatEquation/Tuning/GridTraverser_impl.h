@@ -1,13 +1,3 @@
-/***************************************************************************
-                          GridTraverser_impl.h  -  description
-                             -------------------
-    begin                : Jan 2, 2016
-    copyright            : (C) 2016 by Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #pragma once
 
 #include "GridTraverser.h"

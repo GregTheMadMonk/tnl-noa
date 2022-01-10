@@ -1,13 +1,3 @@
-/***************************************************************************
-                          tnl-decompose-grid.cpp  -  description
-                             -------------------
-    begin                : Jun 24, 2021
-    copyright            : (C) 2021 by Tomas Oberhuber et al.
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 // Implemented by: Jakub Klinkovský
 
 #include <TNL/Config/parseCommandLine.h>

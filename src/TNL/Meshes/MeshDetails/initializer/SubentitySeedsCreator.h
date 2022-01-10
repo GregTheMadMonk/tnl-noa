@@ -1,12 +1,8 @@
-/***************************************************************************
-                          SubentitySeedsCreator.h  -  description
-                             -------------------
-    begin                : Aug 20, 2015
-    copyright            : (C) 2015 by Tomas Oberhuber et al.
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
+// Copyright (c) 2004-2022 Tomáš Oberhuber et al.
+//
+// This file is part of TNL - Template Numerical Library (https://tnl-project.org/)
+//
+// SPDX-License-Identifier: MIT
 
 /***
  * Authors:

@@ -1,12 +1,8 @@
-/***************************************************************************
-                          CSR.h -  description
-                             -------------------
-    begin                : Dec 12, 2019
-    copyright            : (C) 2019 by Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
+// Copyright (c) 2004-2022 Tomáš Oberhuber et al.
+//
+// This file is part of TNL - Template Numerical Library (https://tnl-project.org/)
+//
+// SPDX-License-Identifier: MIT
 
 #pragma once
 

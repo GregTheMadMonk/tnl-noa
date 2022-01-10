@@ -1,14 +1,3 @@
-/***************************************************************************
-                          UpwindMomentumBase.h  -  description
-                             -------------------
-    begin                : Feb 17, 2017
-    copyright            : (C) 2017 by Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
-
 #pragma once
 
 namespace TNL {

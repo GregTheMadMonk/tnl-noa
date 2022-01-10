@@ -1,10 +1,3 @@
-/* 
- * File:   tnlEikonalOperator.h
- * Author: oberhuber
- *
- * Created on July 11, 2016, 6:33 PM
- */
-
 #pragma once
 
 #include <functions/tnlConstantFunction.h>

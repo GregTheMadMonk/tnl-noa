@@ -1,10 +1,8 @@
-/***************************************************************************
-                          TimeIndependentPDESolver.hpp  -  description
-                             -------------------
-    begin                : Jan 15, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
+// Copyright (c) 2004-2022 Tomáš Oberhuber et al.
+//
+// This file is part of TNL - Template Numerical Library (https://tnl-project.org/)
+//
+// SPDX-License-Identifier: MIT
 
 /***************************************************************************
  *                                                                         *

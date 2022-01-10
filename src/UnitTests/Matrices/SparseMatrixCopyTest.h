@@ -1,13 +1,3 @@
-/***************************************************************************
-                          SparseMatrixCopyTest.h -  description
-                             -------------------
-    begin                : Jun 25, 2017
-    copyright            : (C) 2017 by Tomas Oberhuber et al.
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #include <Benchmarks/SpMV/ReferenceFormats/Legacy/CSR.h>
 #include <Benchmarks/SpMV/ReferenceFormats/Legacy/Ellpack.h>
 #include <Benchmarks/SpMV/ReferenceFormats/Legacy/SlicedEllpack.h>

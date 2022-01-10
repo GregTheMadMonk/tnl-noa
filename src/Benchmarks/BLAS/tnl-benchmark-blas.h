@@ -1,13 +1,3 @@
-/***************************************************************************
-                          tnl-benchmark-blas.h  -  description
-                             -------------------
-    begin                : Jan 27, 2010
-    copyright            : (C) 2010 by Tomas Oberhuber et al.
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 // Implemented by: Jakub Klinkovsky
 
 #pragma once

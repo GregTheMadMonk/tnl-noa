@@ -1,13 +1,3 @@
-/***************************************************************************
-                          ObjectTest.cpp  -  description
-                             -------------------
-    begin                : Jul 22, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #include <TNL/Devices/Host.h>
 #include <TNL/Object.h>
 #include <TNL/File.h>

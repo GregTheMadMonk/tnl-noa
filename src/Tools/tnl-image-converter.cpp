@@ -1,13 +1,3 @@
-/***************************************************************************
-                          tnl-image-converter.cpp  -  description
-                             -------------------
-    begin                : Jul 19, 2015
-    copyright            : (C) 2015 by Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #include <TNL/Config/parseCommandLine.h>
 #include <TNL/FileName.h>
 #include <TNL/Meshes/Grid.h>

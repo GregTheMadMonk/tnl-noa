@@ -1,13 +1,3 @@
-/***************************************************************************
-                          tnl-init.cpp  -  description
-                             -------------------
-    begin                : Nov 23, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #include "tnl-init.h"
 
 #include <TNL/File.h>

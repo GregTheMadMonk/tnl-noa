@@ -1,13 +1,3 @@
-/***************************************************************************
-                          SparseMatrixTest_BiEllpack.h -  description
-                             -------------------
-    begin                : Apr 7, 2020
-    copyright            : (C) 2020 by Tomas Oberhuber et al.
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #include <iostream>
 #include <TNL/Algorithms/Segments/BiEllpack.h>
 #include <TNL/Matrices/SparseMatrix.h>

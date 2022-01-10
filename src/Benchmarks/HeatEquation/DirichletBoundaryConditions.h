@@ -1,13 +1,3 @@
-/***************************************************************************
-                          DirichletBoundaryConditions.h  -  description
-                             -------------------
-    begin                : Nov 17, 2014
-    copyright            : (C) 2014 by oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #pragma once
 
 #include <TNL/Operators/Operator.h>

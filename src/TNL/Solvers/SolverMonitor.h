@@ -1,12 +1,8 @@
-/***************************************************************************
-                          SolverMonitor.h  -  description
-                             -------------------
-    begin                : Oct 19, 2012
-    copyright            : (C) 2012 by Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
+// Copyright (c) 2004-2022 Tomáš Oberhuber et al.
+//
+// This file is part of TNL - Template Numerical Library (https://tnl-project.org/)
+//
+// SPDX-License-Identifier: MIT
 
 #pragma once
 

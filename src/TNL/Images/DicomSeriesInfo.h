@@ -1,15 +1,8 @@
-/***************************************************************************
-                          DicomSeries.h  -  description
-                             -------------------
-    begin                : Jul 19, 2015
-    copyright            : (C) 2015 by Tomas Oberhuber et al.
- 
-     Tomas Oberhuber     tomas.oberhuber@fjfi.cvut.cz
-     Jiri Kafka          kafka9@seznam.cz
-     Pavel Neskudla
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
+// Copyright (c) 2004-2022 Tomáš Oberhuber et al.
+//
+// This file is part of TNL - Template Numerical Library (https://tnl-project.org/)
+//
+// SPDX-License-Identifier: MIT
 
 #pragma once
 

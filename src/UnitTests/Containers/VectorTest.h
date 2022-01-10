@@ -1,13 +1,3 @@
-/***************************************************************************
-                          VectorTest-1.h  -  description
-                             -------------------
-    begin                : Oct 25, 2010
-    copyright            : (C) 2010 by Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #pragma once
 
 #ifdef HAVE_GTEST

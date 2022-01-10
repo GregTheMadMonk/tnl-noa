@@ -1,11 +1,3 @@
-/***************************************************************************
-                          SaveAndLoadMeshfunctionTest.cpp  -  description
-                             -------------------
-    begin                : Dec 2, 2017
-    copyright            : (C) 2017 by Tomas Oberhuber et al.
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
 #include <TNL/Functions/MeshFunctionView.h>
 
 #ifdef HAVE_GTEST

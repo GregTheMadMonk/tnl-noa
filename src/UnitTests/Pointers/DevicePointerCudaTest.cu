@@ -1,13 +1,3 @@
-/***************************************************************************
-                          DevicePointerCudaTest.cpp  -  description
-                             -------------------
-    begin                : Nov 26, 2019
-    copyright            : (C) 2019 by Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #include <cstdlib>
 #include <TNL/Devices/Host.h>
 #include <TNL/Pointers/DevicePointer.h>

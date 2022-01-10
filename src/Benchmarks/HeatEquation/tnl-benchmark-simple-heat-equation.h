@@ -1,13 +1,3 @@
-/***************************************************************************
-                          tnl-benchmark-simple-heat-equation.h  -  description
-                             -------------------
-    begin                : Nov 28, 2015
-    copyright            : (C) 2015 by Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #ifndef TNL_BENCHMARK_SIMPLE_HEAT_EQUATION_H
 #define	TNL_BENCHMARK_SIMPLE_HEAT_EQUATION_H
 
