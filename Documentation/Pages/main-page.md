@@ -11,8 +11,6 @@ and distributed systems, which can be managed via a unified interface.
 Similarly to the STL, features provided by the TNL can be grouped into
 several modules:
 
-> TODO: Each topic in this list should have a separate page or tutorial.
-
 - _Core concepts_.
   The main concepts used in TNL are the _memory space_, which represents the
   part of memory where given data is allocated, and the _execution model_,

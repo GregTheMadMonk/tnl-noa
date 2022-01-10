@@ -18,7 +18,7 @@ TNL is based on the following core concepts:
    - Classes for general data structures.
      (TODO: alternatively use "Dense" and "Sparse", because a dense matrix can
      be an extended alias for 2D array)
-   - `Array`, `Vector` (also `VectorOperations`), `NDArray`, ...
+   - `Array`, `Vector`, `NDArray`, ...
 5. Views
    - Views wrap only a raw pointer to data and some metadata (such as the array
      size), they do not do allocation and deallocation of the data. Hence, views
