@@ -35,6 +35,24 @@ template< typename Real,
           typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
+SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseMatrix( const SparseMatrix& matrix )
+: BaseType( matrix ),
+  columnIndexes( matrix.columnIndexes ),
+  segments( matrix.segments ),
+  indexAllocator( matrix.indexAllocator ),
+  view( this->getView() )
+{
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename, typename > class Segments,
+          typename ComputeReal,
+          typename RealAllocator,
+          typename IndexAllocator >
    template< typename Index_t, std::enable_if_t< std::is_integral< Index_t >::value, int > >
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
 SparseMatrix( const Index_t rows,

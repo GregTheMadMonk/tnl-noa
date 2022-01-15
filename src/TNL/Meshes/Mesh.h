@@ -87,7 +87,7 @@ class Mesh
       // constructors
       Mesh() = default;
 
-      Mesh( const Mesh& mesh );
+      Mesh( const Mesh& mesh ) = default;
 
       Mesh( Mesh&& mesh ) = default;
 
