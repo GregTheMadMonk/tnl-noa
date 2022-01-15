@@ -37,15 +37,6 @@ init( typename MeshTraitsType::PointArrayType& points,
 
 
 template< typename MeshConfig, typename Device >
-Mesh< MeshConfig, Device >::
-Mesh( const Mesh& mesh )
-   : StorageBaseType( mesh ),
-     EntityTagsLayerFamily( mesh )
-{
-   points = mesh.getPoints();
-}
-
-template< typename MeshConfig, typename Device >
    template< typename Device_ >
 Mesh< MeshConfig, Device >::
 Mesh( const Mesh< MeshConfig, Device_ >& mesh )
