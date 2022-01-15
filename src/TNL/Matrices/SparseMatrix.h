@@ -181,7 +181,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * \param matrix is the source matrix
        */
-      SparseMatrix( const SparseMatrix& matrix1 ) = default;
+      explicit SparseMatrix( const SparseMatrix& matrix );
 
       /**
        * \brief Move constructor.
