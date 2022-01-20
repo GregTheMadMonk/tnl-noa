@@ -6,11 +6,12 @@
 
 #pragma once
 
-#include <TNL/Images//JPEGImage.h>
 #include <setjmp.h>
 
+#include <TNL/Images/JPEGImage.h>
+
 namespace TNL {
-namespace Images {   
+namespace Images {
 
 #ifdef HAVE_JPEG_H
 inline void my_error_exit( j_common_ptr cinfo )
@@ -42,7 +43,7 @@ readHeader()
 #ifdef HAVE_JPEG_H
    this->decinfo.err = jpeg_std_error(&jerr.pub);
    this->jerr.pub.error_exit = my_error_exit;
- 
+
    /***
     * Prepare the long jump back from libjpeg.
     */
@@ -55,7 +56,7 @@ readHeader()
       jpeg_destroy_decompress( &this->decinfo );
       return false;
    }
- 
+
    jpeg_create_decompress( &this->decinfo );
    jpeg_stdio_src( &this->decinfo, this->file );
    if( jpeg_read_header( &this->decinfo, true ) != JPEG_HEADER_OK )
@@ -103,7 +104,7 @@ read( const RegionOfInterest< Index > roi,
    typedef Meshes::Grid< 2, Real, Device, Index > GridType;
    const GridType& grid = function.getMesh();
    typename GridType::Cell cell( grid );
- 
+
    /***
     * Prepare the long jump back from libjpeg.
     */
@@ -116,14 +117,14 @@ read( const RegionOfInterest< Index > roi,
       jpeg_destroy_decompress( &this->decinfo );
       return false;
    }
- 
+
    jpeg_start_decompress( &this->decinfo );
    int row_stride = this->decinfo.output_width * this->decinfo.output_components;
    JSAMPARRAY row = ( *( this->decinfo.mem->alloc_sarray ) )( ( j_common_ptr ) &this->decinfo,
                                                               JPOOL_IMAGE,
                                                               row_stride,
-                                                              1 );	
- 
+                                                              1 );
+
    Index i( 0 ), j;
    while( this->decinfo.output_scanline < this->decinfo.output_height)
    {
@@ -132,7 +133,7 @@ read( const RegionOfInterest< Index > roi,
       {
          if( !roi.isIn( i, j ) )
             continue;
- 
+
          cell.getCoordinates().x() =  j - roi.getLeft();
          cell.getCoordinates().y() = roi.getBottom() - 1 - i;
          //Index cellIndex = grid.getCellIndex( CoordinatesType( j - roi.getLeft(),
@@ -296,7 +297,7 @@ write( const Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >
    return true;
 #else
    return false;
-#endif   
+#endif
 }
 
 

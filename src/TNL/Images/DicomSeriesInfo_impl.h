@@ -6,12 +6,13 @@
 
 #pragma once
 
-#include <TNL/Images//DicomSeriesInfo.h>
-#include <TNL/Images//DicomHeader.h>
 #include <stdio.h>
 
+#include <TNL/Images/DicomHeader.h>
+#include <TNL/Images/DicomSeriesInfo.h>
+
 namespace TNL {
-namespace Images {   
+namespace Images {
 
 inline DicomSeriesInfo::DicomSeriesInfo( DicomHeader &dicomHeader)
 : dicomHeader( dicomHeader )
@@ -29,49 +30,49 @@ inline bool DicomSeriesInfo::retrieveInfo()
    OFString str;
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_Modality, str );
    this->modality = str.data();
- 
+
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_StudyInstanceUID, str );
    this->studyInstanceUID = str.data();
- 
+
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_SeriesInstanceUID, str );
    this->seriesInstanceUID = str.data();
- 
+
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_SeriesNumber, str );
    this->seriesNumber = str.data();
- 
+
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_SeriesDescription, str );
    this->seriesDescription = str.data();
- 
+
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_SeriesDate, str );
    this->seriesDate = str.data();
- 
+
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_SeriesTime, str );
    this->seriesTime = str.data();
- 
+
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_PerformingPhysicianName, str );
    this->performingPhysiciansName = str.data();
- 
+
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_PerformingPhysicianIdentificationSequence, str );
    this->performingPhysicianIdentificationSequence = str.data();
- 
+
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_OperatorsName, str );
    this->operatorsName = str.data();
- 
+
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_OperatorIdentificationSequence, str );
    this->operatorIdentificationSequence = str.data();
- 
+
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_FrameAcquisitionDuration, str );
    this->frameTime = str.data();
- 
+
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_FrameAcquisitionDateTime, str );
    this->faDateTime = str.data();
- 
+
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_FrameReferenceTime, str );
    this->faRefTime = str.data();
- 
+
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_ActualFrameDuration, str );
    this->AFD = str.data();
- 
+
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_AcquisitionTime, str );
    this->acquisitionTime = str.data();
 

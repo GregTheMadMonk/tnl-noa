@@ -17,7 +17,7 @@
 #endif
 
 namespace TNL {
-namespace Images {   
+namespace Images {
 
 class DicomHeader;
 
@@ -28,21 +28,21 @@ class DicomHeader;
 class DicomPatientInfo
 {
    public:
- 
+
       inline DicomPatientInfo(DicomHeader &aDicomHeader);
- 
+
       inline virtual ~DicomPatientInfo();
 
       inline const String& getName();
- 
+
       inline const String& getSex();
- 
+
       inline const String& getID();
- 
+
       inline const String& getWeight();
- 
+
       inline const String& getPosition();
- 
+
       inline const String& getOrientation();
 
    private:
@@ -67,5 +67,4 @@ class DicomPatientInfo
 } // namespace Images
 } // namespace TNL
 
-#include <TNL/Images//DicomPatientInfo_impl.h>
-
+#include <TNL/Images/DicomPatientInfo_impl.h>

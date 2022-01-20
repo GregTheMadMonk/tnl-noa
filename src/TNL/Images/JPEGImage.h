@@ -23,56 +23,56 @@ struct my_error_mgr
 #endif
 
 namespace TNL {
-namespace Images {   
+namespace Images {
 
 template< typename Index = int >
 class JPEGImage : public Image< Index >
 {
    public:
- 
+
       typedef Index IndexType;
- 
+
       JPEGImage();
- 
+
       bool openForRead( const String& fileName );
- 
+
       template< typename MeshReal,
                 typename Device,
                 typename Real >
       bool read( const RegionOfInterest< Index > roi,
                  Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function );
-      
- 
+
+
       template< typename Real,
                 typename Device >
       bool openForWrite( const String& fileName,
                          Meshes::Grid< 2, Real, Device, Index >& grid );
- 
+
       // TODO: Obsolete
       template< typename Real,
                 typename Device,
                 typename Vector >
       bool write( const Meshes::Grid< 2, Real, Device, Index >& grid,
                   Vector& vector );
-      
+
       template< typename MeshReal,
                 typename Device,
                 typename Real >
       bool write( const Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function );
-      
- 
+
+
       void close();
- 
+
       ~JPEGImage();
- 
+
    protected:
- 
+
       bool readHeader();
- 
+
       template< typename Real,
                 typename Device >
       bool writeHeader( const Meshes::Grid< 2, Real, Device, Index >& grid );
- 
+
       FILE* file;
 
       bool fileOpen;
@@ -89,5 +89,4 @@ class JPEGImage : public Image< Index >
 } // namespace Images
 } // namespace TNL
 
-#include <TNL/Images//JPEGImage_impl.h>
-
+#include <TNL/Images/JPEGImage_impl.h>

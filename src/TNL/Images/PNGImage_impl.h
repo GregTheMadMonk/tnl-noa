@@ -4,12 +4,12 @@
 //
 // SPDX-License-Identifier: MIT
 
-#pragma once 
+#pragma once
 
-#include <TNL/Images//PNGImage.h>
+#include <TNL/Images/PNGImage.h>
 
 namespace TNL {
-namespace Images {   
+namespace Images {
 
 template< typename Index >
 PNGImage< Index >::
@@ -37,7 +37,7 @@ readHeader()
    bool isPNG = !png_sig_cmp( header, 0, headerSize );
    if( ! isPNG )
       return false;
- 
+
    /****
     * Allocate necessary memory
     */
@@ -78,7 +78,7 @@ readHeader()
    }
    png_init_io( this->png_ptr, this->file );
    png_set_sig_bytes( this->png_ptr, headerSize );
- 
+
    /****
     * Read the header
     */
@@ -126,7 +126,7 @@ read( const RegionOfInterest< Index > roi,
    typedef Meshes::Grid< 2, MeshReal, Device, Index > GridType;
    const GridType& grid = function.getMesh();
    typename GridType::Cell cell( grid );
- 
+
    /***
     * Prepare the long jump back from libpng.
     */
@@ -137,9 +137,9 @@ read( const RegionOfInterest< Index > roi,
                                &this->end_info );
       return false;
    }
- 
+
    png_bytepp row_pointers = png_get_rows( this->png_ptr, this->info_ptr );
- 
+
    Index i, j;
    for( i = 0; i < this->height; i ++ )
    {
@@ -147,7 +147,7 @@ read( const RegionOfInterest< Index > roi,
       {
          if( !roi.isIn( i, j ) )
             continue;
- 
+
          cell.getCoordinates().x() = j - roi.getLeft();
          cell.getCoordinates().y() = roi.getBottom() - 1 - i;
          cell.refresh();
@@ -232,7 +232,7 @@ writeHeader( const Meshes::Grid< 2, Real, Device, Index >& grid )
                                 NULL);
       return false;
    }
- 
+
    /***
     * Prepare the long jump back from libpng.
     */
@@ -248,7 +248,7 @@ writeHeader( const Meshes::Grid< 2, Real, Device, Index >& grid )
     * Set the zlib compression level
     */
    //png_set_compression_level( this->png_ptr, Z_BEST_COMPRESSION );
- 
+
    //const int bitDepth( 8 );
    png_set_IHDR( this->png_ptr,
                  this->info_ptr,
@@ -301,7 +301,7 @@ write( const Meshes::Grid< 2, Real, Device, Index >& grid,
 #ifdef HAVE_PNG_H
    typedef Meshes::Grid< 2, Real, Device, Index > GridType;
    typename GridType::Cell cell( grid );
- 
+
    /***
     * Prepare the long jump back from libpng.
     */
@@ -312,7 +312,7 @@ write( const Meshes::Grid< 2, Real, Device, Index >& grid,
                                &this->end_info );
       return false;
    }
- 
+
    Index i, j;
    png_bytep row = new png_byte[ 3 * grid.getDimensions().x() ];
    for( i = 0; i < grid.getDimensions().y(); i ++ )
@@ -348,7 +348,7 @@ write( const Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >
    typedef Meshes::Grid< 2, Real, Device, Index > GridType;
    const GridType& grid = function.getMesh();
    typename GridType::Cell cell( grid );
- 
+
    /***
     * Prepare the long jump back from libpng.
     */
@@ -359,7 +359,7 @@ write( const Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >
                                &this->end_info );
       return false;
    }
- 
+
    Index i, j;
    png_bytep row = new png_byte[ 3 * grid.getDimensions().x() ];
    for( i = 0; i < grid.getDimensions().y(); i ++ )

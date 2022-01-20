@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <TNL/Images//DicomImageInfo.h>
-#include <TNL/Images//DicomHeader.h>
+#include <TNL/Images/DicomHeader.h>
+#include <TNL/Images/DicomImageInfo.h>
 
 namespace TNL {
-namespace Images {   
+namespace Images {
 
 inline DicomImageInfo::DicomImageInfo( DicomHeader& dicomHeader )
 : dicomHeader( dicomHeader )

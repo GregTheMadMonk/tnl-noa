@@ -4,13 +4,14 @@
 //
 // SPDX-License-Identifier: MIT
 
-#pragma once 
+#pragma once
 
 #include <cstring>
-#include <TNL/Images//PGMImage.h>
+
+#include <TNL/Images/PGMImage.h>
 
 namespace TNL {
-namespace Images {   
+namespace Images {
 
 template< typename Index >
 PGMImage< Index >::
@@ -34,7 +35,7 @@ readHeader()
 
    if( magicNumber != "P5" && magicNumber != "P2" )
       return false;
- 
+
    if(  magicNumber == "P5" )
       this->binary = true;
 
@@ -48,7 +49,7 @@ readHeader()
 			this->file.get( character );
    }
    this->file.unget();
- 
+
    this->file >> this->width >> this->height >> this->maxColors;
    return true;
 }
@@ -164,7 +165,7 @@ write( const Meshes::Grid< 2, Real, Device, Index >& grid,
 {
    typedef Meshes::Grid< 2, Real, Device, Index > GridType;
    typename GridType::Cell cell( grid );
- 
+
    Index i, j;
    for( i = 0; i < grid.getDimensions().y(); i ++ )
    {
@@ -173,7 +174,7 @@ write( const Meshes::Grid< 2, Real, Device, Index >& grid,
          cell.getCoordinates().x() = j;
          cell.getCoordinates().y() = grid.getDimensions().y() - 1 - i;
          cell.refresh();
- 
+
          //Index cellIndex = grid.getCellIndex( CoordinatesType( j,
          //                                     grid.getDimensions().y() - 1 - i ) );
 
@@ -185,7 +186,7 @@ write( const Meshes::Grid< 2, Real, Device, Index >& grid,
                   this->file << ' ';
          }
          else this->file << color;
-      }      
+      }
       if ( ! this->binary )
          this->file << '\n';
    }
@@ -203,7 +204,7 @@ write( const Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >
    typedef Meshes::Grid< 2, Real, Device, Index > GridType;
    const GridType& grid = function.getMesh();
    typename GridType::Cell cell( grid );
- 
+
    Index i, j;
    for( i = 0; i < grid.getDimensions().y(); i ++ )
    {
@@ -212,7 +213,7 @@ write( const Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >
          cell.getCoordinates().x() = j;
          cell.getCoordinates().y() = grid.getDimensions().y() - 1 - i;
          cell.refresh();
- 
+
          //Index cellIndex = grid.getCellIndex( CoordinatesType( j,
          //                                     grid.getDimensions().y() - 1 - i ) );
 
@@ -224,7 +225,7 @@ write( const Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >
                   this->file << ' ';
          }
          else this->file << color;
-      }      
+      }
       if ( ! this->binary )
          this->file << '\n';
    }

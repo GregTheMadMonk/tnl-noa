@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <TNL/Images//DicomHeader.h>
-#include <TNL/Images//DicomSeriesInfo.h>
-#include <TNL/Images//DicomPatientInfo.h>
-#include <TNL/Images//DicomImageInfo.h>
+#include <TNL/Images/DicomHeader.h>
+#include <TNL/Images/DicomImageInfo.h>
+#include <TNL/Images/DicomPatientInfo.h>
+#include <TNL/Images/DicomSeriesInfo.h>
 
 namespace TNL {
 namespace Images {

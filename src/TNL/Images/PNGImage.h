@@ -16,25 +16,25 @@
 #include <TNL/Functions/MeshFunction.h>
 
 namespace TNL {
-namespace Images {   
+namespace Images {
 
 template< typename Index = int >
 class PNGImage : public Image< Index >
 {
    public:
- 
+
       using IndexType = Index;
- 
+
       PNGImage();
- 
+
       bool openForRead( const String& fileName );
- 
+
       template< typename MeshReal,
                 typename Device,
                 typename Real >
       bool read( const RegionOfInterest< Index > roi,
                  Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function );
- 
+
       template< typename Real,
                 typename Device >
       bool openForWrite( const String& fileName,
@@ -46,25 +46,25 @@ class PNGImage : public Image< Index >
                 typename Vector >
       bool write( const Meshes::Grid< 2, Real, Device, Index >& grid,
                   Vector& vector );
-      
+
       template< typename MeshReal,
                 typename Device,
                 typename Real >
       bool write( const Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function );
-      
- 
+
+
       void close();
- 
+
       ~PNGImage();
- 
+
    protected:
- 
+
       bool readHeader();
- 
+
       template< typename Real,
                 typename Device >
       bool writeHeader( const Meshes::Grid< 2, Real, Device, Index >& grid );
- 
+
       FILE* file;
 
       bool fileOpen;
@@ -73,7 +73,7 @@ class PNGImage : public Image< Index >
       png_structp png_ptr;
 
       png_infop info_ptr, end_info;
- 
+
       png_byte color_type, bit_depth;
 #endif
 };
@@ -81,5 +81,4 @@ class PNGImage : public Image< Index >
 } // namespace Images
 } // namespace TNL
 
-#include <TNL/Images//PNGImage_impl.h>
-
+#include <TNL/Images/PNGImage_impl.h>

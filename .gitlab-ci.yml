@@ -4,6 +4,10 @@ default:
     image: "archlinux/devel-tnl:latest"
     tags:
         - docker
+    retry:
+        max: 2
+        when:
+            - runner_system_failure
 
 stages:
     - build

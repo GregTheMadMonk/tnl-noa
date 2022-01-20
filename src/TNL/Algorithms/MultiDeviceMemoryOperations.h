@@ -7,6 +7,7 @@
 #pragma once
 
 #include <TNL/Algorithms/MemoryOperations.h>
+#include <TNL/Cuda/LaunchHelpers.h>  // getTransferBufferSize
 
 namespace TNL {
 namespace Algorithms {
