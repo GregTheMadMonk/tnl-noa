@@ -350,9 +350,7 @@ parseCommandLine( int argc,
       return false;
    }
    addDefaultValues( config_description, parameters );
-   if( ! checkMissingEntries( config_description, parameters, printUsage, argv[ 0 ] ) )
-      return false;
-   return true;
+   return checkMissingEntries( config_description, parameters, printUsage, argv[ 0 ] );
 }
 
 }  // namespace Config

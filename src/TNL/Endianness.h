@@ -47,9 +47,7 @@ isLittleEndian()
 {
    const unsigned int tmp1 = 1;
    const auto* tmp2 = reinterpret_cast< const unsigned char* >( &tmp1 );
-   if( *tmp2 != 0 )
-      return true;
-   return false;
+   return *tmp2 != 0;
 }
 
 /**

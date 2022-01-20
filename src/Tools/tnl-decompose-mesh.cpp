@@ -781,5 +781,6 @@ int main( int argc, char* argv[] )
       run( std::forward<MeshType>(mesh), parameters );
       return true;
    };
-   return ! Meshes::resolveAndLoadMesh< DecomposeMeshConfigTag, Devices::Host >( wrapper, inputFileName, inputFileFormat );
+   const bool status = Meshes::resolveAndLoadMesh< DecomposeMeshConfigTag, Devices::Host >( wrapper, inputFileName, inputFileFormat );
+   return static_cast< int >( ! status );
 }

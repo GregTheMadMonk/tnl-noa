@@ -24,9 +24,7 @@ __cuda_callable__
 bool
 SegmentViewIterator< SegmentView >::operator==( const SegmentViewIterator& other ) const
 {
-   if( &this->segmentView == &other.segmentView && localIdx == other.localIdx )
-      return true;
-   return false;
+   return &this->segmentView == &other.segmentView && localIdx == other.localIdx;
 }
 
 template< typename SegmentView >

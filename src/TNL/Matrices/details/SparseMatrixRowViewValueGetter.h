@@ -38,9 +38,7 @@ struct SparseMatrixRowViewValueGetter< SegmentView, ValuesView, ColumnsIndexesVi
              const ColumnsIndexesView& columnIndexes,
              const IndexType& paddingIndex )
    {
-      if( columnIndexes[ globalIdx ] != paddingIndex )
-         return true;
-      return false;
+      return columnIndexes[ globalIdx ] != paddingIndex;
    };
 };
 

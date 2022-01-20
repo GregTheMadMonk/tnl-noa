@@ -23,9 +23,7 @@ __cuda_callable__
 bool
 MatrixRowViewIterator< RowView >::operator==( const MatrixRowViewIterator& other ) const
 {
-   if( &this->rowView == &other.rowView && localIdx == other.localIdx )
-      return true;
-   return false;
+   return &this->rowView == &other.rowView && localIdx == other.localIdx;
 }
 
 template< typename RowView >

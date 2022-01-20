@@ -45,10 +45,7 @@ inline DicomSeries::DicomSeries( const String& filePath )
    imagesInfo.maxColorValue = 0;
    imagesInfo.minColorValue = 128000;
 
-   if( ! loadDicomSeries( filePath ) )
-      isLoaded = false;
-   else
-      isLoaded = true;
+   isLoaded = loadDicomSeries( filePath );
 }
 
 inline DicomSeries::~DicomSeries()
