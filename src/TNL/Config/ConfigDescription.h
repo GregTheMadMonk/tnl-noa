@@ -146,11 +146,11 @@ public:
 
       using CoercedEntryType = typename ParameterTypeCoercion< EntryType >::type;
       if( isCurrentEntryList ) {
-         ConfigEntryList< CoercedEntryType >& entry = dynamic_cast< ConfigEntryList< CoercedEntryType >& >( *currentEntry );
+         auto& entry = dynamic_cast< ConfigEntryList< CoercedEntryType >& >( *currentEntry );
          entry.getEnumValues().push_back( ParameterTypeCoercion< EntryType >::convert( entryEnum ) );
       }
       else {
-         ConfigEntry< CoercedEntryType >& entry = dynamic_cast< ConfigEntry< CoercedEntryType >& >( *currentEntry );
+         auto& entry = dynamic_cast< ConfigEntry< CoercedEntryType >& >( *currentEntry );
          entry.getEnumValues().push_back( ParameterTypeCoercion< EntryType >::convert( entryEnum ) );
       }
    }

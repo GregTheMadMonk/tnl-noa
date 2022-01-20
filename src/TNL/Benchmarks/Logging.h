@@ -115,7 +115,7 @@ public:
    {
       try {
          // check if we got an open file
-         std::ofstream& file = dynamic_cast< std::ofstream& >( log );
+         auto& file = dynamic_cast< std::ofstream& >( log );
          if( file.is_open() )
             // enable exceptions, but only if we got an open file
             // (under MPI, only the master rank typically opens the log file and thus

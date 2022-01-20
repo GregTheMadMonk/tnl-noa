@@ -105,7 +105,7 @@ decompress_block( const char* data )
    // decode the header
    const int encoded_header_length = base64::get_encoded_length( 4 * sizeof( HeaderType ) );
    std::pair< std::size_t, std::unique_ptr< std::uint8_t[] > > decoded_header = base64::decode( data, encoded_header_length );
-   const HeaderType* compression_header = reinterpret_cast< const HeaderType* >( decoded_header.second.get() );
+   const auto* compression_header = reinterpret_cast< const HeaderType* >( decoded_header.second.get() );
 
    if( compression_header[ 0 ] != 1 )
       throw std::length_error( "unexpected number of compressed blocks: " + std::to_string( compression_header[ 0 ] ) );
@@ -147,7 +147,7 @@ decompress_block( std::istream& input_stream )
    // decode the header
    std::pair< std::size_t, std::unique_ptr< std::uint8_t[] > > decoded_header =
       base64::decode( encoded_header.get(), encoded_header_length );
-   const HeaderType* compression_header = reinterpret_cast< const HeaderType* >( decoded_header.second.get() );
+   const auto* compression_header = reinterpret_cast< const HeaderType* >( decoded_header.second.get() );
 
    if( compression_header[ 0 ] != 1 )
       throw std::length_error( "unexpected number of compressed blocks: " + std::to_string( compression_header[ 0 ] ) );

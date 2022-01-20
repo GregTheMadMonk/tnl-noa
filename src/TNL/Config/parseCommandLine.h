@@ -33,52 +33,52 @@ addDefaultValues( const ConfigDescription& config, ParameterContainer& parameter
       const std::string entry_name = entryBase->getName();
       if( entryBase->hasDefaultValue() && ! parameters.checkParameter( entry_name ) ) {
          if( entryBase->getUIEntryType() == "bool" ) {
-            ConfigEntry< bool >& entry = dynamic_cast< ConfigEntry< bool >& >( *entryBase );
+            auto& entry = dynamic_cast< ConfigEntry< bool >& >( *entryBase );
             parameters.addParameter< bool >( entry_name, entry.getDefaultValue() );
             continue;
          }
          else if( entryBase->getUIEntryType() == "integer" ) {
-            ConfigEntry< Integer >& entry = dynamic_cast< ConfigEntry< Integer >& >( *entryBase );
+            auto& entry = dynamic_cast< ConfigEntry< Integer >& >( *entryBase );
             parameters.addParameter< Integer >( entry_name, entry.getDefaultValue() );
             continue;
          }
          else if( entryBase->getUIEntryType() == "unsigned integer" ) {
-            ConfigEntry< UnsignedInteger >& entry = dynamic_cast< ConfigEntry< UnsignedInteger >& >( *entryBase );
+            auto& entry = dynamic_cast< ConfigEntry< UnsignedInteger >& >( *entryBase );
             parameters.addParameter< UnsignedInteger >( entry_name, entry.getDefaultValue() );
             continue;
          }
          else if( entryBase->getUIEntryType() == "real" ) {
-            ConfigEntry< double >& entry = dynamic_cast< ConfigEntry< double >& >( *entryBase );
+            auto& entry = dynamic_cast< ConfigEntry< double >& >( *entryBase );
             parameters.addParameter< double >( entry_name, entry.getDefaultValue() );
             continue;
          }
          else if( entryBase->getUIEntryType() == "string" ) {
-            ConfigEntry< std::string >& entry = dynamic_cast< ConfigEntry< std::string >& >( *entryBase );
+            auto& entry = dynamic_cast< ConfigEntry< std::string >& >( *entryBase );
             parameters.addParameter< std::string >( entry_name, entry.getDefaultValue() );
             continue;
          }
          else if( entryBase->getUIEntryType() == "list of bool" ) {
-            ConfigEntryList< bool >& entry = dynamic_cast< ConfigEntryList< bool >& >( *entryBase );
+            auto& entry = dynamic_cast< ConfigEntryList< bool >& >( *entryBase );
             parameters.addList< bool >( entry_name, entry.getDefaultValue() );
             continue;
          }
          else if( entryBase->getUIEntryType() == "list of integer" ) {
-            ConfigEntryList< Integer >& entry = dynamic_cast< ConfigEntryList< Integer >& >( *entryBase );
+            auto& entry = dynamic_cast< ConfigEntryList< Integer >& >( *entryBase );
             parameters.addList< Integer >( entry_name, entry.getDefaultValue() );
             continue;
          }
          else if( entryBase->getUIEntryType() == "list of unsigned integer" ) {
-            ConfigEntryList< UnsignedInteger >& entry = dynamic_cast< ConfigEntryList< UnsignedInteger >& >( *entryBase );
+            auto& entry = dynamic_cast< ConfigEntryList< UnsignedInteger >& >( *entryBase );
             parameters.addList< UnsignedInteger >( entry_name, entry.getDefaultValue() );
             continue;
          }
          else if( entryBase->getUIEntryType() == "list of real" ) {
-            ConfigEntryList< double >& entry = dynamic_cast< ConfigEntryList< double >& >( *entryBase );
+            auto& entry = dynamic_cast< ConfigEntryList< double >& >( *entryBase );
             parameters.addList< double >( entry_name, entry.getDefaultValue() );
             continue;
          }
          else if( entryBase->getUIEntryType() == "list of string" ) {
-            ConfigEntryList< std::string >& entry = dynamic_cast< ConfigEntryList< std::string >& >( *entryBase );
+            auto& entry = dynamic_cast< ConfigEntryList< std::string >& >( *entryBase );
             parameters.addList< std::string >( entry_name, entry.getDefaultValue() );
             continue;
          }
@@ -273,26 +273,24 @@ parseCommandLine( int argc,
                }
                else if( entryType == "list of integer" ) {
                   const Integer v = convertStringValue< Integer >( value, option );
-                  const ConfigEntryList< Integer >& entry = dynamic_cast< const ConfigEntryList< Integer >& >( *entryBase );
+                  const auto& entry = dynamic_cast< const ConfigEntryList< Integer >& >( *entryBase );
                   checkEnumValues( entry, option, v );
                   integer_list.push_back( v );
                }
                else if( entryType == "list of unsigned integer" ) {
-                  const UnsignedInteger v = convertStringValue< UnsignedInteger >( value, option );
-                  const ConfigEntryList< UnsignedInteger >& entry =
-                     dynamic_cast< const ConfigEntryList< UnsignedInteger >& >( *entryBase );
+                  const auto v = convertStringValue< UnsignedInteger >( value, option );
+                  const auto& entry = dynamic_cast< const ConfigEntryList< UnsignedInteger >& >( *entryBase );
                   checkEnumValues( entry, option, v );
                   unsigned_integer_list.push_back( v );
                }
                else if( entryType == "list of real" ) {
                   const double v = convertStringValue< double >( value, option );
-                  const ConfigEntryList< double >& entry = dynamic_cast< const ConfigEntryList< double >& >( *entryBase );
+                  const auto& entry = dynamic_cast< const ConfigEntryList< double >& >( *entryBase );
                   checkEnumValues( entry, option, v );
                   real_list.push_back( v );
                }
                else if( entryType == "list of string" ) {
-                  const ConfigEntryList< std::string >& entry =
-                     dynamic_cast< const ConfigEntryList< std::string >& >( *entryBase );
+                  const auto& entry = dynamic_cast< const ConfigEntryList< std::string >& >( *entryBase );
                   checkEnumValues( entry, option, value );
                   string_list.push_back( value );
                }
@@ -318,25 +316,24 @@ parseCommandLine( int argc,
             }
             else if( entryType == "integer" ) {
                const Integer v = convertStringValue< Integer >( value, option );
-               const ConfigEntry< Integer >& entry = dynamic_cast< const ConfigEntry< Integer >& >( *entryBase );
+               const auto& entry = dynamic_cast< const ConfigEntry< Integer >& >( *entryBase );
                checkEnumValues( entry, option, v );
                parameters.addParameter< Integer >( option, v );
             }
             else if( entryType == "unsigned integer" ) {
-               const UnsignedInteger v = convertStringValue< UnsignedInteger >( value, option );
-               const ConfigEntry< UnsignedInteger >& entry =
-                  dynamic_cast< const ConfigEntry< UnsignedInteger >& >( *entryBase );
+               const auto v = convertStringValue< UnsignedInteger >( value, option );
+               const auto& entry = dynamic_cast< const ConfigEntry< UnsignedInteger >& >( *entryBase );
                checkEnumValues( entry, option, v );
                parameters.addParameter< UnsignedInteger >( option, v );
             }
             else if( entryType == "real" ) {
                const double v = convertStringValue< double >( value, option );
-               const ConfigEntry< double >& entry = dynamic_cast< const ConfigEntry< double >& >( *entryBase );
+               const auto& entry = dynamic_cast< const ConfigEntry< double >& >( *entryBase );
                checkEnumValues( entry, option, v );
                parameters.addParameter< double >( option, v );
             }
             else if( entryType == "string" ) {
-               const ConfigEntry< std::string >& entry = dynamic_cast< const ConfigEntry< std::string >& >( *entryBase );
+               const auto& entry = dynamic_cast< const ConfigEntry< std::string >& >( *entryBase );
                checkEnumValues( entry, option, (std::string) value );
                parameters.addParameter< std::string >( option, value );
             }

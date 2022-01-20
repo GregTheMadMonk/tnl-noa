@@ -98,7 +98,7 @@ inclusiveScan( const InputArray& input,
 {
    if( end == 0 )
       end = input.getSize();
-   constexpr typename OutputArray::ValueType identity = Reduction::template getIdentity< typename OutputArray::ValueType >();
+   constexpr auto identity = Reduction::template getIdentity< typename OutputArray::ValueType >();
    inclusiveScan( input, output, begin, end, outputBegin, std::forward< Reduction >( reduction ), identity );
 }
 
@@ -184,7 +184,7 @@ exclusiveScan( const InputArray& input,
 {
    if( end == 0 )
       end = input.getSize();
-   constexpr typename OutputArray::ValueType identity = Reduction::template getIdentity< typename OutputArray::ValueType >();
+   constexpr auto identity = Reduction::template getIdentity< typename OutputArray::ValueType >();
    exclusiveScan( input, output, begin, end, outputBegin, std::forward< Reduction >( reduction ), identity );
 }
 
@@ -256,7 +256,7 @@ inplaceInclusiveScan( Array& array,
 {
    if( end == 0 )
       end = array.getSize();
-   constexpr typename Array::ValueType identity = Reduction::template getIdentity< typename Array::ValueType >();
+   constexpr auto identity = Reduction::template getIdentity< typename Array::ValueType >();
    inplaceInclusiveScan( array, begin, end, std::forward< Reduction >( reduction ), identity );
 }
 
@@ -328,7 +328,7 @@ inplaceExclusiveScan( Array& array,
 {
    if( end == 0 )
       end = array.getSize();
-   constexpr typename Array::ValueType identity = Reduction::template getIdentity< typename Array::ValueType >();
+   constexpr auto identity = Reduction::template getIdentity< typename Array::ValueType >();
    inplaceExclusiveScan( array, begin, end, std::forward< Reduction >( reduction ), identity );
 }
 

@@ -164,7 +164,7 @@ DicomSeries::loadImage( const String& filePath, int number )
 {
 #ifdef HAVE_DCMTK_H
    // load header
-   DicomHeader* header = new DicomHeader();
+   auto* header = new DicomHeader();
    dicomSeriesHeaders.setSize( fileList.size() );
    dicomSeriesHeaders.setElement( number, header );
    if( ! header->loadFromFile( filePath ) )
