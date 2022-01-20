@@ -50,7 +50,7 @@ public:
       std::istringstream iss;
 
       // parse points section
-      if( ! sectionPositions.count( "POINTS" ) )
+      if( sectionPositions.count( "POINTS" ) == 0 )
          throw MeshReaderError( "VTKReader", "unable to find the POINTS section, the file may be invalid or corrupted" );
       inputFile.seekg( sectionPositions[ "POINTS" ] );
       getline( inputFile, line );
@@ -95,7 +95,7 @@ public:
       }
 
       // skip to the CELL_TYPES section
-      if( ! sectionPositions.count( "CELL_TYPES" ) )
+      if( sectionPositions.count( "CELL_TYPES" ) == 0 )
          throw MeshReaderError( "VTKReader", "unable to find the CELL_TYPES section, the file may be invalid or corrupted" );
       inputFile.seekg( sectionPositions[ "CELL_TYPES" ] );
       getline( inputFile, line );
@@ -176,7 +176,7 @@ public:
       }
 
       // find to the CELLS section
-      if( ! sectionPositions.count( "CELLS" ) )
+      if( sectionPositions.count( "CELLS" ) == 0 )
          throw MeshReaderError( "VTKReader", "unable to find the CELLS section, the file may be invalid or corrupted" );
       inputFile.seekg( sectionPositions[ "CELLS" ] );
       getline( inputFile, line );
@@ -757,9 +757,8 @@ protected:
       int values_per_element = 1;
 
       sectionName += "::" + arrayName;
-      if( ! sectionPositions.count( sectionName ) ) {
+      if( sectionPositions.count( sectionName ) == 0 )
          throw MeshReaderError( "VTKReader", "array " + arrayName + " was not found in the CELL_DATA section" );
-      }
       inputFile.seekg( sectionPositions[ sectionName ] );
 
       // type: SCALARS, VECTORS, etc.

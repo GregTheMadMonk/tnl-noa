@@ -9,6 +9,7 @@
 #pragma once
 
 #include <string>
+#include <utility>
 #include <vector>
 #include <mpark/variant.hpp>  // backport of std::variant from C++17
 
@@ -44,7 +45,7 @@ public:
 
    MeshReader() = default;
 
-   MeshReader( const std::string& fileName ) : fileName( fileName ) {}
+   MeshReader( std::string fileName ) : fileName( std::move( fileName ) ) {}
 
    virtual ~MeshReader() = default;
 

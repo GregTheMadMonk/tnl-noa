@@ -34,7 +34,7 @@ demangle( const char* name )
    int status = 0;
    std::size_t size = 0;
    std::unique_ptr< char[], void ( * )( void* ) > result( abi::__cxa_demangle( name, nullptr, &size, &status ), std::free );
-   if( result.get() )
+   if( result != nullptr )
       return result.get();
 #endif
    return name;

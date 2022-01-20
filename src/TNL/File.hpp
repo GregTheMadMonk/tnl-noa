@@ -42,9 +42,9 @@ File::open( const String& fileName, std::ios_base::openmode mode )
    catch( std::ios_base::failure& ) {
       std::stringstream msg;
       msg << "Unable to open file " << fileName << " ";
-      if( mode & std::ios_base::in )
+      if( ( mode & std::ios_base::in ) != 0 )
          msg << " for reading.";
-      if( mode & std::ios_base::out )
+      if( ( mode & std::ios_base::out ) != 0 )
          msg << " for writing.";
 
       throw std::ios_base::failure( msg.str() );
@@ -273,16 +273,16 @@ operator>>( File& file, std::string& str )
    catch( ... ) {
       throw Exceptions::FileDeserializationError( file.getFileName(), "unable to read string length." );
    }
-   char buffer[ length ];
-   if( length ) {
+   if( length > 0 ) {
+      char buffer[ length ];
       try {
          file.load( buffer, length );
       }
       catch( ... ) {
          throw Exceptions::FileDeserializationError( file.getFileName(), "unable to read a C-string." );
       }
+      str.assign( buffer, length );
    }
-   str.assign( buffer, length );
    return file;
 }
 

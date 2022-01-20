@@ -97,7 +97,7 @@ encode( const std::uint8_t* data, std::size_t data_size )
       in += 3;
    }
 
-   if( end - in ) {
+   if( end - in != 0 ) {
       *pos++ = encoding_table[ in[ 0 ] >> 2 ];
       if( end - in == 1 ) {
          *pos++ = encoding_table[ ( in[ 0 ] & 0x03 ) << 4 ];
@@ -162,7 +162,7 @@ decode_block( const char* input, std::size_t input_length, std::uint8_t* output,
    }
 
    // check left-over chars
-   if( count )
+   if( count > 0 )
       throw std::invalid_argument( "base64: decoding error: invalid input (length not padded to a multiple of 4)" );
 
    return pos - output;

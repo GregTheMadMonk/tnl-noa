@@ -86,7 +86,7 @@ Initialized()
 #ifdef HAVE_MPI
    int flag;
    MPI_Initialized( &flag );
-   return flag;
+   return flag != 0;
 #else
    return true;
 #endif
@@ -98,7 +98,7 @@ Finalized()
 #ifdef HAVE_MPI
    int flag;
    MPI_Finalized( &flag );
-   return flag;
+   return flag != 0;
 #else
    return false;
 #endif

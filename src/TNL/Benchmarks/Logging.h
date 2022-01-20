@@ -180,7 +180,7 @@ public:
    setMetadataWidths( const std::map< std::string, int >& widths )
    {
       for( const auto& it : widths )
-         if( metadataWidths.count( it.first ) )
+         if( metadataWidths.count( it.first ) > 0 )
             metadataWidths[ it.first ] = it.second;
          else
             metadataWidths.insert( it );

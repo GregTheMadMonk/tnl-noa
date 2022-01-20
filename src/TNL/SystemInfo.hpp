@@ -175,7 +175,7 @@ SystemInfo::parseCPUInfo()
       file.getline( line, 1024 );
       if( strncmp( line, "physical id", strlen( "physical id" ) ) == 0 ) {
          i = strlen( "physical id" );
-         while( line[ i ] != ':' && line[ i ] )
+         while( line[ i ] != ':' && line[ i ] != '\0' )
             i++;
          processors.insert( atoi( &line[ i + 1 ] ) );
          continue;
@@ -183,21 +183,21 @@ SystemInfo::parseCPUInfo()
       // FIXME: the rest does not work on heterogeneous multi-socket systems
       if( strncmp( line, "model name", strlen( "model name" ) ) == 0 ) {
          i = strlen( "model name" );
-         while( line[ i ] != ':' && line[ i ] )
+         while( line[ i ] != ':' && line[ i ] != '\0' )
             i++;
          info.CPUModelName = &line[ i + 1 ];
          continue;
       }
       if( strncmp( line, "cpu cores", strlen( "cpu cores" ) ) == 0 ) {
          i = strlen( "cpu MHz" );
-         while( line[ i ] != ':' && line[ i ] )
+         while( line[ i ] != ':' && line[ i ] != '\0' )
             i++;
          info.CPUCores = atoi( &line[ i + 1 ] );
          continue;
       }
       if( strncmp( line, "siblings", strlen( "siblings" ) ) == 0 ) {
          i = strlen( "siblings" );
-         while( line[ i ] != ':' && line[ i ] )
+         while( line[ i ] != ':' && line[ i ] != '\0' )
             i++;
          info.CPUThreads = atoi( &line[ i + 1 ] );
       }

@@ -112,7 +112,7 @@ IterativeSolverMonitor< Real, Index >::refresh()
       this->saved = false;
 
       const int line_width = getLineWidth();
-      int free = line_width ? line_width : std::numeric_limits< int >::max();
+      int free = line_width > 0 ? line_width : std::numeric_limits< int >::max();
 
       auto real_to_string = []( Real value, int precision = 6 )
       {
@@ -123,7 +123,7 @@ IterativeSolverMonitor< Real, Index >::refresh()
 
       auto print_item = [ &free ]( const std::string& item, int width = 0 )
       {
-         width = min( free, ( width ) ? width : item.length() );
+         width = min( free, width > 0 ? width : item.length() );
          std::cout << std::setw( width ) << item.substr( 0, width );
          free -= width;
       };

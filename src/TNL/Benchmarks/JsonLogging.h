@@ -27,7 +27,7 @@ public:
       TNL_ASSERT_EQ( headerElements.size(), widths.size(), "elements must have equal sizes" );
       if( verbose > 0 && header_changed ) {
          for( const auto& lg : metadataColumns ) {
-            const int width = ( metadataWidths.count( lg.first ) ) ? metadataWidths[ lg.first ] : 14;
+            const int width = ( metadataWidths.count( lg.first ) > 0 ) ? metadataWidths[ lg.first ] : 14;
             std::cout << std::setw( width ) << lg.first;
          }
          for( std::size_t i = 0; i < headerElements.size(); i++ )
@@ -52,7 +52,7 @@ public:
       int idx( 0 );
       for( const auto& lg : this->metadataColumns ) {
          if( verbose > 0 ) {
-            const int width = ( metadataWidths.count( lg.first ) ) ? metadataWidths[ lg.first ] : 14;
+            const int width = ( metadataWidths.count( lg.first ) > 0 ) ? metadataWidths[ lg.first ] : 14;
             std::cout << std::setw( width ) << lg.second;
          }
          if( idx++ > 0 )
@@ -119,7 +119,7 @@ protected:
       std::stringstream str;
       if( fixed )
          str << std::fixed;
-      if( precision )
+      if( precision > 0 )
          str << std::setprecision( precision );
       str << num;
       return str.str();

@@ -41,7 +41,7 @@ protected:
    static void
    verifyElement( const tinyxml2::XMLElement* elem, const std::string& name )
    {
-      if( ! elem )
+      if( elem == nullptr )
          throw MeshReaderError( "XMLVTK", "tag <" + name + "> not found" );
       if( elem->Name() != name )
          throw MeshReaderError( "XMLVTK",
@@ -55,9 +55,9 @@ protected:
       const tinyxml2::XMLElement* elem = parent->FirstChildElement();
       if( ! childName.empty() )
          verifyElement( elem, childName );
-      else if( ! elem )
+      else if( elem == nullptr )
          throw MeshReaderError( "XMLVTK", "element " + parentName + " does not contain any child" );
-      if( elem->NextSibling() )
+      if( elem->NextSibling() != nullptr )
          throw MeshReaderError( "XMLVTK", "<" + childName + "> is not the only element in <" + parentName + ">" );
       return elem;
    }
@@ -67,7 +67,7 @@ protected:
    {
       const char* attribute = nullptr;
       attribute = elem->Attribute( name.c_str() );
-      if( attribute )
+      if( attribute != nullptr )
          return attribute;
       if( ! defaultValue.empty() )
          return defaultValue;
@@ -327,11 +327,11 @@ protected:
    readPointOrCellData( const std::string& sectionName, const std::string& arrayName )
    {
       const tinyxml2::XMLElement* piece = getChildSafe( datasetElement, "Piece" );
-      if( piece->NextSiblingElement( "Piece" ) )
+      if( piece->NextSiblingElement( "Piece" ) != nullptr )
          // ambiguity - throw error, we don't know which piece to parse
          throw MeshReaderError( "XMLVTK", "the dataset element <" + fileType + "> contains more than one <Piece> element" );
       const tinyxml2::XMLElement* pointData = getChildSafe( piece, sectionName );
-      if( pointData->NextSiblingElement( sectionName.c_str() ) )
+      if( pointData->NextSiblingElement( sectionName.c_str() ) != nullptr )
          throw MeshReaderError( "XMLVTK", "the <Piece> element contains more than one <" + sectionName + "> element" );
       const tinyxml2::XMLElement* dataArray = getDataArrayByName( pointData, arrayName );
       return readDataArray( dataArray, arrayName );
@@ -371,7 +371,7 @@ public:
       // verify root element
       const XMLElement* elem = dom.FirstChildElement();
       verifyElement( elem, "VTKFile" );
-      if( elem->NextSibling() )
+      if( elem->NextSibling() != nullptr )
          throw MeshReaderError( "XMLVTK", "<VTKFile> is not the only element in the file " + fileName );
 
       // verify byte order

@@ -82,7 +82,7 @@ public:
    bool
    checkParameter( const std::string& name ) const
    {
-      return parameters.count( name );
+      return parameters.count( name ) > 0;
    }
 
    /**

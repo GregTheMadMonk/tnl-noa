@@ -29,7 +29,7 @@ class VTIReader : public XMLVTK
       // check the <Piece> tag
       using namespace tinyxml2;
       const XMLElement* piece = getChildSafe( datasetElement, "Piece" );
-      if( piece->NextSiblingElement( "Piece" ) )
+      if( piece->NextSiblingElement( "Piece" ) != nullptr )
          // ambiguity - throw error, we don't know which piece to parse (or all of them?)
          throw MeshReaderError( "VTIReader", "the serial ImageData file contains more than one <Piece> element" );
       const std::string pieceExtent = getAttributeString( piece, "Extent" );

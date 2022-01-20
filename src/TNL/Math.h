@@ -531,7 +531,7 @@ __cuda_callable__
 inline int
 roundUpDivision( const int num, const int div )
 {
-   return num / div + ( num % div != 0 );
+   return num / div + static_cast< int >( num % div != 0 );
 }
 
 /**
@@ -544,7 +544,7 @@ __cuda_callable__
 inline int
 roundToMultiple( int number, int multiple )
 {
-   return multiple * ( number / multiple + ( number % multiple != 0 ) );
+   return multiple * ( number / multiple + static_cast< int >( number % multiple != 0 ) );
 }
 
 /**

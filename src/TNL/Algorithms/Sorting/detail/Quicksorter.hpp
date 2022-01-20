@@ -329,7 +329,7 @@ Quicksorter< Value, Devices::Cuda >::getElemPerBlock() const
    // find smallest x so that this inequality holds
    double multiplier = 1. * setsNeeded / maxBlocks;
    int elemPerBlock = multiplier * desiredElemPerBlock;
-   setsNeeded = elemPerBlock / threadsPerBlock + ( elemPerBlock % threadsPerBlock != 0 );
+   setsNeeded = elemPerBlock / threadsPerBlock + static_cast< int >( elemPerBlock % threadsPerBlock != 0 );
 
    return setsNeeded * threadsPerBlock;
 }

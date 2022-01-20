@@ -29,7 +29,7 @@ public:
    redirect( const std::string& fname )
    {
       // restore the original stream if there is any backup
-      if( backupFd >= 0 || file )
+      if( backupFd >= 0 || file != nullptr )
          if( ! restore() )
             return false;
 
@@ -88,7 +88,7 @@ redirect_stdout_stderr( const std::string& stdout_fname, const std::string& stde
    static OutputRedirection stdoutRedir( STDOUT_FILENO );
    static OutputRedirection stderrRedir( STDERR_FILENO );
 
-   if( restore == false ) {
+   if( ! restore ) {
       if( ! stdoutRedir.redirect( stdout_fname ) )
          return false;
       if( ! stderrRedir.redirect( stderr_fname ) )

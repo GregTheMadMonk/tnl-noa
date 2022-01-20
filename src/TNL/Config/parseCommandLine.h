@@ -224,7 +224,7 @@ parseCommandLine( int argc,
       return true;
    };
 
-   auto matob = [ iequals ]( const std::string& value, const std::string& option ) -> int
+   auto matob = [ iequals ]( const std::string& value, const std::string& option ) -> bool
    {
       if( iequals( value, "yes" ) || iequals( value, "true" ) )
          return true;

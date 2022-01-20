@@ -115,7 +115,7 @@ getHardwareMetadata()
 #ifdef HAVE_MPI
       { "number of MPI processes", std::to_string( nproc ) },
 #endif
-      { "OpenMP enabled", std::to_string( Devices::Host::isOMPEnabled() ) },
+      { "OpenMP enabled", Devices::Host::isOMPEnabled() ? "yes" : "no" },
       { "OpenMP threads", std::to_string( Devices::Host::getMaxThreadsCount() ) },
       { "CPU model name", SystemInfo::getCPUModelName( cpu_id ) },
       { "CPU cores", std::to_string( SystemInfo::getNumberOfCores( cpu_id ) ) },

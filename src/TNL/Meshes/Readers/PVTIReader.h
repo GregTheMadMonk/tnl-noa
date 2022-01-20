@@ -123,7 +123,7 @@ class PVTIReader : public XMLVTK
 
       // read pieces info
       const XMLElement* piece = getChildSafe( datasetElement, "Piece" );
-      while( piece ) {
+      while( piece != nullptr ) {
          const std::string source = getAttributeString( piece, "Source" );
          if( ! source.empty() ) {
             pieceSources.push_back( getSourcePath( source ) );
