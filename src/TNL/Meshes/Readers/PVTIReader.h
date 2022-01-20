@@ -125,7 +125,7 @@ class PVTIReader : public XMLVTK
       const XMLElement* piece = getChildSafe( datasetElement, "Piece" );
       while( piece ) {
          const std::string source = getAttributeString( piece, "Source" );
-         if( source != "" ) {
+         if( ! source.empty() ) {
             pieceSources.push_back( getSourcePath( source ) );
          }
          else
@@ -133,7 +133,7 @@ class PVTIReader : public XMLVTK
          // find next
          piece = piece->NextSiblingElement( "Piece" );
       }
-      if( pieceSources.size() == 0 )
+      if( pieceSources.empty() )
          throw MeshReaderError( "PVTIReader", "the file does not contain any <Piece> element." );
 
       // check that the number of pieces matches the number of MPI ranks
@@ -210,7 +210,7 @@ public:
    loadMesh( MeshType& mesh )
    {
       // check that detectMesh has been called
-      if( meshType == "" )
+      if( meshType.empty() )
          detectMesh();
 
       // check if we have a distributed grid

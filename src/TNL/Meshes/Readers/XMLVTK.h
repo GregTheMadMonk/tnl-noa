@@ -198,7 +198,7 @@ protected:
       while( *block != '\0' && std::isspace( *block ) )
          ++block;
 
-      if( compressor == "" ) {
+      if( compressor.empty() ) {
          std::size_t data_size = 0;
          const T* data_ptr = nullptr;
          std::pair< std::size_t, std::unique_ptr< std::uint8_t[] > > decoded_data =
@@ -393,7 +393,7 @@ public:
       compressor = getAttributeString( elem, "compressor", "<none>" );
       if( compressor == "<none>" )
          compressor = "";
-      if( compressor != "" && compressor != "vtkZLibDataCompressor" )
+      if( ! compressor.empty() && compressor != "vtkZLibDataCompressor" )
          throw MeshReaderError( "XMLVTK",
                                 "unsupported compressor type: " + compressor + " (only vtkZLibDataCompressor is supported)" );
 

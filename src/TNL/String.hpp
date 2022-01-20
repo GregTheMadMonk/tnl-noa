@@ -186,7 +186,7 @@ String::operator!=( const String& str ) const
 
 inline String::operator bool() const
 {
-   return getLength();
+   return ! empty();
 }
 
 inline bool
@@ -239,14 +239,14 @@ String::split( char separator, SplitSkip skip ) const
    String s;
    for( int i = 0; i < this->getLength(); i++ ) {
       if( ( *this )[ i ] == separator ) {
-         if( skip != SplitSkip::SkipEmpty || s != "" )
+         if( skip != SplitSkip::SkipEmpty || ! s.empty() )
             parts.push_back( s );
          s = "";
       }
       else
          s += ( *this )[ i ];
    }
-   if( skip != SplitSkip::SkipEmpty || s != "" )
+   if( skip != SplitSkip::SkipEmpty || ! s.empty() )
       parts.push_back( s );
    return parts;
 }

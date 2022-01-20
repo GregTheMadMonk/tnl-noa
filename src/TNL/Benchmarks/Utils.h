@@ -158,7 +158,7 @@ writeMapAsJson( const std::map< std::string, std::string >& data, std::string fi
 {
    namespace fs = std::experimental::filesystem;
 
-   if( newExtension != "" ) {
+   if( ! newExtension.empty() ) {
       const fs::path oldPath = filename;
       const fs::path newPath = oldPath.parent_path() / ( oldPath.stem().string() + newExtension );
       filename = newPath;

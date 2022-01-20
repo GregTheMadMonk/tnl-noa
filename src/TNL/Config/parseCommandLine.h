@@ -153,7 +153,7 @@ checkMissingEntries( const ConfigDescription& config,
       if( entryBase->isRequired() && ! parameters.checkParameter( entry_name ) )
          missingParameters.push_back( entry_name );
    }
-   if( missingParameters.size() > 0 ) {
+   if( ! missingParameters.empty() ) {
       std::cerr << "Some mandatory parameters are misssing. They are listed at the end." << std::endl;
       if( printUsage )
          Config::printUsage( config, programName );
@@ -256,7 +256,7 @@ parseCommandLine( int argc,
          if( value.empty() )
             throw Exceptions::ConfigError( "Missing value for the parameter " + option + "." );
          const std::vector< String > parsedEntryType = entryType.split();
-         if( parsedEntryType.size() == 0 )
+         if( parsedEntryType.empty() )
             throw Exceptions::ConfigError( "Internal error: Unknown config entry type " + entryType + "." );
          if( parsedEntryType[ 0 ] == "list" ) {
             std::vector< bool > bool_list;
@@ -298,15 +298,15 @@ parseCommandLine( int argc,
                   // this will not happen if all entry types are handled above
                   throw std::runtime_error( "Function parseCommandLine encountered unsupported entry type: " + entryType );
             }
-            if( bool_list.size() )
+            if( ! bool_list.empty() )
                parameters.addParameter< std::vector< bool > >( option, bool_list );
-            if( integer_list.size() )
+            if( ! integer_list.empty() )
                parameters.addParameter< std::vector< Integer > >( option, integer_list );
-            if( unsigned_integer_list.size() )
+            if( ! unsigned_integer_list.empty() )
                parameters.addParameter< std::vector< UnsignedInteger > >( option, unsigned_integer_list );
-            if( real_list.size() )
+            if( ! real_list.empty() )
                parameters.addParameter< std::vector< double > >( option, real_list );
-            if( string_list.size() )
+            if( ! string_list.empty() )
                parameters.addParameter< std::vector< std::string > >( option, string_list );
          }
          else {

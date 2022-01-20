@@ -104,7 +104,7 @@ inline String
 SystemInfo::getCPUModelName( int cpu_id )
 {
    static String CPUModelName;
-   if( CPUModelName == "" ) {
+   if( CPUModelName.empty() ) {
       CPUInfo info = parseCPUInfo();
       CPUModelName = info.CPUModelName;
    }

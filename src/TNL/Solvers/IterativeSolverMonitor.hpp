@@ -149,7 +149,7 @@ IterativeSolverMonitor< Real, Index >::refresh()
       }
 
       const std::string displayed_stage = ( saved ) ? saved_stage : stage;
-      if( displayed_stage.length() && free > 5 ) {
+      if( ! displayed_stage.empty() && free > 5 ) {
          if( (int) displayed_stage.length() <= free - 2 ) {
             std::cout << "  " << displayed_stage;
             free -= ( 2 + displayed_stage.length() );

@@ -92,7 +92,7 @@ public:
    loadMesh( MeshType& mesh )
    {
       // check that detectMesh has been called
-      if( meshType == "" )
+      if( meshType.empty() )
          detectMesh();
 
       // check if we have a grid
@@ -151,7 +151,7 @@ public:
    loadMesh( MeshType& mesh )
    {
       // check that detectMesh has been called
-      if( meshType == "" )
+      if( meshType.empty() )
          detectMesh();
 
       // check if we have an unstructured mesh

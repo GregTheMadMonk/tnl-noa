@@ -113,7 +113,7 @@ parseObjectType( const String& objectType )
          templateBrackets++;
       if( ! templateBrackets ) {
          if( objectType[ i ] == ',' || objectType[ i ] == '>' ) {
-            if( buffer != "" ) {
+            if( ! buffer.empty() ) {
                parsedObjectType.push_back( buffer.strip( ' ' ) );
                buffer.clear();
             }

@@ -59,9 +59,7 @@ public:
    bool
    hasEnumValues() const override
    {
-      if( enumValues.size() > 0 )
-         return true;
-      return false;
+      return ! enumValues.empty();
    }
 
    void
