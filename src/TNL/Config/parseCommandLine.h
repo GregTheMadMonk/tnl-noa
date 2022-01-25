@@ -158,8 +158,8 @@ checkMissingEntries( const ConfigDescription& config,
       if( printUsage )
          Config::printUsage( config, programName );
       std::cerr << "Add the following missing parameters to the command line:" << std::endl << "   ";
-      for( int i = 0; i < (int) missingParameters.size(); i++ )
-         std::cerr << "--" << missingParameters[ i ] << " ... ";
+      for( auto& missingParameter : missingParameters )
+         std::cerr << "--" << missingParameter << " ... ";
       std::cerr << std::endl;
       return false;
    }
