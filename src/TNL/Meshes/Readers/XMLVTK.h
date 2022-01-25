@@ -36,8 +36,8 @@ static const std::map< std::string, std::string > VTKDataTypes{ { "Int8", "std::
 
 class XMLVTK : public MeshReader
 {
-#ifdef HAVE_TINYXML2
 protected:
+#ifdef HAVE_TINYXML2
    static void
    verifyElement( const tinyxml2::XMLElement* elem, const std::string& name )
    {
@@ -338,7 +338,6 @@ protected:
    }
 #endif
 
-protected:
    [[noreturn]] static void
    throw_no_tinyxml()
    {

@@ -144,7 +144,6 @@ public:
    bool
    operator!=( const DistributedMesh& other ) const;
 
-public:
    bool
    isThereNeighbor( const CoordinatesType& direction ) const;
 
