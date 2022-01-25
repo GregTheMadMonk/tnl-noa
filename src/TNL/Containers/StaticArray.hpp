@@ -131,7 +131,7 @@ template< int Size, typename Value >
 __cuda_callable__
 StaticArray< Size, Value >::StaticArray( const std::initializer_list< Value >& elems )
 {
-   auto it = elems.begin();
+   const auto* it = elems.begin();
    for( int i = 0; i < getSize(); i++ )
       data[ i ] = *it++;
 }
