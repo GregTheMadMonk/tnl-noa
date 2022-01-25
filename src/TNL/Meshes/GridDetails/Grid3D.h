@@ -67,7 +67,7 @@ public:
     * \brief See Grid1D::setDimensions( const CoordinatesType& dimensions ).
     */
    void
-   setDimensions( const CoordinatesType& );
+   setDimensions( const CoordinatesType& dimensions );
 
    /**
     * \brief See Grid1D::getDimensions().
