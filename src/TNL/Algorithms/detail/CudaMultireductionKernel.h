@@ -20,7 +20,6 @@ namespace TNL {
 namespace Algorithms {
 namespace detail {
 
-#ifdef HAVE_CUDA
 /****
  * The performance of this kernel is very sensitive to register usage.
  * Compile with --ptxas-options=-v and configure these constants for given
@@ -29,14 +28,15 @@ namespace detail {
 static constexpr int Multireduction_maxThreadsPerBlock = 256;  // must be a power of 2
 static constexpr int Multireduction_registersPerThread = 32;   // empirically determined optimal value
 
-   // __CUDA_ARCH__ is defined only in device code!
-   #if( __CUDA_ARCH__ == 750 )
-                                                              // Turing has a limit of 1024 threads per multiprocessor
+// __CUDA_ARCH__ is defined only in device code!
+#if( __CUDA_ARCH__ == 750 )
+// Turing has a limit of 1024 threads per multiprocessor
 static constexpr int Multireduction_minBlocksPerMultiprocessor = 4;
-   #else
+#else
 static constexpr int Multireduction_minBlocksPerMultiprocessor = 8;
-   #endif
+#endif
 
+#ifdef HAVE_CUDA
 template< int blockSizeX, typename Result, typename DataFetcher, typename Reduction, typename Index >
 __global__
 void

@@ -163,11 +163,11 @@ class PVTIReader : public XMLVTK
       // TODO: assert that all MPI ranks have the same attributes
 
       // TODO
-      //      if( ghostLevels > 0 ) {
-      //         // load the vtkGhostType arrays from PointData and CellData
-      //         pointTags = localReader.readPointData( VTK::ghostArrayName() );
-      //         cellTags = localReader.readCellData( VTK::ghostArrayName() );
-      //      }
+      // if( ghostLevels > 0 ) {
+      //    // load the vtkGhostType arrays from PointData and CellData
+      //    pointTags = localReader.readPointData( VTK::ghostArrayName() );
+      //    cellTags = localReader.readCellData( VTK::ghostArrayName() );
+      // }
    }
 #endif
 
@@ -221,7 +221,7 @@ public:
       mesh.setCommunicator( communicator );
 
       // TODO: set the domain decomposition
-      //      mesh.setDomainDecomposition( decomposition );
+      // mesh.setDomainDecomposition( decomposition );
 
       // load the global grid (meshType must be faked before calling loadMesh)
       typename MeshType::GridType globalGrid;
@@ -239,11 +239,10 @@ public:
       mesh.setGhostLevels( ghostLevels );
       // check MinCommonVertices
       // TODO
-      //      if( minCommonVertices > 0 && minCommonVertices != MeshType::Config::dualGraphMinCommonVertices )
-      //         std::cerr << "WARNING: the mesh was decomposed with different MinCommonVertices value than the value set in the
-      //         mesh configuration "
-      //                      "(" << minCommonVertices << " vs " << MeshType::Config::dualGraphMinCommonVertices << ")." <<
-      //                      std::endl;
+      // if( minCommonVertices > 0 && minCommonVertices != MeshType::Config::dualGraphMinCommonVertices )
+      //    std::cerr << "WARNING: the mesh was decomposed with different MinCommonVertices value than the value set in the "
+      //              << "mesh configuration (" << minCommonVertices << " vs " << MeshType::Config::dualGraphMinCommonVertices
+      //              << ")." << std::endl;
 
       // load the local mesh and check with the subdomain
       typename MeshType::GridType localMesh;
@@ -258,34 +257,39 @@ public:
          throw MeshReaderError( "PVTIReader", msg.str() );
       }
 
-      //      using Index = typename MeshType::IndexType;
-      //      const Index pointsCount = mesh.getLocalMesh().template getEntitiesCount< 0 >();
-      //      const Index cellsCount = mesh.getLocalMesh().template getEntitiesCount< MeshType::getMeshDimension() >();
+      // using Index = typename MeshType::IndexType;
+      // const Index pointsCount = mesh.getLocalMesh().template getEntitiesCount< 0 >();
+      // const Index cellsCount = mesh.getLocalMesh().template getEntitiesCount< MeshType::getMeshDimension() >();
 
-      /*    // TODO
-            if( ghostLevels > 0 ) {
-               // assign point ghost tags
-               using mpark::get;
-               const std::vector<std::uint8_t> pointTags = get< std::vector<std::uint8_t> >( this->pointTags );
-               if( (Index) pointTags.size() != pointsCount )
-                  throw MeshReaderError( "PVTIReader", "the vtkGhostType array in PointData has wrong size: " +
-         std::to_string(pointTags.size()) ); mesh.vtkPointGhostTypes() = pointTags; for( Index i = 0; i < pointsCount; i++ ) if(
-         pointTags[ i ] & (std::uint8_t) VTK::PointGhostTypes::DUPLICATEPOINT ) localMesh.template addEntityTag< 0 >( i,
-         EntityTags::GhostEntity );
+      // TODO
+      /*
+      if( ghostLevels > 0 ) {
+         // assign point ghost tags
+         using mpark::get;
+         const std::vector< std::uint8_t > pointTags = get< std::vector< std::uint8_t > >( this->pointTags );
+         if( (Index) pointTags.size() != pointsCount )
+            throw MeshReaderError(
+               "PVTIReader", "the vtkGhostType array in PointData has wrong size: " + std::to_string( pointTags.size() ) );
+         mesh.vtkPointGhostTypes() = pointTags;
+         for( Index i = 0; i < pointsCount; i++ )
+            if( pointTags[ i ] & (std::uint8_t) VTK::PointGhostTypes::DUPLICATEPOINT )
+               localMesh.template addEntityTag< 0 >( i, EntityTags::GhostEntity );
 
-               // assign cell ghost tags
-               using mpark::get;
-               const std::vector<std::uint8_t> cellTags = get< std::vector<std::uint8_t> >( this->cellTags );
-               if( (Index) cellTags.size() != cellsCount )
-                  throw MeshReaderError( "PVTIReader", "the vtkGhostType array in CellData has wrong size: " +
-         std::to_string(cellTags.size()) ); mesh.vtkCellGhostTypes() = cellTags; for( Index i = 0; i < cellsCount; i++ ) { if(
-         cellTags[ i ] & (std::uint8_t) VTK::CellGhostTypes::DUPLICATECELL ) localMesh.template addEntityTag<
-         MeshType::getMeshDimension() >( i, EntityTags::GhostEntity );
-               }
+         // assign cell ghost tags
+         using mpark::get;
+         const std::vector< std::uint8_t > cellTags = get< std::vector< std::uint8_t > >( this->cellTags );
+         if( (Index) cellTags.size() != cellsCount )
+            throw MeshReaderError( "PVTIReader",
+                                   "the vtkGhostType array in CellData has wrong size: " + std::to_string( cellTags.size() ) );
+         mesh.vtkCellGhostTypes() = cellTags;
+         for( Index i = 0; i < cellsCount; i++ ) {
+            if( cellTags[ i ] & (std::uint8_t) VTK::CellGhostTypes::DUPLICATECELL )
+               localMesh.template addEntityTag< MeshType::getMeshDimension() >( i, EntityTags::GhostEntity );
+         }
 
-               // reset arrays since they are not needed anymore
-               this->pointTags = this->cellTags = {};
-            }
+         // reset arrays since they are not needed anymore
+         this->pointTags = this->cellTags = {};
+      }
       */
    }
 

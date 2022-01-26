@@ -101,14 +101,14 @@ CSRAdaptiveKernel< Index, Device >::findLimit( const Index start,
       Index elements = offsets[ current + 1 ] - offsets[ current ];
       sum += elements;
       if( sum > detail::CSRAdaptiveKernelParameters< SizeOfValue >::StreamedSharedElementsPerWarp() ) {
-         if( current - start > 0 )  // extra row
-         {
+         if( current - start > 0 ) {
+            // extra row
             type = detail::Type::STREAM;
             return current;
          }
-         else {                                                                                                // one long row
-            if( sum <= 2 * detail::CSRAdaptiveKernelParameters< SizeOfValue >::MaxAdaptiveElementsPerWarp() )  // MAX_ELEMENTS_PER_WARP_ADAPT
-                                                                                                               // )
+         else {
+            // one long row
+            if( sum <= 2 * detail::CSRAdaptiveKernelParameters< SizeOfValue >::MaxAdaptiveElementsPerWarp() )
                type = detail::Type::VECTOR;
             else
                type = detail::Type::LONG;

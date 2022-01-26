@@ -130,20 +130,27 @@ struct MeshCellTopologyTag
 {
    static constexpr bool enabled = false;
 };
-// template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Edge > { static constexpr bool enabled =
-// true; }; template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Triangle > { static constexpr bool
-// enabled = true; }; template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Quadrangle > { static
-// constexpr bool enabled = true; }; template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag,
-// Topologies::Tetrahedron > { static constexpr bool enabled = true; }; template< typename ConfigTag > struct
-// MeshCellTopologyTag< ConfigTag, Topologies::Hexahedron > { static constexpr bool enabled = true; }; template< typename
-// ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Polygon > { static constexpr bool enabled = true; }; template<
-// typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Wedge > { static constexpr bool enabled = true; };
-// template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Pyramid > { static constexpr bool enabled =
-// true; }; template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Polyhedron > { static constexpr
-// bool enabled = true; };
-//  TODO: Simplex has not been tested yet
-// template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Simplex > { static constexpr bool enabled =
-// true; };
+// template< typename ConfigTag >
+// struct MeshCellTopologyTag< ConfigTag, Topologies::Edge > { static constexpr bool enabled = true; };
+// template< typename ConfigTag >
+// struct MeshCellTopologyTag< ConfigTag, Topologies::Triangle > { static constexpr bool enabled = true; };
+// template< typename ConfigTag >
+// struct MeshCellTopologyTag< ConfigTag, Topologies::Quadrangle > { static constexpr bool enabled = true; };
+// template< typename ConfigTag >
+// struct MeshCellTopologyTag< ConfigTag, Topologies::Tetrahedron > { static constexpr bool enabled = true; };
+// template< typename ConfigTag >
+// struct MeshCellTopologyTag< ConfigTag, Topologies::Hexahedron > { static constexpr bool enabled = true; };
+// template< typename ConfigTag >
+// struct MeshCellTopologyTag< ConfigTag, Topologies::Polygon > { static constexpr bool enabled = true; };
+// template< typename ConfigTag >
+// struct MeshCellTopologyTag< ConfigTag, Topologies::Wedge > { static constexpr bool enabled = true; };
+// template< typename ConfigTag >
+// struct MeshCellTopologyTag< ConfigTag, Topologies::Pyramid > { static constexpr bool enabled = true; };
+// template< typename ConfigTag >
+// struct MeshCellTopologyTag< ConfigTag, Topologies::Polyhedron > { static constexpr bool enabled = true; };
+// TODO: Simplex has not been tested yet
+// template< typename ConfigTag >
+// struct MeshCellTopologyTag< ConfigTag, Topologies::Simplex > { static constexpr bool enabled = true; };
 
 // All sensible space dimensions are enabled by default.
 template< typename ConfigTag, typename CellTopology, int SpaceDimension >
@@ -218,9 +225,8 @@ struct MeshConfigTemplateTag
 //       at the time of template specializations, so something like this does
 //       not work:
 //
-//          struct MeshTag< ConfigTag,
-//                      Mesh< typename MeshConfigTemplateTag< ConfigTag >::
-//                         template MeshConfig< CellTopology, SpaceDimension, Real, GlobalIndex, LocalIndex > > >
+// struct MeshTag< ConfigTag, Mesh< typename MeshConfigTemplateTag< ConfigTag >::
+//    template MeshConfig< CellTopology, SpaceDimension, Real, GlobalIndex, LocalIndex > > >
 //
 template< typename ConfigTag,
           typename Device,
@@ -231,10 +237,14 @@ template< typename ConfigTag,
           typename LocalIndex >
 struct MeshTag
 {
-   static constexpr bool enabled =
-      MeshDeviceTag< ConfigTag, Device >::enabled && MeshCellTopologyTag< ConfigTag, CellTopology >::enabled
-      && MeshSpaceDimensionTag< ConfigTag, CellTopology, SpaceDimension >::enabled && MeshRealTag< ConfigTag, Real >::enabled
-      && MeshGlobalIndexTag< ConfigTag, GlobalIndex >::enabled && MeshLocalIndexTag< ConfigTag, LocalIndex >::enabled;
+   // clang-format off
+   static constexpr bool enabled = MeshDeviceTag< ConfigTag, Device >::enabled
+                                && MeshCellTopologyTag< ConfigTag, CellTopology >::enabled
+                                && MeshSpaceDimensionTag< ConfigTag, CellTopology, SpaceDimension >::enabled
+                                && MeshRealTag< ConfigTag, Real >::enabled
+                                && MeshGlobalIndexTag< ConfigTag, GlobalIndex >::enabled
+                                && MeshLocalIndexTag< ConfigTag, LocalIndex >::enabled;
+   // clang-format on
 };
 
 }  // namespace BuildConfigTags

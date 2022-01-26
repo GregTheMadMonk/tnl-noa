@@ -430,6 +430,7 @@ TNL_IMPL_CMP_HELPER_( GT, > );
 
    #else  // #ifdef __CUDA_ARCH__
       #ifdef TNL_THROW_ASSERTION_ERROR
+
          // This will be used by the code for Python bindings to translate assertion
          // failures to the Python's AssertionError exception.
          #define TNL_ASSERT( ___tnl__assert_condition, ___tnl__assert_command )                                  \
@@ -448,7 +449,9 @@ TNL_IMPL_CMP_HELPER_( GT, > );
                std::cerr.rdbuf( old );                                                                           \
                throw ::TNL::Assert::AssertionError( msg );                                                       \
             }
+
       #else  // #ifdef TNL_THROW_ASSERTION_ERROR
+
          // This will be used in regular C++ code
          #define TNL_ASSERT( ___tnl__assert_condition, ___tnl__assert_command )                                  \
             if( ! ( ___tnl__assert_condition ) ) {                                                               \
@@ -460,6 +463,7 @@ TNL_IMPL_CMP_HELPER_( GT, > );
                ___tnl__assert_command;                                                                           \
                throw EXIT_FAILURE;                                                                               \
             }
+
       #endif  // #ifdef TNL_THROW_ASSERTION_ERROR
    #endif     // #ifdef __CUDA_ARCH__
 

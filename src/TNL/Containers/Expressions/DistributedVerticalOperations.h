@@ -60,8 +60,8 @@ DistributedExpressionArgMin( const Expression& expression )
          (char*) dataForScatter, sizeof( ResultType ), (char*) gatheredResults, sizeof( ResultType ), communicator );
 
       // reduce the gathered data
-      const auto* _data = gatheredResults;  // workaround for nvcc which does not allow to capture variable-length arrays (even
-                                            // in pure host code!)
+      //    workaround for nvcc which does not allow to capture variable-length arrays (even in pure host code!)
+      const auto* _data = gatheredResults;
       auto fetch = [ _data ]( IndexType i )
       {
          return _data[ i ].first;
@@ -119,8 +119,8 @@ DistributedExpressionArgMax( const Expression& expression )
          (char*) dataForScatter, sizeof( ResultType ), (char*) gatheredResults, sizeof( ResultType ), communicator );
 
       // reduce the gathered data
-      const auto* _data = gatheredResults;  // workaround for nvcc which does not allow to capture variable-length arrays (even
-                                            // in pure host code!)
+      //    workaround for nvcc which does not allow to capture variable-length arrays (even in pure host code!)
+      const auto* _data = gatheredResults;
       auto fetch = [ _data ]( IndexType i )
       {
          return _data[ i ].first;
