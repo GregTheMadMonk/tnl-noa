@@ -41,8 +41,7 @@ public:
    static void
    configSetup( Config::ConfigDescription& config, const String& prefix = "" );
 
-   bool
-   setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
+   bool init(); // const MeshType& mesh );
 
    bool
    init( const MeshType& mesh );

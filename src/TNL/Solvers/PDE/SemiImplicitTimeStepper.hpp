@@ -45,7 +45,8 @@ SemiImplicitTimeStepper< Problem >::setup( const Config::ParameterContainer& par
 
 template< typename Problem >
 bool
-SemiImplicitTimeStepper< Problem >::init( const MeshType& mesh )
+SemiImplicitTimeStepper< Problem >::
+init()
 {
    this->matrix = std::make_shared< MatrixType >();
    if( ! this->problem->setupLinearSystem( this->matrix ) ) {

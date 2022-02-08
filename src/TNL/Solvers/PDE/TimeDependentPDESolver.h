@@ -88,7 +88,7 @@ protected:
 
    Pointers::SharedPointer< Meshes::DistributedMeshes::DistributedMesh< MeshType > > distributedMeshPointer;
 
-   DofVectorPointer dofsPointer;
+   DofVectorType dofs;
 
    CommonDataPointer commonDataPointer;
 

@@ -18,17 +18,15 @@ namespace TNL {
 namespace Solvers {
 namespace ODE {
 
-template< class Problem,
-          typename SolverMonitor = IterativeSolverMonitor< typename Problem::RealType, typename Problem::IndexType > >
-class ExplicitSolver : public IterativeSolver< typename Problem::RealType, typename Problem::IndexType, SolverMonitor >
+template< typename Real = double,
+          typename Index = int,
+          typename SolverMonitor = IterativeSolverMonitor< Real, Index > >
+class ExplicitSolver : public IterativeSolver< Real, Index, SolverMonitor >
 {
-public:
-   using ProblemType = Problem;
-   using DofVectorType = typename Problem::DofVectorType;
-   using RealType = typename Problem::RealType;
-   using DeviceType = typename Problem::DeviceType;
-   using IndexType = typename Problem::IndexType;
-   using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
+   public:
+
+   using RealType = Real;
+   using IndexType = Index;
    using SolverMonitorType = SolverMonitor;
 
    ExplicitSolver();
@@ -39,11 +37,7 @@ public:
    bool
    setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
 
-   void
-   setProblem( Problem& problem );
-
-   void
-   setTime( const RealType& t );
+   void setTime( const RealType& t );
 
    const RealType&
    getTime() const;
@@ -51,8 +45,7 @@ public:
    void
    setStopTime( const RealType& stopTime );
 
-   RealType
-   getStopTime() const;
+   const RealType& getStopTime() const;
 
    void
    setTau( const RealType& tau );
@@ -69,11 +62,7 @@ public:
    void
    setVerbose( IndexType v );
 
-   virtual bool
-   solve( DofVectorPointer& u ) = 0;
-
-   void
-   setTestingMode( bool testingMode );
+   void setTestingMode( bool testingMode );
 
    void
    setRefreshRate( const IndexType& refreshRate );
@@ -102,13 +91,6 @@ protected:
    IndexType verbosity;
 
    bool testingMode;
-
-   Problem* problem;
-
-   /****
-    * Auxiliary array for the computation of the solver residue on CUDA device.
-    */
-   Containers::Vector< RealType, DeviceType, IndexType > cudaBlockResidue;
 };
 
 }  // namespace ODE

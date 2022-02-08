@@ -14,20 +14,17 @@ namespace TNL {
 namespace Solvers {
 namespace ODE {
 
-template< typename Problem,
-          typename SolverMonitor = IterativeSolverMonitor< typename Problem::RealType, typename Problem::IndexType > >
-class Euler : public ExplicitSolver< Problem, SolverMonitor >
+template< typename Vector,
+          typename SolverMonitor = IterativeSolverMonitor< typename Vector::RealType, typename Vector::IndexType > >
+class Euler : public ExplicitSolver< typename Vector::RealType, typename Vector::IndexType, SolverMonitor >
 {
 public:
-   using ProblemType = Problem;
-   using DofVectorType = typename ProblemType::DofVectorType;
-   using RealType = typename ProblemType::RealType;
-   using DeviceType = typename ProblemType::DeviceType;
-   using IndexType = typename ProblemType::IndexType;
-   using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
+   using RealType = typename Vector::RealType;
+   using DeviceType = typename Vector::DeviceType;
+   using IndexType  = typename Vector::IndexType;
+   using VectorType = Vector;
+   using DofVectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
    using SolverMonitorType = SolverMonitor;
-
-   Euler();
 
    static void
    configSetup( Config::ConfigDescription& config, const String& prefix = "" );
@@ -35,8 +32,8 @@ public:
    bool
    setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
 
-   void
-   setCFLCondition( const RealType& cfl );
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix = "" );
 
    const RealType&
    getCFLCondition() const;
@@ -44,10 +41,13 @@ public:
    bool
    solve( DofVectorPointer& u );
 
-protected:
-   DofVectorPointer _k1;
+      template< typename RHSFunction >
+      bool solve( VectorType& u, RHSFunction&& rhs );
 
-   RealType cflCondition;
+   protected:
+      DofVectorType _k1;
+
+      RealType cflCondition;
 };
 
 }  // namespace ODE

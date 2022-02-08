@@ -12,25 +12,30 @@ namespace TNL {
 namespace Solvers {
 namespace PDE {
 
-template< typename Problem, template< typename OdeProblem, typename SolverMonitor > class OdeSolver >
-ExplicitTimeStepper< Problem, OdeSolver >::ExplicitTimeStepper() : problem( 0 ), timeStep( 0 ), allIterations( 0 )
-{}
-
-template< typename Problem, template< typename OdeProblem, typename SolverMonitor > class OdeSolver >
+template< typename DofVector,
+          template < typename DofVector_, typename SolverMonitor > class OdeSolver >
 void
-ExplicitTimeStepper< Problem, OdeSolver >::configSetup( Config::ConfigDescription& config, const String& prefix )
-{}
+ExplicitTimeStepper< DofVector, OdeSolver >::
+configSetup( Config::ConfigDescription& config,
+             const String& prefix )
+{
+}
 
-template< typename Problem, template< typename OdeProblem, typename SolverMonitor > class OdeSolver >
+template< typename DofVector,
+          template < typename DofVector_, typename SolverMonitor > class OdeSolver >
 bool
-ExplicitTimeStepper< Problem, OdeSolver >::setup( const Config::ParameterContainer& parameters, const String& prefix )
+ExplicitTimeStepper< DofVector, OdeSolver >::
+setup( const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
    return this->odeSolver->setup( parameters, prefix );
 }
 
-template< typename Problem, template< typename OdeProblem, typename SolverMonitor > class OdeSolver >
+template< typename DofVector,
+          template < typename DofVector_, typename SolverMonitor > class OdeSolver >
 bool
-ExplicitTimeStepper< Problem, OdeSolver >::init( const MeshType& mesh )
+ExplicitTimeStepper< DofVector, OdeSolver >::
+init()
 {
    this->explicitUpdaterTimer.reset();
    this->mainTimer.reset();
@@ -39,40 +44,31 @@ ExplicitTimeStepper< Problem, OdeSolver >::init( const MeshType& mesh )
    return true;
 }
 
-template< typename Problem, template< typename OdeProblem, typename SolverMonitor > class OdeSolver >
+template< typename DofVector,
+          template < typename DofVector_, typename SolverMonitor > class OdeSolver >
 void
-ExplicitTimeStepper< Problem, OdeSolver >::setSolver(
-   typename ExplicitTimeStepper< Problem, OdeSolver >::OdeSolverType& odeSolver )
+ExplicitTimeStepper< DofVector, OdeSolver >::
+setSolver( typename ExplicitTimeStepper< DofVector, OdeSolver >::OdeSolverType& odeSolver )
 {
    this->odeSolver = &odeSolver;
 };
 
-template< typename Problem, template< typename OdeProblem, typename SolverMonitor > class OdeSolver >
+template< typename DofVector,
+          template < typename DofVector_, typename SolverMonitor > class OdeSolver >
 void
-ExplicitTimeStepper< Problem, OdeSolver >::setProblem( ProblemType& problem )
-{
-   this->problem = &problem;
-};
-
-template< typename Problem, template< typename OdeProblem, typename SolverMonitor > class OdeSolver >
-void
-ExplicitTimeStepper< Problem, OdeSolver >::setSolverMonitor( SolverMonitorType& solverMonitor )
+ExplicitTimeStepper< DofVector, OdeSolver >::
+setSolverMonitor( SolverMonitorType& solverMonitor )
 {
    this->solverMonitor = &solverMonitor;
    if( this->odeSolver )
       this->odeSolver->setSolverMonitor( solverMonitor );
 }
 
-template< typename Problem, template< typename OdeProblem, typename SolverMonitor > class OdeSolver >
-Problem*
-ExplicitTimeStepper< Problem, OdeSolver >::getProblem() const
-{
-   return this->problem;
-};
-
-template< typename Problem, template< typename OdeProblem, typename SolverMonitor > class OdeSolver >
+template< typename DofVector,
+          template < typename DofVector_, typename SolverMonitor > class OdeSolver >
 bool
-ExplicitTimeStepper< Problem, OdeSolver >::setTimeStep( const RealType& timeStep )
+ExplicitTimeStepper< DofVector, OdeSolver >::
+setTimeStep( const RealType& timeStep )
 {
    if( timeStep <= 0.0 ) {
       std::cerr << "Tau for ExplicitTimeStepper must be positive. " << std::endl;
@@ -82,19 +78,22 @@ ExplicitTimeStepper< Problem, OdeSolver >::setTimeStep( const RealType& timeStep
    return true;
 };
 
-template< typename Problem, template< typename OdeProblem, typename SolverMonitor > class OdeSolver >
+template< typename DofVector,
+          template < typename DofVector_, typename SolverMonitor > class OdeSolver >
 bool
-ExplicitTimeStepper< Problem, OdeSolver >::solve( const RealType& time, const RealType& stopTime, DofVectorPointer& dofVector )
+ExplicitTimeStepper< DofVector, OdeSolver >::
+solve( const RealType& time,
+       const RealType& stopTime,
+       DofVectorType& dofVector )
 {
    TNL_ASSERT_TRUE( this->odeSolver, "ODE solver was not set" );
    mainTimer.start();
    this->odeSolver->setTau( this->timeStep );
-   this->odeSolver->setProblem( *this );
+   //this->odeSolver->setProblem( * this );
    this->odeSolver->setTime( time );
    this->odeSolver->setStopTime( stopTime );
    if( this->odeSolver->getMinIterations() )
-      this->odeSolver->setMaxTau(
-         ( stopTime - time ) / (typename OdeSolver< Problem, SolverMonitor >::RealType) this->odeSolver->getMinIterations() );
+      this->odeSolver->setMaxTau( ( stopTime - time ) / ( typename OdeSolver< DofVector, SolverMonitor >::RealType ) this->odeSolver->getMinIterations() );
    if( ! this->odeSolver->solve( dofVector ) )
       return false;
    // this->problem->setExplicitBoundaryConditions( stopTime, dofVector );
@@ -103,12 +102,14 @@ ExplicitTimeStepper< Problem, OdeSolver >::solve( const RealType& time, const Re
    return true;
 }
 
-template< typename Problem, template< typename OdeProblem, typename SolverMonitor > class OdeSolver >
+template< typename DofVector,
+          template < typename DofVector_, typename SolverMonitor > class OdeSolver >
 void
-ExplicitTimeStepper< Problem, OdeSolver >::getExplicitUpdate( const RealType& time,
-                                                              const RealType& tau,
-                                                              DofVectorPointer& u,
-                                                              DofVectorPointer& fu )
+ExplicitTimeStepper< DofVector, OdeSolver >::
+getExplicitUpdate( const RealType& time,
+                const RealType& tau,
+                DofVectorType& u,
+                DofVectorType& fu )
 {
    if( this->solverMonitor ) {
       this->solverMonitor->setTime( time );
@@ -143,16 +144,22 @@ ExplicitTimeStepper< Problem, OdeSolver >::getExplicitUpdate( const RealType& ti
    this->postIterateTimer.stop();
 }
 
-template< typename Problem, template< typename OdeProblem, typename SolverMonitor > class OdeSolver >
+template< typename DofVector,
+          template < typename DofVector_, typename SolverMonitor > class OdeSolver >
 void
-ExplicitTimeStepper< Problem, OdeSolver >::applyBoundaryConditions( const RealType& time, DofVectorPointer& u )
+ExplicitTimeStepper< DofVector, OdeSolver >::
+applyBoundaryConditions( const RealType& time,
+                         DofVectorType& u )
 {
    this->problem->applyBoundaryConditions( time, u );
 }
 
-template< typename Problem, template< typename OdeProblem, typename SolverMonitor > class OdeSolver >
+
+template< typename DofVector,
+          template < typename DofVector_, typename SolverMonitor > class OdeSolver >
 bool
-ExplicitTimeStepper< Problem, OdeSolver >::writeEpilog( Logger& logger ) const
+ExplicitTimeStepper< DofVector, OdeSolver >::
+writeEpilog( Logger& logger ) const
 {
    logger.writeParameter< long long int >( "Iterations count:", this->allIterations );
    logger.writeParameter< const char* >( "Pre-iterate time:", "" );
