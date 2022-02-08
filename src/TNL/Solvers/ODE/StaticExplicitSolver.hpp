@@ -28,7 +28,7 @@ setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
    this->setVerbose( parameters.getParameter< int >( "verbose" ) );
-   return IterativeSolver< RealType, IndexType, SolverMonitor >::setup( parameters, prefix );
+   return StaticIterativeSolver< RealType, IndexType >::setup( parameters, prefix );
 }
 
 template< typename Real, typename Index >

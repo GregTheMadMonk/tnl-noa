@@ -7,7 +7,7 @@
 #pragma once
 
 #include <iomanip>
-#include <TNL/Solvers/IterativeSolver.h>
+#include <TNL/Solvers/StaticIterativeSolver.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Containers/StaticVector.h>
@@ -18,7 +18,7 @@ namespace ODE {
 
 template< typename Real = double,
           typename Index = int >
-class StaticExplicitSolver : public IterativeSolver< Real, Index >
+class StaticExplicitSolver : public StaticIterativeSolver< Real, Index >
 {
    public:
 

@@ -26,7 +26,6 @@ class StaticEuler : public StaticExplicitSolver< Real, int >
       using IndexType  = int;
       using VectorType = Real;
       using DofVectorType = VectorType;
-      using SolverMonitorType = SolverMonitor;
 
       __cuda_callable__
       StaticEuler() = default;
