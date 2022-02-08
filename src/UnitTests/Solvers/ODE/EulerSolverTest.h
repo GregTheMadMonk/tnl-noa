@@ -16,14 +16,14 @@ using namespace TNL::Containers;
 
 // test fixture for typed tests
 template< typename DofContainer >
-class DofContainerTest : public ::testing::Test
+class ODESolverTest : public ::testing::Test
 {
 protected:
    using DofContainerType = DofContainer;
 };
 
 // types for which DofContainerTest is instantiated
-using DofContainerTypes = ::testing::Types<
+using DofVectorTypes = ::testing::Types<
 #ifndef HAVE_CUDA
    // we can't test all types because the argument list would be too long...
    Vector< float,  Devices::Sequential, int >,
@@ -39,10 +39,29 @@ using DofContainerTypes = ::testing::Types<
 #endif
 >;
 
-TYPED_TEST_SUITE( DofContainerTest, DofContainerTypes );
+template< typename DofContainer >
+class ODEStaticSolverTest : public ::testing::Test
+{
+protected:
+   using DofContainerType = DofContainer;
+};
+
+// types for which DofContainerTest is instantiated
+using DofStaticVectorTypes = ::testing::Types<
+   StaticVector< 1, float >,
+   StaticVector< 2, float >,
+   StaticVector< 3, float >,
+   StaticVector< 1, double >,
+   StaticVector< 2, double >,
+   StaticVector< 3, double >
+>;
 
 
-TYPED_TEST( DofContainerTest, testWithVector )
+TYPED_TEST_SUITE( ODESolverTest, DofVectorTypes );
+
+TYPED_TEST_SUITE( ODEStaticSolverTest, DofStaticVectorTypes );
+
+TYPED_TEST( ODESolverTest, LinearFunctionTest )
 {
    using DofContainerType = typename TestFixture::DofContainerType;
    using SolverType = TNL::Solvers::ODE::Euler< DofContainerType >;
@@ -63,6 +82,28 @@ TYPED_TEST( DofContainerTest, testWithVector )
    Real exact_solution = 0.5 * final_time * final_time;
    EXPECT_NEAR( TNL::max( TNL::abs( u - exact_solution ) ), ( Real ) 0.0, 0.1 );
    //std::cout << u << std::endl;
+}
+
+TYPED_TEST( ODEStaticSolverTest, LinearFunctionTest )
+{
+   using DofContainerType = typename TestFixture::DofContainerType;
+   using SolverType = TNL::Solvers::ODE::Euler< DofContainerType >;
+   using Real = typename DofContainerType::RealType;
+
+   const Real final_time = 10.0;
+   SolverType solver;
+   solver.setTime( 0.0 );
+   solver.setStopTime( final_time );
+   solver.setTau( 0.005 );
+   solver.setConvergenceResidue( 0.0 );
+
+   DofContainerType u( 0.0 );
+   solver.solve( u, [] ( const Real& time, const Real& tau, const auto& u, auto& fu ) {
+      fu = time;
+   } );
+
+   Real exact_solution = 0.5 * final_time * final_time;
+   EXPECT_NEAR( TNL::max( TNL::abs( u - exact_solution ) ), ( Real ) 0.0, 0.1 );
 }
 
 

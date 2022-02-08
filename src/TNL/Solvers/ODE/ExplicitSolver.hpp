@@ -13,18 +13,6 @@ namespace Solvers {
 namespace ODE {
 
 template< typename Real, typename Index, typename SolverMonitor >
-ExplicitSolver< Real, Index, SolverMonitor >::
-ExplicitSolver()
-:  time( 0.0 ),
-   stopTime( 0.0 ),
-   tau( 0.0 ),
-   maxTau( std::numeric_limits< RealType >::max() ),
-   verbosity( 0 ),
-   testingMode( false )
-{
-};
-
-template< typename Real, typename Index, typename SolverMonitor >
 void
 ExplicitSolver< Real, Index, SolverMonitor >::
 configSetup( Config::ConfigDescription& config,

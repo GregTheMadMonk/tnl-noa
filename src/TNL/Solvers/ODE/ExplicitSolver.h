@@ -29,7 +29,7 @@ class ExplicitSolver : public IterativeSolver< Real, Index, SolverMonitor >
    using IndexType = Index;
    using SolverMonitorType = SolverMonitor;
 
-   ExplicitSolver();
+   ExplicitSolver() = default;
 
    static void
    configSetup( Config::ConfigDescription& config, const String& prefix = "" );
@@ -74,7 +74,7 @@ protected:
    /****
     * Current time of the parabolic problem.
     */
-   RealType time;
+   RealType time = 0.0;
 
    /****
     * The method solve will stop when reaching the stopTime.
@@ -84,13 +84,13 @@ protected:
    /****
     * Current time step.
     */
-   RealType tau;
+   RealType tau = 0.0;
 
-   RealType maxTau;
+   RealType maxTau = std::numeric_limits< RealType >::max();
 
-   IndexType verbosity;
+   IndexType verbosity = 0;
 
-   bool testingMode;
+   bool testingMode = false;
 };
 
 }  // namespace ODE
