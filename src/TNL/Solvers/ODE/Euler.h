@@ -17,11 +17,30 @@ namespace TNL {
 namespace Solvers {
 namespace ODE {
 
-template< typename DofsType, typename Aux = void >
+template< typename Real >//, typename Aux = void >
 struct ODESolverDefaultTypesGetter
 {
-   using RealType = typename DofsType::RealType;
-   using IndexType = typename DofsType::IndexType;
+   using RealType = Real;
+   using IndexType = int;
+};
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Allocator >
+struct ODESolverDefaultTypesGetter< Containers::Vector< Real, Device, Index, Allocator > >
+{
+   using RealType = Real;
+   using IndexType = Index;
+};
+
+template< typename Real,
+          typename Device,
+          typename Index >
+struct ODESolverDefaultTypesGetter< Containers::VectorView< Real, Device, Index > >
+{
+   using RealType = Real;
+   using IndexType = Index;
 };
 
 template< int Size, typename Real >
@@ -31,17 +50,44 @@ struct ODESolverDefaultTypesGetter< TNL::Containers::StaticVector< Size, Real > 
    using IndexType = int;
 };
 
-template< typename Real >
-struct ODESolverDefaultTypesGetter< Real, std::enable_if< std::is_arithmetic< Real >::value > >
+template< typename Real,
+          typename SolverMonitor = IterativeSolverMonitor< typename ODESolverDefaultTypesGetter< Real >::RealType,
+                                                           typename ODESolverDefaultTypesGetter< Real >::IndexType > >
+class Euler : public ExplicitSolver< Real, int, SolverMonitor >
 {
-   using RealType = Real;
-   using IndexType = int;
+   public:
+
+      using RealType = Real;
+      using IndexType  = int;
+      using VectorType = Real;
+      using DofVectorType = VectorType;
+      using SolverMonitorType = SolverMonitor;
+
+      __cuda_callable__
+      Euler() = default;
+
+      static void configSetup( Config::ConfigDescription& config,
+                               const String& prefix = "" );
+
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix = "" );
+
+      __cuda_callable__
+      void setCFLCondition( const RealType& cfl );
+
+      __cuda_callable__
+      const RealType& getCFLCondition() const;
+
+      __cuda_callable__
+      template< typename RHSFunction >
+      bool solve( VectorType& u, RHSFunction&& rhs );
+
+   protected:
+      DofVectorType k1;
+
+      RealType cflCondition = 0.0;
 };
 
-template< typename Vector,
-          typename SolverMonitor = IterativeSolverMonitor< typename ODESolverDefaultTypesGetter< Vector >::RealType,
-                                                           typename ODESolverDefaultTypesGetter< Vector >::IndexType > >
-class Euler;
 
 template< int Size_,
           typename Real,
@@ -84,20 +130,20 @@ class Euler< TNL::Containers::StaticVector< Size_, Real >, SolverMonitor >
 };
 
 
-template< typename Vector,
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Allocator,
           typename SolverMonitor >
-class Euler : public ExplicitSolver< typename Vector::RealType, typename Vector::IndexType, SolverMonitor >
+class Euler< Containers::Vector< Real, Device, Index, Allocator >, SolverMonitor > : public ExplicitSolver< Real, Index, SolverMonitor >
 {
 public:
-   using RealType = typename Vector::RealType;
-   using DeviceType = typename Vector::DeviceType;
-   using IndexType  = typename Vector::IndexType;
-   using VectorType = Vector;
-   using DofVectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
-   using SolverMonitorType = SolverMonitor;
-
-   static void
-   configSetup( Config::ConfigDescription& config, const String& prefix = "" );
+      using RealType = Real;
+      using DeviceType = Device;
+      using IndexType  = Index;
+      using VectorType = Containers::Vector< Real, Device, Index, Allocator >;
+      using DofVectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
+      using SolverMonitorType = SolverMonitor;
 
       Euler() = default;
 
@@ -122,8 +168,15 @@ public:
       RealType cflCondition = 0.0;
 };
 
-}  // namespace ODE
-}  // namespace Solvers
-}  // namespace TNL
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename SolverMonitor >
+class Euler< Containers::VectorView< Real, Device, Index >, SolverMonitor > : public Euler< Containers::Vector< Real, Device, Index >, SolverMonitor >
+{};
+
+} // namespace ODE
+} // namespace Solvers
+} // namespace TNL
 
 #include <TNL/Solvers/ODE/Euler.hpp>
