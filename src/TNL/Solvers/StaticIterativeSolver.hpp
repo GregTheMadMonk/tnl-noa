@@ -132,23 +132,23 @@ checkConvergence()
 {
    if( std::isnan( this->getResidue() ) )
    {
-      std::cerr << std::endl << "The residue is NaN." << std::endl;
+      //std::cerr << std::endl << "The residue is NaN." << std::endl;
       return false;
    }
    if(( this->getResidue() > this->getDivergenceResidue() &&
          this->getIterations() > this->minIterations ) )
    {
-      std::cerr << std::endl  << "The residue has exceeded allowed tolerance " << this->getDivergenceResidue() << "." << std::endl;
+      //std::cerr << std::endl  << "The residue has exceeded allowed tolerance " << this->getDivergenceResidue() << "." << std::endl;
       return false;
    }
    if( this->getIterations() >= this->getMaxIterations() )
    {
-      std::cerr << std::endl  << "The solver has exceeded maximal allowed number of iterations " << this->getMaxIterations() << "." << std::endl;
+      //std::cerr << std::endl  << "The solver has exceeded maximal allowed number of iterations " << this->getMaxIterations() << "." << std::endl;
       return false;
    }
    if( this->getResidue() > this->getConvergenceResidue() )
    {
-      std::cerr << std::endl  << "The residue ( = " << this->getResidue() << " ) is too large( > " << this->getConvergenceResidue() << " )." << std::endl;
+      //std::cerr << std::endl  << "The residue ( = " << this->getResidue() << " ) is too large( > " << this->getConvergenceResidue() << " )." << std::endl;
       return false;
    }
    return true;

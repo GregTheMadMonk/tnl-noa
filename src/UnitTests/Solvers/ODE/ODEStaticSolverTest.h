@@ -49,13 +49,41 @@ TYPED_TEST_SUITE( ODENumericSolverTest, DofNumericTypes );
 
 TYPED_TEST_SUITE( ODEStaticSolverTest, DofStaticVectorTypes );
 
+template< typename RealType, typename SolverType >
+void ODENumericSolverTest_LinearFunctionTest()
+{
+   const RealType final_time = 10.0;
+   SolverType solver;
+   solver.setTime( 0.0 );
+   solver.setStopTime( final_time );
+   solver.setTau( 0.005 );
+   solver.setConvergenceResidue( 0.0 );
+
+   RealType u( 0.0 );
+   solver.solve( u, [] __cuda_callable__ ( const RealType& time, const RealType& tau, const RealType& u, RealType& fu ) {
+      fu = time;
+   } );
+
+   RealType exact_solution = 0.5 * final_time * final_time;
+   EXPECT_NEAR( TNL::abs( u - exact_solution ), ( RealType ) 0.0, 0.1 );
+}
+
 TYPED_TEST( ODENumericSolverTest, LinearFunctionTest )
 {
    using DofContainerType = typename TestFixture::DofContainerType;
    using SolverType = ODETestSolver< DofContainerType >;
    using Real = DofContainerType;
 
-   const Real final_time = 10.0;
+   ODENumericSolverTest_LinearFunctionTest< Real, SolverType >();
+}
+
+template< typename DofContainerType, typename SolverType >
+void ODEStaticSolverTest_LinearFunctionTest()
+{
+   using StaticVectorType = DofContainerType;
+   using RealType = typename DofContainerType::RealType;
+
+   const RealType final_time = 10.0;
    SolverType solver;
    solver.setTime( 0.0 );
    solver.setStopTime( final_time );
@@ -63,12 +91,12 @@ TYPED_TEST( ODENumericSolverTest, LinearFunctionTest )
    solver.setConvergenceResidue( 0.0 );
 
    DofContainerType u( 0.0 );
-   solver.solve( u, [] ( const Real& time, const Real& tau, const auto& u, auto& fu ) {
+   solver.solve( u, [] __cuda_callable__ ( const RealType& time, const RealType& tau, const StaticVectorType& u, StaticVectorType& fu ) {
       fu = time;
    } );
 
-   Real exact_solution = 0.5 * final_time * final_time;
-   EXPECT_NEAR( TNL::abs( u - exact_solution ), ( Real ) 0.0, 0.1 );
+   RealType exact_solution = 0.5 * final_time * final_time;
+   EXPECT_NEAR( TNL::max( TNL::abs( u - exact_solution ) ), ( RealType ) 0.0, 0.1 );
 }
 
 TYPED_TEST( ODEStaticSolverTest, LinearFunctionTest )
@@ -77,20 +105,7 @@ TYPED_TEST( ODEStaticSolverTest, LinearFunctionTest )
    using SolverType = ODETestSolver< DofContainerType >;
    using Real = typename DofContainerType::RealType;
 
-   const Real final_time = 10.0;
-   SolverType solver;
-   solver.setTime( 0.0 );
-   solver.setStopTime( final_time );
-   solver.setTau( 0.005 );
-   solver.setConvergenceResidue( 0.0 );
-
-   DofContainerType u( 0.0 );
-   solver.solve( u, [] ( const Real& time, const Real& tau, const auto& u, auto& fu ) {
-      fu = time;
-   } );
-
-   Real exact_solution = 0.5 * final_time * final_time;
-   EXPECT_NEAR( TNL::max( TNL::abs( u - exact_solution ) ), ( Real ) 0.0, 0.1 );
+   ODEStaticSolverTest_LinearFunctionTest< DofContainerType, SolverType >();
 }
 
 #endif

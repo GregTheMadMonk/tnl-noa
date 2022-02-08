@@ -42,8 +42,8 @@ class StaticEuler : public StaticExplicitSolver< Real, int >
       __cuda_callable__
       const RealType& getCFLCondition() const;
 
-      __cuda_callable__
       template< typename RHSFunction >
+      __cuda_callable__
       bool solve( VectorType& u, RHSFunction&& rhs );
 
    protected:
@@ -81,8 +81,8 @@ class StaticEuler< TNL::Containers::StaticVector< Size_, Real > >
       __cuda_callable__
       const RealType& getCFLCondition() const;
 
-      __cuda_callable__
       template< typename RHSFunction >
+      __cuda_callable__
       bool solve( VectorType& u, RHSFunction&& rhs );
 
    protected:
