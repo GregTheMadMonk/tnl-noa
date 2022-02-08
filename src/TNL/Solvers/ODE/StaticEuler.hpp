@@ -28,7 +28,7 @@ bool
 StaticEuler< Real >::
 setup( const Config::ParameterContainer& parameters, const String& prefix )
 {
-   ExplicitSolver< RealType, IndexType, SolverMonitor >::setup( parameters, prefix );
+   StaticExplicitSolver< RealType, IndexType >::setup( parameters, prefix );
    if( parameters.checkParameter( prefix + "euler-cfl" ) )
       this->setCFLCondition( parameters.getParameter< double >( prefix + "euler-cfl" ) );
    return true;
@@ -134,7 +134,7 @@ bool
 StaticEuler< Containers::StaticVector< Size_, Real > >::
 setup( const Config::ParameterContainer& parameters, const String& prefix )
 {
-   ExplicitSolver< RealType, IndexType, SolverMonitor >::setup( parameters, prefix );
+   StaticExplicitSolver< RealType, IndexType >::setup( parameters, prefix );
    if( parameters.checkParameter( prefix + "euler-cfl" ) )
       this->setCFLCondition( parameters.getParameter< double >( prefix + "euler-cfl" ) );
    return true;

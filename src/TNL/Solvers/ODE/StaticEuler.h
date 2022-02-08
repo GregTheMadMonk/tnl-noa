@@ -9,7 +9,7 @@
 #include <type_traits>
 
 #include <TNL/Config/ConfigDescription.h>
-#include <TNL/Solvers/ODE/ExplicitSolver.h>
+#include <TNL/Solvers/ODE/StaticExplicitSolver.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Containers/StaticVector.h>
 
@@ -18,7 +18,7 @@ namespace Solvers {
 namespace ODE {
 
 template< typename Real >
-class StaticEuler : public ExplicitSolver< Real, int >
+class StaticEuler : public StaticExplicitSolver< Real, int >
 {
    public:
 
@@ -57,7 +57,7 @@ class StaticEuler : public ExplicitSolver< Real, int >
 template< int Size_,
           typename Real >
 class StaticEuler< TNL::Containers::StaticVector< Size_, Real > >
-    : public ExplicitSolver< Real, int >
+    : public StaticExplicitSolver< Real, int >
 {
    public:
 
