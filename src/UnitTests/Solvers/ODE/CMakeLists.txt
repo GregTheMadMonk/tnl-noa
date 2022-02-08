@@ -1,5 +1,6 @@
 set( COMMON_TESTS
             EulerSolverTest
+            StaticEulerSolverTest
 )
 
 set( CPP_TESTS
