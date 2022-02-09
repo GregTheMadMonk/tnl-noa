@@ -31,7 +31,7 @@ using DofVectorTypes = ::testing::Types<
    Vector< double, Devices::Sequential, long >
 #endif
 #ifdef HAVE_CUDA
-  ,Vector< float,  Devices::Cuda, int >,
+   Vector< float,  Devices::Cuda, int >,
    Vector< double, Devices::Cuda, int >,
    Vector< float,  Devices::Cuda, long >,
    Vector< double, Devices::Cuda, long >
