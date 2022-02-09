@@ -77,6 +77,43 @@ TYPED_TEST( ODENumericSolverTest, LinearFunctionTest )
    ODENumericSolverTest_LinearFunctionTest< Real, SolverType >();
 }
 
+template< typename RealType, typename SolverType, typename Device >
+void ODENumericSolverTest_ParallelLinearFunctionTest()
+{
+   const int size = 10;
+   const RealType final_time = 10.0;
+   TNL::Containers::Vector< RealType, Device > u( size, 0.0 );
+   auto u_view = u.getView();
+   auto f = [=] __cuda_callable__ ( int idx ) mutable {
+      SolverType solver;
+      solver.setTime( 0.0 );
+      solver.setStopTime( final_time );
+      solver.setTau( 0.005 );
+      solver.setConvergenceResidue( 0.0 );
+
+      solver.solve( u_view[ idx ], [] __cuda_callable__ ( const RealType& time, const RealType& tau, const RealType& u, RealType& fu ) {
+         fu = time;
+      } );
+   };
+   TNL::Algorithms::ParallelFor< Device >::exec( 0, size, f );
+
+
+   RealType exact_solution = 0.5 * final_time * final_time;
+   EXPECT_NEAR( TNL::max( TNL::abs( u - exact_solution ) ), ( RealType ) 0.0, 0.1 );
+}
+
+TYPED_TEST( ODENumericSolverTest, ParallelLinearFunctionTest )
+{
+   using DofContainerType = typename TestFixture::DofContainerType;
+   using SolverType = ODETestSolver< DofContainerType >;
+
+#ifndef HAVE_CUDA
+   ODENumericSolverTest_ParallelLinearFunctionTest< DofContainerType, SolverType, TNL::Devices::Host >();
+#else
+   ODENumericSolverTest_ParallelLinearFunctionTest< DofContainerType, SolverType, TNL::Devices::Cuda >();
+#endif
+}
+
 template< typename DofContainerType, typename SolverType >
 void ODEStaticSolverTest_LinearFunctionTest()
 {
@@ -107,6 +144,48 @@ TYPED_TEST( ODEStaticSolverTest, LinearFunctionTest )
 
    ODEStaticSolverTest_LinearFunctionTest< DofContainerType, SolverType >();
 }
+
+template< typename DofContainerType, typename SolverType, typename Device >
+void ODEStaticSolverTest_ParallelLinearFunctionTest()
+{
+   using RealType = typename DofContainerType::RealType;
+
+   const int size = 10;
+   const RealType final_time = 10.0;
+   TNL::Containers::Vector< DofContainerType, Device > u( size, 0.0 );
+   auto u_view = u.getView();
+   auto f = [=] __cuda_callable__ ( int idx ) mutable {
+      SolverType solver;
+      solver.setTime( 0.0 );
+      solver.setStopTime( final_time );
+      solver.setTau( 0.005 );
+      solver.setConvergenceResidue( 0.0 );
+
+      solver.solve( u_view[ idx ], [] __cuda_callable__ ( const RealType& time, const RealType& tau, const DofContainerType& u, DofContainerType& fu ) {
+         fu = time;
+      } );
+   };
+   TNL::Algorithms::ParallelFor< Device >::exec( 0, size, f );
+
+   RealType exact_solution( 0.5 * final_time * final_time );
+   auto error = TNL::Algorithms::reduce< Device >( 0, size,
+      [=] __cuda_callable__ ( int idx ) -> RealType { return TNL::max( u_view[ idx ] - exact_solution ); },
+      TNL::Max() );
+   EXPECT_NEAR( error, ( RealType ) 0.0, 0.1 );
+}
+
+TYPED_TEST( ODEStaticSolverTest, ParallelLinearFunctionTest )
+{
+   using DofContainerType = typename TestFixture::DofContainerType;
+   using SolverType = ODETestSolver< DofContainerType >;
+
+#ifndef HAVE_CUDA
+   ODEStaticSolverTest_ParallelLinearFunctionTest< DofContainerType, SolverType, TNL::Devices::Host >();
+#else
+   ODEStaticSolverTest_ParallelLinearFunctionTest< DofContainerType, SolverType, TNL::Devices::Cuda >();
+#endif
+}
+
 
 #endif
 
