@@ -84,16 +84,20 @@ void ODENumericSolverTest_ParallelLinearFunctionTest()
    const RealType final_time = 10.0;
    TNL::Containers::Vector< RealType, Device > u( size, 0.0 );
    auto u_view = u.getView();
+   auto inner_f = [] __cuda_callable__ ( const RealType& time, const RealType& tau, const RealType& u, RealType& fu ) {
+         fu = time;
+   };
    auto f = [=] __cuda_callable__ ( int idx ) mutable {
       SolverType solver;
       solver.setTime( 0.0 );
       solver.setStopTime( final_time );
       solver.setTau( 0.005 );
       solver.setConvergenceResidue( 0.0 );
-
-      solver.solve( u_view[ idx ], [] __cuda_callable__ ( const RealType& time, const RealType& tau, const RealType& u, RealType& fu ) {
-         fu = time;
-      } );
+      solver.solve( u_view[ idx ], inner_f );
+      // The following is not accepted by nvcc
+      //solver.solve( u_view[ idx ], [] __cuda_callable__ ( const RealType& time, const RealType& tau, const RealType& u, RealType& fu ) {
+      //   fu = time;
+      //} );
    };
    TNL::Algorithms::ParallelFor< Device >::exec( 0, size, f );
 
@@ -154,16 +158,21 @@ void ODEStaticSolverTest_ParallelLinearFunctionTest()
    const RealType final_time = 10.0;
    TNL::Containers::Vector< DofContainerType, Device > u( size, 0.0 );
    auto u_view = u.getView();
+   auto inner_f = [=] __cuda_callable__ ( const RealType& time, const RealType& tau, const DofContainerType& u, DofContainerType& fu ) {
+      fu = time;
+   };
    auto f = [=] __cuda_callable__ ( int idx ) mutable {
       SolverType solver;
       solver.setTime( 0.0 );
       solver.setStopTime( final_time );
       solver.setTau( 0.005 );
       solver.setConvergenceResidue( 0.0 );
+      solver.solve( u_view[ idx ], inner_f );
 
-      solver.solve( u_view[ idx ], [] __cuda_callable__ ( const RealType& time, const RealType& tau, const DofContainerType& u, DofContainerType& fu ) {
-         fu = time;
-      } );
+      // The following is not accepted by nvcc compiler
+      //solver.solve( u_view[ idx ], [] __cuda_callable__ ( const RealType& time, const RealType& tau, const DofContainerType& u, DofContainerType& fu ) {
+      //   fu = time;
+      //} );
    };
    TNL::Algorithms::ParallelFor< Device >::exec( 0, size, f );
 
