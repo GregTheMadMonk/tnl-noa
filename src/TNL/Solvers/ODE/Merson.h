@@ -14,9 +14,9 @@ namespace TNL {
 namespace Solvers {
 namespace ODE {
 
-template< class Problem,
-          typename SolverMonitor = IterativeSolverMonitor< typename Problem::RealType, typename Problem::IndexType > >
-class Merson : public ExplicitSolver< Problem, SolverMonitor >
+template< class Vector,
+          typename SolverMonitor = IterativeSolverMonitor< typename Vector::RealType, typename Vector::IndexType > >
+class Merson : public ExplicitSolver< typename Vector::RealType, typename Vector::IndexType, SolverMonitor >
 {
 public:
    using ProblemType = Problem;
@@ -27,32 +27,37 @@ public:
    using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
    using SolverMonitorType = SolverMonitor;
 
-   Merson();
+      using RealType = typename Vector::RealType;
+      using DeviceType = typename Vector::DeviceType;
+      using IndexType  = typename Vector::IndexType;
+      using VectorType = Vector;
+      using DofVectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
+      using SolverMonitorType = SolverMonitor;
 
-   static void
-   configSetup( Config::ConfigDescription& config, const String& prefix = "" );
+      Merson() = default;
 
    bool
    setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
 
-   void
-   setAdaptivity( const RealType& a );
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix = "" );
 
    bool
    solve( DofVectorPointer& u );
 
-protected:
-   void
-   writeGrids( const DofVectorPointer& u );
+      template< typename RHSFunction >
+      bool solve( VectorType& u, RHSFunction&& rhs );
 
    DofVectorPointer _k1, _k2, _k3, _k4, _k5, _kAux;
 
-   /****
-    * This controls the accuracy of the solver
-    */
-   RealType adaptivity;
+      void writeGrids( const DofVectorType& u );
 
-   Containers::Vector< RealType, DeviceType, IndexType > openMPErrorEstimateBuffer;
+      DofVectorType _k1, _k2, _k3, _k4, _k5, _kAux;
+
+      /****
+       * This controls the accuracy of the solver
+       */
+      RealType adaptivity = 0.00001;
 };
 
 }  // namespace ODE
