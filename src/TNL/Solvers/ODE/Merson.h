@@ -45,6 +45,8 @@ public:
    bool
    solve( DofVectorPointer& u );
 
+      const RealType& getAdaptivity() const;
+
       template< typename RHSFunction >
       bool solve( VectorType& u, RHSFunction&& rhs );
 

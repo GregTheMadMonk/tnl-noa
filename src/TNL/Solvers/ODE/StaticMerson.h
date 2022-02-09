@@ -6,19 +6,16 @@
 
 #pragma once
 
-#include <type_traits>
-
+#include <math.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Solvers/ODE/StaticExplicitSolver.h>
-#include <TNL/Config/ParameterContainer.h>
-#include <TNL/Containers/StaticVector.h>
 
 namespace TNL {
 namespace Solvers {
 namespace ODE {
 
-template< typename Real >
-class StaticEuler : public StaticExplicitSolver< Real, int >
+template< class Real >
+class StaticMerson : public StaticExplicitSolver< Real, int >
 {
    public:
 
@@ -28,7 +25,7 @@ class StaticEuler : public StaticExplicitSolver< Real, int >
       using DofVectorType = VectorType;
 
       __cuda_callable__
-      StaticEuler() = default;
+      StaticMerson() = default;
 
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" );
@@ -37,37 +34,38 @@ class StaticEuler : public StaticExplicitSolver< Real, int >
                   const String& prefix = "" );
 
       __cuda_callable__
-      void setCFLCondition( const RealType& cfl );
+      void setAdaptivity( const RealType& a );
 
       __cuda_callable__
-      const RealType& getCFLCondition() const;
+      const RealType& getAdaptivity() const;
 
       template< typename RHSFunction >
       __cuda_callable__
       bool solve( VectorType& u, RHSFunction&& rhs );
 
    protected:
-      DofVectorType k1;
 
-      RealType cflCondition = 0.0;
+      DofVectorType k1, k2, k3, k4, k5, kAux;
+
+      /****
+       * This controls the accuracy of the solver
+       */
+      RealType adaptivity = 0.00001;
 };
 
-
-template< int Size_,
-          typename Real >
-class StaticEuler< Containers::StaticVector< Size_, Real > >
-    : public StaticExplicitSolver< Real, int >
+template< int Size_, class Real >
+class StaticMerson< Containers::StaticVector< Size_, Real > >
+   : public StaticExplicitSolver< Real, int >
 {
    public:
 
-      static constexpr int Size = Size_;
       using RealType = Real;
       using IndexType  = int;
-      using VectorType = TNL::Containers::StaticVector< Size, Real >;
+      using VectorType = Containers::StaticVector< Size_, Real >;
       using DofVectorType = VectorType;
 
       __cuda_callable__
-      StaticEuler() = default;
+      StaticMerson() = default;
 
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" );
@@ -76,23 +74,28 @@ class StaticEuler< Containers::StaticVector< Size_, Real > >
                   const String& prefix = "" );
 
       __cuda_callable__
-      void setCFLCondition( const RealType& cfl );
+      void setAdaptivity( const RealType& a );
 
       __cuda_callable__
-      const RealType& getCFLCondition() const;
+      const RealType& getAdaptivity() const;
 
       template< typename RHSFunction >
       __cuda_callable__
       bool solve( VectorType& u, RHSFunction&& rhs );
 
    protected:
-      DofVectorType k1;
 
-      RealType cflCondition = 0.0;
+      DofVectorType k1, k2, k3, k4, k5, kAux;
+
+      /****
+       * This controls the accuracy of the solver
+       */
+      RealType adaptivity = 0.00001;
 };
+
 
 } // namespace ODE
 } // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/ODE/StaticEuler.hpp>
+#include <TNL/Solvers/ODE/StaticMerson.hpp>

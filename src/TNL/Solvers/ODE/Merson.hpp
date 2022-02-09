@@ -18,16 +18,18 @@ namespace Solvers {
 namespace ODE {
 
 template< typename Vector, typename SolverMonitor >
-void Merson< Vector, SolverMonitor >::configSetup( Config::ConfigDescription& config,
-                                                const String& prefix )
+void
+Merson< Vector, SolverMonitor >::
+configSetup( Config::ConfigDescription& config, const String& prefix )
 {
    ExplicitSolver< RealType, IndexType >::configSetup( config, prefix );
    config.addEntry< double >( prefix + "merson-adaptivity", "Time step adaptivity controlling coefficient (the smaller the more precise the computation is, zero means no adaptivity).", 1.0e-4 );
 };
 
 template< typename Vector, typename SolverMonitor >
-bool Merson< Vector, SolverMonitor >::setup( const Config::ParameterContainer& parameters,
-                                         const String& prefix )
+bool
+Merson< Vector, SolverMonitor >::
+setup( const Config::ParameterContainer& parameters, const String& prefix )
 {
    ExplicitSolver< Vector, SolverMonitor >::setup( parameters, prefix );
    if( parameters.checkParameter( prefix + "merson-adaptivity" ) )
@@ -36,14 +38,26 @@ bool Merson< Vector, SolverMonitor >::setup( const Config::ParameterContainer& p
 }
 
 template< typename Vector, typename SolverMonitor >
-void Merson< Vector, SolverMonitor >::setAdaptivity( const RealType& a )
+void
+Merson< Vector, SolverMonitor >::
+setAdaptivity( const RealType& a )
 {
    this->adaptivity = a;
 };
 
 template< typename Vector, typename SolverMonitor >
+auto
+Merson< Vector, SolverMonitor >::
+getAdaptivity() const -> const RealType&
+{
+   return this->adaptivity;
+};
+
+template< typename Vector, typename SolverMonitor >
    template< typename RHSFunction >
-bool Merson< Vector, SolverMonitor >::solve( VectorType& _u, RHSFunction&& rhsFunction )
+bool
+Merson< Vector, SolverMonitor >::
+solve( VectorType& _u, RHSFunction&& rhsFunction )
 {
    if( this->getTau() == 0.0 )
    {
@@ -52,7 +66,7 @@ bool Merson< Vector, SolverMonitor >::solve( VectorType& _u, RHSFunction&& rhsFu
    }
 
    /////
-   // First setup the supporting meshes k1...k5 and kAux.
+   // First setup the supporting vectors k1...k5 and kAux.
    _k1.setLike( _u );
    _k2.setLike( _u );
    _k3.setLike( _u );
@@ -171,7 +185,9 @@ bool Merson< Vector, SolverMonitor >::solve( VectorType& _u, RHSFunction&& rhsFu
 };
 
 template< typename Vector, typename SolverMonitor >
-void Merson< Vector, SolverMonitor >::writeGrids( const DofVectorType& u )
+void
+Merson< Vector, SolverMonitor >::
+writeGrids( const DofVectorType& u )
 {
    std::cout << "Writing Merson solver grids ...";
    File( "Merson-u.tnl", std::ios_base::out ) << u;
