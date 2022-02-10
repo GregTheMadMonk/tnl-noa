@@ -23,8 +23,10 @@ benchmarkArrayOperations( Benchmark<> & benchmark,
 
    double datasetSize = (double) size * sizeof( Real ) / oneGB;
 
-   HostArray hostArray, hostArray2;
-   CudaArray deviceArray, deviceArray2;
+   HostArray hostArray;
+   HostArray hostArray2;
+   CudaArray deviceArray;
+   CudaArray deviceArray2;
    hostArray.setSize( size );
    hostArray2.setSize( size );
 #ifdef HAVE_CUDA

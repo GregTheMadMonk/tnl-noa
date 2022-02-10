@@ -9,11 +9,11 @@
 #include <TNL/String.h>
 
 #ifdef HAVE_DCMTK_H
-#define HAVE_CONFIG_H
-#include <dcmtk/dcmdata/dcfilefo.h>
-#include <dcmtk/dcmdata/dcdeftag.h>
-#define HAVE_STD_STRING
-#include <dcmtk/ofstd/ofstring.h>
+   #define HAVE_CONFIG_H
+   #include <dcmtk/dcmdata/dcfilefo.h>
+   #include <dcmtk/dcmdata/dcdeftag.h>
+   #define HAVE_STD_STRING
+   #include <dcmtk/ofstd/ofstring.h>
 #endif
 
 namespace TNL {
@@ -27,78 +27,89 @@ class DicomHeader;
  */
 class DicomSeriesInfo
 {
-   public:
+public:
+   inline DicomSeriesInfo( DicomHeader& dicomHeader );
 
-       inline DicomSeriesInfo( DicomHeader &dicomHeader );
+   inline virtual ~DicomSeriesInfo();
 
-       inline virtual ~DicomSeriesInfo();
+   inline const String&
+   getModality();
 
-       inline const String& getModality();
+   inline const String&
+   getStudyInstanceUID();
 
-       inline const String& getStudyInstanceUID();
+   inline const String&
+   getSeriesInstanceUID();
 
-       inline const String& getSeriesInstanceUID();
+   inline const String&
+   getSeriesDescription();
 
-       inline const String& getSeriesDescription();
+   inline const String&
+   getSeriesNumber();
 
-       inline const String& getSeriesNumber();
+   inline const String&
+   getSeriesDate();
 
-       inline const String& getSeriesDate();
+   inline const String&
+   getSeriesTime();
 
-       inline const String& getSeriesTime();
+   inline const String&
+   getPerformingPhysiciansName();
 
-       inline const String& getPerformingPhysiciansName();
+   inline const String&
+   getPerformingPhysicianIdentificationSequence();
 
-       inline const String& getPerformingPhysicianIdentificationSequence();
+   inline const String&
+   getOperatorsName();
 
-       inline const String& getOperatorsName();
+   inline const String&
+   getOperatorIdentificationSequence();
 
-       inline const String& getOperatorIdentificationSequence();
+   inline const String&
+   getAcquisitionTime();
 
-       inline const String& getAcquisitionTime();
+private:
+   DicomHeader& dicomHeader;
 
-   private:
+   bool
+   retrieveInfo();
 
-       DicomHeader &dicomHeader;
+   bool isObjectRetrieved;
 
-       bool retrieveInfo();
+   String modality;
 
-       bool isObjectRetrieved;
+   String studyInstanceUID;
 
-       String modality;
+   String seriesInstanceUID;
 
-       String studyInstanceUID;
+   String seriesNumber;
 
-       String seriesInstanceUID;
+   String seriesDescription;
 
-       String seriesNumber;
+   String seriesDate;
 
-       String seriesDescription;
+   String seriesTime;
 
-       String seriesDate;
+   String performingPhysiciansName;
 
-       String seriesTime;
+   String performingPhysicianIdentificationSequence;
 
-       String performingPhysiciansName;
+   String operatorsName;
 
-       String performingPhysicianIdentificationSequence;
+   String operatorIdentificationSequence;
 
-       String operatorsName;
+   String frameTime;
 
-       String operatorIdentificationSequence;
+   String faDateTime;
 
-       String frameTime;
+   String faRefTime;
 
-       String faDateTime;
+   String AFD;
 
-       String faRefTime;
-
-       String AFD;
-
-       String acquisitionTime;
+   String acquisitionTime;
 };
 
-} // namespace Images
-} // namespace TNL
+}  // namespace Images
+}  // namespace TNL
 
 #include <TNL/Images/DicomSeriesInfo_impl.h>

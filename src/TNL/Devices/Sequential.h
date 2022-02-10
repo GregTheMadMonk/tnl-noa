@@ -13,5 +13,5 @@ namespace Devices {
 struct Sequential
 {};
 
-} // namespace Devices
-} // namespace TNL
+}  // namespace Devices
+}  // namespace TNL

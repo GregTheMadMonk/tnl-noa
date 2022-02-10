@@ -44,9 +44,7 @@ namespace Algorithms {
  * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
  * ```
  */
-template< typename InputDistributedArray,
-          typename OutputDistributedArray,
-          typename Reduction >
+template< typename InputDistributedArray, typename OutputDistributedArray, typename Reduction >
 void
 distributedInclusiveScan( const InputDistributedArray& input,
                           OutputDistributedArray& output,
@@ -55,13 +53,16 @@ distributedInclusiveScan( const InputDistributedArray& input,
                           Reduction&& reduction,
                           typename OutputDistributedArray::ValueType identity )
 {
-   static_assert( std::is_same< typename InputDistributedArray::DeviceType, typename OutputDistributedArray::DeviceType >::value,
-                  "The input and output arrays must have the same device type." );
-   TNL_ASSERT_EQ( input.getCommunicator(), output.getCommunicator(),
-                  "The input and output arrays must have the same MPI communicator." );
-   TNL_ASSERT_EQ( input.getLocalRange(), output.getLocalRange(),
+   static_assert(
+      std::is_same< typename InputDistributedArray::DeviceType, typename OutputDistributedArray::DeviceType >::value,
+      "The input and output arrays must have the same device type." );
+   TNL_ASSERT_EQ(
+      input.getCommunicator(), output.getCommunicator(), "The input and output arrays must have the same MPI communicator." );
+   TNL_ASSERT_EQ( input.getLocalRange(),
+                  output.getLocalRange(),
                   "The input and output arrays must have the same local range on all ranks." );
-   // TODO: check if evaluating the input is expensive (e.g. a vector expression), otherwise use WriteInSecondPhase (optimal for array-to-array)
+   // TODO: check if evaluating the input is expensive (e.g. a vector expression), otherwise use WriteInSecondPhase (optimal for
+   // array-to-array)
    using Scan = detail::DistributedScan< detail::ScanType::Inclusive, detail::ScanPhaseType::WriteInFirstPhase >;
    Scan::perform( input, output, begin, end, std::forward< Reduction >( reduction ), identity );
    output.startSynchronization();
@@ -75,9 +76,7 @@ distributedInclusiveScan( const InputDistributedArray& input,
  * See \ref distributedInclusiveScan for the explanation of other parameters.
  * Note that when `end` equals 0 (the default), it is set to `input.getSize()`.
  */
-template< typename InputDistributedArray,
-          typename OutputDistributedArray,
-          typename Reduction = TNL::Plus >
+template< typename InputDistributedArray, typename OutputDistributedArray, typename Reduction = TNL::Plus >
 void
 distributedInclusiveScan( const InputDistributedArray& input,
                           OutputDistributedArray& output,
@@ -87,7 +86,8 @@ distributedInclusiveScan( const InputDistributedArray& input,
 {
    if( end == 0 )
       end = input.getSize();
-   constexpr typename OutputDistributedArray::ValueType identity = Reduction::template getIdentity< typename OutputDistributedArray::ValueType >();
+   constexpr typename OutputDistributedArray::ValueType identity =
+      Reduction::template getIdentity< typename OutputDistributedArray::ValueType >();
    distributedInclusiveScan( input, output, begin, end, std::forward< Reduction >( reduction ), identity );
 }
 
@@ -119,9 +119,7 @@ distributedInclusiveScan( const InputDistributedArray& input,
  * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
  * ```
  */
-template< typename InputDistributedArray,
-          typename OutputDistributedArray,
-          typename Reduction >
+template< typename InputDistributedArray, typename OutputDistributedArray, typename Reduction >
 void
 distributedExclusiveScan( const InputDistributedArray& input,
                           OutputDistributedArray& output,
@@ -130,13 +128,16 @@ distributedExclusiveScan( const InputDistributedArray& input,
                           Reduction&& reduction,
                           typename OutputDistributedArray::ValueType identity )
 {
-   static_assert( std::is_same< typename InputDistributedArray::DeviceType, typename OutputDistributedArray::DeviceType >::value,
-                  "The input and output arrays must have the same device type." );
-   TNL_ASSERT_EQ( input.getCommunicator(), output.getCommunicator(),
-                  "The input and output arrays must have the same MPI communicator." );
-   TNL_ASSERT_EQ( input.getLocalRange(), output.getLocalRange(),
+   static_assert(
+      std::is_same< typename InputDistributedArray::DeviceType, typename OutputDistributedArray::DeviceType >::value,
+      "The input and output arrays must have the same device type." );
+   TNL_ASSERT_EQ(
+      input.getCommunicator(), output.getCommunicator(), "The input and output arrays must have the same MPI communicator." );
+   TNL_ASSERT_EQ( input.getLocalRange(),
+                  output.getLocalRange(),
                   "The input and output arrays must have the same local range on all ranks." );
-   // TODO: check if evaluating the input is expensive (e.g. a vector expression), otherwise use WriteInSecondPhase (optimal for array-to-array)
+   // TODO: check if evaluating the input is expensive (e.g. a vector expression), otherwise use WriteInSecondPhase (optimal for
+   // array-to-array)
    using Scan = detail::DistributedScan< detail::ScanType::Exclusive, detail::ScanPhaseType::WriteInFirstPhase >;
    Scan::perform( input, output, begin, end, std::forward< Reduction >( reduction ), identity );
    output.startSynchronization();
@@ -150,9 +151,7 @@ distributedExclusiveScan( const InputDistributedArray& input,
  * See \ref distributedExclusiveScan for the explanation of other parameters.
  * Note that when `end` equals 0 (the default), it is set to `input.getSize()`.
  */
-template< typename InputDistributedArray,
-          typename OutputDistributedArray,
-          typename Reduction = TNL::Plus >
+template< typename InputDistributedArray, typename OutputDistributedArray, typename Reduction = TNL::Plus >
 void
 distributedExclusiveScan( const InputDistributedArray& input,
                           OutputDistributedArray& output,
@@ -162,7 +161,8 @@ distributedExclusiveScan( const InputDistributedArray& input,
 {
    if( end == 0 )
       end = input.getSize();
-   constexpr typename OutputDistributedArray::ValueType identity = Reduction::template getIdentity< typename OutputDistributedArray::ValueType >();
+   constexpr typename OutputDistributedArray::ValueType identity =
+      Reduction::template getIdentity< typename OutputDistributedArray::ValueType >();
    distributedExclusiveScan( input, output, begin, end, std::forward< Reduction >( reduction ), identity );
 }
 
@@ -194,8 +194,7 @@ distributedExclusiveScan( const InputDistributedArray& input,
  * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
  * ```
  */
-template< typename DistributedArray,
-          typename Reduction >
+template< typename DistributedArray, typename Reduction >
 void
 distributedInplaceInclusiveScan( DistributedArray& array,
                                  typename DistributedArray::IndexType begin,
@@ -216,8 +215,7 @@ distributedInplaceInclusiveScan( DistributedArray& array,
  * See \ref distributedInplaceInclusiveScan for the explanation of other parameters.
  * Note that when `end` equals 0 (the default), it is set to `array.getSize()`.
  */
-template< typename DistributedArray,
-          typename Reduction = TNL::Plus >
+template< typename DistributedArray, typename Reduction = TNL::Plus >
 void
 distributedInplaceInclusiveScan( DistributedArray& array,
                                  typename DistributedArray::IndexType begin = 0,
@@ -226,7 +224,8 @@ distributedInplaceInclusiveScan( DistributedArray& array,
 {
    if( end == 0 )
       end = array.getSize();
-   constexpr typename DistributedArray::ValueType identity = Reduction::template getIdentity< typename DistributedArray::ValueType >();
+   constexpr typename DistributedArray::ValueType identity =
+      Reduction::template getIdentity< typename DistributedArray::ValueType >();
    distributedInplaceInclusiveScan( array, begin, end, std::forward< Reduction >( reduction ), identity );
 }
 
@@ -258,8 +257,7 @@ distributedInplaceInclusiveScan( DistributedArray& array,
  * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
  * ```
  */
-template< typename DistributedArray,
-          typename Reduction >
+template< typename DistributedArray, typename Reduction >
 void
 distributedInplaceExclusiveScan( DistributedArray& array,
                                  typename DistributedArray::IndexType begin,
@@ -280,8 +278,7 @@ distributedInplaceExclusiveScan( DistributedArray& array,
  * See \ref distributedInplaceExclusiveScan for the explanation of other parameters.
  * Note that when `end` equals 0 (the default), it is set to `array.getSize()`.
  */
-template< typename DistributedArray,
-          typename Reduction = TNL::Plus >
+template< typename DistributedArray, typename Reduction = TNL::Plus >
 void
 distributedInplaceExclusiveScan( DistributedArray& array,
                                  typename DistributedArray::IndexType begin = 0,
@@ -290,9 +287,10 @@ distributedInplaceExclusiveScan( DistributedArray& array,
 {
    if( end == 0 )
       end = array.getSize();
-   constexpr typename DistributedArray::ValueType identity = Reduction::template getIdentity< typename DistributedArray::ValueType >();
+   constexpr typename DistributedArray::ValueType identity =
+      Reduction::template getIdentity< typename DistributedArray::ValueType >();
    distributedInplaceExclusiveScan( array, begin, end, std::forward< Reduction >( reduction ), identity );
 }
 
-} // namespace Algorithms
-} // namespace TNL
+}  // namespace Algorithms
+}  // namespace TNL

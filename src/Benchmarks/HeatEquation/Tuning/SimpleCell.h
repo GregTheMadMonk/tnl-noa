@@ -9,17 +9,15 @@ template< typename Grid, typename Config = Meshes::GridEntityNoStencilStorage >
 class SimpleCell
 {
    public:
- 
-      typedef Grid GridType;
-      typedef GridType MeshType;
-      typedef typename GridType::RealType RealType;
-      typedef typename GridType::IndexType IndexType;
-      typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef typename GridType::PointType PointType;
-      typedef Meshes::NeighborGridEntitiesStorage< SimpleCell, Config >
-         NeighborGridEntitiesStorageType;
-      typedef Config ConfigType;
-      
+      using GridType = Grid;
+      using MeshType = GridType;
+      using RealType = typename GridType::RealType;
+      using IndexType = typename GridType::IndexType;
+      using CoordinatesType = typename GridType::CoordinatesType;
+      using PointType = typename GridType::PointType;
+      using NeighborGridEntitiesStorageType = Meshes::NeighborGridEntitiesStorage< SimpleCell, Config >;
+      using ConfigType = Config;
+
       constexpr static int getMeshDimension() { return GridType::getMeshDimension(); };
  
       constexpr static int getEntityDimension() { return getMeshDimension(); };

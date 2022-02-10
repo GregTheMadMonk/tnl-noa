@@ -25,76 +25,77 @@ namespace Pointers {
 // should beome a class template specialization.
 class SmartPointersRegister
 {
+public:
+   /**
+    * Negative deviceId means that \ref Cuda::DeviceInfo::getActiveDevice will be
+    * called to get the device ID.
+    */
+   void
+   insert( SmartPointer* pointer, int deviceId = -1 )
+   {
+      if( deviceId < 0 )
+         deviceId = Cuda::DeviceInfo::getActiveDevice();
+      pointersOnDevices[ deviceId ].insert( pointer );
+   }
 
-   public:
-
-      /**
-       * Negative deviceId means that \ref Cuda::DeviceInfo::getActiveDevice will be
-       * called to get the device ID.
-       */
-      void insert( SmartPointer* pointer, int deviceId = -1 )
-      {
-         if( deviceId < 0 )
-            deviceId = Cuda::DeviceInfo::getActiveDevice();
-         pointersOnDevices[ deviceId ].insert( pointer );
+   /**
+    * Negative deviceId means that \ref Cuda::DeviceInfo::getActiveDevice will be
+    * called to get the device ID.
+    */
+   void
+   remove( SmartPointer* pointer, int deviceId = -1 )
+   {
+      if( deviceId < 0 )
+         deviceId = Cuda::DeviceInfo::getActiveDevice();
+      try {
+         pointersOnDevices.at( deviceId ).erase( pointer );
       }
-
-      /**
-       * Negative deviceId means that \ref Cuda::DeviceInfo::getActiveDevice will be
-       * called to get the device ID.
-       */
-      void remove( SmartPointer* pointer, int deviceId = -1 )
-      {
-         if( deviceId < 0 )
-            deviceId = Cuda::DeviceInfo::getActiveDevice();
-         try {
-            pointersOnDevices.at( deviceId ).erase( pointer );
-         }
-         catch( const std::out_of_range& ) {
-            std::cerr << "Given deviceId " << deviceId << " does not have any pointers yet. "
-                      << "Requested to remove pointer " << pointer << ". "
-                      << "This is most likely a bug in the smart pointer." << std::endl;
-            throw;
-         }
+      catch( const std::out_of_range& ) {
+         std::cerr << "Given deviceId " << deviceId << " does not have any pointers yet. "
+                   << "Requested to remove pointer " << pointer << ". "
+                   << "This is most likely a bug in the smart pointer." << std::endl;
+         throw;
       }
+   }
 
-      /**
-       * Negative deviceId means that \ref Cuda::DeviceInfo::getActiveDevice will be
-       * called to get the device ID.
-       */
-      bool synchronizeDevice( int deviceId = -1 )
-      {
-         if( deviceId < 0 )
-            deviceId = Cuda::DeviceInfo::getActiveDevice();
-         try {
-            const auto & set = pointersOnDevices.at( deviceId );
-            for( auto&& it : set )
-               ( *it ).synchronize();
-            return true;
-         }
-         catch( const std::out_of_range& ) {
-            return false;
-         }
+   /**
+    * Negative deviceId means that \ref Cuda::DeviceInfo::getActiveDevice will be
+    * called to get the device ID.
+    */
+   bool
+   synchronizeDevice( int deviceId = -1 )
+   {
+      if( deviceId < 0 )
+         deviceId = Cuda::DeviceInfo::getActiveDevice();
+      try {
+         const auto& set = pointersOnDevices.at( deviceId );
+         for( auto&& it : set )
+            ( *it ).synchronize();
+         return true;
       }
+      catch( const std::out_of_range& ) {
+         return false;
+      }
+   }
 
-   protected:
+protected:
+   using SetType = std::unordered_set< SmartPointer* >;
 
-      typedef std::unordered_set< SmartPointer* > SetType;
-
-      std::unordered_map< int, SetType > pointersOnDevices;
+   std::unordered_map< int, SetType > pointersOnDevices;
 };
-
 
 // TODO: Device -> Allocator (in all smart pointers)
 template< typename Device >
-SmartPointersRegister& getSmartPointersRegister()
+SmartPointersRegister&
+getSmartPointersRegister()
 {
    static SmartPointersRegister reg;
    return reg;
 }
 
 template< typename Device >
-Timer& getSmartPointersSynchronizationTimer()
+Timer&
+getSmartPointersSynchronizationTimer()
 {
    static Timer timer;
    return timer;
@@ -105,7 +106,8 @@ Timer& getSmartPointersSynchronizationTimer()
  * determined automatically.
  */
 template< typename Device >
-bool synchronizeSmartPointersOnDevice( int deviceId = -1 )
+bool
+synchronizeSmartPointersOnDevice( int deviceId = -1 )
 {
    // TODO: better way to skip synchronization of host-only smart pointers
    if( std::is_same< Device, Devices::Sequential >::value || std::is_same< Device, Devices::Host >::value )
@@ -117,5 +119,5 @@ bool synchronizeSmartPointersOnDevice( int deviceId = -1 )
    return b;
 }
 
-} // namespace Pointers
-} // namespace TNL
+}  // namespace Pointers
+}  // namespace TNL

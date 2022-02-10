@@ -25,26 +25,26 @@
 #include <TNL/Solvers/Linear/Preconditioners/ILUT.h>
 
 namespace TNL {
-   namespace Solvers {
+namespace Solvers {
 
 /**
  * \brief Function returning available linear solvers.
  *
  * \return container with names of available linear solvers.
  */
-inline std::vector<std::string>
+inline std::vector< std::string >
 getLinearSolverOptions()
 {
-   return {
-      "jacobi",
-      "sor",
-      "cg",
-      "bicgstab",
-      "bicgstabl",
-      "gmres",
-      "tfqmr"
+   return { "jacobi",
+            "sor",
+            "cg",
+            "bicgstab",
+            "bicgstabl",
+            "gmres",
+            "tfqmr"
 #ifdef HAVE_UMFPACK
-      , "umfpack"
+            ,
+            "umfpack"
 #endif
    };
 }
@@ -54,15 +54,10 @@ getLinearSolverOptions()
  *
  * \return container with names of available linear preconditioners.
  */
-inline std::vector<std::string>
+inline std::vector< std::string >
 getPreconditionerOptions()
 {
-   return {
-      "none",
-      "diagonal",
-      "ilu0",
-      "ilut"
-   };
+   return { "none", "diagonal", "ilu0", "ilut" };
 }
 
 /**
@@ -143,7 +138,6 @@ template< typename MatrixType >
 std::shared_ptr< Linear::Preconditioners::Preconditioner< MatrixType > >
 getPreconditioner( std::string name )
 {
-
    if( name == "none" )
       return nullptr;
    if( name == "diagonal" )
@@ -165,5 +159,5 @@ getPreconditioner( std::string name )
    return nullptr;
 }
 
-   } // namespace Solvers
-} // namespace TNL
+}  // namespace Solvers
+}  // namespace TNL

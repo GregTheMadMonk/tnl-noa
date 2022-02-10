@@ -4,7 +4,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#pragma once 
+#pragma once
 
 #include <iostream>
 #include <TNL/Containers/StaticVector.h>
@@ -12,66 +12,63 @@
 
 namespace TNL {
 namespace Functions {
-namespace Analytic {   
+namespace Analytic {
 
-template< int dimensions,
-          typename Real = double >
+template< int dimensions, typename Real = double >
 class Constant : public Domain< dimensions, NonspaceDomain >
 {
-   public:
- 
-      typedef Real RealType;
-      typedef Containers::StaticVector< dimensions, RealType > PointType;
- 
-      __cuda_callable__
-      Constant();
+public:
+   using RealType = Real;
+   using PointType = Containers::StaticVector< dimensions, RealType >;
 
-      static void configSetup( Config::ConfigDescription& config,
-                               const String& prefix = "" );
+   __cuda_callable__
+   Constant();
 
-      bool setup( const Config::ParameterContainer& parameters,
-                 const String& prefix = "" );
+   static void
+   configSetup( Config::ConfigDescription& config, const String& prefix = "" );
 
-      void setConstant( const RealType& constant );
+   bool
+   setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
 
-      const RealType& getConstant() const;
+   void
+   setConstant( const RealType& constant );
 
-      template< int XDiffOrder = 0,
-                int YDiffOrder = 0,
-                int ZDiffOrder = 0 >
-      __cuda_callable__ inline
-      RealType getPartialDerivative( const PointType& v,
-                                     const Real& time = 0.0 ) const;
+   const RealType&
+   getConstant() const;
 
-      __cuda_callable__ inline
-      RealType operator()( const PointType& v,
-                           const Real& time = 0.0 ) const
-      {
-         return constant;
-      }
- 
-       __cuda_callable__ inline
-      RealType getValue( const Real& time = 0.0 ) const
-      {
-          return constant;
-      }
+   template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0 >
+   __cuda_callable__
+   inline RealType
+   getPartialDerivative( const PointType& v, const Real& time = 0.0 ) const;
 
-   protected:
+   __cuda_callable__
+   inline RealType
+   operator()( const PointType& v, const Real& time = 0.0 ) const
+   {
+      return constant;
+   }
 
-      RealType constant;
+   __cuda_callable__
+   inline RealType
+   getValue( const Real& time = 0.0 ) const
+   {
+      return constant;
+   }
+
+protected:
+   RealType constant;
 };
 
-template< int dimensions,
-          typename Real >
-std::ostream& operator << ( std::ostream& str, const Constant< dimensions, Real >& f )
+template< int dimensions, typename Real >
+std::ostream&
+operator<<( std::ostream& str, const Constant< dimensions, Real >& f )
 {
    str << "Constant function: constant = " << f.getConstant();
    return str;
 }
 
-} // namespace Analytic
-} // namespace Functions
-} // namespace TNL
+}  // namespace Analytic
+}  // namespace Functions
+}  // namespace TNL
 
 #include <TNL/Functions/Analytic/Constant_impl.h>
-

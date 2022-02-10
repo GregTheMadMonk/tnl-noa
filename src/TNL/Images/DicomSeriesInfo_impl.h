@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <stdio.h>
+#include <cstdio>
 
 #include <TNL/Images/DicomHeader.h>
 #include <TNL/Images/DicomSeriesInfo.h>
@@ -14,17 +14,15 @@
 namespace TNL {
 namespace Images {
 
-inline DicomSeriesInfo::DicomSeriesInfo( DicomHeader &dicomHeader)
-: dicomHeader( dicomHeader )
+inline DicomSeriesInfo::DicomSeriesInfo( DicomHeader& dicomHeader ) : dicomHeader( dicomHeader )
 {
-    isObjectRetrieved = false;
+   isObjectRetrieved = false;
 }
 
-inline DicomSeriesInfo::~DicomSeriesInfo()
-{
-}
+inline DicomSeriesInfo::~DicomSeriesInfo() = default;
 
-inline bool DicomSeriesInfo::retrieveInfo()
+inline bool
+DicomSeriesInfo::retrieveInfo()
 {
 #ifdef HAVE_DCMTK_H
    OFString str;
@@ -76,103 +74,115 @@ inline bool DicomSeriesInfo::retrieveInfo()
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_AcquisitionTime, str );
    this->acquisitionTime = str.data();
 
-    //prostudovat delay time
-    //OFString delayTime = "";
-    //dicomHeader.getFileFormat().getDataset()->findAndGetOFString(DCM_DelayTime, delayTime);
+   // prostudovat delay time
+   // OFString delayTime = "";
+   // dicomHeader.getFileFormat().getDataset()->findAndGetOFString(DCM_DelayTime, delayTime);
 
-    //std::cout << faDateTime << " " << faRefTime << " "<< AFD << " " << AT << std::endl;
+   // std::cout << faDateTime << " " << faRefTime << " "<< AFD << " " << AT << std::endl;
 
-    isObjectRetrieved = true;
-    return true;
+   isObjectRetrieved = true;
+   return true;
 #else
-    std::cerr << "DICOM format is not supported in this build of TNL." << std::endl;
-    return false;
+   std::cerr << "DICOM format is not supported in this build of TNL." << std::endl;
+   return false;
 #endif
 }
 
-inline const String& DicomSeriesInfo::getModality()
+inline const String&
+DicomSeriesInfo::getModality()
 {
-    if(!isObjectRetrieved)
-        retrieveInfo();
-    return this->modality;
+   if( ! isObjectRetrieved )
+      retrieveInfo();
+   return this->modality;
 }
 
-inline const String& DicomSeriesInfo::getStudyInstanceUID()
+inline const String&
+DicomSeriesInfo::getStudyInstanceUID()
 {
-    if(!isObjectRetrieved)
-        retrieveInfo();
-    return this->studyInstanceUID;
+   if( ! isObjectRetrieved )
+      retrieveInfo();
+   return this->studyInstanceUID;
 }
 
-inline const String& DicomSeriesInfo::getSeriesInstanceUID()
+inline const String&
+DicomSeriesInfo::getSeriesInstanceUID()
 {
-    if(!isObjectRetrieved)
-        retrieveInfo();
-    return this->seriesInstanceUID;
+   if( ! isObjectRetrieved )
+      retrieveInfo();
+   return this->seriesInstanceUID;
 }
 
-inline const String& DicomSeriesInfo::getSeriesNumber()
+inline const String&
+DicomSeriesInfo::getSeriesNumber()
 {
-    if(!isObjectRetrieved)
-        retrieveInfo();
-    return this->seriesNumber;
+   if( ! isObjectRetrieved )
+      retrieveInfo();
+   return this->seriesNumber;
 }
 
-inline const String& DicomSeriesInfo::getSeriesDescription()
+inline const String&
+DicomSeriesInfo::getSeriesDescription()
 {
-    if(!isObjectRetrieved)
-        retrieveInfo();
-    return this->seriesDescription;
+   if( ! isObjectRetrieved )
+      retrieveInfo();
+   return this->seriesDescription;
 }
 
-inline const String& DicomSeriesInfo::getSeriesDate()
+inline const String&
+DicomSeriesInfo::getSeriesDate()
 {
-    if(!isObjectRetrieved)
-        retrieveInfo();
-    return this->seriesDate;
+   if( ! isObjectRetrieved )
+      retrieveInfo();
+   return this->seriesDate;
 }
 
-inline const String& DicomSeriesInfo::getSeriesTime()
+inline const String&
+DicomSeriesInfo::getSeriesTime()
 {
-    if(!isObjectRetrieved)
-        retrieveInfo();
-    return this->seriesTime;
+   if( ! isObjectRetrieved )
+      retrieveInfo();
+   return this->seriesTime;
 }
 
-inline const String& DicomSeriesInfo::getPerformingPhysiciansName()
+inline const String&
+DicomSeriesInfo::getPerformingPhysiciansName()
 {
-    if(!isObjectRetrieved)
-        retrieveInfo();
-    return this->performingPhysiciansName;
+   if( ! isObjectRetrieved )
+      retrieveInfo();
+   return this->performingPhysiciansName;
 }
 
-inline const String& DicomSeriesInfo::getPerformingPhysicianIdentificationSequence()
+inline const String&
+DicomSeriesInfo::getPerformingPhysicianIdentificationSequence()
 {
-    if(!isObjectRetrieved)
-        retrieveInfo();
-    return this->performingPhysicianIdentificationSequence;
+   if( ! isObjectRetrieved )
+      retrieveInfo();
+   return this->performingPhysicianIdentificationSequence;
 }
 
-inline const String& DicomSeriesInfo::getOperatorsName()
+inline const String&
+DicomSeriesInfo::getOperatorsName()
 {
-    if(!isObjectRetrieved)
-        retrieveInfo();
-    return this->operatorsName;
+   if( ! isObjectRetrieved )
+      retrieveInfo();
+   return this->operatorsName;
 }
 
-inline const String& DicomSeriesInfo::getOperatorIdentificationSequence()
+inline const String&
+DicomSeriesInfo::getOperatorIdentificationSequence()
 {
-    if(!isObjectRetrieved)
-        retrieveInfo();
-    return this->operatorIdentificationSequence;
+   if( ! isObjectRetrieved )
+      retrieveInfo();
+   return this->operatorIdentificationSequence;
 }
 
-inline const String& DicomSeriesInfo::getAcquisitionTime()
+inline const String&
+DicomSeriesInfo::getAcquisitionTime()
 {
-    if(!isObjectRetrieved)
-        retrieveInfo();
-    return this->acquisitionTime;
+   if( ! isObjectRetrieved )
+      retrieveInfo();
+   return this->acquisitionTime;
 }
 
-} // namespace Images
-} // namespace TNL
+}  // namespace Images
+}  // namespace TNL

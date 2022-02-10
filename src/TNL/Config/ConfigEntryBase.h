@@ -9,6 +9,7 @@
 #pragma once
 
 #include <string>
+#include <utility>
 
 namespace TNL {
 namespace Config {
@@ -25,35 +26,61 @@ protected:
    bool _hasDefaultValue;
 
 public:
-   ConfigEntryBase( const std::string& name,
-                    const std::string& description,
-                    bool required )
-      : name( name ),
-        description( description ),
-        required( required ),
-        _hasDefaultValue( false )
+   ConfigEntryBase( std::string name, std::string description, bool required )
+   : name( std::move( name ) ), description( std::move( description ) ), required( required ), _hasDefaultValue( false )
    {}
 
-   const std::string& getName() const { return name; }
+   const std::string&
+   getName() const
+   {
+      return name;
+   }
 
-   const std::string& getDescription() const { return description; }
+   const std::string&
+   getDescription() const
+   {
+      return description;
+   }
 
-   bool isRequired() const { return required; }
+   bool
+   isRequired() const
+   {
+      return required;
+   }
 
-   bool hasDefaultValue() const { return _hasDefaultValue; }
+   bool
+   hasDefaultValue() const
+   {
+      return _hasDefaultValue;
+   }
 
-   virtual std::string getUIEntryType() const = 0;
+   virtual std::string
+   getUIEntryType() const = 0;
 
-   virtual bool isDelimiter() const { return false; }
+   virtual bool
+   isDelimiter() const
+   {
+      return false;
+   }
 
-   virtual std::string printDefaultValue() const { return ""; }
+   virtual std::string
+   printDefaultValue() const
+   {
+      return "";
+   }
 
-   virtual bool hasEnumValues() const { return false; }
+   virtual bool
+   hasEnumValues() const
+   {
+      return false;
+   }
 
-   virtual void printEnumValues( std::ostream& str ) const {}
+   virtual void
+   printEnumValues( std::ostream& str ) const
+   {}
 
    virtual ~ConfigEntryBase() = default;
 };
 
-} // namespace Config
-} // namespace TNL
+}  // namespace Config
+}  // namespace TNL

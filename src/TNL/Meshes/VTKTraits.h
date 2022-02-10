@@ -25,8 +25,7 @@ namespace Meshes {
 namespace VTK {
 
 // VTK file formats
-enum class FileFormat
-: std::uint8_t
+enum class FileFormat : std::uint8_t
 {
    ascii,
    binary,
@@ -34,16 +33,14 @@ enum class FileFormat
 };
 
 // VTK data types
-enum class DataType
-: std::uint8_t
+enum class DataType : std::uint8_t
 {
    CellData,
    PointData
 };
 
 // VTK entity shapes
-enum class EntityShape
-: std::uint8_t
+enum class EntityShape : std::uint8_t
 {
    Vertex = 1,
    PolyVertex = 2,
@@ -64,10 +61,10 @@ enum class EntityShape
    Polyhedron = 42
 };
 
-inline std::string getShapeName( EntityShape shape )
+inline std::string
+getShapeName( EntityShape shape )
 {
-   switch( shape )
-   {
+   switch( shape ) {
       case EntityShape::Vertex:
          return "Vertex";
       case EntityShape::PolyVertex:
@@ -106,44 +103,103 @@ inline std::string getShapeName( EntityShape shape )
    return "<unknown entity shape>";
 }
 
-inline int getEntityDimension( EntityShape shape )
+inline int
+getEntityDimension( EntityShape shape )
 {
-   switch( shape )
-   {
-      case EntityShape::Vertex:         return 0;
-      case EntityShape::PolyVertex:     return 0;
-      case EntityShape::Line:           return 1;
-      case EntityShape::PolyLine:       return 1;
-      case EntityShape::Triangle:       return 2;
-      case EntityShape::TriangleStrip:  return 2;
-      case EntityShape::Polygon:        return 2;
-      case EntityShape::Pixel:          return 2;
-      case EntityShape::Quad:           return 2;
-      case EntityShape::Tetra:          return 3;
-      case EntityShape::Voxel:          return 3;
-      case EntityShape::Hexahedron:     return 3;
-      case EntityShape::Wedge:          return 3;
-      case EntityShape::Pyramid:        return 3;
-      case EntityShape::PentagonalPrism:return 3;
-      case EntityShape::HexagonalPrism: return 3;
-      case EntityShape::Polyhedron:     return 3;
+   switch( shape ) {
+      case EntityShape::Vertex:
+         return 0;
+      case EntityShape::PolyVertex:
+         return 0;
+      case EntityShape::Line:
+         return 1;
+      case EntityShape::PolyLine:
+         return 1;
+      case EntityShape::Triangle:
+         return 2;
+      case EntityShape::TriangleStrip:
+         return 2;
+      case EntityShape::Polygon:
+         return 2;
+      case EntityShape::Pixel:
+         return 2;
+      case EntityShape::Quad:
+         return 2;
+      case EntityShape::Tetra:
+         return 3;
+      case EntityShape::Voxel:
+         return 3;
+      case EntityShape::Hexahedron:
+         return 3;
+      case EntityShape::Wedge:
+         return 3;
+      case EntityShape::Pyramid:
+         return 3;
+      case EntityShape::PentagonalPrism:
+         return 3;
+      case EntityShape::HexagonalPrism:
+         return 3;
+      case EntityShape::Polyhedron:
+         return 3;
    }
    // this can actually happen when an invalid uint8_t value is converted to EntityShape
-   throw std::runtime_error( "VTK::getEntityDimension: invalid entity shape value " + std::to_string(int(shape)) );
+   throw std::runtime_error( "VTK::getEntityDimension: invalid entity shape value " + std::to_string( int( shape ) ) );
 }
 
 // static mapping of TNL entity topologies to EntityShape
-template< typename Topology > struct TopologyToEntityShape {};
-template<> struct TopologyToEntityShape< Topologies::Vertex >      { static constexpr EntityShape shape = EntityShape::Vertex;     };
-template<> struct TopologyToEntityShape< Topologies::Edge >        { static constexpr EntityShape shape = EntityShape::Line;       };
-template<> struct TopologyToEntityShape< Topologies::Triangle >    { static constexpr EntityShape shape = EntityShape::Triangle;   };
-template<> struct TopologyToEntityShape< Topologies::Polygon >     { static constexpr EntityShape shape = EntityShape::Polygon;    };
-template<> struct TopologyToEntityShape< Topologies::Quadrangle >  { static constexpr EntityShape shape = EntityShape::Quad;       };
-template<> struct TopologyToEntityShape< Topologies::Tetrahedron > { static constexpr EntityShape shape = EntityShape::Tetra;      };
-template<> struct TopologyToEntityShape< Topologies::Hexahedron >  { static constexpr EntityShape shape = EntityShape::Hexahedron; };
-template<> struct TopologyToEntityShape< Topologies::Wedge >       { static constexpr EntityShape shape = EntityShape::Wedge;      };
-template<> struct TopologyToEntityShape< Topologies::Pyramid >     { static constexpr EntityShape shape = EntityShape::Pyramid;    };
-template<> struct TopologyToEntityShape< Topologies::Polyhedron >  { static constexpr EntityShape shape = EntityShape::Polyhedron; };
+template< typename Topology >
+struct TopologyToEntityShape
+{};
+template<>
+struct TopologyToEntityShape< Topologies::Vertex >
+{
+   static constexpr EntityShape shape = EntityShape::Vertex;
+};
+template<>
+struct TopologyToEntityShape< Topologies::Edge >
+{
+   static constexpr EntityShape shape = EntityShape::Line;
+};
+template<>
+struct TopologyToEntityShape< Topologies::Triangle >
+{
+   static constexpr EntityShape shape = EntityShape::Triangle;
+};
+template<>
+struct TopologyToEntityShape< Topologies::Polygon >
+{
+   static constexpr EntityShape shape = EntityShape::Polygon;
+};
+template<>
+struct TopologyToEntityShape< Topologies::Quadrangle >
+{
+   static constexpr EntityShape shape = EntityShape::Quad;
+};
+template<>
+struct TopologyToEntityShape< Topologies::Tetrahedron >
+{
+   static constexpr EntityShape shape = EntityShape::Tetra;
+};
+template<>
+struct TopologyToEntityShape< Topologies::Hexahedron >
+{
+   static constexpr EntityShape shape = EntityShape::Hexahedron;
+};
+template<>
+struct TopologyToEntityShape< Topologies::Wedge >
+{
+   static constexpr EntityShape shape = EntityShape::Wedge;
+};
+template<>
+struct TopologyToEntityShape< Topologies::Pyramid >
+{
+   static constexpr EntityShape shape = EntityShape::Pyramid;
+};
+template<>
+struct TopologyToEntityShape< Topologies::Polyhedron >
+{
+   static constexpr EntityShape shape = EntityShape::Polyhedron;
+};
 
 // mapping used in VTKWriter
 template< typename GridEntity >
@@ -154,24 +210,63 @@ private:
    static_assert( dim >= 0 && dim <= 3, "unexpected dimension of the grid entity" );
 
 public:
-   static constexpr EntityShape shape =
-      (dim == 0) ? EntityShape::Vertex :
-      (dim == 1) ? EntityShape::Line :
-      (dim == 2) ? EntityShape::Pixel :
-                   EntityShape::Voxel;
+   static constexpr EntityShape shape = ( dim == 0 ) ? EntityShape::Vertex
+                                      : ( dim == 1 ) ? EntityShape::Line
+                                      : ( dim == 2 ) ? EntityShape::Pixel
+                                                     : EntityShape::Voxel;
 };
 
 // type names used in the VTK library (for the XML formats)
-inline std::string getTypeName( std::int8_t ) { return "Int8"; }
-inline std::string getTypeName( std::uint8_t ) { return "UInt8"; }
-inline std::string getTypeName( std::int16_t ) { return "Int16"; }
-inline std::string getTypeName( std::uint16_t ) { return "UInt16"; }
-inline std::string getTypeName( std::int32_t ) { return "Int32"; }
-inline std::string getTypeName( std::uint32_t ) { return "UInt32"; }
-inline std::string getTypeName( std::int64_t ) { return "Int64"; }
-inline std::string getTypeName( std::uint64_t ) { return "UInt64"; }
-inline std::string getTypeName( float ) { return "Float32"; }
-inline std::string getTypeName( double ) { return "Float64"; }
+inline std::string
+getTypeName( std::int8_t )
+{
+   return "Int8";
+}
+inline std::string
+getTypeName( std::uint8_t )
+{
+   return "UInt8";
+}
+inline std::string
+getTypeName( std::int16_t )
+{
+   return "Int16";
+}
+inline std::string
+getTypeName( std::uint16_t )
+{
+   return "UInt16";
+}
+inline std::string
+getTypeName( std::int32_t )
+{
+   return "Int32";
+}
+inline std::string
+getTypeName( std::uint32_t )
+{
+   return "UInt32";
+}
+inline std::string
+getTypeName( std::int64_t )
+{
+   return "Int64";
+}
+inline std::string
+getTypeName( std::uint64_t )
+{
+   return "UInt64";
+}
+inline std::string
+getTypeName( float )
+{
+   return "Float32";
+}
+inline std::string
+getTypeName( double )
+{
+   return "Float64";
+}
 
 /**
  * Ghost points and ghost cells
@@ -179,22 +274,21 @@ inline std::string getTypeName( double ) { return "Float64"; }
  * The following bit fields are consistent with the corresponding VTK enums [1], which in turn
  * are consistent with VisIt ghost zones specification [2].
  *
- * - [1] https://github.com/Kitware/VTK/blob/060f626b8df0b8144ec8f10c41f936b712c0330b/Common/DataModel/vtkDataSetAttributes.h#L118-L138
+ * - [1]
+ * https://github.com/Kitware/VTK/blob/060f626b8df0b8144ec8f10c41f936b712c0330b/Common/DataModel/vtkDataSetAttributes.h#L118-L138
  * - [2] http://www.visitusers.org/index.php?title=Representing_ghost_data
  */
-enum class CellGhostTypes
-: std::uint8_t
+enum class CellGhostTypes : std::uint8_t
 {
-   DUPLICATECELL = 1,        // the cell is present on multiple processors
-   HIGHCONNECTIVITYCELL = 2, // the cell has more neighbors than in a regular mesh
-   LOWCONNECTIVITYCELL = 4,  // the cell has less neighbors than in a regular mesh
-   REFINEDCELL = 8,          // other cells are present that refines it
-   EXTERIORCELL = 16,        // the cell is on the exterior of the data set
-   HIDDENCELL = 32           // the cell is needed to maintain connectivity, but the data values should be ignored
+   DUPLICATECELL = 1,         // the cell is present on multiple processors
+   HIGHCONNECTIVITYCELL = 2,  // the cell has more neighbors than in a regular mesh
+   LOWCONNECTIVITYCELL = 4,   // the cell has less neighbors than in a regular mesh
+   REFINEDCELL = 8,           // other cells are present that refines it
+   EXTERIORCELL = 16,         // the cell is on the exterior of the data set
+   HIDDENCELL = 32            // the cell is needed to maintain connectivity, but the data values should be ignored
 };
 
-enum class PointGhostTypes
-: std::uint8_t
+enum class PointGhostTypes : std::uint8_t
 {
    DUPLICATEPOINT = 1,  // the cell is present on multiple processors
    HIDDENPOINT = 2      // the point is needed to maintain connectivity, but the data values should be ignored
@@ -206,11 +300,12 @@ enum class PointGhostTypes
  *
  * For details, see https://blog.kitware.com/ghost-and-blanking-visibility-changes/
  */
-inline const char* ghostArrayName()
+inline const char*
+ghostArrayName()
 {
    return "vtkGhostType";
 }
 
-} // namespace VTK
-} // namespace Meshes
-} // namespace TNL
+}  // namespace VTK
+}  // namespace Meshes
+}  // namespace TNL

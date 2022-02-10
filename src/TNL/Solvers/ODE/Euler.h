@@ -18,38 +18,40 @@ template< typename Problem,
           typename SolverMonitor = IterativeSolverMonitor< typename Problem::RealType, typename Problem::IndexType > >
 class Euler : public ExplicitSolver< Problem, SolverMonitor >
 {
-   public:
+public:
+   using ProblemType = Problem;
+   using DofVectorType = typename ProblemType::DofVectorType;
+   using RealType = typename ProblemType::RealType;
+   using DeviceType = typename ProblemType::DeviceType;
+   using IndexType = typename ProblemType::IndexType;
+   using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
+   using SolverMonitorType = SolverMonitor;
 
-      using ProblemType = Problem;
-      using DofVectorType = typename ProblemType::DofVectorType;
-      using RealType = typename ProblemType::RealType;
-      using DeviceType = typename ProblemType::DeviceType;
-      using IndexType  = typename ProblemType::IndexType;
-      using DofVectorPointer = Pointers::SharedPointer<  DofVectorType, DeviceType >;
-      using SolverMonitorType = SolverMonitor;
+   Euler();
 
-      Euler();
+   static void
+   configSetup( Config::ConfigDescription& config, const String& prefix = "" );
 
-      static void configSetup( Config::ConfigDescription& config,
-                               const String& prefix = "" );
+   bool
+   setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
 
-      bool setup( const Config::ParameterContainer& parameters,
-                 const String& prefix = "" );
+   void
+   setCFLCondition( const RealType& cfl );
 
-      void setCFLCondition( const RealType& cfl );
+   const RealType&
+   getCFLCondition() const;
 
-      const RealType& getCFLCondition() const;
+   bool
+   solve( DofVectorPointer& u );
 
-      bool solve( DofVectorPointer& u );
+protected:
+   DofVectorPointer _k1;
 
-   protected:
-      DofVectorPointer _k1;
-
-      RealType cflCondition;
+   RealType cflCondition;
 };
 
-} // namespace ODE
-} // namespace Solvers
-} // namespace TNL
+}  // namespace ODE
+}  // namespace Solvers
+}  // namespace TNL
 
 #include <TNL/Solvers/ODE/Euler.hpp>

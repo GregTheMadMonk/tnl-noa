@@ -11,19 +11,16 @@ namespace Matrices {
 
 template< typename ValuesView, typename Indexer >
 __cuda_callable__
-TridiagonalMatrixRowView< ValuesView, Indexer >::
-TridiagonalMatrixRowView( const IndexType rowIdx,
-                          const ValuesViewType& values,
-                          const IndexerType& indexer )
+TridiagonalMatrixRowView< ValuesView, Indexer >::TridiagonalMatrixRowView( const IndexType rowIdx,
+                                                                           const ValuesViewType& values,
+                                                                           const IndexerType& indexer )
 : rowIdx( rowIdx ), values( values ), indexer( indexer )
-{
-}
+{}
 
 template< typename ValuesView, typename Indexer >
 __cuda_callable__
 auto
-TridiagonalMatrixRowView< ValuesView, Indexer >::
-getSize() const -> IndexType
+TridiagonalMatrixRowView< ValuesView, Indexer >::getSize() const -> IndexType
 {
    return indexer.getRowSize( rowIdx );
 }
@@ -31,8 +28,7 @@ getSize() const -> IndexType
 template< typename ValuesView, typename Indexer >
 __cuda_callable__
 auto
-TridiagonalMatrixRowView< ValuesView, Indexer >::
-getRowIndex() const -> const IndexType&
+TridiagonalMatrixRowView< ValuesView, Indexer >::getRowIndex() const -> const IndexType&
 {
    return rowIdx;
 }
@@ -40,8 +36,7 @@ getRowIndex() const -> const IndexType&
 template< typename ValuesView, typename Indexer >
 __cuda_callable__
 auto
-TridiagonalMatrixRowView< ValuesView, Indexer >::
-getColumnIndex( const IndexType localIdx ) const -> const IndexType
+TridiagonalMatrixRowView< ValuesView, Indexer >::getColumnIndex( const IndexType localIdx ) const -> const IndexType
 {
    TNL_ASSERT_GE( localIdx, 0, "" );
    TNL_ASSERT_LT( localIdx, 3, "" );
@@ -51,8 +46,7 @@ getColumnIndex( const IndexType localIdx ) const -> const IndexType
 template< typename ValuesView, typename Indexer >
 __cuda_callable__
 auto
-TridiagonalMatrixRowView< ValuesView, Indexer >::
-getValue( const IndexType localIdx ) const -> const RealType&
+TridiagonalMatrixRowView< ValuesView, Indexer >::getValue( const IndexType localIdx ) const -> const RealType&
 {
    return this->values[ this->indexer.getGlobalIndex( rowIdx, localIdx ) ];
 }
@@ -60,8 +54,7 @@ getValue( const IndexType localIdx ) const -> const RealType&
 template< typename ValuesView, typename Indexer >
 __cuda_callable__
 auto
-TridiagonalMatrixRowView< ValuesView, Indexer >::
-getValue( const IndexType localIdx ) -> RealType&
+TridiagonalMatrixRowView< ValuesView, Indexer >::getValue( const IndexType localIdx ) -> RealType&
 {
    return this->values[ this->indexer.getGlobalIndex( rowIdx, localIdx ) ];
 }
@@ -69,9 +62,7 @@ getValue( const IndexType localIdx ) -> RealType&
 template< typename ValuesView, typename Indexer >
 __cuda_callable__
 void
-TridiagonalMatrixRowView< ValuesView, Indexer >::
-setElement( const IndexType localIdx,
-            const RealType& value )
+TridiagonalMatrixRowView< ValuesView, Indexer >::setElement( const IndexType localIdx, const RealType& value )
 {
    this->values[ indexer.getGlobalIndex( rowIdx, localIdx ) ] = value;
 }
@@ -79,8 +70,7 @@ setElement( const IndexType localIdx,
 template< typename ValuesView, typename Indexer >
 __cuda_callable__
 auto
-TridiagonalMatrixRowView< ValuesView, Indexer >::
-begin() -> IteratorType
+TridiagonalMatrixRowView< ValuesView, Indexer >::begin() -> IteratorType
 {
    return IteratorType( *this, 0 );
 }
@@ -88,8 +78,7 @@ begin() -> IteratorType
 template< typename ValuesView, typename Indexer >
 __cuda_callable__
 auto
-TridiagonalMatrixRowView< ValuesView, Indexer >::
-end() -> IteratorType
+TridiagonalMatrixRowView< ValuesView, Indexer >::end() -> IteratorType
 {
    return IteratorType( *this, this->getSize() );
 }
@@ -97,8 +86,7 @@ end() -> IteratorType
 template< typename ValuesView, typename Indexer >
 __cuda_callable__
 auto
-TridiagonalMatrixRowView< ValuesView, Indexer >::
-cbegin() const -> const IteratorType
+TridiagonalMatrixRowView< ValuesView, Indexer >::cbegin() const -> const IteratorType
 {
    return IteratorType( *this, 0 );
 }
@@ -106,11 +94,10 @@ cbegin() const -> const IteratorType
 template< typename ValuesView, typename Indexer >
 __cuda_callable__
 auto
-TridiagonalMatrixRowView< ValuesView, Indexer >::
-cend() const -> const IteratorType
+TridiagonalMatrixRowView< ValuesView, Indexer >::cend() const -> const IteratorType
 {
    return IteratorType( *this, this->getSize() );
 }
 
-} // namespace Matrices
-} // namespace TNL
+}  // namespace Matrices
+}  // namespace TNL

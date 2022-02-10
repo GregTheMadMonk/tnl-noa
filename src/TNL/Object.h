@@ -34,71 +34,76 @@ namespace TNL {
  */
 class Object
 {
-   public:
+public:
+   /**
+    * \brief Static serialization type getter.
+    *
+    * Objects in TNL are saved as in a device independent manner. This method
+    * is supposed to return the object type but with the device type replaced
+    * by Devices::Host. For example \c Array< double, Devices::Cuda > is
+    * saved as \c Array< double, Devices::Host >.
+    */
+   static std::string
+   getSerializationType();
 
-      /**
-       * \brief Static serialization type getter.
-       *
-       * Objects in TNL are saved as in a device independent manner. This method
-       * is supposed to return the object type but with the device type replaced
-       * by Devices::Host. For example \c Array< double, Devices::Cuda > is
-       * saved as \c Array< double, Devices::Host >.
-       */
-      static String getSerializationType();
+   /***
+    * \brief Virtual serialization type getter.
+    *
+    * Objects in TNL are saved as in a device independent manner. This method
+    * is supposed to return the object type but with the device type replaced
+    * by Devices::Host. For example \c Array< double, Devices::Cuda > is
+    * saved as \c Array< double, Devices::Host >.
+    */
+   virtual std::string
+   getSerializationTypeVirtual() const;
 
-      /***
-       * \brief Virtual serialization type getter.
-       *
-       * Objects in TNL are saved as in a device independent manner. This method
-       * is supposed to return the object type but with the device type replaced
-       * by Devices::Host. For example \c Array< double, Devices::Cuda > is
-       * saved as \c Array< double, Devices::Host >.
-       */
-      virtual String getSerializationTypeVirtual() const;
+   /**
+    * \brief Method for saving the object to a file as a binary data.
+    *
+    * Throws \ref Exceptions::FileSerializationError if the object cannot be saved.
+    *
+    * \param file Name of file object.
+    */
+   virtual void
+   save( File& file ) const;
 
-      /**
-       * \brief Method for saving the object to a file as a binary data.
-       *
-       * Throws \ref Exceptions::FileSerializationError if the object cannot be saved.
-       *
-       * \param file Name of file object.
-       */
-      virtual void save( File& file ) const;
+   /**
+    * \brief Method for restoring the object from a file.
+    *
+    * Throws \ref Exceptions::FileDeserializationError if the object cannot be loaded.
+    *
+    * \param file Name of file object.
+    */
+   virtual void
+   load( File& file );
 
-      /**
-       * \brief Method for restoring the object from a file.
-       *
-       * Throws \ref Exceptions::FileDeserializationError if the object cannot be loaded.
-       *
-       * \param file Name of file object.
-       */
-      virtual void load( File& file );
+   /**
+    * \brief Method for saving the object to a file as a binary data.
+    *
+    * Throws \ref Exceptions::FileSerializationError if the object cannot be saved.
+    *
+    * \param fileName String defining the name of a file.
+    */
+   void
+   save( const String& fileName ) const;
 
-      /**
-       * \brief Method for saving the object to a file as a binary data.
-       *
-       * Throws \ref Exceptions::FileSerializationError if the object cannot be saved.
-       *
-       * \param fileName String defining the name of a file.
-       */
-      void save( const String& fileName ) const;
+   /**
+    * \brief Method for restoring the object from a file.
+    *
+    * Throws \ref Exceptions::FileDeserializationError if the object cannot be loaded.
+    *
+    * \param fileName String defining the name of a file.
+    */
+   void
+   load( const String& fileName );
 
-      /**
-       * \brief Method for restoring the object from a file.
-       *
-       * Throws \ref Exceptions::FileDeserializationError if the object cannot be loaded.
-       *
-       * \param fileName String defining the name of a file.
-       */
-      void load( const String& fileName );
-
-      /**
-       * \brief Destructor.
-       *
-       * Since it is not defined as \ref __cuda_callable__, objects inherited
-       * from Object should not be created in CUDA kernels.
-       */
-      virtual ~Object() = default;
+   /**
+    * \brief Destructor.
+    *
+    * Since it is not defined as \ref __cuda_callable__, objects inherited
+    * from Object should not be created in CUDA kernels.
+    */
+   virtual ~Object() = default;
 };
 
 /**
@@ -109,7 +114,8 @@ class Object
  * @param file is file where the object is stored
  * @return string with the object type
  */
-String getObjectType( File& file );
+String
+getObjectType( File& file );
 
 /**
  * \brief Does the same as \ref getObjectType but with a \e fileName parameter instead of file.
@@ -119,7 +125,8 @@ String getObjectType( File& file );
  * @param fileName name of a file where the object is stored
  * @return string with the object type
  */
-String getObjectType( const String& fileName );
+String
+getObjectType( const String& fileName );
 
 /**
  * \brief Parses the object type
@@ -144,8 +151,9 @@ parseObjectType( const String& objectType );
  * @param file is the file where the object will be saved
  * @param type is the object type to be saved
  */
-void saveObjectType( File& file, const String& type );
+void
+saveObjectType( File& file, const String& type );
 
-} // namespace TNL
+}  // namespace TNL
 
 #include <TNL/Object.hpp>

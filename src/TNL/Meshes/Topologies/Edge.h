@@ -24,15 +24,14 @@ struct Edge
    static constexpr int dimension = 1;
 };
 
-
 template<>
 struct Subtopology< Edge, 0 >
 {
-   typedef Vertex Topology;
+   using Topology = Vertex;
 
    static constexpr int count = 2;
 };
 
-} // namespace Topologies
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Topologies
+}  // namespace Meshes
+}  // namespace TNL

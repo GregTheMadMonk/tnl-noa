@@ -37,24 +37,27 @@
 
 #ifdef HAVE_CUDA
 
-#include <stdint.h>
+   #include <stdint.h>
 
 namespace TNL {
 namespace Cuda {
 
-template< typename T, std::size_t _alignment = CHAR_BIT * sizeof(T) >
+template< typename T, std::size_t _alignment = CHAR_BIT * sizeof( T ) >
 struct SharedMemory;
 
 template< typename T >
 struct SharedMemory< T, 8 >
 {
-   __device__ inline operator T* ()
+   __device__
+   inline
+   operator T*()
    {
       extern __shared__ uint8_t __smem8[];
       return reinterpret_cast< T* >( __smem8 );
    }
 
-   __device__ inline operator const T* () const
+   __device__
+   inline operator const T*() const
    {
       extern __shared__ uint8_t __smem8[];
       return reinterpret_cast< T* >( __smem8 );
@@ -64,13 +67,16 @@ struct SharedMemory< T, 8 >
 template< typename T >
 struct SharedMemory< T, 16 >
 {
-   __device__ inline operator T* ()
+   __device__
+   inline
+   operator T*()
    {
       extern __shared__ uint16_t __smem16[];
       return reinterpret_cast< T* >( __smem16 );
    }
 
-   __device__ inline operator const T* () const
+   __device__
+   inline operator const T*() const
    {
       extern __shared__ uint16_t __smem16[];
       return reinterpret_cast< T* >( __smem16 );
@@ -80,13 +86,16 @@ struct SharedMemory< T, 16 >
 template< typename T >
 struct SharedMemory< T, 32 >
 {
-   __device__ inline operator T* ()
+   __device__
+   inline
+   operator T*()
    {
       extern __shared__ uint32_t __smem32[];
       return reinterpret_cast< T* >( __smem32 );
    }
 
-   __device__ inline operator const T* () const
+   __device__
+   inline operator const T*() const
    {
       extern __shared__ uint32_t __smem32[];
       return reinterpret_cast< T* >( __smem32 );
@@ -96,13 +105,16 @@ struct SharedMemory< T, 32 >
 template< typename T >
 struct SharedMemory< T, 64 >
 {
-   __device__ inline operator T* ()
+   __device__
+   inline
+   operator T*()
    {
       extern __shared__ uint64_t __smem64[];
       return reinterpret_cast< T* >( __smem64 );
    }
 
-   __device__ inline operator const T* () const
+   __device__
+   inline operator const T*() const
    {
       extern __shared__ uint64_t __smem64[];
       return reinterpret_cast< T* >( __smem64 );
@@ -110,26 +122,31 @@ struct SharedMemory< T, 64 >
 };
 
 template< typename T >
-__device__ inline T* getSharedMemory()
+__device__
+inline T*
+getSharedMemory()
 {
-   static_assert( sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4 || sizeof(T) == 8,
+   static_assert( sizeof( T ) == 1 || sizeof( T ) == 2 || sizeof( T ) == 4 || sizeof( T ) == 8,
                   "Requested type has unsupported size." );
    return SharedMemory< T >{};
 }
 
 // helper functions for indexing shared memory
-inline constexpr int getNumberOfSharedMemoryBanks()
+inline constexpr int
+getNumberOfSharedMemoryBanks()
 {
    return 32;
 }
 
 template< typename Index >
-__device__ Index getInterleaving( const Index index )
+__device__
+Index
+getInterleaving( const Index index )
 {
    return index + index / Cuda::getNumberOfSharedMemoryBanks();
 }
 
-} // namespace Cuda
-} // namespace TNL
+}  // namespace Cuda
+}  // namespace TNL
 
 #endif

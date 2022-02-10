@@ -57,24 +57,22 @@ getOverlaps( const DistributedMeshType* distributedMesh,
 
 */
 
-template< typename Real,
-          typename Device,
-          typename Index >
+template< typename Real, typename Device, typename Index >
 void
-SubdomainOverlapsGetter< Grid< 1, Real, Device, Index > >::
-getOverlaps( const DistributedMeshType* distributedMesh,
-             SubdomainOverlapsType& lower,
-             SubdomainOverlapsType& upper,
-             IndexType subdomainOverlapSize,
-             const SubdomainOverlapsType& lowerPeriodicBoundariesOverlapSize,
-             const SubdomainOverlapsType& upperPeriodicBoundariesOverlapSize )
+SubdomainOverlapsGetter< Grid< 1, Real, Device, Index > >::getOverlaps(
+   const DistributedMeshType* distributedMesh,
+   SubdomainOverlapsType& lower,
+   SubdomainOverlapsType& upper,
+   IndexType subdomainOverlapSize,
+   const SubdomainOverlapsType& lowerPeriodicBoundariesOverlapSize,
+   const SubdomainOverlapsType& upperPeriodicBoundariesOverlapSize )
 {
    // initialize to 0
    lower = upper = 0;
 
    if( MPI::GetSize() == 1 )
       return;
-   TNL_ASSERT_TRUE( distributedMesh != NULL, "" );
+   TNL_ASSERT_TRUE( distributedMesh != nullptr, "" );
 
    const CoordinatesType& subdomainCoordinates = distributedMesh->getSubdomainCoordinates();
    int rank = MPI::GetRank();
@@ -90,25 +88,22 @@ getOverlaps( const DistributedMeshType* distributedMesh,
       upper[ 0 ] = upperPeriodicBoundariesOverlapSize[ 0 ];
 }
 
-
-template< typename Real,
-          typename Device,
-          typename Index >
+template< typename Real, typename Device, typename Index >
 void
-SubdomainOverlapsGetter< Grid< 2, Real, Device, Index > >::
-getOverlaps( const DistributedMeshType* distributedMesh,
-             SubdomainOverlapsType& lower,
-             SubdomainOverlapsType& upper,
-             IndexType subdomainOverlapSize,
-             const SubdomainOverlapsType& lowerPeriodicBoundariesOverlapSize,
-             const SubdomainOverlapsType& upperPeriodicBoundariesOverlapSize )
+SubdomainOverlapsGetter< Grid< 2, Real, Device, Index > >::getOverlaps(
+   const DistributedMeshType* distributedMesh,
+   SubdomainOverlapsType& lower,
+   SubdomainOverlapsType& upper,
+   IndexType subdomainOverlapSize,
+   const SubdomainOverlapsType& lowerPeriodicBoundariesOverlapSize,
+   const SubdomainOverlapsType& upperPeriodicBoundariesOverlapSize )
 {
    // initialize to 0
    lower = upper = 0;
 
    if( MPI::GetSize() == 1 )
       return;
-   TNL_ASSERT_TRUE( distributedMesh != NULL, "" );
+   TNL_ASSERT_TRUE( distributedMesh != nullptr, "" );
 
    const CoordinatesType& subdomainCoordinates = distributedMesh->getSubdomainCoordinates();
    int rank = MPI::GetRank();
@@ -136,24 +131,22 @@ getOverlaps( const DistributedMeshType* distributedMesh,
       upper[ 1 ] = upperPeriodicBoundariesOverlapSize[ 1 ];
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
+template< typename Real, typename Device, typename Index >
 void
-SubdomainOverlapsGetter< Grid< 3, Real, Device, Index > >::
-getOverlaps( const DistributedMeshType* distributedMesh,
-             SubdomainOverlapsType& lower,
-             SubdomainOverlapsType& upper,
-             IndexType subdomainOverlapSize,
-             const SubdomainOverlapsType& lowerPeriodicBoundariesOverlapSize,
-             const SubdomainOverlapsType& upperPeriodicBoundariesOverlapSize )
+SubdomainOverlapsGetter< Grid< 3, Real, Device, Index > >::getOverlaps(
+   const DistributedMeshType* distributedMesh,
+   SubdomainOverlapsType& lower,
+   SubdomainOverlapsType& upper,
+   IndexType subdomainOverlapSize,
+   const SubdomainOverlapsType& lowerPeriodicBoundariesOverlapSize,
+   const SubdomainOverlapsType& upperPeriodicBoundariesOverlapSize )
 {
    // initialize to 0
    lower = upper = 0;
 
    if( MPI::GetSize() == 1 )
       return;
-   TNL_ASSERT_TRUE( distributedMesh != NULL, "" );
+   TNL_ASSERT_TRUE( distributedMesh != nullptr, "" );
 
    const CoordinatesType& subdomainCoordinates = distributedMesh->getSubdomainCoordinates();
    int rank = MPI::GetRank();
@@ -189,6 +182,6 @@ getOverlaps( const DistributedMeshType* distributedMesh,
       upper[ 2 ] = upperPeriodicBoundariesOverlapSize[ 2 ];
 }
 
-} // namespace DistributedMeshes
-} // namespace Meshes
-} // namespace TNL
+}  // namespace DistributedMeshes
+}  // namespace Meshes
+}  // namespace TNL

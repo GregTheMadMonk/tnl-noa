@@ -13,23 +13,17 @@
 #pragma once
 
 namespace TNL {
-namespace Meshes{
+namespace Meshes {
 namespace Topologies {
 
-template< typename EntityTopology,
-          int SubentityDimension >
+template< typename EntityTopology, int SubentityDimension >
 struct Subtopology
-{
-};
+{};
 
-template< typename EntityTopology,
-          typename SubentityTopology,
-          int SubentityIndex,
-          int SubentityVertexIndex >
+template< typename EntityTopology, typename SubentityTopology, int SubentityIndex, int SubentityVertexIndex >
 struct SubentityVertexMap
-{
-};
+{};
 
-} // namespace Topologies
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Topologies
+}  // namespace Meshes
+}  // namespace TNL

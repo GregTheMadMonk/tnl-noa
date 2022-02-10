@@ -22,17 +22,15 @@ namespace TNL {
 namespace Meshes {
 namespace Readers {
 
-class NetgenReader
-: public MeshReader
+class NetgenReader : public MeshReader
 {
 public:
    NetgenReader() = default;
 
-   NetgenReader( const std::string& fileName )
-   : MeshReader( fileName )
-   {}
+   NetgenReader( const std::string& fileName ) : MeshReader( fileName ) {}
 
-   virtual void detectMesh() override
+   void
+   detectMesh() override
    {
       reset();
 
@@ -62,7 +60,8 @@ public:
 
       // arrays holding the data from the file
       std::vector< double > pointsArray;
-      std::vector< std::int32_t > connectivityArray, offsetsArray;
+      std::vector< std::int32_t > connectivityArray;
+      std::vector< std::int32_t > offsetsArray;
       std::vector< std::uint8_t > typesArray;
 
       // read points
@@ -99,7 +98,7 @@ public:
       else if( meshDimension == 3 )
          cellShape = VTK::EntityShape::Tetra;
       else
-         throw MeshReaderError( "NetgenReader", "unsupported mesh dimension: " + std::to_string(meshDimension) );
+         throw MeshReaderError( "NetgenReader", "unsupported mesh dimension: " + std::to_string( meshDimension ) );
 
       // skip whitespace
       inputFile >> std::ws;
@@ -116,8 +115,10 @@ public:
       for( std::size_t cellIndex = 0; cellIndex < NumberOfCells; cellIndex++ ) {
          if( ! inputFile ) {
             reset();
-            throw MeshReaderError( "NetgenReader", "unable to read enough cells, the file may be invalid or corrupted."
-                                                   " (cellIndex = " + std::to_string(cellIndex) + ")" );
+            throw MeshReaderError( "NetgenReader",
+                                   "unable to read enough cells, the file may be invalid or corrupted."
+                                   " (cellIndex = "
+                                      + std::to_string( cellIndex ) + ")" );
          }
          getline( inputFile, line );
 
@@ -131,8 +132,10 @@ public:
             iss >> vid;
             if( ! iss ) {
                reset();
-               throw MeshReaderError( "NetgenReader", "unable to read enough cells, the file may be invalid or corrupted."
-                                                      " (cellIndex = " + std::to_string(cellIndex) + ", subvertex = " + std::to_string(v) + ")" );
+               throw MeshReaderError( "NetgenReader",
+                                      "unable to read enough cells, the file may be invalid or corrupted."
+                                      " (cellIndex = "
+                                         + std::to_string( cellIndex ) + ", subvertex = " + std::to_string( v ) + ")" );
             }
             // convert point index from 1-based to 0-based
             connectivityArray.push_back( vid - 1 );
@@ -144,16 +147,16 @@ public:
       typesArray.resize( NumberOfCells, (std::uint8_t) cellShape );
 
       // set the arrays to the base class
-      this->pointsArray = std::move(pointsArray);
-      this->cellConnectivityArray = std::move(connectivityArray);
-      this->cellOffsetsArray = std::move(offsetsArray);
-      this->typesArray = std::move(typesArray);
+      this->pointsArray = std::move( pointsArray );
+      this->cellConnectivityArray = std::move( connectivityArray );
+      this->cellOffsetsArray = std::move( offsetsArray );
+      this->typesArray = std::move( typesArray );
 
       // indicate success by setting the mesh type
       meshType = "Meshes::Mesh";
    }
 };
 
-} // namespace Readers
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Readers
+}  // namespace Meshes
+}  // namespace TNL

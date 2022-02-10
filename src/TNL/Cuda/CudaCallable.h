@@ -16,7 +16,9 @@
  * no effect.
  */
 #ifdef HAVE_CUDA
-   #define __cuda_callable__ __device__ __host__
+   #define __cuda_callable__ \
+      __device__             \
+      __host__
 #else
    #define __cuda_callable__
 #endif

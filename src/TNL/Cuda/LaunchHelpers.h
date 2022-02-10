@@ -13,32 +13,38 @@ namespace Cuda {
 
 // TODO: the max grid size depends on the axis: (x,y,z): (2147483647, 65535, 65535)
 // see https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev/-/issues/4
-inline constexpr std::size_t getMaxGridSize()
+inline constexpr std::size_t
+getMaxGridSize()
 {
    return 65535;
 }
 
-inline constexpr size_t getMaxGridXSize()
+inline constexpr size_t
+getMaxGridXSize()
 {
-   return 2147483647;//65535;
+   return 2147483647;  // 65535;
 }
 
-inline constexpr size_t getMaxGridYSize()
-{
-   return 65535;
-}
-
-inline constexpr size_t getMaxGridZSize()
+inline constexpr size_t
+getMaxGridYSize()
 {
    return 65535;
 }
 
-inline constexpr int getMaxBlockSize()
+inline constexpr size_t
+getMaxGridZSize()
+{
+   return 65535;
+}
+
+inline constexpr int
+getMaxBlockSize()
 {
    return 1024;
 }
 
-inline constexpr int getWarpSize()
+inline constexpr int
+getWarpSize()
 {
    return 32;
 }
@@ -46,53 +52,62 @@ inline constexpr int getWarpSize()
 // When we transfer data between the GPU and the CPU we use 1 MiB buffer. This
 // size should ensure good performance.
 // We use the same buffer size even for retyping data during IO operations.
-inline constexpr int getTransferBufferSize()
+inline constexpr int
+getTransferBufferSize()
 {
    return 1 << 20;
 }
 
 #ifdef HAVE_CUDA
-__device__ inline int getGlobalThreadIdx( const int gridIdx = 0,
-                                          const int gridSize = getMaxGridSize() )
+__device__
+inline int
+getGlobalThreadIdx( const int gridIdx = 0, const int gridSize = getMaxGridSize() )
 {
    return ( gridIdx * gridSize + blockIdx.x ) * blockDim.x + threadIdx.x;
 }
 
-__device__ inline int getGlobalThreadIdx_x( const dim3& gridIdx )
+__device__
+inline int
+getGlobalThreadIdx_x( const dim3& gridIdx )
 {
    return ( gridIdx.x * getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
 }
 
-__device__ inline int getGlobalThreadIdx_y( const dim3& gridIdx )
+__device__
+inline int
+getGlobalThreadIdx_y( const dim3& gridIdx )
 {
    return ( gridIdx.y * getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
 }
 
-__device__ inline int getGlobalThreadIdx_z( const dim3& gridIdx )
+__device__
+inline int
+getGlobalThreadIdx_z( const dim3& gridIdx )
 {
    return ( gridIdx.z * getMaxGridSize() + blockIdx.z ) * blockDim.z + threadIdx.z;
 }
 #endif
 
-inline int getNumberOfBlocks( const int threads,
-                              const int blockSize )
+inline int
+getNumberOfBlocks( const int threads, const int blockSize )
 {
    return roundUpDivision( threads, blockSize );
 }
 
-inline int getNumberOfGrids( const int blocks,
-                             const int gridSize = getMaxGridSize() )
+inline int
+getNumberOfGrids( const int blocks, const int gridSize = getMaxGridSize() )
 {
    return roundUpDivision( blocks, gridSize );
 }
 
 #ifdef HAVE_CUDA
-inline void setupThreads( const dim3& blockSize,
-                          dim3& blocksCount,
-                          dim3& gridsCount,
-                          long long int xThreads,
-                          long long int yThreads = 0,
-                          long long int zThreads = 0 )
+inline void
+setupThreads( const dim3& blockSize,
+              dim3& blocksCount,
+              dim3& gridsCount,
+              long long int xThreads,
+              long long int yThreads = 0,
+              long long int zThreads = 0 )
 {
    blocksCount.x = max( 1, xThreads / blockSize.x + ( xThreads % blockSize.x != 0 ) );
    blocksCount.y = max( 1, yThreads / blockSize.y + ( yThreads % blockSize.y != 0 ) );
@@ -116,10 +131,8 @@ inline void setupThreads( const dim3& blockSize,
    gridsCount.z = blocksCount.z / getMaxGridSize() + ( blocksCount.z % getMaxGridSize() != 0 );
 }
 
-inline void setupGrid( const dim3& blocksCount,
-                       const dim3& gridsCount,
-                       const dim3& gridIdx,
-                       dim3& gridSize )
+inline void
+setupGrid( const dim3& blocksCount, const dim3& gridsCount, const dim3& gridIdx, dim3& gridSize )
 {
    /* TODO: this is ext slow!!!!
    int currentDevice( 0 );
@@ -160,17 +173,19 @@ inline void setupGrid( const dim3& blocksCount,
       gridSize.z = blocksCount.z % getMaxGridSize();
 }
 
-inline std::ostream& operator<<( std::ostream& str, const dim3& d )
+inline std::ostream&
+operator<<( std::ostream& str, const dim3& d )
 {
    str << "( " << d.x << ", " << d.y << ", " << d.z << " )";
    return str;
 }
 
-inline void printThreadsSetup( const dim3& blockSize,
-                               const dim3& blocksCount,
-                               const dim3& gridSize,
-                               const dim3& gridsCount,
-                               std::ostream& str = std::cout )
+inline void
+printThreadsSetup( const dim3& blockSize,
+                   const dim3& blocksCount,
+                   const dim3& gridSize,
+                   const dim3& gridsCount,
+                   std::ostream& str = std::cout )
 {
    str << "Block size: " << blockSize << std::endl
        << " Blocks count: " << blocksCount << std::endl
@@ -179,5 +194,5 @@ inline void printThreadsSetup( const dim3& blockSize,
 }
 #endif
 
-} // namespace Cuda
-} // namespace TNL
+}  // namespace Cuda
+}  // namespace TNL

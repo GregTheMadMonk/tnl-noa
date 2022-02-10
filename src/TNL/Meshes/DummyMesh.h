@@ -11,18 +11,20 @@
 namespace TNL {
 namespace Meshes {
 
-template< typename Real = double,
-          typename Device = Devices::Host,
-          typename Index = int >
+template< typename Real = double, typename Device = Devices::Host, typename Index = int >
 class DummyMesh
 {
 public:
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
+   using RealType = Real;
+   using DeviceType = Device;
+   using IndexType = Index;
 
-   constexpr static int getMeshDimension() { return 1; }
+   constexpr static int
+   getMeshDimension()
+   {
+      return 1;
+   }
 };
 
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Meshes
+}  // namespace TNL

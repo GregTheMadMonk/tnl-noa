@@ -16,16 +16,15 @@ namespace TNL {
 namespace Matrices {
 
 template< typename Matrix1, typename Matrix2 >
-void copySparseMatrix( Matrix1& A, const Matrix2& B );
+void
+copySparseMatrix( Matrix1& A, const Matrix2& B );
 
 // NOTE: if `has_symmetric_pattern`, the sparsity pattern of `A` is assumed
 // to be symmetric and it is just copied to `B`. Otherwise, the sparsity
 // pattern of `A^T + A` is copied to `B`.
 template< typename Matrix, typename AdjacencyMatrix >
 void
-copyAdjacencyStructure( const Matrix& A, AdjacencyMatrix& B,
-                        bool has_symmetric_pattern = false,
-                        bool ignore_diagonal = true );
+copyAdjacencyStructure( const Matrix& A, AdjacencyMatrix& B, bool has_symmetric_pattern = false, bool ignore_diagonal = true );
 
 // Applies a permutation to the rows of a sparse matrix and its inverse
 // permutation to the columns of the matrix, i.e. A_perm = P*A*P^{-1}, where
@@ -33,15 +32,14 @@ copyAdjacencyStructure( const Matrix& A, AdjacencyMatrix& B,
 // inverse permutation represented by the iperm vector.
 template< typename Matrix1, typename Matrix2, typename PermutationArray >
 void
-reorderSparseMatrix( const Matrix1& A, Matrix2& A_perm,
-                     const PermutationArray& perm, const PermutationArray& iperm );
+reorderSparseMatrix( const Matrix1& A, Matrix2& A_perm, const PermutationArray& perm, const PermutationArray& iperm );
 
 // TODO: the method does not belong here, but there is no better place...
 template< typename Array1, typename Array2, typename PermutationArray >
 void
 reorderArray( const Array1& src, Array2& dest, const PermutationArray& perm );
 
-} // namespace Matrices
-} // namespace TNL
+}  // namespace Matrices
+}  // namespace TNL
 
 #include "SparseOperations_impl.h"

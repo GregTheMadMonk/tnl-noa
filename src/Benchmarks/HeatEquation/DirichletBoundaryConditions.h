@@ -21,16 +21,15 @@ class DirichletBoundaryConditions
                               Index >
 {
    public:
+      using MeshType = Mesh;
+      using FunctionType = Function;
+      using RealType = Real;
+      using DeviceType = typename MeshType::DeviceType;
+      using IndexType = Index;
 
-      typedef Mesh MeshType;
-      typedef Function FunctionType;
-      typedef Real RealType;
-      typedef typename MeshType::DeviceType DeviceType;
-      typedef Index IndexType;
-      
-      typedef Pointers::SharedPointer<  Mesh > MeshPointer;
-      typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
-      typedef typename MeshType::PointType PointType;
+      using MeshPointer = Pointers::SharedPointer< Mesh >;
+      using DofVectorType = Containers::Vector< RealType, DeviceType, IndexType >;
+      using PointType = typename MeshType::PointType;
 
       static constexpr int getMeshDimension() { return MeshType::getMeshDimension(); }
 

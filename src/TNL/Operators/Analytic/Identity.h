@@ -12,47 +12,38 @@
 
 namespace TNL {
 namespace Operators {
-namespace Analytic {   
-   
-   
+namespace Analytic {
+
 template< int Dimensions, typename Real >
 class Identity : public Functions::Domain< Dimensions, Functions::SpaceDomain >
 {
-   public:
-      
-      typedef Real RealType;
-      typedef Containers::StaticVector< Dimensions, RealType > PointType;
-      
-      bool setup( const Config::ParameterContainer& parameters,
-                  const String& prefix = "" )
-      {
-         return true;
-      };
-      
-      
-      template< typename Function >
-      __cuda_callable__
-      RealType operator()( const Function& function,
-                           const PointType& vertex,
-                           const RealType& time = 0 ) const
-      {
-         return function( vertex, time );
-      }
-      
-      template< typename Function,
-                int XDiffOrder = 0,
-                int YDiffOrder = 0,
-                int ZDiffOrder = 0 >
-      __cuda_callable__
-      RealType getPartialDerivative( const Function& function,
-                                     const PointType& vertex,
-                                     const RealType& time = 0 ) const
-      {
-         return function.template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
-      }
-      
+public:
+   using RealType = Real;
+   using PointType = Containers::StaticVector< Dimensions, RealType >;
+
+   bool
+   setup( const Config::ParameterContainer& parameters, const String& prefix = "" )
+   {
+      return true;
+   };
+
+   template< typename Function >
+   __cuda_callable__
+   RealType
+   operator()( const Function& function, const PointType& vertex, const RealType& time = 0 ) const
+   {
+      return function( vertex, time );
+   }
+
+   template< typename Function, int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0 >
+   __cuda_callable__
+   RealType
+   getPartialDerivative( const Function& function, const PointType& vertex, const RealType& time = 0 ) const
+   {
+      return function.template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+   }
 };
 
-} // namespace Analytic
-} // namespace Operators
-} // namespace TNL
+}  // namespace Analytic
+}  // namespace Operators
+}  // namespace TNL

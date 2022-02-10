@@ -10,8 +10,8 @@
 #include <TNL/Containers/Array.h>
 
 namespace TNL {
-   namespace Algorithms {
-      namespace Segments {
+namespace Algorithms {
+namespace Segments {
 
 /**
  * \brief Print segments sizes, i.e. the segments setup.
@@ -27,15 +27,15 @@ namespace TNL {
  * \include SegmentsPrintingExample-1.out
  */
 template< typename Segments >
-std::ostream& printSegments( const Segments& segments, std::ostream& str )
+std::ostream&
+printSegments( const Segments& segments, std::ostream& str )
 {
    using IndexType = typename Segments::IndexType;
    using DeviceType = typename Segments::DeviceType;
 
    auto segmentsCount = segments.getSegmentsCount();
    str << " [";
-   for( IndexType segmentIdx = 0; segmentIdx < segmentsCount; segmentIdx++ )
-   {
+   for( IndexType segmentIdx = 0; segmentIdx < segmentsCount; segmentIdx++ ) {
       auto segmentSize = segments.getSegmentSize( segmentIdx );
       str << " " << segmentSize;
       if( segmentIdx < segmentsCount )
@@ -47,14 +47,13 @@ std::ostream& printSegments( const Segments& segments, std::ostream& str )
 
 /// This is to prevent from appearing in Doxygen documentation.
 /// \cond HIDDEN_CLASS
-template< typename Segments,
-          typename Fetch >
+template< typename Segments, typename Fetch >
 struct SegmentsPrinter
 {
-   SegmentsPrinter( const Segments& segments, Fetch&& fetch )
-   : segments( segments ), fetch( fetch ) {}
+   SegmentsPrinter( const Segments& segments, Fetch&& fetch ) : segments( segments ), fetch( fetch ) {}
 
-   std::ostream& print( std::ostream& str ) const
+   std::ostream&
+   print( std::ostream& str ) const
    {
       using IndexType = typename Segments::IndexType;
       using DeviceType = typename Segments::DeviceType;
@@ -62,17 +61,17 @@ struct SegmentsPrinter
 
       TNL::Containers::Array< ValueType, DeviceType, IndexType > aux( 1 );
       auto view = segments.getConstView();
-      for( IndexType segmentIdx = 0; segmentIdx < segments.getSegmentsCount(); segmentIdx++ )
-      {
+      for( IndexType segmentIdx = 0; segmentIdx < segments.getSegmentsCount(); segmentIdx++ ) {
          str << "Seg. " << segmentIdx << ": [ ";
          auto segmentSize = segments.getSegmentSize( segmentIdx );
-         for( IndexType localIdx = 0; localIdx < segmentSize; localIdx++ )
-         {
-            aux.forAllElements( [=] __cuda_callable__ ( IndexType elementIdx, double& v ) mutable {
-               //printf( "####### localIdx = %d, globalIdx = %d \n", localIdx, view.getGlobalIndex( segmentIdx, localIdx ) );
-               //v = view.getGlobalIndex( segmentIdx, localIdx );
-               v = fetch( view.getGlobalIndex( segmentIdx, localIdx ) );
-            } );
+         for( IndexType localIdx = 0; localIdx < segmentSize; localIdx++ ) {
+            aux.forAllElements(
+               [ = ] __cuda_callable__( IndexType elementIdx, double& v ) mutable
+               {
+                  // printf( "####### localIdx = %d, globalIdx = %d \n", localIdx, view.getGlobalIndex( segmentIdx, localIdx )
+                  // ); v = view.getGlobalIndex( segmentIdx, localIdx );
+                  v = fetch( view.getGlobalIndex( segmentIdx, localIdx ) );
+               } );
             auto value = aux.getElement( 0 );
             str << value;
             if( localIdx < segmentSize - 1 )
@@ -83,8 +82,7 @@ struct SegmentsPrinter
       return str;
    }
 
-   protected:
-
+protected:
    const Segments& segments;
 
    Fetch fetch;
@@ -97,9 +95,9 @@ std::ostream& operator<<( std::ostream& str, const SegmentsPrinter< Segments, Fe
    return printer.print( str );
 }*/
 
-template< typename Segments,
-          typename Fetch >
-std::ostream& printSegments( const Segments& segments, Fetch&& fetch, std::ostream& str )
+template< typename Segments, typename Fetch >
+std::ostream&
+printSegments( const Segments& segments, Fetch&& fetch, std::ostream& str )
 {
    using IndexType = typename Segments::IndexType;
    using DeviceType = typename Segments::DeviceType;
@@ -107,18 +105,18 @@ std::ostream& printSegments( const Segments& segments, Fetch&& fetch, std::ostre
 
    TNL::Containers::Array< ValueType, DeviceType, IndexType > aux( 1 );
    auto view = segments.getConstView();
-   for( IndexType segmentIdx = 0; segmentIdx < segments.getSegmentsCount(); segmentIdx++ )
-   {
+   for( IndexType segmentIdx = 0; segmentIdx < segments.getSegmentsCount(); segmentIdx++ ) {
       str << "Seg. " << segmentIdx << ": [ ";
       auto segmentSize = segments.getSegmentSize( segmentIdx );
-      //std::cerr << "Segment size = " << segmentSize << std::endl;
-      for( IndexType localIdx = 0; localIdx < segmentSize; localIdx++ )
-      {
-         aux.forAllElements( [=] __cuda_callable__ ( IndexType elementIdx, double& v ) mutable {
-            //printf( "####### localIdx = %d, globalIdx = %d \n", localIdx, view.getGlobalIndex( segmentIdx, localIdx ) );
-            v = fetch( view.getGlobalIndex( segmentIdx, localIdx ) );
-            //v = view.getGlobalIndex( segmentIdx, localIdx );
-         } );
+      // std::cerr << "Segment size = " << segmentSize << std::endl;
+      for( IndexType localIdx = 0; localIdx < segmentSize; localIdx++ ) {
+         aux.forAllElements(
+            [ = ] __cuda_callable__( IndexType elementIdx, double& v ) mutable
+            {
+               // printf( "####### localIdx = %d, globalIdx = %d \n", localIdx, view.getGlobalIndex( segmentIdx, localIdx ) );
+               v = fetch( view.getGlobalIndex( segmentIdx, localIdx ) );
+               // v = view.getGlobalIndex( segmentIdx, localIdx );
+            } );
          auto value = aux.getElement( 0 );
          str << value;
          if( localIdx < segmentSize - 1 )
@@ -130,6 +128,6 @@ std::ostream& printSegments( const Segments& segments, Fetch&& fetch, std::ostre
 }
 /// \endcond
 
-      } // namespace Segments
-   } // namespace Algorithms
-} // namespace TNL
+}  // namespace Segments
+}  // namespace Algorithms
+}  // namespace TNL

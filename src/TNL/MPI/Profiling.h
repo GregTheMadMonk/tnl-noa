@@ -11,11 +11,12 @@
 namespace TNL {
 namespace MPI {
 
-inline Timer& getTimerAllreduce()
+inline Timer&
+getTimerAllreduce()
 {
    static Timer t;
    return t;
 }
 
-} // namespace MPI
-} // namespace TNL
+}  // namespace MPI
+}  // namespace TNL

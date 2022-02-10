@@ -5,9 +5,8 @@ template< typename Mesh, typename Real >class HeatEquationBenchmarkRhs
   : public Functions::Domain< Mesh::getMeshDimension(), Functions::MeshDomain > 
  {
    public:
-
-      typedef Mesh MeshType;
-      typedef Real RealType;
+      using MeshType = Mesh;
+      using RealType = Real;
 
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix = "" )

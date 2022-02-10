@@ -14,43 +14,35 @@
 namespace TNL {
 namespace Meshes {
 
-template< typename ConfigTag,
-          typename Device,
-          typename Functor >
+template< typename ConfigTag, typename Device, typename Functor >
 bool
-resolveDistributedMeshType( Functor&& functor,
-                            const std::string& fileName,
-                            const std::string& fileFormat )
+resolveDistributedMeshType( Functor&& functor, const std::string& fileName, const std::string& fileFormat )
 {
    std::cout << "Detecting distributed mesh from file " << fileName << " ..." << std::endl;
 
-   auto wrapper = [&functor] ( Readers::MeshReader& reader, auto&& localMesh )
+   auto wrapper = [ &functor ]( Readers::MeshReader& reader, auto&& localMesh )
    {
-      using LocalMesh = std::decay_t< decltype(localMesh) >;
+      using LocalMesh = std::decay_t< decltype( localMesh ) >;
       using DistributedMesh = DistributedMeshes::DistributedMesh< LocalMesh >;
-      return std::forward<Functor>(functor)( reader, DistributedMesh{ std::move(localMesh) } );
+      return std::forward< Functor >( functor )( reader, DistributedMesh{ std::move( localMesh ) } );
    };
 
    return resolveMeshType< ConfigTag, Device >( wrapper, fileName, fileFormat );
 }
 
-template< typename ConfigTag,
-          typename Device,
-          typename Functor >
+template< typename ConfigTag, typename Device, typename Functor >
 bool
-resolveAndLoadDistributedMesh( Functor&& functor,
-                               const std::string& fileName,
-                               const std::string& fileFormat )
+resolveAndLoadDistributedMesh( Functor&& functor, const std::string& fileName, const std::string& fileFormat )
 {
-   auto wrapper = [&]( Readers::MeshReader& reader, auto&& mesh ) -> bool
+   auto wrapper = [ & ]( Readers::MeshReader& reader, auto&& mesh ) -> bool
    {
-      using MeshType = std::decay_t< decltype(mesh) >;
+      using MeshType = std::decay_t< decltype( mesh ) >;
       std::cout << "Loading a mesh from the file " << fileName << " ..." << std::endl;
       try {
          if( reader.getMeshType() == "Meshes::DistributedMesh" )
-            dynamic_cast<Readers::PVTUReader&>(reader).loadMesh( mesh );
+            dynamic_cast< Readers::PVTUReader& >( reader ).loadMesh( mesh );
          else if( reader.getMeshType() == "Meshes::DistributedGrid" )
-            dynamic_cast<Readers::PVTIReader&>(reader).loadMesh( mesh );
+            dynamic_cast< Readers::PVTIReader& >( reader ).loadMesh( mesh );
          else
             throw std::runtime_error( "Unknown type of a distributed mesh: " + reader.getMeshType() );
       }
@@ -58,7 +50,7 @@ resolveAndLoadDistributedMesh( Functor&& functor,
          std::cerr << "Failed to load the mesh from the file " << fileName << ". The error is:\n" << e.what() << std::endl;
          return false;
       }
-      return functor( reader, std::forward<MeshType>(mesh) );
+      return functor( reader, std::forward< MeshType >( mesh ) );
    };
    return resolveDistributedMeshType< ConfigTag, Device >( wrapper, fileName, fileFormat );
 }
@@ -72,10 +64,10 @@ loadDistributedMesh( DistributedMeshes::DistributedMesh< Mesh >& distributedMesh
    namespace fs = std::experimental::filesystem;
    std::string format = fileFormat;
    if( format == "auto" ) {
-      format = fs::path(fileName).extension();
+      format = fs::path( fileName ).extension();
       if( format.length() > 0 )
          // remove dot from the extension
-         format = format.substr(1);
+         format = format.substr( 1 );
    }
 
    if( format == "pvtu" ) {
@@ -98,5 +90,5 @@ loadDistributedMesh( DistributedMeshes::DistributedMesh< Mesh >& distributedMesh
    }
 }
 
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Meshes
+}  // namespace TNL

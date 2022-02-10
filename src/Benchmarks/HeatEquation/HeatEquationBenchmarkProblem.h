@@ -20,16 +20,15 @@ class HeatEquationBenchmarkProblem:
                       typename DifferentialOperator::IndexType >
 {
    public:
-
-      typedef typename DifferentialOperator::RealType RealType;
-      typedef typename Mesh::DeviceType DeviceType;
-      typedef typename DifferentialOperator::IndexType IndexType;
-      typedef Functions::MeshFunctionView< Mesh > MeshFunctionViewType;
-      typedef Pointers::SharedPointer< MeshFunctionViewType, DeviceType > MeshFunctionViewPointer;
-      typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
-      typedef Pointers::SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
-      typedef Pointers::SharedPointer< BoundaryCondition > BoundaryConditionPointer;
-      typedef Pointers::SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
+      using RealType = typename DifferentialOperator::RealType;
+      using DeviceType = typename Mesh::DeviceType;
+      using IndexType = typename DifferentialOperator::IndexType;
+      using MeshFunctionViewType = Functions::MeshFunctionView< Mesh >;
+      using MeshFunctionViewPointer = Pointers::SharedPointer< MeshFunctionViewType, DeviceType >;
+      using BaseType = PDEProblem< Mesh, RealType, DeviceType, IndexType >;
+      using DifferentialOperatorPointer = Pointers::SharedPointer< DifferentialOperator >;
+      using BoundaryConditionPointer = Pointers::SharedPointer< BoundaryCondition >;
+      using RightHandSidePointer = Pointers::SharedPointer< RightHandSide, DeviceType >;
 
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;

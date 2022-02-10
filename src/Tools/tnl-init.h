@@ -42,15 +42,15 @@ bool renderFunction( const Config::ParameterContainer& parameters )
       reader.loadMesh( *meshPointer );
    }
 
-   typedef Functions::TestFunction< MeshType::getMeshDimension(), RealType > FunctionType;
-   typedef Pointers::SharedPointer<  FunctionType, typename MeshType::DeviceType > FunctionPointer;
+   using FunctionType = Functions::TestFunction< MeshType::getMeshDimension(), RealType >;
+   using FunctionPointer = Pointers::SharedPointer< FunctionType, typename MeshType::DeviceType >;
    FunctionPointer function;
    std::cout << "Setting up the function ... " << std::endl;
    if( ! function->setup( parameters, "" ) )
       return false;
    std::cout << "done." << std::endl;
-   typedef Functions::MeshFunction< MeshType, MeshType::getMeshDimension() > MeshFunctionType;
-   typedef Pointers::SharedPointer<  MeshFunctionType, typename MeshType::DeviceType > MeshFunctionPointer;
+   using MeshFunctionType = Functions::MeshFunction< MeshType, MeshType::getMeshDimension() >;
+   using MeshFunctionPointer = Pointers::SharedPointer< MeshFunctionType, typename MeshType::DeviceType >;
    MeshFunctionPointer meshFunction( meshPointer );
    //if( ! discreteFunction.setSize( mesh.template getEntitiesCount< typename MeshType::Cell >() ) )
    //   return false;

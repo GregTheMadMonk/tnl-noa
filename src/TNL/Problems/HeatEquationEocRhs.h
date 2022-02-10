@@ -17,39 +17,35 @@
 namespace TNL {
 namespace Problems {
 
-template< typename ExactOperator,
-          typename TestFunction >
-class HeatEquationEocRhs
- : public Functions::Domain< TestFunction::Dimension, Functions::SpaceDomain >
+template< typename ExactOperator, typename TestFunction >
+class HeatEquationEocRhs : public Functions::Domain< TestFunction::Dimension, Functions::SpaceDomain >
 {
-   public:
+public:
+   typedef ExactOperator ExactOperatorType;
+   typedef TestFunction TestFunctionType;
+   typedef typename TestFunction::RealType RealType;
+   typedef typename TestFunction::PointType PointType;
 
-      typedef ExactOperator ExactOperatorType;
-      typedef TestFunction TestFunctionType;
-      typedef typename TestFunction::RealType RealType;
-      typedef typename TestFunction::PointType PointType;
+   bool
+   setup( const Config::ParameterContainer& parameters, const String& prefix = "" )
+   {
+      if( ! testFunction.setup( parameters, prefix ) )
+         return false;
+      return true;
+   }
 
-      bool setup( const Config::ParameterContainer& parameters,
-                  const String& prefix = "" )
-      {
-         if( ! testFunction.setup( parameters, prefix ) )
-            return false;
-         return true;
-      }
+   __cuda_callable__
+   RealType
+   operator()( const PointType& vertex, const RealType& time = 0.0 ) const
+   {
+      return testFunction.getTimeDerivative( vertex, time ) - exactOperator( testFunction, vertex, time );
+   }
 
-      __cuda_callable__
-      RealType operator()( const PointType& vertex,
-                         const RealType& time = 0.0 ) const
-      {
-         return testFunction.getTimeDerivative( vertex, time )
-                - exactOperator( testFunction, vertex, time );
-      }
+protected:
+   ExactOperator exactOperator;
 
-   protected:
-      ExactOperator exactOperator;
-
-      TestFunction testFunction;
+   TestFunction testFunction;
 };
 
-} // namespace Problems
-} // namespace TNL
+}  // namespace Problems
+}  // namespace TNL

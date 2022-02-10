@@ -19,18 +19,18 @@ namespace TNL {
 namespace Meshes {
 namespace Readers {
 
-class PVTUReader
-: public XMLVTK
+class PVTUReader : public XMLVTK
 {
    std::string
-   getSourcePath( std::string source )
+   getSourcePath( const std::string& source )
    {
       namespace fs = std::experimental::filesystem;
-      return fs::path(fileName).parent_path() / source;
+      return fs::path( fileName ).parent_path() / source;
    }
 
 #ifdef HAVE_TINYXML2
-   void readParallelUnstructuredGrid()
+   void
+   readParallelUnstructuredGrid()
    {
       using namespace tinyxml2;
 
@@ -45,14 +45,15 @@ class PVTUReader
       verifyDataArray( pointsData, "PDataArray" );
       const std::string pointsDataName = getAttributeString( pointsData, "Name" );
       if( pointsDataName != "Points" )
-         throw MeshReaderError( "PVTUReader", "the <PPoints> tag does not contain a <PDataArray> with Name=\"Points\" attribute" );
+         throw MeshReaderError( "PVTUReader",
+                                "the <PPoints> tag does not contain a <PDataArray> with Name=\"Points\" attribute" );
       pointsType = VTKDataTypes.at( getAttributeString( pointsData, "type" ) );
 
       // read pieces info
       const XMLElement* piece = getChildSafe( datasetElement, "Piece" );
-      while( piece ) {
+      while( piece != nullptr ) {
          const std::string source = getAttributeString( piece, "Source" );
-         if( source != "" ) {
+         if( ! source.empty() ) {
             pieceSources.push_back( getSourcePath( source ) );
          }
          else
@@ -60,14 +61,15 @@ class PVTUReader
          // find next
          piece = piece->NextSiblingElement( "Piece" );
       }
-      if( pieceSources.size() == 0 )
+      if( pieceSources.empty() )
          throw MeshReaderError( "PVTUReader", "the file does not contain any <Piece> element." );
 
       // check that the number of pieces matches the number of MPI ranks
       const int nproc = MPI::GetSize( communicator );
       if( (int) pieceSources.size() != nproc )
-         throw MeshReaderError( "PVTUReader", "the number of subdomains does not match the number of MPI ranks ("
-                                              + std::to_string(pieceSources.size()) + " vs " + std::to_string(nproc) + ")." );
+         throw MeshReaderError( "PVTUReader",
+                                "the number of subdomains does not match the number of MPI ranks ("
+                                   + std::to_string( pieceSources.size() ) + " vs " + std::to_string( nproc ) + ")." );
 
       // read the local piece source
       const int rank = MPI::GetRank( communicator );
@@ -103,7 +105,8 @@ public:
    : XMLVTK( fileName ), communicator( communicator )
    {}
 
-   virtual void detectMesh() override
+   void
+   detectMesh() override
    {
 #ifdef HAVE_TINYXML2
       reset();
@@ -119,7 +122,8 @@ public:
       if( fileType == "PUnstructuredGrid" )
          readParallelUnstructuredGrid();
       else
-         throw MeshReaderError( "PVTUReader", "the reader cannot read data of the type " + fileType + ". Use a different reader if possible." );
+         throw MeshReaderError(
+            "PVTUReader", "the reader cannot read data of the type " + fileType + ". Use a different reader if possible." );
 
       // indicate success by setting the mesh type
       meshType = "Meshes::DistributedMesh";
@@ -140,7 +144,7 @@ public:
    loadMesh( MeshType& mesh )
    {
       // check that detectMesh has been called
-      if( meshType == "" )
+      if( meshType.empty() )
          detectMesh();
 
       // check if we have a distributed unstructured mesh
@@ -159,15 +163,18 @@ public:
       mesh.setGhostLevels( ghostLevels );
       // check MinCommonVertices
       if( minCommonVertices > 0 && minCommonVertices != MeshType::Config::dualGraphMinCommonVertices )
-         std::cerr << "WARNING: the mesh was decomposed with different MinCommonVertices value than the value set in the mesh configuration "
-                      "(" << minCommonVertices << " vs " << MeshType::Config::dualGraphMinCommonVertices << ")." << std::endl;
+         std::cerr << "WARNING: the mesh was decomposed with different MinCommonVertices value than the value set in the mesh "
+                      "configuration "
+                      "("
+                   << minCommonVertices << " vs " << MeshType::Config::dualGraphMinCommonVertices << ")." << std::endl;
 
       if( ghostLevels > 0 ) {
          // assign point ghost tags
          using mpark::get;
-         const std::vector<std::uint8_t> pointTags = get< std::vector<std::uint8_t> >( this->pointTags );
+         const std::vector< std::uint8_t > pointTags = get< std::vector< std::uint8_t > >( this->pointTags );
          if( (Index) pointTags.size() != pointsCount )
-            throw MeshReaderError( "PVTUReader", "the vtkGhostType array in PointData has wrong size: " + std::to_string(pointTags.size()) );
+            throw MeshReaderError(
+               "PVTUReader", "the vtkGhostType array in PointData has wrong size: " + std::to_string( pointTags.size() ) );
          mesh.vtkPointGhostTypes() = pointTags;
          for( Index i = 0; i < pointsCount; i++ )
             if( pointTags[ i ] & (std::uint8_t) VTK::PointGhostTypes::DUPLICATEPOINT )
@@ -175,9 +182,10 @@ public:
 
          // assign cell ghost tags
          using mpark::get;
-         const std::vector<std::uint8_t> cellTags = get< std::vector<std::uint8_t> >( this->cellTags );
+         const std::vector< std::uint8_t > cellTags = get< std::vector< std::uint8_t > >( this->cellTags );
          if( (Index) cellTags.size() != cellsCount )
-            throw MeshReaderError( "PVTUReader", "the vtkGhostType array in CellData has wrong size: " + std::to_string(cellTags.size()) );
+            throw MeshReaderError( "PVTUReader",
+                                   "the vtkGhostType array in CellData has wrong size: " + std::to_string( cellTags.size() ) );
          mesh.vtkCellGhostTypes() = cellTags;
          for( Index i = 0; i < cellsCount; i++ ) {
             if( cellTags[ i ] & (std::uint8_t) VTK::CellGhostTypes::DUPLICATECELL )
@@ -191,20 +199,22 @@ public:
          // assign global indices
          auto& points_indices = mesh.template getGlobalIndices< 0 >();
          auto& cells_indices = mesh.template getGlobalIndices< MeshType::getMeshDimension() >();
-         auto assign_variant_vector = [] ( auto& array, const VariantVector& variant_vector, Index expectedSize )
+         auto assign_variant_vector = []( auto& array, const VariantVector& variant_vector, Index expectedSize )
          {
             using mpark::visit;
-            visit( [&array, expectedSize](auto&& vector) {
-                     if( (Index) vector.size() != expectedSize )
-                        throw MeshReaderError( "PVTUReader", "the GlobalIndex array has wrong size: " + std::to_string(vector.size())
-                                                             + " (expected " + std::to_string(expectedSize) + ")." );
-                     array.setSize( vector.size() );
-                     std::size_t idx = 0;
-                     for( auto v : vector )
-                        array[ idx++ ] = v;
-                  },
-                  variant_vector
-               );
+            visit(
+               [ &array, expectedSize ]( auto&& vector )
+               {
+                  if( (Index) vector.size() != expectedSize )
+                     throw MeshReaderError( "PVTUReader",
+                                            "the GlobalIndex array has wrong size: " + std::to_string( vector.size() )
+                                               + " (expected " + std::to_string( expectedSize ) + ")." );
+                  array.setSize( vector.size() );
+                  std::size_t idx = 0;
+                  for( auto v : vector )
+                     array[ idx++ ] = v;
+               },
+               variant_vector );
          };
          assign_variant_vector( points_indices, pointGlobalIndices, pointsCount );
          assign_variant_vector( cells_indices, cellGlobalIndices, cellsCount );
@@ -217,7 +227,7 @@ public:
       const Index minCount = MPI::reduce( TNL::min( pointsCount, cellsCount ), MPI_MIN );
       if( minCount == 0 ) {
          // split the communicator, remove the ranks which did not get a subdomain
-         const int color = (pointsCount > 0 && cellsCount > 0) ? 0 : MPI_UNDEFINED;
+         const int color = ( pointsCount > 0 && cellsCount > 0 ) ? 0 : MPI_UNDEFINED;
          const MPI_Comm subCommunicator = MPI::Comm_split( communicator, color, 0 );
 
          // set the communicator
@@ -229,19 +239,20 @@ public:
       }
    }
 
-   virtual VariantVector
+   VariantVector
    readPointData( std::string arrayName ) override
    {
       return localReader.readPointData( arrayName );
    }
 
-   virtual VariantVector
+   VariantVector
    readCellData( std::string arrayName ) override
    {
       return localReader.readCellData( arrayName );
    }
 
-   virtual void reset() override
+   void
+   reset() override
    {
       resetBase();
       ghostLevels = 0;
@@ -255,7 +266,7 @@ protected:
 
    int ghostLevels = 0;
    int minCommonVertices = 0;
-   std::vector<std::string> pieceSources;
+   std::vector< std::string > pieceSources;
 
    VTUReader localReader;
 
@@ -263,6 +274,6 @@ protected:
    VariantVector pointTags, cellTags, pointGlobalIndices, cellGlobalIndices;
 };
 
-} // namespace Readers
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Readers
+}  // namespace Meshes
+}  // namespace TNL

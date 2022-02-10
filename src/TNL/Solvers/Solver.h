@@ -18,17 +18,21 @@
 namespace TNL {
 namespace Solvers {
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
-          template< typename ConfigTag > class ProblemConfig,
-          typename ConfigTag = DefaultBuildConfigTag >
+template<
+   template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter >
+   class ProblemSetter,
+   template< typename ConfigTag >
+   class ProblemConfig,
+   typename ConfigTag = DefaultBuildConfigTag >
 struct Solver
 {
-   static bool run( int argc, char* argv[] )
+   static bool
+   run( int argc, char* argv[] )
    {
       Config::ParameterContainer parameters;
       Config::ConfigDescription configDescription;
       ProblemConfig< ConfigTag >::configSetup( configDescription );
-      SolverConfig< ConfigTag, ProblemConfig< ConfigTag> >::configSetup( configDescription );
+      SolverConfig< ConfigTag, ProblemConfig< ConfigTag > >::configSetup( configDescription );
       configDescription.addDelimiter( "Parallelization setup:" );
       Devices::Host::configSetup( configDescription );
       Devices::Cuda::configSetup( configDescription );
@@ -44,5 +48,5 @@ struct Solver
    }
 };
 
-} // namespace Solvers
-} // namespace TNL
+}  // namespace Solvers
+}  // namespace TNL

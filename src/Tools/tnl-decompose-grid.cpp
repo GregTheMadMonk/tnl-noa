@@ -154,5 +154,6 @@ int main( int argc, char* argv[] )
       run( std::forward<GridType>(grid), parameters );
       return true;
    };
-   return ! Meshes::resolveAndLoadMesh< DecomposeGridConfigTag, Devices::Host >( wrapper, inputFileName, inputFileFormat );
+   const bool status = Meshes::resolveAndLoadMesh< DecomposeGridConfigTag, Devices::Host >( wrapper, inputFileName, inputFileFormat );
+   return static_cast< int >( ! status );
 }

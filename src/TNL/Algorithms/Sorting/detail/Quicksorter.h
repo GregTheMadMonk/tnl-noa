@@ -12,8 +12,8 @@
 #include <TNL/Algorithms/Sorting/detail/task.h>
 
 namespace TNL {
-   namespace Algorithms {
-      namespace Sorting {
+namespace Algorithms {
+namespace Sorting {
 
 template< typename Value, typename Device >
 class Quicksorter;
@@ -21,85 +21,96 @@ class Quicksorter;
 template< typename Value >
 class Quicksorter< Value, Devices::Cuda >
 {
-   public:
+public:
+   using ValueType = Value;
+   using DeviceType = Devices::Cuda;
 
-      using ValueType = Value;
-      using DeviceType = Devices::Cuda;
+   template< typename Array, typename Compare >
+   void
+   sort( Array& arr, const Compare& cmp );
 
+   template< typename Array >
+   void
+   sort( Array& arr );
 
-      template< typename Array, typename Compare >
-      void sort( Array& arr, const Compare& cmp );
+protected:
+   void
+   init( Containers::ArrayView< Value, Devices::Cuda > arr,
+         int gridDim,
+         int blockDim,
+         int desiredElemPerBlock,
+         int maxSharable );
 
-      template< typename Array >
-      void sort( Array& arr );
+   template< typename CMP >
+   void
+   performSort( const CMP& Cmp );
 
-   protected:
+   /**
+    * returns how many blocks are needed to start sort phase 1 if @param elemPerBlock were to be used
+    * */
+   int
+   getSetsNeeded( int elemPerBlock ) const;
 
-      void init( Containers::ArrayView<Value, Devices::Cuda> arr, int gridDim, int blockDim, int desiredElemPerBlock, int maxSharable);
+   /**
+    * returns the optimal amount of elements per thread needed for phase
+    * */
+   int
+   getElemPerBlock() const;
 
-      template< typename CMP >
-         void performSort( const CMP &Cmp );
+   /**
+    * returns the amount of blocks needed to start phase 1 while also initializing all tasks
+    * */
+   template< typename CMP >
+   int
+   initTasks( int elemPerBlock, const CMP& Cmp );
 
+   /**
+    * does the 1st phase of Quicksort until out of task memory or each task is small enough
+    * for correctness, secondphase method needs to be called to sort each subsequences
+    * */
+   template< typename CMP >
+   void
+   firstPhase( const CMP& Cmp );
 
-      /**
-       * returns how many blocks are needed to start sort phase 1 if @param elemPerBlock were to be used
-       * */
-      int getSetsNeeded(int elemPerBlock) const;
+   /**
+    * update necessary variables after 1 phase1 sort
+    * */
+   void
+   processNewTasks();
 
-      /**
-       * returns the optimal amount of elements per thread needed for phase
-       * */
-      int getElemPerBlock() const;
+   /**
+    * sorts all leftover tasks
+    * */
+   template< typename CMP >
+   void
+   secondPhase( const CMP& Cmp );
 
-      /**
-       * returns the amount of blocks needed to start phase 1 while also initializing all tasks
-       * */
-      template< typename CMP >
-         int initTasks(int elemPerBlock, const CMP &Cmp);
+   int maxBlocks, threadsPerBlock, desiredElemPerBlock, maxSharable;  // kernel config
 
-      /**
-       * does the 1st phase of Quicksort until out of task memory or each task is small enough
-       * for correctness, secondphase method needs to be called to sort each subsequences
-       * */
-      template <typename CMP>
-         void firstPhase(const CMP &Cmp);
+   Containers::Array< Value, Devices::Cuda > auxMem;
+   Containers::ArrayView< Value, Devices::Cuda > arr, aux;
 
-      /**
-       * update necessary variables after 1 phase1 sort
-       * */
-      void processNewTasks();
+   int desired_2ndPhasElemPerBlock;
+   const int g_maxTasks = 1 << 14;
+   int maxTasks;
 
-      /**
-       * sorts all leftover tasks
-       * */
-      template <typename CMP>
-         void secondPhase( const CMP &Cmp) ;
+   Containers::Array< TASK, Devices::Cuda > cuda_tasks, cuda_newTasks,
+      cuda_2ndPhaseTasks;  // 1 set of 2 rotating tasks and 2nd phase
+   Containers::Array< int, Devices::Cuda > cuda_newTasksAmount, cuda_2ndPhaseTasksAmount;  // is in reality 1 integer each
 
-      int maxBlocks, threadsPerBlock, desiredElemPerBlock, maxSharable; //kernel config
+   Containers::Array< int, Devices::Cuda > cuda_blockToTaskMapping;
+   Containers::Array< int, Devices::Cuda > cuda_reductionTaskInitMem;
 
-      Containers::Array<Value, Devices::Cuda> auxMem;
-      Containers::ArrayView<Value, Devices::Cuda> arr, aux;
+   int host_1stPhaseTasksAmount = 0, host_2ndPhaseTasksAmount = 0;
+   int iteration = 0;
 
-      int desired_2ndPhasElemPerBlock;
-      const int g_maxTasks = 1 << 14;
-      int maxTasks;
-
-
-      Containers::Array<TASK, Devices::Cuda> cuda_tasks, cuda_newTasks, cuda_2ndPhaseTasks; //1 set of 2 rotating tasks and 2nd phase
-      Containers::Array<int, Devices::Cuda> cuda_newTasksAmount, cuda_2ndPhaseTasksAmount;  //is in reality 1 integer each
-
-      Containers::Array<int, Devices::Cuda> cuda_blockToTaskMapping;
-      Containers::Array<int, Devices::Cuda> cuda_reductionTaskInitMem;
-
-      int host_1stPhaseTasksAmount = 0, host_2ndPhaseTasksAmount = 0;
-      int iteration = 0;
-
-      template< typename T >
-      friend int getSetsNeededFunction(int elemPerBlock, const Quicksorter< T, Devices::Cuda >& quicksort );
+   template< typename T >
+   friend int
+   getSetsNeededFunction( int elemPerBlock, const Quicksorter< T, Devices::Cuda >& quicksort );
 };
 
-        } // namespace Sorting
-    } // namespace Algorithms
-} // namespace TNL
+}  // namespace Sorting
+}  // namespace Algorithms
+}  // namespace TNL
 
 #include <TNL/Algorithms/Sorting/detail/Quicksorter.hpp>

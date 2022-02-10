@@ -66,22 +66,12 @@ namespace Algorithms {
  *
  * \include SumExampleWithLambda.out
  */
-template< typename Device,
-          typename Index,
-          typename Result,
-          typename Fetch,
-          typename Reduction >
-Result reduce( const Index begin,
-               const Index end,
-               Fetch&& fetch,
-               Reduction&& reduction,
-               const Result& identity )
+template< typename Device, typename Index, typename Result, typename Fetch, typename Reduction >
+Result
+reduce( Index begin, Index end, Fetch&& fetch, Reduction&& reduction, const Result& identity )
 {
-   return detail::Reduction< Device >::reduce( begin,
-                                               end,
-                                               std::forward< Fetch >( fetch ),
-                                               std::forward< Reduction >( reduction ),
-                                               identity );
+   return detail::Reduction< Device >::reduce(
+      begin, end, std::forward< Fetch >( fetch ), std::forward< Reduction >( reduction ), identity );
 }
 
 /**
@@ -119,16 +109,11 @@ Result reduce( const Index begin,
  *
  * \include SumExampleWithFunctional.out
  */
-template< typename Device,
-          typename Index,
-          typename Fetch,
-          typename Reduction = TNL::Plus >
-auto reduce( const Index begin,
-             const Index end,
-             Fetch&& fetch,
-             Reduction&& reduction = TNL::Plus{} )
+template< typename Device, typename Index, typename Fetch, typename Reduction = TNL::Plus >
+auto
+reduce( Index begin, Index end, Fetch&& fetch, Reduction&& reduction = TNL::Plus{} )
 {
-   using Result = Containers::Expressions::RemoveET< decltype( reduction( fetch(0), fetch(0) ) ) >;
+   using Result = Containers::Expressions::RemoveET< decltype( reduction( fetch( 0 ), fetch( 0 ) ) ) >;
    return reduce< Device >( begin,
                             end,
                             std::forward< Fetch >( fetch ),
@@ -156,19 +141,12 @@ auto reduce( const Index begin,
  *
  * \include reduceArrayExample.out
  */
-template< typename Array,
-          typename Device = typename Array::DeviceType,
-          typename Reduction,
-          typename Result >
-auto reduce( const Array& array,
-             Reduction&& reduction,
-             Result identity )
+template< typename Array, typename Device = typename Array::DeviceType, typename Reduction, typename Result >
+auto
+reduce( const Array& array, Reduction&& reduction, Result identity )
 {
-   return reduce< Device >( (typename Array::IndexType) 0,
-                            array.getSize(),
-                            array.getConstView(),
-                            std::forward< Reduction >( reduction ),
-                            identity );
+   return reduce< Device >(
+      (typename Array::IndexType) 0, array.getSize(), array.getConstView(), std::forward< Reduction >( reduction ), identity );
 }
 
 /**
@@ -195,16 +173,12 @@ auto reduce( const Array& array,
  *
  * \include reduceArrayExample.out
  */
-template< typename Array,
-          typename Device = typename Array::DeviceType,
-          typename Reduction = TNL::Plus >
-auto reduce( const Array& array,
-             Reduction&& reduction = TNL::Plus{} )
+template< typename Array, typename Device = typename Array::DeviceType, typename Reduction = TNL::Plus >
+auto
+reduce( const Array& array, Reduction&& reduction = TNL::Plus{} )
 {
-   using Result = Containers::Expressions::RemoveET< decltype( reduction( array(0), array(0) ) ) >;
-   return reduce< Array, Device >( array,
-                                   std::forward< Reduction >( reduction ),
-                                   reduction.template getIdentity< Result >() );
+   using Result = Containers::Expressions::RemoveET< decltype( reduction( array( 0 ), array( 0 ) ) ) >;
+   return reduce< Array, Device >( array, std::forward< Reduction >( reduction ), reduction.template getIdentity< Result >() );
 }
 
 /**
@@ -253,23 +227,12 @@ auto reduce( const Array& array,
  *
  * \include ReductionWithArgument.out
  */
-template< typename Device,
-          typename Index,
-          typename Result,
-          typename Fetch,
-          typename Reduction >
+template< typename Device, typename Index, typename Result, typename Fetch, typename Reduction >
 std::pair< Result, Index >
-reduceWithArgument( const Index begin,
-                    const Index end,
-                    Fetch&& fetch,
-                    Reduction&& reduction,
-                    const Result& identity )
+reduceWithArgument( Index begin, Index end, Fetch&& fetch, Reduction&& reduction, const Result& identity )
 {
-   return detail::Reduction< Device >::reduceWithArgument( begin,
-                                                           end,
-                                                           std::forward< Fetch >( fetch ),
-                                                           std::forward< Reduction >( reduction ),
-                                                           identity );
+   return detail::Reduction< Device >::reduceWithArgument(
+      begin, end, std::forward< Fetch >( fetch ), std::forward< Reduction >( reduction ), identity );
 }
 
 /**
@@ -316,17 +279,11 @@ reduceWithArgument( const Index begin,
  *
  * \include ReductionWithArgumentWithFunctional.out
  */
-template< typename Device,
-          typename Index,
-          typename Fetch,
-          typename Reduction >
+template< typename Device, typename Index, typename Fetch, typename Reduction >
 auto
-reduceWithArgument( const Index begin,
-                    const Index end,
-                    Fetch&& fetch,
-                    Reduction&& reduction )
+reduceWithArgument( Index begin, Index end, Fetch&& fetch, Reduction&& reduction )
 {
-   using Result = Containers::Expressions::RemoveET< decltype( fetch(0) ) >;
+   using Result = Containers::Expressions::RemoveET< decltype( fetch( 0 ) ) >;
    return reduceWithArgument< Device >( begin,
                                         end,
                                         std::forward< Fetch >( fetch ),
@@ -354,19 +311,12 @@ reduceWithArgument( const Index begin,
  *
  * \include reduceWithArgumentArrayExample.out
  */
-template< typename Array,
-          typename Device = typename Array::DeviceType,
-          typename Reduction,
-          typename Result >
-auto reduceWithArgument( const Array& array,
-                         Reduction&& reduction,
-                         Result identity )
+template< typename Array, typename Device = typename Array::DeviceType, typename Reduction, typename Result >
+auto
+reduceWithArgument( const Array& array, Reduction&& reduction, Result identity )
 {
-   return reduceWithArgument< Device >( (typename Array::IndexType) 0,
-                                        array.getSize(),
-                                        array.getConstView(),
-                                        std::forward< Reduction >( reduction ),
-                                        identity );
+   return reduceWithArgument< Device >(
+      (typename Array::IndexType) 0, array.getSize(), array.getConstView(), std::forward< Reduction >( reduction ), identity );
 }
 
 /**
@@ -391,17 +341,14 @@ auto reduceWithArgument( const Array& array,
  *
  * \include reduceWithArgumentArrayExample.out
  */
-template< typename Array,
-          typename Device = typename Array::DeviceType,
-          typename Reduction >
-auto reduceWithArgument( const Array& array,
-                         Reduction&& reduction )
+template< typename Array, typename Device = typename Array::DeviceType, typename Reduction >
+auto
+reduceWithArgument( const Array& array, Reduction&& reduction )
 {
-   using Result = Containers::Expressions::RemoveET< decltype( array(0) ) >;
-   return reduceWithArgument< Array, Device >( array,
-                                               std::forward< Reduction >( reduction ),
-                                               reduction.template getIdentity< Result >() );
+   using Result = Containers::Expressions::RemoveET< decltype( array( 0 ) ) >;
+   return reduceWithArgument< Array, Device >(
+      array, std::forward< Reduction >( reduction ), reduction.template getIdentity< Result >() );
 }
 
-} // namespace Algorithms
-} // namespace TNL
+}  // namespace Algorithms
+}  // namespace TNL

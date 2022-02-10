@@ -15,30 +15,20 @@ namespace TNL {
 namespace Meshes {
 
 template< typename T >
-class isGrid
-: public std::false_type
+class isGrid : public std::false_type
 {};
 
-template< int Dimension,
-          typename Real,
-          typename Device,
-          typename Index >
-class isGrid< Grid< Dimension, Real, Device, Index > >
-: public std::true_type
+template< int Dimension, typename Real, typename Device, typename Index >
+class isGrid< Grid< Dimension, Real, Device, Index > > : public std::true_type
 {};
 
 template< typename T >
-class isDistributedGrid
-: public std::false_type
+class isDistributedGrid : public std::false_type
 {};
 
-template< int Dimension,
-          typename Real,
-          typename Device,
-          typename Index >
-class isDistributedGrid< DistributedMeshes::DistributedMesh< Grid< Dimension, Real, Device, Index > > >
-: public std::true_type
+template< int Dimension, typename Real, typename Device, typename Index >
+class isDistributedGrid< DistributedMeshes::DistributedMesh< Grid< Dimension, Real, Device, Index > > > : public std::true_type
 {};
 
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Meshes
+}  // namespace TNL

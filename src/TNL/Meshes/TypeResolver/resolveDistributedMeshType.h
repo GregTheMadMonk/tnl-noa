@@ -13,21 +13,13 @@
 namespace TNL {
 namespace Meshes {
 
-template< typename ConfigTag,
-          typename Device,
-          typename Functor >
+template< typename ConfigTag, typename Device, typename Functor >
 bool
-resolveDistributedMeshType( Functor&& functor,
-                            const std::string& fileName,
-                            const std::string& fileFormat = "auto" );
+resolveDistributedMeshType( Functor&& functor, const std::string& fileName, const std::string& fileFormat = "auto" );
 
-template< typename ConfigTag,
-          typename Device,
-          typename Functor >
+template< typename ConfigTag, typename Device, typename Functor >
 bool
-resolveAndLoadDistributedMesh( Functor&& functor,
-                               const std::string& fileName,
-                               const std::string& fileFormat = "auto" );
+resolveAndLoadDistributedMesh( Functor&& functor, const std::string& fileName, const std::string& fileFormat = "auto" );
 
 template< typename Mesh >
 bool
@@ -35,7 +27,7 @@ loadDistributedMesh( DistributedMeshes::DistributedMesh< Mesh >& distributedMesh
                      const std::string& fileName,
                      const std::string& fileFormat = "auto" );
 
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Meshes
+}  // namespace TNL
 
 #include <TNL/Meshes/TypeResolver/resolveDistributedMeshType.hpp>

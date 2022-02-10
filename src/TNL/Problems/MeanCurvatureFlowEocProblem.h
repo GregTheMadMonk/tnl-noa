@@ -21,18 +21,24 @@ namespace Problems {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator = NonlinearDiffusion< Mesh,
-                                                          tnlOneSideDiffNonlinearOperator< Mesh, tnlOneSideDiffOperatorQ<Mesh, typename BoundaryCondition::RealType,
-                                                          typename BoundaryCondition::IndexType >, typename BoundaryCondition::RealType, typename BoundaryCondition::IndexType >,
-                                                          typename BoundaryCondition::RealType, typename BoundaryCondition::IndexType > >
-class MeanCurvatureFlowEocProblem : public MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >
+          typename DifferentialOperator = NonlinearDiffusion<
+             Mesh,
+             tnlOneSideDiffNonlinearOperator<
+                Mesh,
+                tnlOneSideDiffOperatorQ< Mesh, typename BoundaryCondition::RealType, typename BoundaryCondition::IndexType >,
+                typename BoundaryCondition::RealType,
+                typename BoundaryCondition::IndexType >,
+             typename BoundaryCondition::RealType,
+             typename BoundaryCondition::IndexType > >
+class MeanCurvatureFlowEocProblem
+: public MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >
 {
-   public:
-
-      bool setup( const Config::ParameterContainer& parameters );
+public:
+   bool
+   setup( const Config::ParameterContainer& parameters );
 };
 
-} // namespace Problems
-} // namespace TNL
+}  // namespace Problems
+}  // namespace TNL
 
 #include <TNL/Problems/MeanCurvatureFlowEocProblem_impl.h>

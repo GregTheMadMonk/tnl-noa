@@ -18,7 +18,7 @@ static void
 printStackBacktraceAndAbort( int sig = 0 )
 {
    if( sig == SIGSEGV )
-      fprintf(stderr, "Invalid memory reference, printing backtrace and aborting...\n");
+      fprintf( stderr, "Invalid memory reference, printing backtrace and aborting...\n" );
    else if( sig == SIGFPE ) {
       /*
        * Unfortunately it is not possible to get the floating-point exception type
@@ -32,7 +32,7 @@ printStackBacktraceAndAbort( int sig = 0 )
        *    if(fetestexcept(FE_UNDERFLOW))  fprintf(stderr, " FE_UNDERFLOW");
        *    fprintf(stderr, " occurred, printing backtrace and aborting...\n");
        */
-      fprintf(stderr, "Floating-point exception occurred, printing backtrace and aborting...\n");
+      fprintf( stderr, "Floating-point exception occurred, printing backtrace and aborting...\n" );
    }
    else
       fprintf( stderr, "Aborting due to signal %d...\n", sig );
@@ -58,9 +58,9 @@ static void
 trackFloatingPointExceptions()
 {
    signal( SIGSEGV, printStackBacktraceAndAbort );
-   signal( SIGFPE,  printStackBacktraceAndAbort );
+   signal( SIGFPE, printStackBacktraceAndAbort );
    feenableexcept( FE_ALL_EXCEPT & ~FE_INEXACT );
 }
 
-} // namespace Debugging
-} // namespace TNL
+}  // namespace Debugging
+}  // namespace TNL

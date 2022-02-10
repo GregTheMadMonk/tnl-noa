@@ -16,19 +16,18 @@ namespace Linear {
 
 template< typename Matrix >
 void
-BICGStab< Matrix >::
-configSetup( Config::ConfigDescription& config,
-             const String& prefix )
+BICGStab< Matrix >::configSetup( Config::ConfigDescription& config, const String& prefix )
 {
    LinearSolver< Matrix >::configSetup( config, prefix );
-   config.addEntry< bool >( prefix + "bicgstab-exact-residue", "Whether the BiCGstab should compute the exact residue in each step (true) or to use a cheap approximation (false).", false );
+   config.addEntry< bool >(
+      prefix + "bicgstab-exact-residue",
+      "Whether the BiCGstab should compute the exact residue in each step (true) or to use a cheap approximation (false).",
+      false );
 }
 
 template< typename Matrix >
 bool
-BICGStab< Matrix >::
-setup( const Config::ParameterContainer& parameters,
-       const String& prefix )
+BICGStab< Matrix >::setup( const Config::ParameterContainer& parameters, const String& prefix )
 {
    if( parameters.checkParameter( prefix + "bicgstab-exact-residue" ) )
       exact_residue = parameters.getParameter< bool >( "bicgstab-exact-residue" );
@@ -37,8 +36,7 @@ setup( const Config::ParameterContainer& parameters,
 
 template< typename Matrix >
 bool
-BICGStab< Matrix >::
-solve( ConstVectorViewType b, VectorViewType x )
+BICGStab< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
 {
    this->setSize( x );
 
@@ -59,25 +57,24 @@ solve( ConstVectorViewType b, VectorViewType x )
 
    p = r_ast = r;
    s.setValue( 0.0 );
-   r_ast_sqnorm = rho = (r, r_ast);
+   r_ast_sqnorm = rho = ( r, r_ast );
 
-   const RealType eps2 = std::numeric_limits<RealType>::epsilon() * std::numeric_limits<RealType>::epsilon();
+   const RealType eps2 = std::numeric_limits< RealType >::epsilon() * std::numeric_limits< RealType >::epsilon();
 
    this->resetIterations();
    this->setResidue( std::sqrt( rho ) / b_norm );
 
-   while( this->nextIteration() )
-   {
+   while( this->nextIteration() ) {
       // alpha_j = ( r_j, r^ast_0 ) / ( A * p_j, r^ast_0 )
       preconditioned_matvec( p, Ap );
-      alpha = rho / (Ap, r_ast);
+      alpha = rho / ( Ap, r_ast );
 
       // s_j = r_j - alpha_j * A p_j
       s = r - alpha * Ap;
 
       // omega_j = ( A s_j, s_j ) / ( A s_j, A s_j )
       preconditioned_matvec( s, As );
-      omega = (As, s) / (As, As);
+      omega = ( As, s ) / ( As, As );
 
       // x_{j+1} = x_j + alpha_j * p_j + omega_j * s_j
       x += alpha * p + omega * s;
@@ -87,20 +84,20 @@ solve( ConstVectorViewType b, VectorViewType x )
 
       // compute scalar product of the residual vectors
       rho_old = rho;
-      rho = (r, r_ast);
-      if( abs(rho) < eps2 * r_ast_sqnorm ) {
+      rho = ( r, r_ast );
+      if( abs( rho ) < eps2 * r_ast_sqnorm ) {
          // The new residual vector has become too orthogonal to the arbitrarily chosen direction r_ast.
          // Let's restart with a new r0:
          compute_residue( r, x, b );
          r_ast = r;
-         r_ast_sqnorm = rho = (r, r_ast);
+         r_ast_sqnorm = rho = ( r, r_ast );
       }
 
       // beta = alpha_j / omega_j * ( r_{j+1}, r^ast_0 ) / ( r_j, r^ast_0 )
-      beta = (rho / rho_old) * (alpha / omega);
+      beta = ( rho / rho_old ) * ( alpha / omega );
 
       // p_{j+1} = r_{j+1} + beta_j * ( p_j - omega_j * A p_j )
-      p = r + beta * p - (beta * omega) * Ap;
+      p = r + beta * p - ( beta * omega ) * Ap;
 
       if( exact_residue ) {
          // Compute the exact preconditioned residue into the 's' vector.
@@ -120,8 +117,7 @@ solve( ConstVectorViewType b, VectorViewType x )
 
 template< typename Matrix >
 void
-BICGStab< Matrix >::
-compute_residue( VectorViewType r, ConstVectorViewType x, ConstVectorViewType b )
+BICGStab< Matrix >::compute_residue( VectorViewType r, ConstVectorViewType x, ConstVectorViewType b )
 {
    // r = M.solve(b - A * x);
    if( this->preconditioner ) {
@@ -137,8 +133,7 @@ compute_residue( VectorViewType r, ConstVectorViewType x, ConstVectorViewType b 
 
 template< typename Matrix >
 void
-BICGStab< Matrix >::
-preconditioned_matvec( ConstVectorViewType src, VectorViewType dst )
+BICGStab< Matrix >::preconditioned_matvec( ConstVectorViewType src, VectorViewType dst )
 {
    if( this->preconditioner ) {
       this->matrix->vectorProduct( src, M_tmp );
@@ -151,8 +146,7 @@ preconditioned_matvec( ConstVectorViewType src, VectorViewType dst )
 
 template< typename Matrix >
 void
-BICGStab< Matrix >::
-setSize( const VectorViewType& x )
+BICGStab< Matrix >::setSize( const VectorViewType& x )
 {
    r.setLike( x );
    r_ast.setLike( x );
@@ -163,6 +157,6 @@ setSize( const VectorViewType& x )
    M_tmp.setLike( x );
 }
 
-} // namespace Linear
-} // namespace Solvers
-} // namespace TNL
+}  // namespace Linear
+}  // namespace Solvers
+}  // namespace TNL

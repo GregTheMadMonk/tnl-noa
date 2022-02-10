@@ -9,34 +9,26 @@
 #include <TNL/Meshes/Traverser.h>
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
 
-template< typename Mesh,
-          typename DifferentialOperator,
-          typename BoundaryConditions,
-          typename RowsCapacitiesType >
-   template< typename EntityType >
+template< typename Mesh, typename DifferentialOperator, typename BoundaryConditions, typename RowsCapacitiesType >
+template< typename EntityType >
 void
-MatrixSetter< Mesh, DifferentialOperator, BoundaryConditions, RowsCapacitiesType >::
-getCompressedRowLengths( const MeshPointer& meshPointer,
-                          const DifferentialOperatorPointer& differentialOperatorPointer,
-                          const BoundaryConditionsPointer& boundaryConditionsPointer,
-                          RowsCapacitiesTypePointer& rowLengthsPointer ) const
+MatrixSetter< Mesh, DifferentialOperator, BoundaryConditions, RowsCapacitiesType >::getCompressedRowLengths(
+   const MeshPointer& meshPointer,
+   const DifferentialOperatorPointer& differentialOperatorPointer,
+   const BoundaryConditionsPointer& boundaryConditionsPointer,
+   RowsCapacitiesTypePointer& rowLengthsPointer ) const
 {
    {
-      TraverserUserData
-         userData( &differentialOperatorPointer.template getData< DeviceType >(),
-                   &boundaryConditionsPointer.template getData< DeviceType >(),
-                   &rowLengthsPointer.template modifyData< DeviceType >() );
+      TraverserUserData userData( &differentialOperatorPointer.template getData< DeviceType >(),
+                                  &boundaryConditionsPointer.template getData< DeviceType >(),
+                                  &rowLengthsPointer.template modifyData< DeviceType >() );
       Meshes::Traverser< MeshType, EntityType > meshTraverser;
-      meshTraverser.template processBoundaryEntities< TraverserBoundaryEntitiesProcessor >
-                                                    ( meshPointer,
-                                                      userData );
-      meshTraverser.template processInteriorEntities< TraverserInteriorEntitiesProcessor >
-                                                    ( meshPointer,
-                                                      userData );
+      meshTraverser.template processBoundaryEntities< TraverserBoundaryEntitiesProcessor >( meshPointer, userData );
+      meshTraverser.template processInteriorEntities< TraverserInteriorEntitiesProcessor >( meshPointer, userData );
    }
 }
 
-} // namespace Matrices
-} // namespace TNL
+}  // namespace Matrices
+}  // namespace TNL

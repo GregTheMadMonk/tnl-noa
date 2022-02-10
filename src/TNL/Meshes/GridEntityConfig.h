@@ -10,7 +10,7 @@ namespace TNL {
 namespace Meshes {
 
 enum GridEntityStencilStorage
-{ 
+{
    GridEntityNoStencil = 0,
    GridEntityCrossStencil,
    GridEntityFullStencil
@@ -19,9 +19,8 @@ enum GridEntityStencilStorage
 template< int storage >
 class GridEntityStencilStorageTag
 {
-   public:
- 
-      static constexpr int stencilStorage = storage;
+public:
+   static constexpr int stencilStorage = storage;
 };
 
 /****
@@ -46,37 +45,39 @@ class GridEntityStencilStorageTag
 
 class GridEntityNoStencilStorage
 {
-   public:
- 
-      template< typename GridEntity >
-      constexpr static bool neighborEntityStorage( int neighborEntityStorage )
-      {
-         return false;
-      }
- 
-      constexpr static int getStencilSize()
-      {
-         return 0;
-      }
+public:
+   template< typename GridEntity >
+   constexpr static bool
+   neighborEntityStorage( int neighborEntityStorage )
+   {
+      return false;
+   }
+
+   constexpr static int
+   getStencilSize()
+   {
+      return 0;
+   }
 };
 
 template< int stencilSize = 1 >
 class GridEntityCrossStencilStorage
 {
-   public:
- 
-      template< typename GridEntity >
-      constexpr static bool neighborEntityStorage( const int neighborEntityDimension )
-      {
-         return ( GridEntity::getEntityDimension() == GridEntity::GridType::getMeshDimension() &&
-                  neighborEntityDimension == GridEntity::GridType::getMeshDimension() );
-      }
- 
-      constexpr static int getStencilSize()
-      {
-         return stencilSize;
-      }
+public:
+   template< typename GridEntity >
+   constexpr static bool
+   neighborEntityStorage( const int neighborEntityDimension )
+   {
+      return ( GridEntity::getEntityDimension() == GridEntity::GridType::getMeshDimension()
+               && neighborEntityDimension == GridEntity::GridType::getMeshDimension() );
+   }
+
+   constexpr static int
+   getStencilSize()
+   {
+      return stencilSize;
+   }
 };
 
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Meshes
+}  // namespace TNL

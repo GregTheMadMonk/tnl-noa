@@ -30,10 +30,12 @@ struct Cuda
 
    Cuda() = default;
    Cuda( const Cuda& ) = default;
-   Cuda( Cuda&& ) = default;
+   Cuda( Cuda&& ) noexcept = default;
 
-   Cuda& operator=( const Cuda& ) = default;
-   Cuda& operator=( Cuda&& ) = default;
+   Cuda&
+   operator=( const Cuda& ) = default;
+   Cuda&
+   operator=( Cuda&& ) noexcept = default;
 
    template< class U >
    Cuda( const Cuda< U >& )
@@ -44,23 +46,26 @@ struct Cuda
    {}
 
    template< class U >
-   Cuda& operator=( const Cuda< U >& )
+   Cuda&
+   operator=( const Cuda< U >& )
    {
       return *this;
    }
 
    template< class U >
-   Cuda& operator=( Cuda< U >&& )
+   Cuda&
+   operator=( Cuda< U >&& )
    {
       return *this;
    }
 
-   value_type* allocate( size_type n )
+   value_type*
+   allocate( size_type n )
    {
 #ifdef HAVE_CUDA
       TNL_CHECK_CUDA_DEVICE;
       value_type* result = nullptr;
-      if( cudaMalloc( (void**) &result, n * sizeof(value_type) ) != cudaSuccess )
+      if( cudaMalloc( (void**) &result, n * sizeof( value_type ) ) != cudaSuccess )
          throw Exceptions::CudaBadAlloc();
       TNL_CHECK_CUDA_DEVICE;
       return result;
@@ -69,7 +74,8 @@ struct Cuda
 #endif
    }
 
-   void deallocate(value_type* ptr, size_type)
+   void
+   deallocate( value_type* ptr, size_type )
    {
 #ifdef HAVE_CUDA
       TNL_CHECK_CUDA_DEVICE;
@@ -81,17 +87,19 @@ struct Cuda
    }
 };
 
-template<class T1, class T2>
-bool operator==(const Cuda<T1>&, const Cuda<T2>&)
+template< class T1, class T2 >
+bool
+operator==( const Cuda< T1 >&, const Cuda< T2 >& )
 {
    return true;
 }
 
-template<class T1, class T2>
-bool operator!=(const Cuda<T1>& lhs, const Cuda<T2>& rhs)
+template< class T1, class T2 >
+bool
+operator!=( const Cuda< T1 >& lhs, const Cuda< T2 >& rhs )
 {
-   return !(lhs == rhs);
+   return ! ( lhs == rhs );
 }
 
-} // namespace Allocators
-} // namespace TNL
+}  // namespace Allocators
+}  // namespace TNL

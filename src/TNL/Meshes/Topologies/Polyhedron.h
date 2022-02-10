@@ -35,6 +35,6 @@ struct Subtopology< Polyhedron, 2 >
    typedef Polygon Topology;
 };
 
-} // namespace Topologies
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Topologies
+}  // namespace Meshes
+}  // namespace TNL

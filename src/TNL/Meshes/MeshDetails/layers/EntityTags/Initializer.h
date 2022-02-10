@@ -21,9 +21,9 @@ namespace EntityTags {
 template< typename MeshConfig, typename Device, typename Mesh >
 class Initializer
 {
-   using DeviceType      = Device;
+   using DeviceType = Device;
    using GlobalIndexType = typename MeshConfig::GlobalIndexType;
-   using LocalIndexType  = typename MeshConfig::LocalIndexType;
+   using LocalIndexType = typename MeshConfig::LocalIndexType;
 
 protected:
    // _T is necessary to force *partial* specialization, since explicit specializations
@@ -31,8 +31,8 @@ protected:
    template< typename CurrentDimension = DimensionTag< MeshConfig::meshDimension >, typename _T = void >
    struct EntityTagsNeedInitialization
    {
-      static constexpr bool value = MeshConfig::entityTagsStorage( CurrentDimension::value ) ||
-                                    EntityTagsNeedInitialization< typename CurrentDimension::Decrement >::value;
+      static constexpr bool value = MeshConfig::entityTagsStorage( CurrentDimension::value )
+                                 || EntityTagsNeedInitialization< typename CurrentDimension::Decrement >::value;
    };
 
    template< typename _T >
@@ -52,7 +52,8 @@ protected:
       template< bool enabled = true, typename _T = void >
       struct Worker
       {
-         static void exec( Mesh& mesh )
+         static void
+         exec( Mesh& mesh )
          {
             mesh.template getEntityTagsView< Dimension >().setValue( 0 );
          }
@@ -61,11 +62,14 @@ protected:
       template< typename _T >
       struct Worker< false, _T >
       {
-         static void exec( Mesh& mesh ) {}
+         static void
+         exec( Mesh& mesh )
+         {}
       };
 
    public:
-      static void exec( Mesh& mesh )
+      static void
+      exec( Mesh& mesh )
       {
          Worker< enabled >::exec( mesh );
       }
@@ -82,7 +86,8 @@ protected:
       struct Worker
       {
          __cuda_callable__
-         static void exec( Mesh& mesh, const GlobalIndexType& faceIndex, const typename Mesh::Face& face )
+         static void
+         exec( Mesh& mesh, const GlobalIndexType& faceIndex, const typename Mesh::Face& face )
          {
             const LocalIndexType subentitiesCount = face.template getSubentitiesCount< Subdimension >();
             for( LocalIndexType i = 0; i < subentitiesCount; i++ ) {
@@ -96,12 +101,15 @@ protected:
       struct Worker< false, _T >
       {
          __cuda_callable__
-         static void exec( Mesh& mesh, const GlobalIndexType& faceIndex, const typename Mesh::Face& face ) {}
+         static void
+         exec( Mesh& mesh, const GlobalIndexType& faceIndex, const typename Mesh::Face& face )
+         {}
       };
 
    public:
       __cuda_callable__
-      static void exec( Mesh& mesh, const GlobalIndexType& faceIndex, const typename Mesh::Face& face )
+      static void
+      exec( Mesh& mesh, const GlobalIndexType& faceIndex, const typename Mesh::Face& face )
       {
          Worker< enabled >::exec( mesh, faceIndex, face );
       }
@@ -117,25 +125,24 @@ public:
    class Worker
    {
    public:
-      static void exec( Mesh& mesh )
+      static void
+      exec( Mesh& mesh )
       {
          // set entities count
          Algorithms::staticFor< int, 0, Mesh::getMeshDimension() + 1 >(
-            [&mesh] ( auto dim ) {
+            [ &mesh ]( auto dim )
+            {
                mesh.template entityTagsSetEntitiesCount< dim >( mesh.template getEntitiesCount< dim >() );
-            }
-         );
+            } );
 
          // reset entity tags
          Algorithms::staticFor< int, 0, Mesh::getMeshDimension() + 1 >(
-            [&mesh] ( auto dim ) {
+            [ &mesh ]( auto dim )
+            {
                ResetEntityTags< dim >::exec( mesh );
-            }
-         );
+            } );
 
-         auto kernel = [] __cuda_callable__
-            ( GlobalIndexType faceIndex,
-              Mesh* mesh )
+         auto kernel = [] __cuda_callable__( GlobalIndexType faceIndex, Mesh * mesh )
          {
             const auto& face = mesh->template getEntity< Mesh::getMeshDimension() - 1 >( faceIndex );
             if( face.template getSuperentitiesCount< Mesh::getMeshDimension() >() == 1 ) {
@@ -146,41 +153,43 @@ public:
                mesh->template addEntityTag< Mesh::getMeshDimension() >( cellIndex, EntityTags::BoundaryEntity );
                // initialize all subentities
                Algorithms::staticFor< int, 0, Mesh::getMeshDimension() - 1 >(
-                  [&mesh, faceIndex, &face] ( auto dim ) {
+                  [ &mesh, faceIndex, &face ]( auto dim )
+                  {
                      InitializeSubentities< dim >::exec( *mesh, faceIndex, face );
-                  }
-               );
+                  } );
             }
          };
 
          const GlobalIndexType facesCount = mesh.template getEntitiesCount< Mesh::getMeshDimension() - 1 >();
          Pointers::DevicePointer< Mesh > meshPointer( mesh );
-         Algorithms::ParallelFor< DeviceType >::exec( (GlobalIndexType) 0, facesCount,
-                                                      kernel,
-                                                      &meshPointer.template modifyData< DeviceType >() );
+         Algorithms::ParallelFor< DeviceType >::exec(
+            (GlobalIndexType) 0, facesCount, kernel, &meshPointer.template modifyData< DeviceType >() );
 
          // update entity tags
          Algorithms::staticFor< int, 0, Mesh::getMeshDimension() + 1 >(
-            [&mesh] ( auto dim ) {
+            [ &mesh ]( auto dim )
+            {
                mesh.template updateEntityTagsLayer< dim >();
-            }
-         );
+            } );
       }
    };
 
    template< typename _T >
    struct Worker< false, _T >
    {
-      static void exec( Mesh& mesh ) {}
+      static void
+      exec( Mesh& mesh )
+      {}
    };
 
 public:
-   void initLayer()
+   void
+   initLayer()
    {
-      Worker<>::exec( *static_cast<Mesh*>(this) );
+      Worker<>::exec( *static_cast< Mesh* >( this ) );
    }
 };
 
-} // namespace EntityTags
-} // namespace Meshes
-} // namespace TNL
+}  // namespace EntityTags
+}  // namespace Meshes
+}  // namespace TNL

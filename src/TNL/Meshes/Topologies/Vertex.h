@@ -21,6 +21,6 @@ struct Vertex
    static constexpr int dimension = 0;
 };
 
-} // namespace Topologies
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Topologies
+}  // namespace Meshes
+}  // namespace TNL

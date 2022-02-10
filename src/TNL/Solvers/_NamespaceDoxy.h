@@ -8,10 +8,8 @@
 
 namespace TNL {
 
-   /**
-    * \brief Namespace for solvers.
-    */
-   namespace Solvers {
-
-   } // namespace Solvers
-} // namespace TNL
+/**
+ * \brief Namespace for solvers.
+ */
+namespace Solvers {}  // namespace Solvers
+}  // namespace TNL

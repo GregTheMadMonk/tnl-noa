@@ -12,8 +12,8 @@
 #include <TNL/Algorithms/Segments/SegmentView.h>
 
 namespace TNL {
-   namespace Algorithms {
-      namespace Segments {
+namespace Algorithms {
+namespace Segments {
 
 template< typename Device,
           typename Index,
@@ -22,126 +22,165 @@ template< typename Device,
           int SliceSize = 32 >
 class SlicedEllpack
 {
-   public:
+public:
+   using DeviceType = Device;
+   using IndexType = std::remove_const_t< Index >;
+   using OffsetsContainer = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
+   static constexpr int
+   getSliceSize()
+   {
+      return SliceSize;
+   }
+   static constexpr ElementsOrganization
+   getOrganization()
+   {
+      return Organization;
+   }
+   using ViewType = SlicedEllpackView< Device, Index, Organization, SliceSize >;
+   template< typename Device_, typename Index_ >
+   using ViewTemplate = SlicedEllpackView< Device_, Index_, Organization, SliceSize >;
+   using ConstViewType = SlicedEllpackView< Device, std::add_const_t< Index >, Organization, SliceSize >;
+   using SegmentViewType = SegmentView< IndexType, Organization >;
 
-      using DeviceType = Device;
-      using IndexType = std::remove_const_t< Index >;
-      using OffsetsContainer = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
-      static constexpr int getSliceSize() { return SliceSize; }
-      static constexpr ElementsOrganization getOrganization() { return Organization; }
-      using ViewType = SlicedEllpackView< Device, Index, Organization, SliceSize >;
-      template< typename Device_, typename Index_ >
-      using ViewTemplate = SlicedEllpackView< Device_, Index_, Organization, SliceSize >;
-      using ConstViewType = SlicedEllpackView< Device, std::add_const_t< Index >, Organization, SliceSize >;
-      using SegmentViewType = SegmentView< IndexType, Organization >;
+   static constexpr bool
+   havePadding()
+   {
+      return true;
+   };
 
-      static constexpr bool havePadding() { return true; };
+   SlicedEllpack() = default;
 
-      SlicedEllpack();
+   template< typename SizesContainer >
+   SlicedEllpack( const SizesContainer& sizes );
 
-      template< typename SizesContainer >
-      SlicedEllpack( const SizesContainer& sizes );
+   template< typename ListIndex >
+   SlicedEllpack( const std::initializer_list< ListIndex >& segmentsSizes );
 
-      template< typename ListIndex >
-      SlicedEllpack( const std::initializer_list< ListIndex >& segmentsSizes );
+   SlicedEllpack( const SlicedEllpack& segments ) = default;
 
-      SlicedEllpack( const SlicedEllpack& segments ) = default;
+   SlicedEllpack( SlicedEllpack&& segments ) noexcept = default;
 
-      SlicedEllpack( SlicedEllpack&& segments ) = default;
+   static std::string
+   getSerializationType();
 
-      static String getSerializationType();
+   static String
+   getSegmentsType();
 
-      static String getSegmentsType();
+   ViewType
+   getView();
 
-      ViewType getView();
+   const ConstViewType
+   getConstView() const;
 
-      const ConstViewType getConstView() const;
+   /**
+    * \brief Set sizes of particular segments.
+    */
+   template< typename SizesHolder = OffsetsContainer >
+   void
+   setSegmentsSizes( const SizesHolder& sizes );
 
-      /**
-       * \brief Set sizes of particular segments.
-       */
-      template< typename SizesHolder = OffsetsContainer >
-      void setSegmentsSizes( const SizesHolder& sizes );
+   void
+   reset();
 
-      void reset();
+   __cuda_callable__
+   IndexType
+   getSegmentsCount() const;
 
-      __cuda_callable__
-      IndexType getSegmentsCount() const;
+   __cuda_callable__
+   IndexType
+   getSegmentSize( IndexType segmentIdx ) const;
 
-      __cuda_callable__
-      IndexType getSegmentSize( const IndexType segmentIdx ) const;
+   /**
+    * \brief Number segments.
+    */
+   __cuda_callable__
+   IndexType
+   getSize() const;
 
-      /**
-       * \brief Number segments.
-       */
-      __cuda_callable__
-      IndexType getSize() const;
+   __cuda_callable__
+   IndexType
+   getStorageSize() const;
 
+   __cuda_callable__
+   IndexType
+   getGlobalIndex( Index segmentIdx, Index localIdx ) const;
 
-      __cuda_callable__
-      IndexType getStorageSize() const;
+   __cuda_callable__
+   SegmentViewType
+   getSegmentView( IndexType segmentIdx ) const;
 
-      __cuda_callable__
-      IndexType getGlobalIndex( const Index segmentIdx, const Index localIdx ) const;
+   /***
+    * \brief Go over all segments and for each segment element call
+    * function 'f' with arguments 'args'. The return type of 'f' is bool.
+    * When its true, the for-loop continues. Once 'f' returns false, the for-loop
+    * is terminated.
+    */
+   template< typename Function >
+   void
+   forElements( IndexType first, IndexType last, Function&& f ) const;
 
-      __cuda_callable__
-      SegmentViewType getSegmentView( const IndexType segmentIdx ) const;
+   template< typename Function >
+   void
+   forAllElements( Function&& f ) const;
 
-      /***
-       * \brief Go over all segments and for each segment element call
-       * function 'f' with arguments 'args'. The return type of 'f' is bool.
-       * When its true, the for-loop continues. Once 'f' returns false, the for-loop
-       * is terminated.
-       */
-      template< typename Function >
-      void forElements( IndexType first, IndexType last, Function&& f ) const;
+   template< typename Function >
+   void
+   forSegments( IndexType begin, IndexType end, Function&& f ) const;
 
-      template< typename Function >
-      void forAllElements( Function&& f ) const;
+   template< typename Function >
+   void
+   forAllSegments( Function&& f ) const;
 
-      template< typename Function >
-      void forSegments( IndexType begin, IndexType end, Function&& f ) const;
+   /***
+    * \brief Go over all segments and perform a reduction in each of them.
+    */
+   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+   void
+   reduceSegments( IndexType first,
+                   IndexType last,
+                   Fetch& fetch,
+                   const Reduction& reduction,
+                   ResultKeeper& keeper,
+                   const Real& zero ) const;
 
-      template< typename Function >
-      void forAllSegments( Function&& f ) const;
+   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+   void
+   reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const;
 
-      /***
-       * \brief Go over all segments and perform a reduction in each of them.
-       */
-      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
-      void reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const;
+   SlicedEllpack&
+   operator=( const SlicedEllpack& source ) = default;
 
-      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
-      void reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const;
+   template< typename Device_, typename Index_, typename IndexAllocator_, ElementsOrganization Organization_ >
+   SlicedEllpack&
+   operator=( const SlicedEllpack< Device_, Index_, IndexAllocator_, Organization_, SliceSize >& source );
 
-      SlicedEllpack& operator=( const SlicedEllpack& source ) = default;
+   void
+   save( File& file ) const;
 
-      template< typename Device_, typename Index_, typename IndexAllocator_, ElementsOrganization Organization_ >
-      SlicedEllpack& operator=( const SlicedEllpack< Device_, Index_, IndexAllocator_, Organization_, SliceSize >& source );
+   void
+   load( File& file );
 
-      void save( File& file ) const;
+   template< typename Fetch >
+   SegmentsPrinter< SlicedEllpack, Fetch >
+   print( Fetch&& fetch ) const;
 
-      void load( File& file );
+protected:
+   IndexType size = 0;
+   IndexType alignedSize = 0;
+   IndexType segmentsCount = 0;
 
-      template< typename Fetch >
-      SegmentsPrinter< SlicedEllpack, Fetch > print( Fetch&& fetch ) const;
-
-   protected:
-
-      IndexType size, alignedSize, segmentsCount;
-
-      OffsetsContainer sliceOffsets, sliceSegmentSizes;
+   OffsetsContainer sliceOffsets, sliceSegmentSizes;
 };
 
-template <typename Device,
-          typename Index,
-          typename IndexAllocator,
-          ElementsOrganization Organization,
-          int SliceSize >
-std::ostream& operator<<( std::ostream& str, const SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >& segments ) { return printSegments( str, segments ); }
+template< typename Device, typename Index, typename IndexAllocator, ElementsOrganization Organization, int SliceSize >
+std::ostream&
+operator<<( std::ostream& str, const SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >& segments )
+{
+   return printSegments( str, segments );
+}
 
-      } // namespace Segements
-   }  // namespace Algorithms
-} // namespace TNL
+}  // namespace Segments
+}  // namespace Algorithms
+}  // namespace TNL
 
 #include <TNL/Algorithms/Segments/SlicedEllpack.hpp>

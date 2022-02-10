@@ -9,15 +9,21 @@
 #include <TNL/Devices/Host.h>
 
 namespace TNL {
-   namespace Algorithms {
-      namespace Segments {
+namespace Algorithms {
+namespace Segments {
 
-enum ElementsOrganization { ColumnMajorOrder = 0, RowMajorOrder };
+enum ElementsOrganization
+{
+   ColumnMajorOrder = 0,
+   RowMajorOrder
+};
 
 template< typename Device >
 struct DefaultElementsOrganization
 {
-   static constexpr ElementsOrganization getOrganization() {
+   static constexpr ElementsOrganization
+   getOrganization()
+   {
       if( std::is_same< Device, Devices::Host >::value )
          return RowMajorOrder;
       else
@@ -25,15 +31,15 @@ struct DefaultElementsOrganization
    };
 };
 
-} // namespace Segments
-} // namespace Algorithms
+}  // namespace Segments
+}  // namespace Algorithms
 
-inline String getSerializationType( Algorithms::Segments::ElementsOrganization Organization )
+inline std::string
+getSerializationType( Algorithms::Segments::ElementsOrganization Organization )
 {
    if( Organization == Algorithms::Segments::RowMajorOrder )
-      return String( "RowMajorOrder" );
-   else
-      return String( "ColumnMajorOrder" );
+      return "RowMajorOrder";
+   return "ColumnMajorOrder";
 }
 
-} // namespace TNL
+}  // namespace TNL

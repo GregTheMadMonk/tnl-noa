@@ -12,102 +12,75 @@
 #include <TNL/Cuda/MemoryHelpers.h>
 #include <TNL/Cuda/SharedMemory.h>
 
+#include <utility>
+
 namespace TNL {
 namespace Matrices {
 
-template< typename Real,
-          typename Device,
-          typename Index >
+template< typename Real, typename Device, typename Index >
 __cuda_callable__
-MatrixView< Real, Device, Index >::
-MatrixView()
-: rows( 0 ),
-  columns( 0 )
-{
-}
+MatrixView< Real, Device, Index >::MatrixView() : rows( 0 ), columns( 0 ) {}
 
-template< typename Real,
-          typename Device,
-          typename Index >
+template< typename Real, typename Device, typename Index >
 __cuda_callable__
-MatrixView< Real, Device, Index >::
-MatrixView( const IndexType rows_,
-            const IndexType columns_,
-            const ValuesView& values_ )
- : rows( rows_ ), columns( columns_ ), values( values_ )
-{
-}
+MatrixView< Real, Device, Index >::MatrixView( const IndexType rows_, const IndexType columns_, ValuesView values_ )
+: rows( rows_ ), columns( columns_ ), values( std::move( values_ ) )
+{}
 
-template< typename Real,
-          typename Device,
-          typename Index >
+template< typename Real, typename Device, typename Index >
 Index
-MatrixView< Real, Device, Index >::
-getAllocatedElementsCount() const
+MatrixView< Real, Device, Index >::getAllocatedElementsCount() const
 {
    return this->values.getSize();
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
+template< typename Real, typename Device, typename Index >
 Index
-MatrixView< Real, Device, Index >::
-getNonzeroElementsCount() const
+MatrixView< Real, Device, Index >::getNonzeroElementsCount() const
 {
    const auto values_view = this->values.getConstView();
-   auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> IndexType {
+   auto fetch = [ = ] __cuda_callable__( const IndexType i ) -> IndexType
+   {
       return ( values_view[ i ] != 0.0 );
    };
-   return Algorithms::reduce< DeviceType >( ( IndexType ) 0, this->values.getSize(), fetch, std::plus<>{}, 0 );
+   return Algorithms::reduce< DeviceType >( (IndexType) 0, this->values.getSize(), fetch, std::plus<>{}, 0 );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
+template< typename Real, typename Device, typename Index >
 __cuda_callable__
-Index MatrixView< Real, Device, Index >::getRows() const
+Index
+MatrixView< Real, Device, Index >::getRows() const
 {
    return this->rows;
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
+template< typename Real, typename Device, typename Index >
 __cuda_callable__
-Index MatrixView< Real, Device, Index >::getColumns() const
+Index
+MatrixView< Real, Device, Index >::getColumns() const
 {
    return this->columns;
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
+template< typename Real, typename Device, typename Index >
 __cuda_callable__
 const typename MatrixView< Real, Device, Index >::ValuesView&
-MatrixView< Real, Device, Index >::
-getValues() const
+MatrixView< Real, Device, Index >::getValues() const
 {
    return this->values;
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
+template< typename Real, typename Device, typename Index >
 __cuda_callable__
 typename MatrixView< Real, Device, Index >::ValuesView&
-MatrixView< Real, Device, Index >::
-getValues()
+MatrixView< Real, Device, Index >::getValues()
 {
    return this->values;
 }
-template< typename Real,
-          typename Device,
-          typename Index >
+template< typename Real, typename Device, typename Index >
 __cuda_callable__
 MatrixView< Real, Device, Index >&
-MatrixView< Real, Device, Index >::
-operator=( const MatrixView& view )
+MatrixView< Real, Device, Index >::operator=( const MatrixView& view )
 {
    rows = view.rows;
    columns = view.columns;
@@ -115,14 +88,12 @@ operator=( const MatrixView& view )
    return *this;
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename MatrixT >
-bool MatrixView< Real, Device, Index >::operator == ( const MatrixT& matrix ) const
+template< typename Real, typename Device, typename Index >
+template< typename MatrixT >
+bool
+MatrixView< Real, Device, Index >::operator==( const MatrixT& matrix ) const
 {
-   if( this->getRows() != matrix.getRows() ||
-       this->getColumns() != matrix.getColumns() )
+   if( this->getRows() != matrix.getRows() || this->getColumns() != matrix.getColumns() )
       return false;
    for( IndexType row = 0; row < this->getRows(); row++ )
       for( IndexType column = 0; column < this->getColumns(); column++ )
@@ -131,19 +102,17 @@ bool MatrixView< Real, Device, Index >::operator == ( const MatrixT& matrix ) co
    return true;
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename MatrixT >
-bool MatrixView< Real, Device, Index >::operator != ( const MatrixT& matrix ) const
+template< typename Real, typename Device, typename Index >
+template< typename MatrixT >
+bool
+MatrixView< Real, Device, Index >::operator!=( const MatrixT& matrix ) const
 {
-   return ! operator == ( matrix );
+   return ! operator==( matrix );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
-void MatrixView< Real, Device, Index >::save( File& file ) const
+template< typename Real, typename Device, typename Index >
+void
+MatrixView< Real, Device, Index >::save( File& file ) const
 {
    Object::save( file );
    file.save( &this->rows );
@@ -151,12 +120,10 @@ void MatrixView< Real, Device, Index >::save( File& file ) const
    file << this->values;
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
-void MatrixView< Real, Device, Index >::print( std::ostream& str ) const
-{
-}
+template< typename Real, typename Device, typename Index >
+void
+MatrixView< Real, Device, Index >::print( std::ostream& str ) const
+{}
 
 /*void
 MatrixView< Real, Device, Index >::
@@ -192,5 +159,5 @@ computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector)
     }
 } */
 
-   } // namespace Matrices
-} // namespace TNL
+}  // namespace Matrices
+}  // namespace TNL

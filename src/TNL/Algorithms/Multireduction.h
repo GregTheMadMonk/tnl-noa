@@ -38,17 +38,9 @@ struct Multireduction< Devices::Sequential >
     *    n: number of datasets to be reduced
     *    result: output array of size = n
     */
-   template< typename Result,
-             typename DataFetcher,
-             typename Reduction,
-             typename Index >
+   template< typename Result, typename DataFetcher, typename Reduction, typename Index >
    static constexpr void
-   reduce( const Result identity,
-           DataFetcher dataFetcher,
-           const Reduction reduction,
-           const Index size,
-           const int n,
-           Result* result );
+   reduce( Result identity, DataFetcher dataFetcher, Reduction reduction, Index size, int n, Result* result );
 };
 
 template<>
@@ -69,17 +61,9 @@ struct Multireduction< Devices::Host >
     *    n: number of datasets to be reduced
     *    result: output array of size = n
     */
-   template< typename Result,
-             typename DataFetcher,
-             typename Reduction,
-             typename Index >
+   template< typename Result, typename DataFetcher, typename Reduction, typename Index >
    static void
-   reduce( const Result identity,
-           DataFetcher dataFetcher,
-           const Reduction reduction,
-           const Index size,
-           const int n,
-           Result* result );
+   reduce( Result identity, DataFetcher dataFetcher, Reduction reduction, Index size, int n, Result* result );
 };
 
 template<>
@@ -100,20 +84,12 @@ struct Multireduction< Devices::Cuda >
     *    n: number of datasets to be reduced
     *    hostResult: output array of size = n
     */
-   template< typename Result,
-             typename DataFetcher,
-             typename Reduction,
-             typename Index >
+   template< typename Result, typename DataFetcher, typename Reduction, typename Index >
    static void
-   reduce( const Result identity,
-           DataFetcher dataFetcher,
-           const Reduction reduction,
-           const Index size,
-           const int n,
-           Result* hostResult );
+   reduce( Result identity, DataFetcher dataFetcher, Reduction reduction, Index size, int n, Result* hostResult );
 };
 
-} // namespace Algorithms
-} // namespace TNL
+}  // namespace Algorithms
+}  // namespace TNL
 
 #include "Multireduction.hpp"

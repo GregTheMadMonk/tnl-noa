@@ -9,34 +9,27 @@
 #include <TNL/Functions/FunctionAdapter.h>
 
 namespace TNL {
-namespace Functions {   
+namespace Functions {
 
-template< typename OutMeshFunction,
-          typename InFunction,
-          typename Real >
+template< typename OutMeshFunction, typename InFunction, typename Real >
 class MeshFunctionEvaluatorTraverserUserData
 {
-   public:
-      typedef InFunction InFunctionType;
+public:
+   using InFunctionType = InFunction;
 
-      MeshFunctionEvaluatorTraverserUserData( const InFunction* function,
-                                              const Real& time,
-                                              OutMeshFunction* meshFunction,
-                                              const Real& outFunctionMultiplicator,
-                                              const Real& inFunctionMultiplicator )
-      : meshFunction( meshFunction ),
-        function( function ),
-        time( time ),
-        outFunctionMultiplicator( outFunctionMultiplicator ),
-        inFunctionMultiplicator( inFunctionMultiplicator )
-      {}
+   MeshFunctionEvaluatorTraverserUserData( const InFunction* function,
+                                           const Real& time,
+                                           OutMeshFunction* meshFunction,
+                                           const Real& outFunctionMultiplicator,
+                                           const Real& inFunctionMultiplicator )
+   : meshFunction( meshFunction ), function( function ), time( time ), outFunctionMultiplicator( outFunctionMultiplicator ),
+     inFunctionMultiplicator( inFunctionMultiplicator )
+   {}
 
-      OutMeshFunction* meshFunction;
-      const InFunction* function;
-      const Real time, outFunctionMultiplicator, inFunctionMultiplicator;
-
+   OutMeshFunction* meshFunction;
+   const InFunction* function;
+   const Real time, outFunctionMultiplicator, inFunctionMultiplicator;
 };
-
 
 /***
  * General mesh function evaluator. As an input function any type implementing
@@ -47,111 +40,108 @@ class MeshFunctionEvaluatorTraverserUserData
  *  evaluateInteriorEntities() - evaluate the input function only on the INTERIOR mesh entities
  *  evaluateBoundaryEntities() - evaluate the input function only on the BOUNDARY mesh entities
  */
-template< typename OutMeshFunction,
-          typename InFunction >
+template< typename OutMeshFunction, typename InFunction >
 class MeshFunctionEvaluator
 {
    static_assert( OutMeshFunction::getDomainDimension() == InFunction::getDomainDimension(),
                   "Input and output functions must have the same domain dimensions." );
 
-   public:
-      typedef typename InFunction::RealType RealType;
-      typedef typename OutMeshFunction::MeshType MeshType;
-      typedef typename MeshType::DeviceType DeviceType;
-      typedef Functions::MeshFunctionEvaluatorTraverserUserData< OutMeshFunction, InFunction, RealType > TraverserUserData;
+public:
+   using RealType = typename InFunction::RealType;
+   using MeshType = typename OutMeshFunction::MeshType;
+   using DeviceType = typename MeshType::DeviceType;
+   using TraverserUserData = Functions::MeshFunctionEvaluatorTraverserUserData< OutMeshFunction, InFunction, RealType >;
 
-      template< typename OutMeshFunctionPointer, typename InFunctionPointer >
-      static void evaluate( OutMeshFunctionPointer& meshFunction,
-                            const InFunctionPointer& function,
-                            const RealType& time = ( RealType ) 0.0,
-                            const RealType& outFunctionMultiplicator = ( RealType ) 0.0,
-                            const RealType& inFunctionMultiplicator = ( RealType ) 1.0 );
+   template< typename OutMeshFunctionPointer, typename InFunctionPointer >
+   static void
+   evaluate( OutMeshFunctionPointer& meshFunction,
+             const InFunctionPointer& function,
+             const RealType& time = (RealType) 0.0,
+             const RealType& outFunctionMultiplicator = (RealType) 0.0,
+             const RealType& inFunctionMultiplicator = (RealType) 1.0 );
 
-      template< typename OutMeshFunctionPointer, typename InFunctionPointer >
-      static void evaluateAllEntities( OutMeshFunctionPointer& meshFunction,
-                                       const InFunctionPointer& function,
-                                       const RealType& time = ( RealType ) 0.0,
-                                       const RealType& outFunctionMultiplicator = ( RealType ) 0.0,
-                                       const RealType& inFunctionMultiplicator = ( RealType ) 1.0 );
- 
-      template< typename OutMeshFunctionPointer, typename InFunctionPointer >
-      static void evaluateInteriorEntities( OutMeshFunctionPointer& meshFunction,
-                                            const InFunctionPointer& function,
-                                            const RealType& time = ( RealType ) 0.0,
-                                            const RealType& outFunctionMultiplicator = ( RealType ) 0.0,
-                                            const RealType& inFunctionMultiplicator = ( RealType ) 1.0 );
+   template< typename OutMeshFunctionPointer, typename InFunctionPointer >
+   static void
+   evaluateAllEntities( OutMeshFunctionPointer& meshFunction,
+                        const InFunctionPointer& function,
+                        const RealType& time = (RealType) 0.0,
+                        const RealType& outFunctionMultiplicator = (RealType) 0.0,
+                        const RealType& inFunctionMultiplicator = (RealType) 1.0 );
 
-      template< typename OutMeshFunctionPointer, typename InFunctionPointer >
-      static void evaluateBoundaryEntities( OutMeshFunctionPointer& meshFunction,
-                                            const InFunctionPointer& function,
-                                            const RealType& time = ( RealType ) 0.0,
-                                            const RealType& outFunctionMultiplicator = ( RealType ) 0.0,
-                                            const RealType& inFunctionMultiplicator = ( RealType ) 1.0 );
+   template< typename OutMeshFunctionPointer, typename InFunctionPointer >
+   static void
+   evaluateInteriorEntities( OutMeshFunctionPointer& meshFunction,
+                             const InFunctionPointer& function,
+                             const RealType& time = (RealType) 0.0,
+                             const RealType& outFunctionMultiplicator = (RealType) 0.0,
+                             const RealType& inFunctionMultiplicator = (RealType) 1.0 );
 
-   protected:
+   template< typename OutMeshFunctionPointer, typename InFunctionPointer >
+   static void
+   evaluateBoundaryEntities( OutMeshFunctionPointer& meshFunction,
+                             const InFunctionPointer& function,
+                             const RealType& time = (RealType) 0.0,
+                             const RealType& outFunctionMultiplicator = (RealType) 0.0,
+                             const RealType& inFunctionMultiplicator = (RealType) 1.0 );
 
-      enum EntitiesType { all, boundary, interior };
- 
-      template< typename OutMeshFunctionPointer, typename InFunctionPointer >
-      static void evaluateEntities( OutMeshFunctionPointer& meshFunction,
-                                    const InFunctionPointer& function,
-                                    const RealType& time,
-                                    const RealType& outFunctionMultiplicator,
-                                    const RealType& inFunctionMultiplicator,
-                                    EntitiesType entitiesType );
+protected:
+   enum EntitiesType
+   {
+      all,
+      boundary,
+      interior
+   };
 
- 
+   template< typename OutMeshFunctionPointer, typename InFunctionPointer >
+   static void
+   evaluateEntities( OutMeshFunctionPointer& meshFunction,
+                     const InFunctionPointer& function,
+                     const RealType& time,
+                     const RealType& outFunctionMultiplicator,
+                     const RealType& inFunctionMultiplicator,
+                     EntitiesType entitiesType );
 };
 
-
-template< typename MeshType,
-          typename UserData >
+template< typename MeshType, typename UserData >
 class MeshFunctionEvaluatorAssignmentEntitiesProcessor
 {
-   public:
-
-      template< typename EntityType >
-      __cuda_callable__
-      static inline void processEntity( const MeshType& mesh,
-                                        UserData& userData,
-                                        const EntityType& entity )
-      {
-         typedef FunctionAdapter< MeshType, typename UserData::InFunctionType > FunctionAdapter;
-         ( *userData.meshFunction )( entity ) =
-            userData.inFunctionMultiplicator *
-            FunctionAdapter::getValue( *userData.function, entity, userData.time );
-         /*cerr << "Idx = " << entity.getIndex()
-            << " Value = " << FunctionAdapter::getValue( *userData.function, entity, userData.time )
-            << " stored value = " << ( *userData.meshFunction )( entity )
-            << " multiplicators = " << std::endl;*/
-      }
+public:
+   template< typename EntityType >
+   __cuda_callable__
+   static inline void
+   processEntity( const MeshType& mesh, UserData& userData, const EntityType& entity )
+   {
+      using FunctionAdapter = FunctionAdapter< MeshType, typename UserData::InFunctionType >;
+      ( *userData.meshFunction )( entity ) =
+         userData.inFunctionMultiplicator * FunctionAdapter::getValue( *userData.function, entity, userData.time );
+      /*cerr << "Idx = " << entity.getIndex()
+         << " Value = " << FunctionAdapter::getValue( *userData.function, entity, userData.time )
+         << " stored value = " << ( *userData.meshFunction )( entity )
+         << " multiplicators = " << std::endl;*/
+   }
 };
 
-template< typename MeshType,
-          typename UserData >
+template< typename MeshType, typename UserData >
 class MeshFunctionEvaluatorAdditionEntitiesProcessor
 {
-   public:
-
-      template< typename EntityType >
-      __cuda_callable__
-      static inline void processEntity( const MeshType& mesh,
-                                        UserData& userData,
-                                        const EntityType& entity )
-      {
-         typedef FunctionAdapter< MeshType, typename UserData::InFunctionType > FunctionAdapter;
-         ( *userData.meshFunction )( entity ) =
-            userData.outFunctionMultiplicator * ( *userData.meshFunction )( entity ) +
-            userData.inFunctionMultiplicator *
-            FunctionAdapter::getValue( *userData.function, entity, userData.time );
-         /*cerr << "Idx = " << entity.getIndex()
-            << " Value = " << FunctionAdapter::getValue( *userData.function, entity, userData.time )
-            << " stored value = " << ( *userData.meshFunction )( entity )
-            << " multiplicators = " << std::endl;*/
-      }
+public:
+   template< typename EntityType >
+   __cuda_callable__
+   static inline void
+   processEntity( const MeshType& mesh, UserData& userData, const EntityType& entity )
+   {
+      using FunctionAdapter = FunctionAdapter< MeshType, typename UserData::InFunctionType >;
+      ( *userData.meshFunction )( entity ) =
+         userData.outFunctionMultiplicator * ( *userData.meshFunction )( entity )
+         + userData.inFunctionMultiplicator * FunctionAdapter::getValue( *userData.function, entity, userData.time );
+      /*cerr << "Idx = " << entity.getIndex()
+         << " Value = " << FunctionAdapter::getValue( *userData.function, entity, userData.time )
+         << " stored value = " << ( *userData.meshFunction )( entity )
+         << " multiplicators = " << std::endl;*/
+   }
 };
 
-} // namespace Functions
-} // namespace TNL
+}  // namespace Functions
+}  // namespace TNL
 
 #include <TNL/Functions/MeshFunctionEvaluator_impl.h>

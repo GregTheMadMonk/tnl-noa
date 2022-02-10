@@ -7,7 +7,7 @@
 #pragma once
 
 namespace TNL {
-namespace Operators {   
+namespace Operators {
 
 template< typename Mesh,
           typename Real,
@@ -19,13 +19,11 @@ template< typename Mesh,
           int YDirection,
           int ZDirection >
 class FiniteDifferences
-{
-};
+{};
 
-} // namespace Operators
-} // namespace TNL
+}  // namespace Operators
+}  // namespace TNL
 
 #include <TNL/Operators/fdm/FiniteDifferences_1D.h>
 #include <TNL/Operators/fdm/FiniteDifferences_2D.h>
 #include <TNL/Operators/fdm/FiniteDifferences_3D.h>
-

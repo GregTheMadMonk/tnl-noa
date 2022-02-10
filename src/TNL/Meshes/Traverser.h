@@ -24,34 +24,29 @@ public:
    using DeviceType = typename MeshType::DeviceType;
    using GlobalIndexType = typename MeshType::GlobalIndexType;
 
-   template< typename EntitiesProcessor,
-             typename UserData >
-   void processBoundaryEntities( const MeshPointer& meshPointer,
-                                 UserData userData ) const;
+   template< typename EntitiesProcessor, typename UserData >
+   void
+   processBoundaryEntities( const MeshPointer& meshPointer, UserData userData ) const;
 
-   template< typename EntitiesProcessor,
-             typename UserData >
-   void processInteriorEntities( const MeshPointer& meshPointer,
-                                 UserData userData ) const;
+   template< typename EntitiesProcessor, typename UserData >
+   void
+   processInteriorEntities( const MeshPointer& meshPointer, UserData userData ) const;
 
-   template< typename EntitiesProcessor,
-             typename UserData >
-   void processAllEntities( const MeshPointer& meshPointer,
-                            UserData userData ) const;
+   template< typename EntitiesProcessor, typename UserData >
+   void
+   processAllEntities( const MeshPointer& meshPointer, UserData userData ) const;
 
-   template< typename EntitiesProcessor,
-             typename UserData >
-   void processGhostEntities( const MeshPointer& meshPointer,
-                              UserData userData ) const;
+   template< typename EntitiesProcessor, typename UserData >
+   void
+   processGhostEntities( const MeshPointer& meshPointer, UserData userData ) const;
 
-   template< typename EntitiesProcessor,
-             typename UserData >
-   void processLocalEntities( const MeshPointer& meshPointer,
-                              UserData userData ) const;
+   template< typename EntitiesProcessor, typename UserData >
+   void
+   processLocalEntities( const MeshPointer& meshPointer, UserData userData ) const;
 };
 
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Meshes
+}  // namespace TNL
 
 #include <TNL/Meshes/Traverser.hpp>
 #include <TNL/Meshes/GridDetails/Traverser_Grid1D.h>

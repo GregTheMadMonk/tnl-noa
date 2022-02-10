@@ -54,22 +54,19 @@ template< typename Mesh,
 class ExplicitUpdater
 {
    public:
-      typedef Mesh MeshType;
-      typedef Pointers::SharedPointer<  MeshType > MeshPointer;
-      typedef typename MeshFunction::RealType RealType;
-      typedef typename MeshFunction::DeviceType DeviceType;
-      typedef typename MeshFunction::IndexType IndexType;
-      typedef ExplicitUpdaterTraverserUserData< RealType,
-                                                MeshFunction,
-                                                DifferentialOperator,
-                                                BoundaryConditions,
-                                                RightHandSide > TraverserUserData;
-      typedef Pointers::SharedPointer<  DifferentialOperator, DeviceType > DifferentialOperatorPointer;
-      typedef Pointers::SharedPointer<  BoundaryConditions, DeviceType > BoundaryConditionsPointer;
-      typedef Pointers::SharedPointer<  RightHandSide, DeviceType > RightHandSidePointer;
-      typedef Pointers::SharedPointer<  MeshFunction, DeviceType > MeshFunctionPointer;
-      typedef Pointers::SharedPointer<  TraverserUserData, DeviceType > TraverserUserDataPointer;
-      
+      using MeshType = Mesh;
+      using MeshPointer = Pointers::SharedPointer< MeshType >;
+      using RealType = typename MeshFunction::RealType;
+      using DeviceType = typename MeshFunction::DeviceType;
+      using IndexType = typename MeshFunction::IndexType;
+      using TraverserUserData =
+         ExplicitUpdaterTraverserUserData< RealType, MeshFunction, DifferentialOperator, BoundaryConditions, RightHandSide >;
+      using DifferentialOperatorPointer = Pointers::SharedPointer< DifferentialOperator, DeviceType >;
+      using BoundaryConditionsPointer = Pointers::SharedPointer< BoundaryConditions, DeviceType >;
+      using RightHandSidePointer = Pointers::SharedPointer< RightHandSide, DeviceType >;
+      using MeshFunctionPointer = Pointers::SharedPointer< MeshFunction, DeviceType >;
+      using TraverserUserDataPointer = Pointers::SharedPointer< TraverserUserData, DeviceType >;
+
       void setDifferentialOperator( const DifferentialOperatorPointer& differentialOperatorPointer )
       {
          this->userDataPointer->differentialOperator = &differentialOperatorPointer.template getData< DeviceType >();
@@ -165,8 +162,7 @@ class ExplicitUpdater
       class TraverserInteriorEntitiesProcessor
       {
          public:
-
-            typedef typename MeshType::PointType PointType;
+            using PointType = typename MeshType::PointType;
 
             template< typename EntityType >
             __cuda_callable__
@@ -174,7 +170,7 @@ class ExplicitUpdater
                                               TraverserUserData& userData,
                                               const EntityType& entity )
             {
-               typedef Functions::FunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
+               using FunctionAdapter = Functions::FunctionAdapter< MeshType, RightHandSide >;
                ( *userData.fu )( entity )  = 
                   ( *userData.differentialOperator )( *userData.u, entity, userData.time );
                // TODO: fix the right hand side here !!!
@@ -188,7 +184,7 @@ class ExplicitUpdater
                                               const IndexType& entityIndex,
                                               const typename MeshType::CoordinatesType& coordinates )
             {
-               typedef Functions::FunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
+               using FunctionAdapter = Functions::FunctionAdapter< MeshType, RightHandSide >;
                userData.real_fu[ entityIndex ] = 
                        ( *userData.differentialOperator )( mesh, userData.real_u, entityIndex, coordinates, userData.time );
                // TODO: fix the right hand side here !!!

@@ -29,6 +29,6 @@ struct Subtopology< Polygon, 1 >
    typedef Edge Topology;
 };
 
-} // namespace Topologies
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Topologies
+}  // namespace Meshes
+}  // namespace TNL

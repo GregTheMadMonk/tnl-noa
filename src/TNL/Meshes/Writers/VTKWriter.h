@@ -20,45 +20,44 @@ class VTKWriter
 {
    static_assert( Mesh::getMeshDimension() <= 3, "The VTK format supports only 1D, 2D and 3D meshes." );
    // TODO: check also space dimension when grids allow it
-//   static_assert( Mesh::getSpaceDimension() <= 3, "The VTK format supports only 1D, 2D and 3D meshes." );
+   //   static_assert( Mesh::getSpaceDimension() <= 3, "The VTK format supports only 1D, 2D and 3D meshes." );
 
 public:
-
    VTKWriter() = delete;
 
-   VTKWriter( std::ostream& str, VTK::FileFormat format = VTK::FileFormat::binary )
-   : str(str.rdbuf()), format(format)
+   VTKWriter( std::ostream& str, VTK::FileFormat format = VTK::FileFormat::binary ) : str( str.rdbuf() ), format( format )
    {
       if( format != VTK::FileFormat::ascii && format != VTK::FileFormat::binary )
-         throw std::domain_error("The Legacy VTK file formats support only ASCII and BINARY formats.");
+         throw std::domain_error( "The Legacy VTK file formats support only ASCII and BINARY formats." );
    }
 
    // If desired, cycle and time of the simulation can put into the file. This follows the instructions at
    // http://www.visitusers.org/index.php?title=Time_and_Cycle_in_VTK_files
-   void writeMetadata( std::int32_t cycle = -1, double time = -1 );
+   void
+   writeMetadata( std::int32_t cycle = -1, double time = -1 );
 
    template< int EntityDimension = Mesh::getMeshDimension() >
-   void writeEntities( const Mesh& mesh );
+   void
+   writeEntities( const Mesh& mesh );
 
    template< typename Array >
-   void writePointData( const Array& array,
-                        const std::string& name,
-                        const int numberOfComponents = 1 );
+   void
+   writePointData( const Array& array, const std::string& name, int numberOfComponents = 1 );
 
    template< typename Array >
-   void writeCellData( const Array& array,
-                       const std::string& name,
-                       const int numberOfComponents = 1 );
+   void
+   writeCellData( const Array& array, const std::string& name, int numberOfComponents = 1 );
 
    template< typename Array >
-   void writeDataArray( const Array& array,
-                        const std::string& name,
-                        const int numberOfComponents = 1 );
+   void
+   writeDataArray( const Array& array, const std::string& name, int numberOfComponents = 1 );
 
 protected:
-   void writePoints( const Mesh& mesh );
+   void
+   writePoints( const Mesh& mesh );
 
-   void writeHeader();
+   void
+   writeHeader();
 
    std::ostream str;
 
@@ -81,8 +80,8 @@ protected:
    VTK::DataType currentSection = VTK::DataType::CellData;
 };
 
-} // namespace Writers
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Writers
+}  // namespace Meshes
+}  // namespace TNL
 
 #include <TNL/Meshes/Writers/VTKWriter.hpp>

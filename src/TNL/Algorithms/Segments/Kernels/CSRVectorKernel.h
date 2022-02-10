@@ -13,11 +13,10 @@
 #include <TNL/Algorithms/Segments/detail/LambdaAdapter.h>
 
 namespace TNL {
-   namespace Algorithms {
-      namespace Segments {
+namespace Algorithms {
+namespace Segments {
 
-template< typename Index,
-          typename Device >
+template< typename Index, typename Device >
 struct CSRVectorKernel
 {
    using IndexType = Index;
@@ -26,34 +25,35 @@ struct CSRVectorKernel
    using ConstViewType = CSRVectorKernel< Index, Device >;
 
    template< typename Offsets >
-   void init( const Offsets& offsets );
+   void
+   init( const Offsets& offsets );
 
-   void reset();
+   void
+   reset();
 
-   ViewType getView();
+   ViewType
+   getView();
 
-   ConstViewType getConstView() const;
+   ConstViewType
+   getConstView() const;
 
-   static TNL::String getKernelType();
+   static TNL::String
+   getKernelType();
 
-   template< typename OffsetsView,
-             typename Fetch,
-             typename Reduction,
-             typename ResultKeeper,
-             typename Real,
-             typename... Args >
-   static void reduceSegments( const OffsetsView& offsets,
-                                  Index first,
-                                  Index last,
-                                  Fetch& fetch,
-                                  const Reduction& reduction,
-                                  ResultKeeper& keeper,
-                                  const Real& zero,
-                                  Args... args );
+   template< typename OffsetsView, typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+   static void
+   reduceSegments( const OffsetsView& offsets,
+                   Index first,
+                   Index last,
+                   Fetch& fetch,
+                   const Reduction& reduction,
+                   ResultKeeper& keeper,
+                   const Real& zero,
+                   Args... args );
 };
 
-      } // namespace Segments
-   }  // namespace Algorithms
-} // namespace TNL
+}  // namespace Segments
+}  // namespace Algorithms
+}  // namespace TNL
 
 #include <TNL/Algorithms/Segments/Kernels/CSRVectorKernel.hpp>

@@ -318,7 +318,7 @@ endif()
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin )
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib )
 include_directories( src )
-include_directories( src/3rdparty )
+include_directories( SYSTEM src/3rdparty )
 
 # Add all subdirectories
 add_subdirectory( src )
@@ -330,6 +330,10 @@ if( ${BUILD_DOC} )
    add_subdirectory( Documentation/Examples )
    add_subdirectory( Documentation/Tutorials )
 endif()
+
+# export compile_commands.json so it can be used by Clang tools
+# https://clang.llvm.org/docs/JSONCompilationDatabase.html
+set( CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "" )
 
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Template Numerical Library")
 set(CPACK_PACKAGE_VENDOR "MMG")

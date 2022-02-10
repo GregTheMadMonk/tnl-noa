@@ -19,8 +19,8 @@
 #include <TNL/Solvers/Linear/LinearSolver.h>
 
 namespace TNL {
-   namespace Solvers {
-      namespace Linear {
+namespace Solvers {
+namespace Linear {
 
 /**
  * \brief Iterative solver of linear systems based on the BICGStab(l) method.
@@ -52,107 +52,109 @@ namespace TNL {
  * \tparam Matrix is type of matrix describing the linear system.
  */
 template< typename Matrix >
-class BICGStabL
-: public LinearSolver< Matrix >
+class BICGStabL : public LinearSolver< Matrix >
 {
    using Base = LinearSolver< Matrix >;
 
    // compatibility shortcut
    using Traits = Linear::Traits< Matrix >;
 
-   public:
+public:
+   /**
+    * \brief Floating point type used for computations.
+    */
+   using RealType = typename Base::RealType;
 
-      /**
-       * \brief Floating point type used for computations.
-       */
-      using RealType = typename Base::RealType;
+   /**
+    * \brief Device where the solver will run on and auxillary data will alloacted on.
+    */
+   using DeviceType = typename Base::DeviceType;
 
-      /**
-       * \brief Device where the solver will run on and auxillary data will alloacted on.
-       */
-      using DeviceType = typename Base::DeviceType;
+   /**
+    * \brief Type for indexing.
+    */
+   using IndexType = typename Base::IndexType;
 
-      /**
-       * \brief Type for indexing.
-       */
-      using IndexType = typename Base::IndexType;
+   /**
+    * \brief Type for vector view.
+    */
+   using VectorViewType = typename Base::VectorViewType;
 
-      /**
-       * \brief Type for vector view.
-       */
-      using VectorViewType = typename Base::VectorViewType;
+   /**
+    * \brief Type for constant vector view.
+    */
+   using ConstVectorViewType = typename Base::ConstVectorViewType;
 
-      /**
-       * \brief Type for constant vector view.
-       */
-      using ConstVectorViewType = typename Base::ConstVectorViewType;
+   /**
+    * \brief This is method defines configuration entries for setup of the linear iterative solver.
+    *
+    * In addition to config entries defined by \ref IterativeSolver::configSetup, this method
+    * defines the following:
+    *
+    * \e bicgstab-ell - number of Bi-CG iterations before the MR part starts.
+    *
+    * \e bicgstab-exact-residue - says whether the BiCGstab should compute the exact residue in
+    *                             each step (true) or to use a cheap approximation (false).
+    *
+    * \param config contains description of configuration parameters.
+    * \param prefix is a prefix of particular configuration entries.
+    */
+   static void
+   configSetup( Config::ConfigDescription& config, const String& prefix = "" );
 
-      /**
-       * \brief This is method defines configuration entries for setup of the linear iterative solver.
-       *
-       * In addition to config entries defined by \ref IterativeSolver::configSetup, this method
-       * defines the following:
-       *
-       * \e bicgstab-ell - number of Bi-CG iterations before the MR part starts.
-       *
-       * \e bicgstab-exact-residue - says whether the BiCGstab should compute the exact residue in
-       *                             each step (true) or to use a cheap approximation (false).
-       *
-       * \param config contains description of configuration parameters.
-       * \param prefix is a prefix of particular configuration entries.
-       */
-      static void configSetup( Config::ConfigDescription& config,
-                              const String& prefix = "" );
+   /**
+    * \brief Method for setup of the linear iterative solver based on configuration parameters.
+    *
+    * \param parameters contains values of the define configuration entries.
+    * \param prefix is a prefix of particular configuration entries.
+    */
+   bool
+   setup( const Config::ParameterContainer& parameters, const String& prefix = "" ) override;
 
-      /**
-       * \brief Method for setup of the linear iterative solver based on configuration parameters.
-       *
-       * \param parameters contains values of the define configuration entries.
-       * \param prefix is a prefix of particular configuration entries.
-       */
-      bool setup( const Config::ParameterContainer& parameters,
-                  const String& prefix = "" ) override;
+   /**
+    * \brief Method for solving of a linear system.
+    *
+    * See \ref LinearSolver::solve for more details.
+    *
+    * \param b vector with the right-hand side of the linear system.
+    * \param x vector for the solution of the linear system.
+    * \return true if the solver converged.
+    * \return false if the solver did not converge.
+    */
+   bool
+   solve( ConstVectorViewType b, VectorViewType x ) override;
 
-      /**
-       * \brief Method for solving of a linear system.
-       *
-       * See \ref LinearSolver::solve for more details.
-       *
-       * \param b vector with the right-hand side of the linear system.
-       * \param x vector for the solution of the linear system.
-       * \return true if the solver converged.
-       * \return false if the solver did not converge.
-       */
-      bool solve( ConstVectorViewType b, VectorViewType x ) override;
+protected:
+   using VectorType = typename Traits::VectorType;
+   using DeviceVector = Containers::Vector< RealType, DeviceType, IndexType >;
+   using HostVector = Containers::Vector< RealType, Devices::Host, IndexType >;
 
-   protected:
-      using VectorType = typename Traits::VectorType;
-      using DeviceVector = Containers::Vector< RealType, DeviceType, IndexType >;
-      using HostVector = Containers::Vector< RealType, Devices::Host, IndexType >;
+   void
+   compute_residue( VectorViewType r, ConstVectorViewType x, ConstVectorViewType b );
 
-      void compute_residue( VectorViewType r, ConstVectorViewType x, ConstVectorViewType b );
+   void
+   preconditioned_matvec( ConstVectorViewType src, VectorViewType dst );
 
-      void preconditioned_matvec( ConstVectorViewType src, VectorViewType dst );
+   void
+   setSize( const VectorViewType& x );
 
-      void setSize( const VectorViewType& x );
+   int ell = 1;
 
-      int ell = 1;
+   bool exact_residue = false;
 
-      bool exact_residue = false;
+   // matrices (in column-major format)
+   DeviceVector R, U;
+   // single vectors (distributed)
+   VectorType r_ast, M_tmp, res_tmp;
+   // host-only storage
+   HostVector T, sigma, g_0, g_1, g_2;
 
-      // matrices (in column-major format)
-      DeviceVector R, U;
-      // single vectors (distributed)
-      VectorType r_ast, M_tmp, res_tmp;
-      // host-only storage
-      HostVector T, sigma, g_0, g_1, g_2;
-
-      IndexType size = 0;
-      IndexType ldSize = 0;
+   IndexType size = 0;
+   IndexType ldSize = 0;
 };
 
-      } // namespace Linear
-   } // namespace Solvers
-} // namespace TNL
+}  // namespace Linear
+}  // namespace Solvers
+}  // namespace TNL
 
 #include <TNL/Solvers/Linear/BICGStabL.hpp>

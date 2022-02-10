@@ -28,5 +28,5 @@ struct ScopedInitializer
    }
 };
 
-} // namespace MPI
-} // namespace TNL
+}  // namespace MPI
+}  // namespace TNL

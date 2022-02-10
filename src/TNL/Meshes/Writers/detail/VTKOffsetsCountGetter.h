@@ -13,14 +13,13 @@ namespace Meshes {
 namespace Writers {
 namespace detail {
 
-template< typename Mesh,
-          int EntityDimension,
-          typename EntityType = typename Mesh::template EntityType< EntityDimension > >
+template< typename Mesh, int EntityDimension, typename EntityType = typename Mesh::template EntityType< EntityDimension > >
 struct VTKOffsetsCountGetter
 {
    using IndexType = typename Mesh::GlobalIndexType;
 
-   static IndexType getOffsetsCount( const Mesh& mesh )
+   static IndexType
+   getOffsetsCount( const Mesh& mesh )
    {
       const IndexType entitiesCount = mesh.template getEntitiesCount< EntityType >();
       const IndexType verticesPerEntity = VerticesPerEntity< EntityType >::count;
@@ -29,11 +28,14 @@ struct VTKOffsetsCountGetter
 };
 
 template< typename Mesh, int EntityDimension >
-struct VTKOffsetsCountGetter< Mesh, EntityDimension, MeshEntity< typename Mesh::Config, typename Mesh::DeviceType, Topologies::Polygon > >
+struct VTKOffsetsCountGetter< Mesh,
+                              EntityDimension,
+                              MeshEntity< typename Mesh::Config, typename Mesh::DeviceType, Topologies::Polygon > >
 {
    using IndexType = typename Mesh::GlobalIndexType;
 
-   static IndexType getOffsetsCount( const Mesh& mesh )
+   static IndexType
+   getOffsetsCount( const Mesh& mesh )
    {
       const IndexType entitiesCount = mesh.template getEntitiesCount< EntityDimension >();
       IndexType offsetsCount = 0;
@@ -44,11 +46,14 @@ struct VTKOffsetsCountGetter< Mesh, EntityDimension, MeshEntity< typename Mesh::
 };
 
 template< typename Mesh, int EntityDimension >
-struct VTKOffsetsCountGetter< Mesh, EntityDimension, MeshEntity< typename Mesh::Config, typename Mesh::DeviceType, Topologies::Polyhedron > >
+struct VTKOffsetsCountGetter< Mesh,
+                              EntityDimension,
+                              MeshEntity< typename Mesh::Config, typename Mesh::DeviceType, Topologies::Polyhedron > >
 {
    using IndexType = typename Mesh::GlobalIndexType;
 
-   static IndexType getOffsetsCount( const Mesh& mesh )
+   static IndexType
+   getOffsetsCount( const Mesh& mesh )
    {
       const IndexType entitiesCount = mesh.template getEntitiesCount< EntityDimension >();
       IndexType offsetsCount = 0;
@@ -68,7 +73,7 @@ struct VTKOffsetsCountGetter< Mesh, EntityDimension, MeshEntity< typename Mesh::
    }
 };
 
-} // namespace detail
-} // namespace Writers
-} // namespace Meshes
-} // namespace TNL
+}  // namespace detail
+}  // namespace Writers
+}  // namespace Meshes
+}  // namespace TNL

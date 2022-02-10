@@ -25,14 +25,11 @@ namespace Meshes {
  *  DYNAMIC TOPOLOGY
  *       FALSE
  */
-template< typename MeshConfig,
-          typename Device,
-          typename EntityTopology,
-          int Dimension >
+template< typename MeshConfig, typename Device, typename EntityTopology, int Dimension >
 class MeshSubentityTraits< MeshConfig, Device, EntityTopology, Dimension, false >
 {
    using GlobalIndexType = typename MeshConfig::GlobalIndexType;
-   using LocalIndexType  = typename MeshConfig::LocalIndexType;
+   using LocalIndexType = typename MeshConfig::LocalIndexType;
 
 public:
    static_assert( 0 <= Dimension && Dimension <= MeshConfig::meshDimension, "invalid dimension" );
@@ -42,17 +39,13 @@ public:
    static constexpr int count = Topologies::Subtopology< EntityTopology, Dimension >::count;
 
    using SubentityTopology = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityTopology;
-   using SubentityType     = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityType;
+   using SubentityType = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityType;
 
-   template< LocalIndexType subentityIndex,
-             LocalIndexType subentityVertexIndex >
+   template< LocalIndexType subentityIndex, LocalIndexType subentityVertexIndex >
    struct Vertex
    {
-      static constexpr int index = Topologies::SubentityVertexMap<
-                  EntityTopology,
-                  SubentityTopology,
-                  subentityIndex,
-                  subentityVertexIndex >::index;
+      static constexpr int index =
+         Topologies::SubentityVertexMap< EntityTopology, SubentityTopology, subentityIndex, subentityVertexIndex >::index;
    };
 };
 
@@ -62,14 +55,11 @@ public:
  *  DYNAMIC TOPOLOGY
  *       TRUE
  */
-template< typename MeshConfig,
-          typename Device,
-          typename EntityTopology,
-          int Dimension >
+template< typename MeshConfig, typename Device, typename EntityTopology, int Dimension >
 class MeshSubentityTraits< MeshConfig, Device, EntityTopology, Dimension, true >
 {
    using GlobalIndexType = typename MeshConfig::GlobalIndexType;
-   using LocalIndexType  = typename MeshConfig::LocalIndexType;
+   using LocalIndexType = typename MeshConfig::LocalIndexType;
 
 public:
    static_assert( 0 <= Dimension && Dimension <= MeshConfig::meshDimension, "invalid dimension" );
@@ -78,8 +68,8 @@ public:
    static constexpr bool storageEnabled = MeshConfig::subentityStorage( EntityTopology::dimension, Dimension );
 
    using SubentityTopology = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityTopology;
-   using SubentityType     = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityType;
+   using SubentityType = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityType;
 };
 
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Meshes
+}  // namespace TNL

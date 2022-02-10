@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <stdlib.h> // srand48
+#include <cstdlib>  // srand48
 #include <numeric>  // std::partial_sum
 
 #include <TNL/Benchmarks/Benchmarks.h>
@@ -39,8 +39,14 @@ benchmarkVectorOperations( Benchmark<> & benchmark,
 
    double datasetSize = (double) size * sizeof( Real ) / oneGB;
 
-   HostVector hostVector( size ), hostVector2( size ), hostVector3( size ), hostVector4( size );
-   CudaVector deviceVector, deviceVector2, deviceVector3, deviceVector4;
+   HostVector hostVector( size );
+   HostVector hostVector2( size );
+   HostVector hostVector3( size );
+   HostVector hostVector4( size );
+   CudaVector deviceVector;
+   CudaVector deviceVector2;
+   CudaVector deviceVector3;
+   CudaVector deviceVector4;
 #ifdef HAVE_CUDA
    deviceVector.setSize( size );
    deviceVector2.setSize( size );
@@ -48,12 +54,16 @@ benchmarkVectorOperations( Benchmark<> & benchmark,
    deviceVector4.setSize( size );
 #endif
 
-   HostView hostView( hostVector ), hostView2( hostVector2 ), hostView3( hostVector3 ), hostView4( hostVector4 );
+   HostView hostView( hostVector );
+   HostView hostView2( hostVector2 );
+   HostView hostView3( hostVector3 );
+   HostView hostView4( hostVector4 );
 #ifdef HAVE_CUDA
    CudaView deviceView( deviceVector ), deviceView2( deviceVector2 ), deviceView3( deviceVector3 ), deviceView4( deviceVector4 );
 #endif
 
-   Real resultHost, resultDevice;
+   Real resultHost;
+   Real resultDevice;
 
 #ifdef HAVE_CUDA
    cublasHandle_t cublasHandle;

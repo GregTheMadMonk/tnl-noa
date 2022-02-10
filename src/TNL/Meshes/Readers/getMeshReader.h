@@ -24,16 +24,15 @@ namespace Meshes {
 namespace Readers {
 
 inline std::shared_ptr< MeshReader >
-getMeshReader( const std::string& fileName,
-               const std::string& fileFormat )
+getMeshReader( const std::string& fileName, const std::string& fileFormat )
 {
    namespace fs = std::experimental::filesystem;
    std::string format = fileFormat;
    if( format == "auto" ) {
-      format = fs::path(fileName).extension();
+      format = fs::path( fileName ).extension();
       if( format.length() > 0 )
          // remove dot from the extension
-         format = format.substr(1);
+         format = format.substr( 1 );
    }
 
    if( format == "ng" )
@@ -59,6 +58,6 @@ getMeshReader( const std::string& fileName,
    return nullptr;
 }
 
-} // namespace Readers
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Readers
+}  // namespace Meshes
+}  // namespace TNL

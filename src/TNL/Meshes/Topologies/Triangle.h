@@ -23,11 +23,10 @@ struct Triangle
    static constexpr int dimension = 2;
 };
 
-
 template<>
 struct Subtopology< Triangle, 0 >
 {
-   typedef Vertex Topology;
+   using Topology = Vertex;
 
    static constexpr int count = 3;
 };
@@ -35,21 +34,44 @@ struct Subtopology< Triangle, 0 >
 template<>
 struct Subtopology< Triangle, 1 >
 {
-   typedef Edge Topology;
+   using Topology = Edge;
 
    static constexpr int count = 3;
 };
 
+template<>
+struct SubentityVertexMap< Triangle, Edge, 0, 0 >
+{
+   static constexpr int index = 1;
+};
+template<>
+struct SubentityVertexMap< Triangle, Edge, 0, 1 >
+{
+   static constexpr int index = 2;
+};
 
-template<> struct SubentityVertexMap< Triangle, Edge, 0, 0> { static constexpr int index = 1; };
-template<> struct SubentityVertexMap< Triangle, Edge, 0, 1> { static constexpr int index = 2; };
+template<>
+struct SubentityVertexMap< Triangle, Edge, 1, 0 >
+{
+   static constexpr int index = 2;
+};
+template<>
+struct SubentityVertexMap< Triangle, Edge, 1, 1 >
+{
+   static constexpr int index = 0;
+};
 
-template<> struct SubentityVertexMap< Triangle, Edge, 1, 0> { static constexpr int index = 2; };
-template<> struct SubentityVertexMap< Triangle, Edge, 1, 1> { static constexpr int index = 0; };
+template<>
+struct SubentityVertexMap< Triangle, Edge, 2, 0 >
+{
+   static constexpr int index = 0;
+};
+template<>
+struct SubentityVertexMap< Triangle, Edge, 2, 1 >
+{
+   static constexpr int index = 1;
+};
 
-template<> struct SubentityVertexMap< Triangle, Edge, 2, 0> { static constexpr int index = 0; };
-template<> struct SubentityVertexMap< Triangle, Edge, 2, 1> { static constexpr int index = 1; };
-
-} // namespace Topologies
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Topologies
+}  // namespace Meshes
+}  // namespace TNL

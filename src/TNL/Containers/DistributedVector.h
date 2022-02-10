@@ -18,10 +18,10 @@ template< typename Real,
           typename Device = Devices::Host,
           typename Index = int,
           typename Allocator = typename Allocators::Default< Device >::template Allocator< Real > >
-class DistributedVector
-: public DistributedArray< Real, Device, Index, Allocator >
+class DistributedVector : public DistributedArray< Real, Device, Index, Allocator >
 {
    using BaseType = DistributedArray< Real, Device, Index, Allocator >;
+
 public:
    using RealType = Real;
    using DeviceType = Device;
@@ -41,10 +41,9 @@ public:
              typename _Allocator = typename Allocators::Default< _Device >::template Allocator< _Real > >
    using Self = DistributedVector< _Real, _Device, _Index, _Allocator >;
 
-
    // inherit all constructors and assignment operators from Array
    using BaseType::DistributedArray;
-#if !defined(__CUDACC_VER_MAJOR__) || __CUDACC_VER_MAJOR__ < 11
+#if ! defined( __CUDACC_VER_MAJOR__ ) || __CUDACC_VER_MAJOR__ < 11
    using BaseType::operator=;
 #endif
 
@@ -63,49 +62,57 @@ public:
    /**
     * \brief Default move constructor.
     */
-   DistributedVector( DistributedVector&& ) = default;
+   DistributedVector( DistributedVector&& ) noexcept = default;
 
    /**
     * \brief Copy-assignment operator for copying data from another vector.
     */
-   DistributedVector& operator=( const DistributedVector& ) = default;
+   DistributedVector&
+   operator=( const DistributedVector& ) = default;
 
    /**
     * \brief Move-assignment operator for acquiring data from \e rvalues.
     */
-   DistributedVector& operator=( DistributedVector&& ) = default;
+   DistributedVector&
+   operator=( DistributedVector&& ) noexcept = default;
 
    /**
     * \brief Returns a modifiable view of the local part of the vector.
     */
-   LocalViewType getLocalView();
+   LocalViewType
+   getLocalView();
 
    /**
     * \brief Returns a non-modifiable view of the local part of the vector.
     */
-   ConstLocalViewType getConstLocalView() const;
+   ConstLocalViewType
+   getConstLocalView() const;
 
    /**
     * \brief Returns a modifiable view of the local part of the vector,
     * including ghost values.
     */
-   LocalViewType getLocalViewWithGhosts();
+   LocalViewType
+   getLocalViewWithGhosts();
 
    /**
     * \brief Returns a non-modifiable view of the local part of the vector,
     * including ghost values.
     */
-   ConstLocalViewType getConstLocalViewWithGhosts() const;
+   ConstLocalViewType
+   getConstLocalViewWithGhosts() const;
 
    /**
     * \brief Returns a modifiable view of the vector.
     */
-   ViewType getView();
+   ViewType
+   getView();
 
    /**
     * \brief Returns a non-modifiable view of the vector.
     */
-   ConstViewType getConstView() const;
+   ConstViewType
+   getConstView() const;
 
    /**
     * \brief Conversion operator to a modifiable view of the vector.
@@ -117,80 +124,66 @@ public:
     */
    operator ConstViewType() const;
 
-
    /*
     * Usual Vector methods follow below.
     */
-   template< typename Scalar,
-             typename...,
-             typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >
-   DistributedVector& operator=( Scalar c );
+   template< typename Scalar, typename..., typename = std::enable_if_t< ! HasSubscriptOperator< Scalar >::value > >
+   DistributedVector&
+   operator=( Scalar c );
 
-   template< typename Scalar,
-             typename...,
-             typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >
-   DistributedVector& operator+=( Scalar c );
+   template< typename Scalar, typename..., typename = std::enable_if_t< ! HasSubscriptOperator< Scalar >::value > >
+   DistributedVector&
+   operator+=( Scalar c );
 
-   template< typename Scalar,
-             typename...,
-             typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >
-   DistributedVector& operator-=( Scalar c );
+   template< typename Scalar, typename..., typename = std::enable_if_t< ! HasSubscriptOperator< Scalar >::value > >
+   DistributedVector&
+   operator-=( Scalar c );
 
-   template< typename Scalar,
-             typename...,
-             typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >
-   DistributedVector& operator*=( Scalar c );
+   template< typename Scalar, typename..., typename = std::enable_if_t< ! HasSubscriptOperator< Scalar >::value > >
+   DistributedVector&
+   operator*=( Scalar c );
 
-   template< typename Scalar,
-             typename...,
-             typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >
-   DistributedVector& operator/=( Scalar c );
+   template< typename Scalar, typename..., typename = std::enable_if_t< ! HasSubscriptOperator< Scalar >::value > >
+   DistributedVector&
+   operator/=( Scalar c );
 
-   template< typename Scalar,
-             typename...,
-             typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >
-   DistributedVector& operator%=( Scalar c );
+   template< typename Scalar, typename..., typename = std::enable_if_t< ! HasSubscriptOperator< Scalar >::value > >
+   DistributedVector&
+   operator%=( Scalar c );
 
-   template< typename Vector,
-             typename...,
-             typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
-   DistributedVector& operator=( const Vector& vector );
+   template< typename Vector, typename..., typename = std::enable_if_t< HasSubscriptOperator< Vector >::value > >
+   DistributedVector&
+   operator=( const Vector& vector );
 
-   template< typename Vector,
-             typename...,
-             typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
-   DistributedVector& operator+=( const Vector& vector );
+   template< typename Vector, typename..., typename = std::enable_if_t< HasSubscriptOperator< Vector >::value > >
+   DistributedVector&
+   operator+=( const Vector& vector );
 
-   template< typename Vector,
-             typename...,
-             typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
-   DistributedVector& operator-=( const Vector& vector );
+   template< typename Vector, typename..., typename = std::enable_if_t< HasSubscriptOperator< Vector >::value > >
+   DistributedVector&
+   operator-=( const Vector& vector );
 
-   template< typename Vector,
-             typename...,
-             typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
-   DistributedVector& operator*=( const Vector& vector );
+   template< typename Vector, typename..., typename = std::enable_if_t< HasSubscriptOperator< Vector >::value > >
+   DistributedVector&
+   operator*=( const Vector& vector );
 
-   template< typename Vector,
-             typename...,
-             typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
-   DistributedVector& operator/=( const Vector& vector );
+   template< typename Vector, typename..., typename = std::enable_if_t< HasSubscriptOperator< Vector >::value > >
+   DistributedVector&
+   operator/=( const Vector& vector );
 
-   template< typename Vector,
-             typename...,
-             typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
-   DistributedVector& operator%=( const Vector& vector );
+   template< typename Vector, typename..., typename = std::enable_if_t< HasSubscriptOperator< Vector >::value > >
+   DistributedVector&
+   operator%=( const Vector& vector );
 };
 
 // Enable expression templates for DistributedVector
 namespace Expressions {
-   template< typename Real, typename Device, typename Index, typename Allocator >
-   struct HasEnabledDistributedExpressionTemplates< DistributedVector< Real, Device, Index, Allocator > >
-   : std::true_type
-   {};
-} // namespace Expressions
+template< typename Real, typename Device, typename Index, typename Allocator >
+struct HasEnabledDistributedExpressionTemplates< DistributedVector< Real, Device, Index, Allocator > > : std::true_type
+{};
+}  // namespace Expressions
 
-} // namespace Containers
-} // namespace TNL
+}  // namespace Containers
+}  // namespace TNL
 
 #include <TNL/Containers/DistributedVector.hpp>

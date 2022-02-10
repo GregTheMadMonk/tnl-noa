@@ -23,31 +23,32 @@ class OutputRedirection
 public:
    OutputRedirection() = delete;
 
-   OutputRedirection(int targetFd) : targetFd(targetFd) {}
+   OutputRedirection( int targetFd ) : targetFd( targetFd ) {}
 
-   bool redirect(std::string fname)
+   bool
+   redirect( const std::string& fname )
    {
       // restore the original stream if there is any backup
-      if( backupFd >= 0 || file )
+      if( backupFd >= 0 || file != nullptr )
          if( ! restore() )
-             return false;
+            return false;
 
       // first open the file
-      file = ::fopen(fname.c_str(), "w");
+      file = ::fopen( fname.c_str(), "w" );
       if( file == nullptr ) {
          std::cerr << "error: fopen() failed, output is not redirected." << std::endl;
          return false;
       }
 
       // then backup the original file descriptors
-      backupFd = ::dup(targetFd);
+      backupFd = ::dup( targetFd );
       if( backupFd < 0 ) {
          std::cerr << "error: dup() failed, output is not redirected." << std::endl;
          return false;
       }
 
       // finally redirect stdout and stderr
-      if( ::dup2(::fileno(file), targetFd) < 0 ) {
+      if( ::dup2( ::fileno( file ), targetFd ) < 0 ) {
          std::cerr << "error: dup2() failed, output is not redirected." << std::endl;
          return false;
       }
@@ -55,11 +56,12 @@ public:
       return true;
    }
 
-   bool restore()
+   bool
+   restore()
    {
       // first restore the original file descriptor
       if( backupFd >= 0 ) {
-         if( ::dup2(backupFd, targetFd) < 0 ) {
+         if( ::dup2( backupFd, targetFd ) < 0 ) {
             std::cerr << "error: dup2() failed, output is not restored." << std::endl;
             return false;
          }
@@ -68,7 +70,7 @@ public:
 
       // then close the file
       if( file != nullptr ) {
-         ::fclose(file);
+         ::fclose( file );
          file = nullptr;
       }
       return true;
@@ -76,20 +78,20 @@ public:
 
    ~OutputRedirection()
    {
-       restore();
+      restore();
    }
 };
 
 inline bool
-redirect_stdout_stderr(std::string stdout_fname, std::string stderr_fname, bool restore = false)
+redirect_stdout_stderr( const std::string& stdout_fname, const std::string& stderr_fname, bool restore = false )
 {
    static OutputRedirection stdoutRedir( STDOUT_FILENO );
    static OutputRedirection stderrRedir( STDERR_FILENO );
 
-   if( restore == false ) {
-      if( ! stdoutRedir.redirect(stdout_fname) )
+   if( ! restore ) {
+      if( ! stdoutRedir.redirect( stdout_fname ) )
          return false;
-      if( ! stderrRedir.redirect(stderr_fname) )
+      if( ! stderrRedir.redirect( stderr_fname ) )
          return false;
    }
    else {
@@ -100,5 +102,5 @@ redirect_stdout_stderr(std::string stdout_fname, std::string stderr_fname, bool 
    return true;
 }
 
-} // namespace Debugging
-} // namespace TNL
+}  // namespace Debugging
+}  // namespace TNL

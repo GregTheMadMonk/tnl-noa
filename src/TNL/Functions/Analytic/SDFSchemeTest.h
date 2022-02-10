@@ -17,88 +17,75 @@
 #include <functions/tnlSDFParaboloidSDF.h>
 
 namespace TNL {
-   namespace Functions {
-      namespace Analytic {
+namespace Functions {
+namespace Analytic {
 
 template< typename function, typename Real = double >
 class SDFSchemeTestBase
 {
-   public:
-
+public:
    SDFSchemeTestBase();
 
-   bool setup( const Config::ParameterContainer& parameters,
-           const String& prefix = "" );
+   bool
+   setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
 
-
-   	function f;
+   function f;
 };
 
 template< typename function, int Dimensions, typename Real >
 class SDFSchemeTest
-{
-
-};
+{};
 
 template< typename function, int Dimensions, typename Real >
 class SDFSchemeTest< function, 1, Real > : public SDFSchemeTestBase< function, Real >
 {
-   public:
-
-
-   enum { Dimensions = 1 };
+public:
+   enum
+   {
+      Dimensions = 1
+   };
    typedef Point PointType;
    typedef typename PointType::RealType RealType;
 
-   template< int XDiffOrder = 0,
-             int YDiffOrder = 0,
-             int ZDiffOrder = 0 >
-   RealType getValue( const PointType& v,
-           const Real& time = 0.0 ) const;
-
-
-
+   template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0 >
+   RealType
+   getValue( const PointType& v, const Real& time = 0.0 ) const;
 };
 
 template< typename function, int Dimensions, typename Real >
 class SDFSchemeTest< function, 2, Real > : public SDFSchemeTestBase< function, Real >
 {
-   public:
-
-
-   enum { Dimensions = 2 };
+public:
+   enum
+   {
+      Dimensions = 2
+   };
    typedef Point PointType;
    typedef typename PointType::RealType RealType;
 
-   template< int XDiffOrder = 0,
-             int YDiffOrder = 0,
-             int ZDiffOrder = 0 >
-   RealType getValue( const PointType& v,
-           const Real& time = 0.0 ) const;
-
-
+   template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0 >
+   RealType
+   getValue( const PointType& v, const Real& time = 0.0 ) const;
 };
 
 template< typename function, int Dimensions, typename Real >
-class SDFSchemeTest< function, 3, Real > : public SDFSchemeTestBase< function,  Real >
+class SDFSchemeTest< function, 3, Real > : public SDFSchemeTestBase< function, Real >
 {
-   public:
-
-
-   enum { Dimensions = 3 };
+public:
+   enum
+   {
+      Dimensions = 3
+   };
    typedef Point PointType;
    typedef typename PointType::RealType RealType;
 
-   template< int XDiffOrder = 0,
-             int YDiffOrder = 0,
-             int ZDiffOrder = 0 >
-   RealType getValue( const PointType& v,
-           const Real& time = 0.0 ) const;
-
+   template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0 >
+   RealType
+   getValue( const PointType& v, const Real& time = 0.0 ) const;
 };
 
-      } // namespace Analytic
-   } // namespace Functions
-} // namespace TNL
+}  // namespace Analytic
+}  // namespace Functions
+}  // namespace TNL
 
 #include <functions/SDFSchemeTest_impl.h>

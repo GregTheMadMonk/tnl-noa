@@ -16,17 +16,15 @@ namespace TNL {
 namespace Meshes {
 namespace Readers {
 
-class FPMAReader
-: public MeshReader
+class FPMAReader : public MeshReader
 {
 public:
    FPMAReader() = default;
 
-   FPMAReader( const std::string& fileName )
-   : MeshReader( fileName )
-   {}
+   FPMAReader( const std::string& fileName ) : MeshReader( fileName ) {}
 
-   virtual void detectMesh() override
+   virtual void
+   detectMesh() override
    {
       reset();
 
@@ -52,7 +50,7 @@ public:
       std::vector< std::int32_t > faceConnectivityArray, faceOffsetsArray;
 
       // read number of points
-      NumberOfPoints = readValue< decltype(NumberOfPoints) >( inputFile );
+      NumberOfPoints = readValue< decltype( NumberOfPoints ) >( inputFile );
       if( ! inputFile ) {
          reset();
          throw MeshReaderError( "FPMAReader", "unable to read number of points, the file may be invalid or corrupted." );
@@ -70,14 +68,16 @@ public:
             PointType aux = readValue< PointType >( inputFile );
             if( ! inputFile ) {
                reset();
-               throw MeshReaderError( "FPMAReader", "unable to read " + std::to_string(i) + "th component of the vertex number " + std::to_string(pointIndex) + "." );
+               throw MeshReaderError( "FPMAReader",
+                                      "unable to read " + std::to_string( i ) + "th component of the vertex number "
+                                         + std::to_string( pointIndex ) + "." );
             }
             pointsArray.emplace_back( aux );
          }
       }
 
       // read number of faces
-      NumberOfFaces = readValue< decltype(NumberOfFaces) >( inputFile );
+      NumberOfFaces = readValue< decltype( NumberOfFaces ) >( inputFile );
       if( ! inputFile ) {
          reset();
          throw MeshReaderError( "FPMAReader", "unable to read number of faces, the file may be invalid or corrupted." );
@@ -87,9 +87,8 @@ public:
       faceConnectivityArray.reserve( NumberOfFaces );
       faceOffsetsArray.reserve( NumberOfFaces );
       for( std::size_t faceIndex = 0; faceIndex < NumberOfFaces; faceIndex++ ) {
-
          // read number of points of a face
-         size_t numberOfFacePoints = readValue< decltype(numberOfFacePoints) >( inputFile );
+         size_t numberOfFacePoints = readValue< decltype( numberOfFacePoints ) >( inputFile );
          if( ! inputFile ) {
             reset();
             throw MeshReaderError( "FPMAReader", "unable to read enough faces, the file may be invalid or corrupted." );
@@ -97,10 +96,12 @@ public:
 
          // read points of a face
          for( std::size_t i = 0; i < numberOfFacePoints; i++ ) {
-            size_t pointIndex = readValue< decltype(pointIndex) >( inputFile );
+            size_t pointIndex = readValue< decltype( pointIndex ) >( inputFile );
             if( ! inputFile ) {
                reset();
-               throw MeshReaderError( "FPMAReader", "unable to read " + std::to_string(i) + "th component of the face number " + std::to_string(faceIndex) + "." );
+               throw MeshReaderError( "FPMAReader",
+                                      "unable to read " + std::to_string( i ) + "th component of the face number "
+                                         + std::to_string( faceIndex ) + "." );
             }
             faceConnectivityArray.emplace_back( pointIndex );
          }
@@ -109,7 +110,7 @@ public:
       }
 
       // read number of cells
-      NumberOfCells = readValue< decltype(NumberOfCells) >( inputFile );
+      NumberOfCells = readValue< decltype( NumberOfCells ) >( inputFile );
       if( ! inputFile ) {
          reset();
          throw MeshReaderError( "FPMAReader", "unable to read number of cells, the file may be invalid or corrupted." );
@@ -119,9 +120,8 @@ public:
       cellConnectivityArray.reserve( NumberOfCells );
       cellOffsetsArray.reserve( NumberOfCells );
       for( std::size_t cellIndex = 0; cellIndex < NumberOfCells; cellIndex++ ) {
-
          // read number of faces of a cell
-         size_t numberOfCellFaces = readValue< decltype(numberOfCellFaces) >( inputFile );
+         size_t numberOfCellFaces = readValue< decltype( numberOfCellFaces ) >( inputFile );
          if( ! inputFile ) {
             reset();
             throw MeshReaderError( "FPMAReader", "unable to read enough cells, the file may be invalid or corrupted." );
@@ -129,10 +129,12 @@ public:
 
          // read faces of a cell
          for( std::size_t i = 0; i < numberOfCellFaces; i++ ) {
-            std::uint32_t faceIndex = readValue< decltype(faceIndex) >( inputFile );
+            std::uint32_t faceIndex = readValue< decltype( faceIndex ) >( inputFile );
             if( ! iss ) {
                reset();
-               throw MeshReaderError( "FPMAReader", "unable to read " + std::to_string(i) + "th component of the cell number " + std::to_string(cellIndex) + "." );
+               throw MeshReaderError( "FPMAReader",
+                                      "unable to read " + std::to_string( i ) + "th component of the cell number "
+                                         + std::to_string( cellIndex ) + "." );
             }
             cellConnectivityArray.emplace_back( faceIndex );
          }
@@ -141,18 +143,20 @@ public:
       }
 
       // set the arrays to the base class
-      this->pointsArray = std::move(pointsArray);
-      this->cellConnectivityArray = std::move(cellConnectivityArray);
-      this->cellOffsetsArray = std::move(cellOffsetsArray);
-      this->faceConnectivityArray = std::move(faceConnectivityArray);
-      this->faceOffsetsArray = std::move(faceOffsetsArray);
+      this->pointsArray = std::move( pointsArray );
+      this->cellConnectivityArray = std::move( cellConnectivityArray );
+      this->cellOffsetsArray = std::move( cellOffsetsArray );
+      this->faceConnectivityArray = std::move( faceConnectivityArray );
+      this->faceOffsetsArray = std::move( faceOffsetsArray );
 
       // indicate success by setting the mesh type
       meshType = "Meshes::Mesh";
    }
+
 private:
    template< typename T >
-   T readValue( std::ifstream& ifs )
+   T
+   readValue( std::ifstream& ifs )
    {
       skipComments( ifs );
       T val;
@@ -160,18 +164,19 @@ private:
       return val;
    }
 
-   void skipComments( std::ifstream& ifs )
+   void
+   skipComments( std::ifstream& ifs )
    {
       ifs >> std::ws;
       int c = ifs.peek();
       while( c == '#' && c != EOF ) {
-         ifs.ignore( std::numeric_limits<std::streamsize>::max(), '\n' ); // skip to the next line
+         ifs.ignore( std::numeric_limits< std::streamsize >::max(), '\n' );  // skip to the next line
          ifs >> std::ws;
          c = ifs.peek();
       }
    }
 };
 
-} // namespace Readers
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Readers
+}  // namespace Meshes
+}  // namespace TNL

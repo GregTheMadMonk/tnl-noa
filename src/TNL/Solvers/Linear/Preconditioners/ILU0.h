@@ -15,19 +15,18 @@
 #include <TNL/Pointers/UniquePointer.h>
 #include <TNL/Exceptions/NotImplementedError.h>
 
-#if defined(HAVE_CUDA) && defined(HAVE_CUSPARSE)
-#include <cusparse.h>
+#if defined( HAVE_CUDA ) && defined( HAVE_CUSPARSE )
+   #include <cusparse.h>
 #endif
 
 namespace TNL {
-   namespace Solvers {
-      namespace Linear {
-      namespace Preconditioners {
+namespace Solvers {
+namespace Linear {
+namespace Preconditioners {
 
 // implementation template
 template< typename Matrix, typename Real, typename Device, typename Index >
-class ILU0_impl
-: public Preconditioner< Matrix >
+class ILU0_impl : public Preconditioner< Matrix >
 {
 public:
    using RealType = Real;
@@ -37,14 +36,16 @@ public:
    using typename Preconditioner< Matrix >::ConstVectorViewType;
    using typename Preconditioner< Matrix >::MatrixPointer;
 
-   virtual void update( const MatrixPointer& matrixPointer ) override
+   virtual void
+   update( const MatrixPointer& matrixPointer ) override
    {
-      throw Exceptions::NotImplementedError("ILU0 is not implemented yet for the matrix type " + getType< Matrix >());
+      throw Exceptions::NotImplementedError( "ILU0 is not implemented yet for the matrix type " + getType< Matrix >() );
    }
 
-   virtual void solve( ConstVectorViewType b, VectorViewType x ) const override
+   virtual void
+   solve( ConstVectorViewType b, VectorViewType x ) const override
    {
-      throw Exceptions::NotImplementedError("ILU0 is not implemented yet for the matrix type " + getType< Matrix >());
+      throw Exceptions::NotImplementedError( "ILU0 is not implemented yet for the matrix type " + getType< Matrix >() );
    }
 };
 
@@ -56,8 +57,7 @@ public:
  * \tparam Matrix is type of the matrix describing the linear system.
  */
 template< typename Matrix >
-class ILU0
-: public ILU0_impl< Matrix, typename Matrix::RealType, typename Matrix::DeviceType, typename Matrix::IndexType >
+class ILU0 : public ILU0_impl< Matrix, typename Matrix::RealType, typename Matrix::DeviceType, typename Matrix::IndexType >
 {};
 
 /**
@@ -70,84 +70,86 @@ class ILU0
  * \tparam Matrix is type of the matrix describing the linear system.
  */
 template< typename Matrix, typename Real, typename Index >
-class ILU0_impl< Matrix, Real, Devices::Host, Index >
-: public Preconditioner< Matrix >
+class ILU0_impl< Matrix, Real, Devices::Host, Index > : public Preconditioner< Matrix >
 {
-   public:
+public:
+   /**
+    * \brief Floating point type used for computations.
+    */
+   using RealType = Real;
 
-      /**
-       * \brief Floating point type used for computations.
-       */
-      using RealType = Real;
+   /**
+    * \brief Device where the preconditioner will run on and auxillary data will alloacted on.
+    */
+   using DeviceType = Devices::Host;
 
-      /**
-       * \brief Device where the preconditioner will run on and auxillary data will alloacted on.
-       */
-      using DeviceType = Devices::Host;
+   /**
+    * \brief Type for indexing.
+    */
+   using IndexType = Index;
 
-      /**
-       * \brief Type for indexing.
-       */
-      using IndexType = Index;
+   /**
+    * \brief Type for vector view.
+    */
+   using typename Preconditioner< Matrix >::VectorViewType;
 
-      /**
-       * \brief Type for vector view.
-       */
-      using typename Preconditioner< Matrix >::VectorViewType;
+   /**
+    * \brief Type for constant vector view.
+    */
+   using typename Preconditioner< Matrix >::ConstVectorViewType;
 
-      /**
-       * \brief Type for constant vector view.
-       */
-      using typename Preconditioner< Matrix >::ConstVectorViewType;
+   /**
+    * \brief Type of shared pointer to the matrix.
+    */
+   using typename Preconditioner< Matrix >::MatrixPointer;
 
-      /**
-       * \brief Type of shared pointer to the matrix.
-       */
-      using typename Preconditioner< Matrix >::MatrixPointer;
+   /**
+    * \brief This method updates the preconditioner with respect to given matrix.
+    *
+    * \param matrixPointer smart pointer (\ref std::shared_ptr) to matrix the preconditioner is related to.
+    */
+   virtual void
+   update( const MatrixPointer& matrixPointer ) override;
 
-      /**
-       * \brief This method updates the preconditioner with respect to given matrix.
-       *
-       * \param matrixPointer smart pointer (\ref std::shared_ptr) to matrix the preconditioner is related to.
-       */
-      virtual void update( const MatrixPointer& matrixPointer ) override;
+   /**
+    * \brief This method applies the preconditioner.
+    *
+    * \param b is the input vector the preconditioner is applied on.
+    * \param x is the result of the preconditioning.
+    */
+   virtual void
+   solve( ConstVectorViewType b, VectorViewType x ) const override;
 
-      /**
-       * \brief This method applies the preconditioner.
-       *
-       * \param b is the input vector the preconditioner is applied on.
-       * \param x is the result of the preconditioning.
-       */
-      virtual void solve( ConstVectorViewType b, VectorViewType x ) const override;
+protected:
+   // The factors L and U are stored separately and the rows of U are reversed.
+   using CSR =
+      Matrices::SparseMatrix< RealType, DeviceType, IndexType, Matrices::GeneralMatrix, Algorithms::Segments::CSRScalar >;
+   CSR L, U;
 
-   protected:
-      // The factors L and U are stored separately and the rows of U are reversed.
-      using CSR = Matrices::SparseMatrix< RealType, DeviceType, IndexType, Matrices::GeneralMatrix, Algorithms::Segments::CSRScalar >;
-      CSR L, U;
+   // Specialized methods to distinguish between normal and distributed matrices
+   // in the implementation.
+   template< typename M >
+   static IndexType
+   getMinColumn( const M& m )
+   {
+      return 0;
+   }
 
-      // Specialized methods to distinguish between normal and distributed matrices
-      // in the implementation.
-      template< typename M >
-      static IndexType getMinColumn( const M& m )
-      {
+   template< typename M >
+   static IndexType
+   getMinColumn( const Matrices::DistributedMatrix< M >& m )
+   {
+      if( m.getRows() == m.getColumns() )
+         // square matrix, assume global column indices
+         return m.getLocalRowRange().getBegin();
+      else
+         // non-square matrix, assume ghost indexing
          return 0;
-      }
-
-      template< typename M >
-      static IndexType getMinColumn( const Matrices::DistributedMatrix< M >& m )
-      {
-         if( m.getRows() == m.getColumns() )
-            // square matrix, assume global column indices
-            return m.getLocalRowRange().getBegin();
-         else
-            // non-square matrix, assume ghost indexing
-            return 0;
-      }
+   }
 };
 
 template< typename Matrix >
-class ILU0_impl< Matrix, double, Devices::Cuda, int >
-: public Preconditioner< Matrix >
+class ILU0_impl< Matrix, double, Devices::Cuda, int > : public Preconditioner< Matrix >
 {
 public:
    using RealType = double;
@@ -159,30 +161,35 @@ public:
 
    ILU0_impl()
    {
-#if defined(HAVE_CUDA) && defined(HAVE_CUSPARSE)
+#if defined( HAVE_CUDA ) && defined( HAVE_CUSPARSE )
       cusparseCreate( &handle );
 #endif
    }
 
-   virtual void update( const MatrixPointer& matrixPointer ) override;
+   virtual void
+   update( const MatrixPointer& matrixPointer ) override;
 
-   virtual void solve( ConstVectorViewType b, VectorViewType x ) const override;
+   virtual void
+   solve( ConstVectorViewType b, VectorViewType x ) const override;
 
    ~ILU0_impl()
    {
-#if defined(HAVE_CUDA) && defined(HAVE_CUSPARSE)
+#if defined( HAVE_CUDA ) && defined( HAVE_CUSPARSE )
       resetMatrices();
       cusparseDestroy( handle );
 #endif
    }
 
    // must be public because nvcc does not allow extended lambdas in private or protected regions
-   void allocate_LU();
-   void copy_triangular_factors();
-protected:
+   void
+   allocate_LU();
+   void
+   copy_triangular_factors();
 
-#if defined(HAVE_CUDA) && defined(HAVE_CUSPARSE)
-   using CSR = Matrices::SparseMatrix< RealType, DeviceType, IndexType, Matrices::GeneralMatrix, Algorithms::Segments::CSRScalar >;
+protected:
+#if defined( HAVE_CUDA ) && defined( HAVE_CUSPARSE )
+   using CSR =
+      Matrices::SparseMatrix< RealType, DeviceType, IndexType, Matrices::GeneralMatrix, Algorithms::Segments::CSRScalar >;
    Pointers::UniquePointer< CSR > A, L, U;
    Containers::Vector< RealType, DeviceType, IndexType > y;
 
@@ -191,25 +198,26 @@ protected:
    cusparseMatDescr_t descr_A = 0;
    cusparseMatDescr_t descr_L = 0;
    cusparseMatDescr_t descr_U = 0;
-   csrilu02Info_t     info_A  = 0;
-   csrsv2Info_t       info_L  = 0;
-   csrsv2Info_t       info_U  = 0;
+   csrilu02Info_t info_A = 0;
+   csrsv2Info_t info_L = 0;
+   csrsv2Info_t info_U = 0;
 
    const cusparseSolvePolicy_t policy_A = CUSPARSE_SOLVE_POLICY_USE_LEVEL;
    const cusparseSolvePolicy_t policy_L = CUSPARSE_SOLVE_POLICY_USE_LEVEL;
    const cusparseSolvePolicy_t policy_U = CUSPARSE_SOLVE_POLICY_USE_LEVEL;
-//   const cusparseSolvePolicy_t policy_A = CUSPARSE_SOLVE_POLICY_NO_LEVEL;
-//   const cusparseSolvePolicy_t policy_L = CUSPARSE_SOLVE_POLICY_NO_LEVEL;
-//   const cusparseSolvePolicy_t policy_U = CUSPARSE_SOLVE_POLICY_NO_LEVEL;
-   const cusparseOperation_t trans_L  = CUSPARSE_OPERATION_NON_TRANSPOSE;
-   const cusparseOperation_t trans_U  = CUSPARSE_OPERATION_NON_TRANSPOSE;
+   //   const cusparseSolvePolicy_t policy_A = CUSPARSE_SOLVE_POLICY_NO_LEVEL;
+   //   const cusparseSolvePolicy_t policy_L = CUSPARSE_SOLVE_POLICY_NO_LEVEL;
+   //   const cusparseSolvePolicy_t policy_U = CUSPARSE_SOLVE_POLICY_NO_LEVEL;
+   const cusparseOperation_t trans_L = CUSPARSE_OPERATION_NON_TRANSPOSE;
+   const cusparseOperation_t trans_U = CUSPARSE_OPERATION_NON_TRANSPOSE;
 
    Containers::Array< char, DeviceType, int > pBuffer;
 
    // scaling factor for triangular solves
    const double alpha = 1.0;
 
-   void resetMatrices()
+   void
+   resetMatrices()
    {
       if( descr_A ) {
          cusparseDestroyMatDescr( descr_A );
@@ -245,6 +253,7 @@ class ILU0_impl< Matrices::DistributedMatrix< Matrix >, double, Devices::Cuda, i
 : public Preconditioner< Matrices::DistributedMatrix< Matrix > >
 {
    using MatrixType = Matrices::DistributedMatrix< Matrix >;
+
 public:
    using RealType = double;
    using DeviceType = Devices::Cuda;
@@ -253,20 +262,22 @@ public:
    using typename Preconditioner< MatrixType >::ConstVectorViewType;
    using typename Preconditioner< MatrixType >::MatrixPointer;
 
-   virtual void update( const MatrixPointer& matrixPointer ) override
+   virtual void
+   update( const MatrixPointer& matrixPointer ) override
    {
-      throw Exceptions::NotImplementedError("ILU0 is not implemented yet for CUDA and distributed matrices.");
+      throw Exceptions::NotImplementedError( "ILU0 is not implemented yet for CUDA and distributed matrices." );
    }
 
-   virtual void solve( ConstVectorViewType b, VectorViewType x ) const override
+   virtual void
+   solve( ConstVectorViewType b, VectorViewType x ) const override
    {
-      throw Exceptions::NotImplementedError("ILU0 is not implemented yet for CUDA and distributed matrices.");
+      throw Exceptions::NotImplementedError( "ILU0 is not implemented yet for CUDA and distributed matrices." );
    }
 };
 
-} // namespace Preconditioners
-} // namespace Linear
-} // namespace Solvers
-} // namespace TNL
+}  // namespace Preconditioners
+}  // namespace Linear
+}  // namespace Solvers
+}  // namespace TNL
 
 #include "ILU0.hpp"

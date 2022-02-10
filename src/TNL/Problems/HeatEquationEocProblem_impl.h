@@ -10,7 +10,6 @@
  * Szekely Ondrej, ondra.szekely@gmail.com
  */
 
-
 #pragma once
 
 #include "HeatEquationEocProblem.h"
@@ -18,17 +17,14 @@
 namespace TNL {
 namespace Problems {
 
-template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename DifferentialOperator >
+template< typename Mesh, typename BoundaryCondition, typename RightHandSide, typename DifferentialOperator >
 bool
-HeatEquationEocProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator  >::
-setup( const Config::ParameterContainer& parameters,
-       const String& prefix )
+HeatEquationEocProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::setup(
+   const Config::ParameterContainer& parameters,
+   const String& prefix )
 {
-   if( ! this->boundaryConditionPointer->setup( this->getMesh(), parameters, prefix ) ||
-       ! this->rightHandSidePointer->setup( parameters ) )
+   if( ! this->boundaryConditionPointer->setup( this->getMesh(), parameters, prefix )
+       || ! this->rightHandSidePointer->setup( parameters ) )
       return false;
    this->explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer );
    this->explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer );
@@ -39,5 +35,5 @@ setup( const Config::ParameterContainer& parameters,
    return true;
 }
 
-} // namespace Problems
-} // namespace TNL
+}  // namespace Problems
+}  // namespace TNL

@@ -9,7 +9,7 @@
 #include "HeatEquationBenchmarkRhs.h"
 #include "HeatEquationBenchmarkBuildConfigTag.h"
 
-typedef HeatEquationBenchmarkBuildConfigTag BuildConfig;
+using BuildConfig = HeatEquationBenchmarkBuildConfigTag;
 
 /****
  * Uncoment the following (and comment the previous line) for the complete build.
@@ -53,31 +53,32 @@ template< typename Real,
 class HeatEquationBenchmarkSetter
 {
    public:
-
-      typedef Real RealType;
-      typedef Device DeviceType;
-      typedef Index IndexType;
+      using RealType = Real;
+      using DeviceType = Device;
+      using IndexType = Index;
 
       static bool run( const Config::ParameterContainer & parameters )
       {
           enum { Dimension = MeshType::getMeshDimension() };
-          typedef BenchmarkLaplace< MeshType, Real, Index > ApproximateOperator;
-          typedef HeatEquationBenchmarkRhs< MeshType, Real > RightHandSide;
-          typedef Containers::StaticVector < MeshType::getMeshDimension(), Real > Point;
+          using ApproximateOperator = BenchmarkLaplace< MeshType, Real, Index >;
+          using RightHandSide = HeatEquationBenchmarkRhs< MeshType, Real >;
+          using Point = Containers::StaticVector< MeshType::getMeshDimension(), Real >;
 
-         /****
-          * Resolve the template arguments of your solver here.
-          * The following code is for the Dirichlet and the Neumann boundary conditions.
-          * Both can be constant or defined as descrete values of Vector.
-          */
+          /****
+           * Resolve the template arguments of your solver here.
+           * The following code is for the Dirichlet and the Neumann boundary conditions.
+           * Both can be constant or defined as descrete values of Vector.
+           */
           String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
           if( parameters.checkParameter( "boundary-conditions-constant" ) )
           {
-             typedef Functions::Analytic::Constant< Dimension, Real > Constant;
+             using Constant = Functions::Analytic::Constant< Dimension, Real >;
              if( boundaryConditionsType == "dirichlet" )
              {
-                typedef Operators::DirichletBoundaryConditions< MeshType, Constant, MeshType::getMeshDimension(), Real, Index > BoundaryConditions;
-                typedef HeatEquationBenchmarkProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
+                using BoundaryConditions =
+                   Operators::DirichletBoundaryConditions< MeshType, Constant, MeshType::getMeshDimension(), Real, Index >;
+                using Problem =
+                   HeatEquationBenchmarkProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator >;
                 SolverStarter solverStarter;
                 return solverStarter.template run< Problem >( parameters );
              }

@@ -19,61 +19,55 @@ namespace Images {
 template< typename Index = int >
 class PGMImage : public Image< Index >
 {
-   public:
+public:
+   using IndexType = Index;
 
-      typedef Index IndexType;
+   PGMImage();
 
-      PGMImage();
+   bool
+   openForRead( const String& fileName );
 
-      bool openForRead( const String& fileName );
+   template< typename MeshReal, typename Device, typename Real >
+   bool
+   read( RegionOfInterest< Index > roi,
+         Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function );
 
-      template< typename MeshReal,
-                typename Device,
-                typename Real >
-      bool read( const RegionOfInterest< Index > roi,
-                 Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function );
+   template< typename Real, typename Device >
+   bool
+   openForWrite( const String& fileName, Meshes::Grid< 2, Real, Device, Index >& grid, bool binary = true );
 
-      template< typename Real,
-                typename Device >
-      bool openForWrite( const String& fileName,
-                         Meshes::Grid< 2, Real, Device, Index >& grid,
-                         bool binary = true );
+   // TODO: obsolete
+   template< typename Real, typename Device, typename Vector >
+   bool
+   write( const Meshes::Grid< 2, Real, Device, Index >& grid, Vector& vector );
 
-      // TODO: obsolete
-      template< typename Real,
-                typename Device,
-                typename Vector >
-      bool write( const Meshes::Grid< 2, Real, Device, Index >& grid,
-                  Vector& vector );
+   template< typename MeshReal, typename Device, typename Real >
+   bool
+   write( const Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function );
 
-      template< typename MeshReal,
-                typename Device,
-                typename Real >
-      bool write( const Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function );
+   void
+   close();
 
-      void close();
+   ~PGMImage();
 
-      ~PGMImage();
+protected:
+   bool
+   readHeader();
 
-      protected:
+   template< typename Real, typename Device >
+   bool
+   writeHeader( const Meshes::Grid< 2, Real, Device, Index >& grid, bool binary );
 
-         bool readHeader();
+   bool binary;
 
-         template< typename Real,
-                   typename Device >
-         bool writeHeader( const Meshes::Grid< 2, Real, Device, Index >& grid,
-                           bool binary );
+   IndexType maxColors;
 
-         bool binary;
+   std::fstream file;
 
-         IndexType maxColors;
-
-         std::fstream file;
-
-         bool fileOpen;
+   bool fileOpen;
 };
 
-} // namespace Images
-} // namespace TNL
+}  // namespace Images
+}  // namespace TNL
 
 #include <TNL/Images/PGMImage_impl.h>

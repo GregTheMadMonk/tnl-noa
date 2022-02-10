@@ -269,8 +269,8 @@ void
 decompose_and_save( const Mesh& mesh,
                     const unsigned nparts,
                     const MetisIndexArray& part,
-                    const std::shared_ptr< idx_t > dual_xadj,
-                    const std::shared_ptr< idx_t > dual_adjncy,
+                    const std::shared_ptr< idx_t >& dual_xadj,
+                    const std::shared_ptr< idx_t >& dual_adjncy,
                     const unsigned ncommon,
                     const unsigned ghost_levels,
                     const std::string pvtuFileName )
@@ -321,7 +321,8 @@ decompose_and_save( const Mesh& mesh,
    IndexArray seed_to_cell_index( cellsCount );
    for( unsigned p = 0; p < nparts; p++ ) {
       Index assigned = 0;
-      std::set< Index > boundary, ghost_neighbors;
+      std::set< Index > boundary;
+      std::set< Index > ghost_neighbors;
       for( Index local_idx = 0; local_idx < cells_counts[ p ]; local_idx++ ) {
          const Index global_idx = cells_local_to_global[ cells_offsets[ p ] + local_idx ];
          const auto& cell = mesh.template getEntity< typename Mesh::Cell >( global_idx );
@@ -519,7 +520,8 @@ decompose_and_save( const Mesh& mesh,
       seeds_global_indices.shrink_to_fit();
 
       // create "vtkGhostType" CellData and PointData arrays - see https://blog.kitware.com/ghost-and-blanking-visibility-changes/
-      Containers::Array< std::uint8_t, Devices::Sequential, Index > cellGhosts( seeds.size() ), pointGhosts( points.getSize() );
+      Containers::Array< std::uint8_t, Devices::Sequential, Index > cellGhosts( seeds.size() );
+      Containers::Array< std::uint8_t, Devices::Sequential, Index > pointGhosts( points.getSize() );
       for( Index i = 0; i < cells_counts[ p ]; i++ )
          cellGhosts[ i ] = 0;
       for( Index i = cells_counts[ p ]; i < (Index) seeds.size(); i++ )
@@ -619,7 +621,8 @@ void run( const Mesh& mesh, const Config::ParameterContainer& parameters )
    // get the mesh connectivity information in a format suitable for METIS. Actually, the same
    // format is used by the XML-based VTK formats - the only difference is that METIS requires
    // `offsets` to start with 0.
-   std::vector< idx_t > connectivity, offsets;
+   std::vector< idx_t > connectivity;
+   std::vector< idx_t > offsets;
    offsets.push_back(0);
    const Index cellsCount = mesh.template getEntitiesCount< typename Mesh::Cell >();
    for( Index i = 0; i < cellsCount; i++ ) {
@@ -778,5 +781,6 @@ int main( int argc, char* argv[] )
       run( std::forward<MeshType>(mesh), parameters );
       return true;
    };
-   return ! Meshes::resolveAndLoadMesh< DecomposeMeshConfigTag, Devices::Host >( wrapper, inputFileName, inputFileFormat );
+   const bool status = Meshes::resolveAndLoadMesh< DecomposeMeshConfigTag, Devices::Host >( wrapper, inputFileName, inputFileFormat );
+   return static_cast< int >( ! status );
 }

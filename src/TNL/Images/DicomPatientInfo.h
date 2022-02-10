@@ -9,11 +9,11 @@
 #include <TNL/String.h>
 
 #ifdef HAVE_DCMTK_H
-#define HAVE_CONFIG_H
-#define HAVE_STD_STRING
-#include <dcmtk/dcmdata/dcfilefo.h>
-#include <dcmtk/dcmdata/dcdeftag.h>
-#include <dcmtk/ofstd/ofstring.h>
+   #define HAVE_CONFIG_H
+   #define HAVE_STD_STRING
+   #include <dcmtk/dcmdata/dcfilefo.h>
+   #include <dcmtk/dcmdata/dcdeftag.h>
+   #include <dcmtk/ofstd/ofstring.h>
 #endif
 
 namespace TNL {
@@ -27,44 +27,49 @@ class DicomHeader;
  */
 class DicomPatientInfo
 {
-   public:
+public:
+   inline DicomPatientInfo( DicomHeader& aDicomHeader );
 
-      inline DicomPatientInfo(DicomHeader &aDicomHeader);
+   inline virtual ~DicomPatientInfo();
 
-      inline virtual ~DicomPatientInfo();
+   inline const String&
+   getName();
 
-      inline const String& getName();
+   inline const String&
+   getSex();
 
-      inline const String& getSex();
+   inline const String&
+   getID();
 
-      inline const String& getID();
+   inline const String&
+   getWeight();
 
-      inline const String& getWeight();
+   inline const String&
+   getPosition();
 
-      inline const String& getPosition();
+   inline const String&
+   getOrientation();
 
-      inline const String& getOrientation();
+private:
+   DicomHeader& dicomHeader;
+   bool
+   retrieveInfo();
+   bool isObjectRetrieved;
 
-   private:
+   String name;
 
-       DicomHeader &dicomHeader;
-       bool retrieveInfo();
-       bool isObjectRetrieved;
+   String sex;
 
-       String name;
+   String ID;
 
-       String sex;
+   String weight;
 
-       String ID;
+   String patientPosition;
 
-       String weight;
-
-       String patientPosition;
-
-       String patientOrientation;
+   String patientOrientation;
 };
 
-} // namespace Images
-} // namespace TNL
+}  // namespace Images
+}  // namespace TNL
 
 #include <TNL/Images/DicomPatientInfo_impl.h>

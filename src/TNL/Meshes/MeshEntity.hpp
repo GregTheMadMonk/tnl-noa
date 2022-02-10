@@ -17,154 +17,115 @@
 namespace TNL {
 namespace Meshes {
 
-template< typename MeshConfig,
-          typename Device,
-          typename EntityTopology >
+template< typename MeshConfig, typename Device, typename EntityTopology >
 __cuda_callable__
-MeshEntity< MeshConfig, Device, EntityTopology >::
-MeshEntity( const MeshType& mesh, const GlobalIndexType index )
-: meshPointer( &mesh ),
-  index( index )
-{
-}
+MeshEntity< MeshConfig, Device, EntityTopology >::MeshEntity( const MeshType& mesh, GlobalIndexType index )
+: meshPointer( &mesh ), index( index )
+{}
 
-template< typename MeshConfig,
-          typename Device,
-          typename EntityTopology >
+template< typename MeshConfig, typename Device, typename EntityTopology >
 __cuda_callable__
 bool
-MeshEntity< MeshConfig, Device, EntityTopology >::
-operator==( const MeshEntity& entity ) const
+MeshEntity< MeshConfig, Device, EntityTopology >::operator==( const MeshEntity& entity ) const
 {
    return getIndex() == entity.getIndex();
 }
 
-template< typename MeshConfig,
-          typename Device,
-          typename EntityTopology >
+template< typename MeshConfig, typename Device, typename EntityTopology >
 __cuda_callable__
 bool
-MeshEntity< MeshConfig, Device, EntityTopology >::
-operator!=( const MeshEntity& entity ) const
+MeshEntity< MeshConfig, Device, EntityTopology >::operator!=( const MeshEntity& entity ) const
 {
    return ! ( *this == entity );
 }
 
-template< typename MeshConfig,
-          typename Device,
-          typename EntityTopology >
+template< typename MeshConfig, typename Device, typename EntityTopology >
 constexpr int
-MeshEntity< MeshConfig, Device, EntityTopology >::
-getEntityDimension()
+MeshEntity< MeshConfig, Device, EntityTopology >::getEntityDimension()
 {
    return EntityTopology::dimension;
 }
 
-template< typename MeshConfig,
-          typename Device,
-          typename EntityTopology >
+template< typename MeshConfig, typename Device, typename EntityTopology >
 __cuda_callable__
 const Mesh< MeshConfig, Device >&
-MeshEntity< MeshConfig, Device, EntityTopology >::
-getMesh() const
+MeshEntity< MeshConfig, Device, EntityTopology >::getMesh() const
 {
    return *meshPointer;
 }
 
-template< typename MeshConfig,
-          typename Device,
-          typename EntityTopology >
+template< typename MeshConfig, typename Device, typename EntityTopology >
 __cuda_callable__
 typename Mesh< MeshConfig, Device >::GlobalIndexType
-MeshEntity< MeshConfig, Device, EntityTopology >::
-getIndex() const
+MeshEntity< MeshConfig, Device, EntityTopology >::getIndex() const
 {
    return index;
 }
 
-template< typename MeshConfig,
-          typename Device,
-          typename EntityTopology >
+template< typename MeshConfig, typename Device, typename EntityTopology >
 __cuda_callable__
 typename MeshEntity< MeshConfig, Device, EntityTopology >::PointType
-MeshEntity< MeshConfig, Device, EntityTopology >::
-getPoint() const
+MeshEntity< MeshConfig, Device, EntityTopology >::getPoint() const
 {
    static_assert( getEntityDimension() == 0, "getPoint() can be used only on vertices" );
    return meshPointer->getPoint( getIndex() );
 }
 
-template< typename MeshConfig,
-          typename Device,
-          typename EntityTopology >
-   template< int Subdimension >
+template< typename MeshConfig, typename Device, typename EntityTopology >
+template< int Subdimension >
 __cuda_callable__
 typename MeshEntity< MeshConfig, Device, EntityTopology >::LocalIndexType
-MeshEntity< MeshConfig, Device, EntityTopology >::
-getSubentitiesCount() const
+MeshEntity< MeshConfig, Device, EntityTopology >::getSubentitiesCount() const
 {
    TNL_ASSERT_TRUE( meshPointer, "meshPointer was not set" );
    return meshPointer->template getSubentitiesCount< getEntityDimension(), Subdimension >( this->getIndex() );
 }
 
-template< typename MeshConfig,
-          typename Device,
-          typename EntityTopology >
-   template< int Subdimension >
+template< typename MeshConfig, typename Device, typename EntityTopology >
+template< int Subdimension >
 __cuda_callable__
 typename MeshEntity< MeshConfig, Device, EntityTopology >::GlobalIndexType
-MeshEntity< MeshConfig, Device, EntityTopology >::
-getSubentityIndex( const LocalIndexType localIndex ) const
+MeshEntity< MeshConfig, Device, EntityTopology >::getSubentityIndex( LocalIndexType localIndex ) const
 {
    TNL_ASSERT_TRUE( meshPointer, "meshPointer was not set" );
    return meshPointer->template getSubentityIndex< getEntityDimension(), Subdimension >( this->getIndex(), localIndex );
 }
 
-template< typename MeshConfig,
-          typename Device,
-          typename EntityTopology >
-   template< int Superdimension >
+template< typename MeshConfig, typename Device, typename EntityTopology >
+template< int Superdimension >
 __cuda_callable__
 typename MeshEntity< MeshConfig, Device, EntityTopology >::LocalIndexType
-MeshEntity< MeshConfig, Device, EntityTopology >::
-getSuperentitiesCount() const
+MeshEntity< MeshConfig, Device, EntityTopology >::getSuperentitiesCount() const
 {
    TNL_ASSERT_TRUE( meshPointer, "meshPointer was not set" );
    return meshPointer->template getSuperentitiesCount< getEntityDimension(), Superdimension >( this->getIndex() );
 }
 
-template< typename MeshConfig,
-          typename Device,
-          typename EntityTopology >
-   template< int Superdimension >
+template< typename MeshConfig, typename Device, typename EntityTopology >
+template< int Superdimension >
 __cuda_callable__
 typename MeshEntity< MeshConfig, Device, EntityTopology >::GlobalIndexType
-MeshEntity< MeshConfig, Device, EntityTopology >::
-getSuperentityIndex( const LocalIndexType localIndex ) const
+MeshEntity< MeshConfig, Device, EntityTopology >::getSuperentityIndex( LocalIndexType localIndex ) const
 {
    TNL_ASSERT_TRUE( meshPointer, "meshPointer was not set" );
    return meshPointer->template getSuperentityIndex< getEntityDimension(), Superdimension >( this->getIndex(), localIndex );
 }
 
-template< typename MeshConfig,
-          typename Device,
-          typename EntityTopology >
+template< typename MeshConfig, typename Device, typename EntityTopology >
 __cuda_callable__
 typename MeshEntity< MeshConfig, Device, EntityTopology >::TagType
-MeshEntity< MeshConfig, Device, EntityTopology >::
-getTag() const
+MeshEntity< MeshConfig, Device, EntityTopology >::getTag() const
 {
    TNL_ASSERT_TRUE( meshPointer, "meshPointer was not set" );
    return meshPointer->template getEntityTag< getEntityDimension() >( this->getIndex() );
 }
 
-template< typename MeshConfig,
-          typename Device,
-          typename EntityTopology >
-std::ostream& operator<<( std::ostream& str, const MeshEntity< MeshConfig, Device, EntityTopology >& entity )
+template< typename MeshConfig, typename Device, typename EntityTopology >
+std::ostream&
+operator<<( std::ostream& str, const MeshEntity< MeshConfig, Device, EntityTopology >& entity )
 {
-   return str << getType< decltype(entity) >() << "( <meshPointer>, " << entity.getIndex() << " )";
+   return str << getType< decltype( entity ) >() << "( <meshPointer>, " << entity.getIndex() << " )";
 }
 
-} // namespace Meshes
-} // namespace TNL
+}  // namespace Meshes
+}  // namespace TNL

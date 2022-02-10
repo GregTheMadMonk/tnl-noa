@@ -8,9 +8,8 @@
 
 #include <TNL/Algorithms/ParallelFor.h>
 
-
 namespace TNL {
-   namespace Algorithms {
+namespace Algorithms {
 
 /**
  * \brief Wrapper to ParallelFor which makes it run sequentially.
@@ -36,15 +35,14 @@ struct SequentialFor
     * \include SequentialForExample.out
     *
     */
-   template< typename Index,
-             typename Function >
-   static void exec( Index start, Index end, Function f )
+   template< typename Index, typename Function >
+   static void
+   exec( Index start, Index end, Function f )
    {
       for( Index i = start; i < end; i++ )
          ParallelFor< Device >::exec( i, i + 1, f );
    }
 };
 
-
-   } // namespace Algorithms
-} // namespace TNL
+}  // namespace Algorithms
+}  // namespace TNL

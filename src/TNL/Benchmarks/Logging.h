@@ -22,53 +22,83 @@ namespace Benchmarks {
 
 class LoggingRowElements
 {
-   public:
+public:
+   LoggingRowElements()
+   {
+      stream << std::setprecision( 6 ) << std::fixed;
+   }
 
-      LoggingRowElements()
-      {
-         stream << std::setprecision( 6 ) << std::fixed;
-      }
+   template< typename T >
+   LoggingRowElements&
+   operator<<( const T& b )
+   {
+      stream << b;
+      elements.push_back( stream.str() );
+      stream.str( std::string() );
+      return *this;
+   }
 
-      template< typename T >
-      LoggingRowElements& operator << ( const T& b )
-      {
-         stream << b;
-         elements.push_back( stream.str() );
-         stream.str( std::string() );
-         return *this;
-      }
+   LoggingRowElements&
+   operator<<( decltype( std::setprecision( 2 ) )& setprec )
+   {
+      stream << setprec;
+      return *this;
+   }
 
-      LoggingRowElements& operator << ( decltype( std::setprecision( 2 ) )& setprec )
-      {
-         stream << setprec;
-         return *this;
-      }
+   LoggingRowElements&
+   operator<<( decltype( std::fixed )& setfixed )  // the same works also for std::scientific
+   {
+      stream << setfixed;
+      return *this;
+   }
 
-      LoggingRowElements& operator << ( decltype( std::fixed )& setfixed ) // the same works also for std::scientific
-      {
-         stream << setfixed;
-         return *this;
-      }
+   std::size_t
+   size() const noexcept
+   {
+      return elements.size();
+   };
 
-      std::size_t size() const noexcept { return elements.size(); };
+   // iterators
+   auto
+   begin() noexcept
+   {
+      return elements.begin();
+   }
 
-      // iterators
-      auto begin() noexcept { return elements.begin(); }
+   auto
+   begin() const noexcept
+   {
+      return elements.begin();
+   }
 
-      auto begin() const noexcept { return elements.begin(); }
+   auto
+   cbegin() const noexcept
+   {
+      return elements.cbegin();
+   }
 
-      auto cbegin() const noexcept { return elements.cbegin(); }
+   auto
+   end() noexcept
+   {
+      return elements.end();
+   }
 
-      auto end() noexcept { return elements.end(); }
+   auto
+   end() const noexcept
+   {
+      return elements.end();
+   }
 
-      auto end() const noexcept { return elements.end(); }
+   auto
+   cend() const noexcept
+   {
+      return elements.cend();
+   }
 
-      auto cend() const noexcept { return elements.cend(); }
+protected:
+   std::list< std::string > elements;
 
-   protected:
-      std::list< std::string > elements;
-
-      std::stringstream stream;
+   std::stringstream stream;
 };
 
 class Logging
@@ -81,12 +111,11 @@ public:
    using RowElements = LoggingRowElements;
    using WidthHints = std::vector< int >;
 
-   Logging( std::ostream& log, int verbose = true )
-   : log(log), verbose(verbose)
+   Logging( std::ostream& log, int verbose = 1 ) : log( log ), verbose( verbose )
    {
       try {
          // check if we got an open file
-         std::ofstream& file = dynamic_cast< std::ofstream& >( log );
+         auto& file = dynamic_cast< std::ofstream& >( log );
          if( file.is_open() )
             // enable exceptions, but only if we got an open file
             // (under MPI, only the master rank typically opens the log file and thus
@@ -105,12 +134,14 @@ public:
       this->verbose = verbose;
    }
 
-   int getVerbose() const
+   int
+   getVerbose() const
    {
       return verbose;
    }
 
-   virtual void setMetadataColumns( const MetadataColumns& elements )
+   virtual void
+   setMetadataColumns( const MetadataColumns& elements )
    {
       // check if a header element changed (i.e. a first item of the pairs)
       if( metadataColumns.size() != elements.size() )
@@ -125,11 +156,11 @@ public:
    }
 
    virtual void
-   setMetadataElement( const typename MetadataColumns::value_type & element,
+   setMetadataElement( const typename MetadataColumns::value_type& element,
                        int insertPosition = -1 /* negative values insert from the end */ )
    {
       bool found = false;
-      for( auto & it : metadataColumns )
+      for( auto& it : metadataColumns )
          if( it.first == element.first ) {
             if( it.second != element.second )
                it.second = element.second;
@@ -146,10 +177,10 @@ public:
    }
 
    virtual void
-   setMetadataWidths( const std::map< std::string, int > & widths )
+   setMetadataWidths( const std::map< std::string, int >& widths )
    {
-      for( auto & it : widths )
-         if( metadataWidths.count( it.first ) )
+      for( const auto& it : widths )
+         if( metadataWidths.count( it.first ) > 0 )
             metadataWidths[ it.first ] = it.second;
          else
             metadataWidths.insert( it );
@@ -162,7 +193,8 @@ public:
               const WidthHints& columnWidthHints,
               const std::string& errorMessage = "" ) = 0;
 
-   virtual void writeErrorMessage( const std::string& message ) = 0;
+   virtual void
+   writeErrorMessage( const std::string& message ) = 0;
 
 protected:
    std::ostream& log;
@@ -173,5 +205,5 @@ protected:
    bool header_changed = true;
 };
 
-} // namespace Benchmarks
-} // namespace TNL
+}  // namespace Benchmarks
+}  // namespace TNL

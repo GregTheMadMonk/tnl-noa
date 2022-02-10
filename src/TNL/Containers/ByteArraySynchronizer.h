@@ -40,18 +40,21 @@ public:
    using ByteArrayView = ArrayView< std::uint8_t, Device, Index >;
    using RequestsVector = std::vector< MPI_Request >;
 
-   enum class AsyncPolicy {
+   enum class AsyncPolicy
+   {
       synchronous,
       deferred,
       threadpool,
       async,
    };
 
-   ByteArraySynchronizer() : tp(1) {}
+   ByteArraySynchronizer() : tp( 1 ) {}
 
-   virtual void synchronizeByteArray( ByteArrayView array, int bytesPerValue ) = 0;
+   virtual void
+   synchronizeByteArray( ByteArrayView array, int bytesPerValue ) = 0;
 
-   virtual RequestsVector synchronizeByteArrayAsyncWorker( ByteArrayView array, int bytesPerValue ) = 0;
+   virtual RequestsVector
+   synchronizeByteArrayAsyncWorker( ByteArrayView array, int bytesPerValue ) = 0;
 
    /**
     * \brief An asynchronous version of \ref synchronizeByteArray.
@@ -62,7 +65,8 @@ public:
     * Note that at most one async operation may be active at a time, the
     * following calls will block until the pending operation is finished.
     */
-   void synchronizeByteArrayAsync( ByteArrayView array, int bytesPerValue, AsyncPolicy policy = AsyncPolicy::synchronous )
+   void
+   synchronizeByteArrayAsync( ByteArrayView array, int bytesPerValue, AsyncPolicy policy = AsyncPolicy::synchronous )
    {
       // wait for any previous synchronization (multiple objects can share the
       // same synchronizer)
@@ -74,20 +78,21 @@ public:
 
       async_start_timer.start();
 
-      // GOTCHA: https://devblogs.nvidia.com/cuda-pro-tip-always-set-current-device-avoid-multithreading-bugs/
-      #ifdef HAVE_CUDA
+// GOTCHA: https://devblogs.nvidia.com/cuda-pro-tip-always-set-current-device-avoid-multithreading-bugs/
+#ifdef HAVE_CUDA
       if( std::is_same< Device, Devices::Cuda >::value )
-         cudaGetDevice(&gpu_id);
-      #endif
+         cudaGetDevice( &gpu_id );
+#endif
 
       if( policy == AsyncPolicy::threadpool || policy == AsyncPolicy::async ) {
          // everything offloaded to a separate thread
-         auto worker = [=] () {
-            // GOTCHA: https://devblogs.nvidia.com/cuda-pro-tip-always-set-current-device-avoid-multithreading-bugs/
-            #ifdef HAVE_CUDA
+         auto worker = [ = ]()
+         {
+// GOTCHA: https://devblogs.nvidia.com/cuda-pro-tip-always-set-current-device-avoid-multithreading-bugs/
+#ifdef HAVE_CUDA
             if( std::is_same< Device, Devices::Cuda >::value )
-               cudaSetDevice(this->gpu_id);
-            #endif
+               cudaSetDevice( this->gpu_id );
+#endif
 
             this->synchronizeByteArray( array, bytesPerValue );
          };
@@ -100,7 +105,8 @@ public:
       else if( policy == AsyncPolicy::deferred ) {
          // immediate start, deferred synchronization (but still in the same thread)
          auto requests = synchronizeByteArrayAsyncWorker( array, bytesPerValue );
-         auto worker = [requests] () mutable {
+         auto worker = [ requests ]() mutable
+         {
             MPI::Waitall( requests.data(), requests.size() );
          };
          this->async_op = std::async( std::launch::deferred, worker );
@@ -139,5 +145,5 @@ public:
    std::size_t async_ops_count = 0;
 };
 
-} // namespace Containers
-} // namespace TNL
+}  // namespace Containers
+}  // namespace TNL
