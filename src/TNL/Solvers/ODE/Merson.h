@@ -19,47 +19,34 @@ template< class Vector,
 class Merson : public ExplicitSolver< typename Vector::RealType, typename Vector::IndexType, SolverMonitor >
 {
 public:
-   using ProblemType = Problem;
-   using DofVectorType = typename Problem::DofVectorType;
-   using RealType = typename Problem::RealType;
-   using DeviceType = typename Problem::DeviceType;
-   using IndexType = typename Problem::IndexType;
-   using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
+   using RealType = typename Vector::RealType;
+   using DeviceType = typename Vector::DeviceType;
+   using IndexType  = typename Vector::IndexType;
+   using VectorType = Vector;
+   using DofVectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
    using SolverMonitorType = SolverMonitor;
 
-      using RealType = typename Vector::RealType;
-      using DeviceType = typename Vector::DeviceType;
-      using IndexType  = typename Vector::IndexType;
-      using VectorType = Vector;
-      using DofVectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
-      using SolverMonitorType = SolverMonitor;
+   Merson() = default;
 
-      Merson() = default;
+   void configSetup( Config::ConfigDescription& config, const String& prefix = "" );
 
-   bool
-   setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
+   bool setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
 
-      bool setup( const Config::ParameterContainer& parameters,
-                  const String& prefix = "" );
+   void setAdaptivity( const RealType& a );
 
-   bool
-   solve( DofVectorPointer& u );
+   const RealType& getAdaptivity() const;
 
-      const RealType& getAdaptivity() const;
+   template< typename RHSFunction >
+   bool solve( VectorType& u, RHSFunction&& rhs );
 
-      template< typename RHSFunction >
-      bool solve( VectorType& u, RHSFunction&& rhs );
+   void writeGrids( const DofVectorType& u );
 
-   DofVectorPointer _k1, _k2, _k3, _k4, _k5, _kAux;
+   DofVectorType _k1, _k2, _k3, _k4, _k5, _kAux;
 
-      void writeGrids( const DofVectorType& u );
-
-      DofVectorType _k1, _k2, _k3, _k4, _k5, _kAux;
-
-      /****
-       * This controls the accuracy of the solver
-       */
-      RealType adaptivity = 0.00001;
+   /****
+    * This controls the accuracy of the solver
+    */
+   RealType adaptivity = 0.00001;
 };
 
 }  // namespace ODE

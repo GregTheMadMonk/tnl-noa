@@ -21,36 +21,33 @@ template< typename Vector,
           typename SolverMonitor = IterativeSolverMonitor< typename Vector::RealType, typename Vector::IndexType > >
 class Euler : public ExplicitSolver< typename Vector::RealType, typename Vector::IndexType, SolverMonitor >
 {
-   public:
+public:
 
-      using RealType = typename Vector::RealType;
-      using DeviceType = typename Vector::DeviceType;
-      using IndexType  = typename Vector::IndexType;
-      using VectorType = Vector;
-      using DofVectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
-      using SolverMonitorType = SolverMonitor;
+   using RealType = typename Vector::RealType;
+   using DeviceType = typename Vector::DeviceType;
+   using IndexType  = typename Vector::IndexType;
+   using VectorType = Vector;
+   using DofVectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
+   using SolverMonitorType = SolverMonitor;
 
-      Euler() = default;
+   Euler() = default;
 
-      static void configSetup( Config::ConfigDescription& config,
-                               const String& prefix = "" );
+   static void configSetup( Config::ConfigDescription& config, const String& prefix = "" );
 
-      bool setup( const Config::ParameterContainer& parameters,
-                  const String& prefix = "" );
+   bool setup( const Config::ParameterContainer& parameters,
+               const String& prefix = "" );
 
-   const RealType&
-   getCFLCondition() const;
+   void setCFLCondition( const RealType& cfl );
 
-   bool
-   solve( DofVectorPointer& u );
+   const RealType& getCFLCondition() const;
 
-      template< typename RHSFunction >
-      bool solve( VectorType& u, RHSFunction&& rhs );
+   template< typename RHSFunction >
+   bool solve( VectorType& u, RHSFunction&& rhs );
 
-   protected:
-      DofVectorType _k1;
+protected:
+   DofVectorType _k1;
 
-      RealType cflCondition = 0.0;
+   RealType cflCondition = 0.0;
 };
 
 } // namespace ODE

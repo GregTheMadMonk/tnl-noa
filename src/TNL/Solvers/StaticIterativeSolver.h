@@ -8,6 +8,9 @@
 
 #include <limits>
 
+
+#include <TNL/String.h>
+#include <TNL/Cuda/CudaCallable.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 
