@@ -213,17 +213,17 @@ In the above, `[list of targets]` should be replaced with a space-separated list
 of targets that can be selected from the following list:
 
 - `all`: Special target which includes all other targets.
-- `benchmarks`: Compile the 'src/Benchmarks' directory.
-- `examples`: Compile the 'src/Examples' directory.
-- `tools`: Compile the 'src/Tools' directory.
-- `tests`: Compile unit tests in the 'src/UnitTests' directory (except tests for
+- `benchmarks`: Compile the `src/Benchmarks` directory.
+- `examples`: Compile the `src/Examples` directory.
+- `tools`: Compile the `src/Tools` directory.
+- `tests`: Compile unit tests in the `src/UnitTests` directory (except tests for
   matrix formats, which have a separate target).
 - `matrix-tests`: Compile unit tests for matrix formats.
 - `python`: Compile the Python bindings.
 - `doc`: Generate the documentation.
 
-Additionally, `[options]` can be replaced with a list of `--`-prefixed options
-that can be viewed by running `./install --help`.
+Additionally, `[options]` can be replaced with a list of options with the `--`
+prefix that can be viewed by running `./install --help`.
 
 Note that [CMake](https://cmake.org/) 3.13 or later is required when using the
 `install` script.
