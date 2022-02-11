@@ -83,8 +83,13 @@ or via SSH:
 
     git clone gitlab@mmg-gitlab.fjfi.cvut.cz:tnl/tnl-dev.git
 
-Since TNL is a header-only library, no installation is necessary to actually use
-the library in your project. See the [Usage](#usage) section for details.
+TNL is a header-only library so it can be used with no installation. However,
+we recommend to do quick installation be executing
+
+   ./install tools
+
+which also downloads necessary dependencies and create some useful TNL tools.
+See the [Usage](#usage) section for more details.
 
 You may also want to install some optional dependencies and/or compile and
 install various tools and examples. See the following section for details.
