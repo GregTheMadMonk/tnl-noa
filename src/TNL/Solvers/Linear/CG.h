@@ -21,7 +21,7 @@ namespace Linear {
  *
  * \tparam Matrix is type of matrix describing the linear system.
  *
- * See \ref TNL::Solvers::Linear::IterativeSolver for example of showing how to use the linear solvers.
+ * See \ref TNL::Solvers::Linear::LinearSolver for example of showing how to use the linear solvers.
  */
 template< typename Matrix >
 class CG : public LinearSolver< Matrix >
