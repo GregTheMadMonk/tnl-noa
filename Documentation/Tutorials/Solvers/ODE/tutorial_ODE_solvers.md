@@ -4,40 +4,24 @@
 
 ## Introduction
 
-Solvers of (ordinary differntial equations)[https://en.wikipedia.org/wiki/Ordinary_differential_equation] are .... . TNL offers the followiing iterative methods:
+In this part, we describes solvers [ordinary differntial equations](https://en.wikipedia.org/wiki/Ordinary_differential_equation). TNL offers the following ODE solvers:
 
+1. \ref TNL::Solvers::ODE::Euler - the Euler method with the 1-st order of accuracy.
+2. \ref TNL::Solvers::ODE::Merson - the Runge-Kutta-Merson solver with the 4-th order of accuracy and adaptive choice of the time step.
+
+Each solver has its static counterpart which can be run even in the GPU kernels which means that it can be combined with \ref TNL::Algorithms::ParallelFor for example. The static ODE solvers are the following:
+
+1. \ref TNL::Solvers::ODE::StaticEuler - the Euler method with the 1-st order of accuracy.
+2. \ref TNL::Solvers::ODE::StaticMerson - the Runge-Kutta-Merson solver with the 4-th order of accuracy and adaptive choice of the time step.
 
 ## Static ODE solvers
+
+
 
 ## Non-static ODE Solvers
 
 ### Basic setup
 
-All iterative solvers for linear systems can be found in the namespace \ref TNL::Solvers::Linear. The following example shows the use the iterative solvers:
-
-\includelineno Solvers/Linear/IterativeLinearSolverExample.cpp
-
-In this example we solve a linear system \f$ A \vec x = \vec b \f$ where
-
-\f[
-A = \left(
-\begin{array}{cccc}
- 2.5 & -1   &      &      &      \\
--1   &  2.5 & -1   &      &      \\
-     & -1   &  2.5 & -1   &      \\
-     &      & -1   &  2.5 & -1   \\
-     &      &      & -1   &  2.5 \\
-\end{array}
-\right)
-\f]
-
-The right-hand side vector \f$\vec b \f$ is set to \f$( 1.5, 0.5, 0.5, 0.5, 1.5 )^T \f$ so that the exact solution is \f$ \vec x = ( 1, 1, 1, 1, 1 )^T\f$. The matrix elements of \f$A $\f$ is set on the lines 12-51 by the means of the method \ref TNL::Matrices::SparseMatrix::forAllElements. In this example, we use the sparse matrix but any other matrix type can be used as well (see the namespace \ref TNL::Matrices). Next we set the solution vector \f$ \vec x = ( 1, 1, 1, 1, 1 )^T\f$ (line 57) and multiply it with matrix \f$ A \f$ to get the right-hand side vector \f$\vec b\f$ (lines 58-59). Finally, we reset the vector \f$\vec x \f$ to zero vector.
-
-To solve the linear system, we use TFQMR method (line 66), as an example. Other solvers can be used as well (see the namespace \ref TNL::Solvers::Linear). The solver needs only one template parameter which is the matrix type. Next we create an instance of the solver (line 67 ) and set the matrix of the linear system (line 68). Note, that matrix is passed to the solver as a shared smart pointer (\ref std::shared_ptr). This is why we created an instance of the smart pointer on the line 24 instead of the sparse matrix itself. The solver is executed on the line 69 by calling the method \ref TNL::Solvers::Linear::LinearSolver::solve. The method accepts the right-hand side vector \f$ \vec b\f$ and the solution vector \f$ \vec x\f$.
-
-The result looks as follows:
-
-\include IterativeLinearSolverExample.out
 
 ### Setup with a solver monitor
 
@@ -60,18 +44,6 @@ The only changes happen on lines 83-85 where we create an instance of TNL timer 
 The result looks as follows:
 
 \include IterativeLinearSolverWithTimerExample.out
-
-### Setup with preconditioner
-
-Preconditioners of iterative solvers can significantly improve the performance of the solver. In the case of the linear systems, they are used mainly with the Krylov subspace methods. Preconditioners cannot be used with the starionary methods (\ref TNL::Solvers::Linear::Jacobi and \ref TNL::Solvers::Linear::SOR). The following example shows how to setup an iterative solver of linear systems with preconditioning.
-
-\includelineno Solvers/Linear/IterativeLinearSolverWithPreconditionerExample.cpp
-
-In this example, we solve the same problem as in all other examples in this section. The only differences concerning the preconditioner happen on the lines (68-72). Similar to the matrix of the linear system, the preconditioner is passed to the solver by the means of  smart shared pointer (\ref std::shared_ptr). The instance is created on the lines 68 and 69. Next we have to initialize the preconditioner (line 70, \ref TNL::Solvers::Linear::Preconditioners::Preconditioner::update). The method `update` has to be called everytime the matrix of the linear system changes. This is important for example when solving time dependent PDEs but it does not happen in this example. Finally, we need to connect the solver with the preconditioner (line 73, \ref TNL::Solvers::Linear::LinearSolver).
-
-The result looks as follows:
-
-\include IterativeLinearSolverWithPreconditionerExample.out
 
 ### Choosing the solver and preconditioner type at runtime
 
