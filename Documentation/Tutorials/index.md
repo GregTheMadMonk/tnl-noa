@@ -10,4 +10,5 @@
 8. [Matrices](./Matrices/tutorial_Matrices.md)
 9. [Linear solvers](./Solvers/Linear/tutorial_Linear_solvers.md)
 10. [Segments aka sparse formats](./Segments/tutorial_Segments.md)
-11. [Unstructured meshes](./Meshes/tutorial_Meshes.md)
+11. [ODE solvers](./Solvers/ODE/tutorial_ODE_solvers.md)
+12. [Unstructured meshes](./Meshes/tutorial_Meshes.md)
