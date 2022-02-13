@@ -37,9 +37,9 @@ public:
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" );
 
-   void setCFLCondition( const RealType& cfl );
+   void setCourantNumber( const RealType& cfl );
 
-   const RealType& getCFLCondition() const;
+   const RealType& getCourantNumber() const;
 
    template< typename RHSFunction >
    bool solve( VectorType& u, RHSFunction&& rhs );
@@ -47,7 +47,7 @@ public:
 protected:
    DofVectorType _k1;
 
-   RealType cflCondition = 0.0;
+   RealType courantNumber = 0.0;
 };
 
 } // namespace ODE

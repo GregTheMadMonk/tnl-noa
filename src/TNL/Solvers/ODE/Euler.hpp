@@ -28,24 +28,24 @@ setup( const Config::ParameterContainer& parameters, const String& prefix )
 {
    ExplicitSolver< RealType, IndexType, SolverMonitor >::setup( parameters, prefix );
    if( parameters.checkParameter( prefix + "euler-cfl" ) )
-      this->setCFLCondition( parameters.getParameter< double >( prefix + "euler-cfl" ) );
+      this->setCourantNumber( parameters.getParameter< double >( prefix + "euler-cfl" ) );
    return true;
 }
 
 template< typename Vector, typename SolverMonitor >
 void
 Euler< Vector, SolverMonitor >::
-setCFLCondition( const RealType& cfl )
+setCourantNumber( const RealType& c )
 {
-   this->cflCondition = cfl;
+   this->courantNumber = c;
 }
 
 template< typename Vector, typename SolverMonitor >
 auto
 Euler< Vector, SolverMonitor >::
-getCFLCondition() const -> const RealType&
+getCourantNumber() const -> const RealType&
 {
-   return this->cflCondition;
+   return this->courantNumber;
 }
 
 template< typename Vector, typename SolverMonitor >
@@ -82,9 +82,9 @@ solve( VectorType& _u, RHSFunction&& rhsFunction )
 
       RealType lastResidue = this->getResidue();
       RealType maxResidue( 0.0 );
-      if( this -> cflCondition != 0.0 ) {
+      if( this -> CourantNumber != 0.0 ) {
          maxResidue = max( abs( k1 ) );
-         if( currentTau * maxResidue > this->cflCondition ) {
+         if( currentTau * maxResidue > this->courantNumber ) {
             currentTau *= 0.9;
             continue;
          }
@@ -112,7 +112,7 @@ solve( VectorType& _u, RHSFunction&& rhsFunction )
           ( this -> getConvergenceResidue() != 0.0 && this->getResidue() < this -> getConvergenceResidue() ) )
          return true;
 
-      if( this->cflCondition != 0.0 ) {
+      if( this->courantNumber != 0.0 ) {
          currentTau /= 0.95;
          currentTau = min( currentTau, this->getMaxTau() );
       }

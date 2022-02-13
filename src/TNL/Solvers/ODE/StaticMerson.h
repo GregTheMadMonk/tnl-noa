@@ -39,9 +39,9 @@ class StaticMerson : public StaticExplicitSolver< Real, int >
       __cuda_callable__
       const RealType& getAdaptivity() const;
 
-      template< typename RHSFunction >
+      template< typename RHSFunction, typename... Args >
       __cuda_callable__
-      bool solve( VectorType& u, RHSFunction&& rhs );
+      bool solve( VectorType& u, RHSFunction&& rhs, Args... args );
 
    protected:
 
@@ -79,9 +79,9 @@ class StaticMerson< Containers::StaticVector< Size_, Real > >
       __cuda_callable__
       const RealType& getAdaptivity() const;
 
-      template< typename RHSFunction >
+      template< typename RHSFunction, typename... Args >
       __cuda_callable__
-      bool solve( VectorType& u, RHSFunction&& rhs );
+      bool solve( VectorType& u, RHSFunction&& rhs, Args... args );
 
    protected:
 

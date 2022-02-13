@@ -54,10 +54,10 @@ getAdaptivity() const
 };
 
 template< typename Real >
-   template< typename RHSFunction >
+   template< typename RHSFunction, typename... Args >
 bool __cuda_callable__
 StaticMerson< Real >::
-solve( VectorType& u, RHSFunction&& rhsFunction )
+solve( VectorType& u, RHSFunction&& rhsFunction. Args... args )
 {
    if( this->getTau() == 0.0 )
       return false;
@@ -91,31 +91,27 @@ solve( VectorType& u, RHSFunction&& rhsFunction )
 
       /////
       // k1
-      rhsFunction( time, currentTau, u, k1 );
+      rhsFunction( time, currentTau, u, k1, args... );
 
       /////
       // k2
       kAux = u + currentTau * ( 1.0 / 3.0 * k1 );
-      //this->problem->applyBoundaryConditions( time + tau_3, _kAux );
-      rhsFunction( time + tau_3, currentTau, kAux, k2 );
+      rhsFunction( time + tau_3, currentTau, kAux, k2, args... );
 
       /////
       // k3
       kAux = u + currentTau * 1.0 / 6.0 * ( k1 + k2 );
-      //this->problem->applyBoundaryConditions( time + tau_3, _kAux );
-      rhsFunction( time + tau_3, currentTau, kAux, k3 );
+      rhsFunction( time + tau_3, currentTau, kAux, k3, args... );
 
       /////
       // k4
       kAux = u + currentTau * ( 0.125 * k1 + 0.375 * k3 );
-      //this->problem->applyBoundaryConditions( time + 0.5 * currentTau, _kAux );
-      rhsFunction( time + 0.5 * currentTau, currentTau, kAux, k4 );
+      rhsFunction( time + 0.5 * currentTau, currentTau, kAux, k4, args... );
 
       /////
       // k5
       kAux = u + currentTau * ( 0.5 * k1 - 1.5 * k3 + 2.0 * k4 );
-      //this->problem->applyBoundaryConditions( time + currentTau, _kAux );
-      rhsFunction( time + currentTau, currentTau, kAux, k5 );
+      rhsFunction( time + currentTau, currentTau, kAux, k5, args... );
 
       /////
       // Compute an error of the approximation.
@@ -199,10 +195,10 @@ getAdaptivity() const
 };
 
 template< int Size_, typename Real >
-   template< typename RHSFunction >
+   template< typename RHSFunction, typename... Args >
 bool __cuda_callable__
 StaticMerson< Containers::StaticVector< Size_, Real > >::
-solve( VectorType& u, RHSFunction&& rhsFunction )
+solve( VectorType& u, RHSFunction&& rhsFunction, Args... args )
 {
    if( this->getTau() == 0.0 )
       return false;
@@ -236,31 +232,27 @@ solve( VectorType& u, RHSFunction&& rhsFunction )
 
       /////
       // k1
-      rhsFunction( time, currentTau, u, k1 );
+      rhsFunction( time, currentTau, u, k1, args... );
 
       /////
       // k2
       kAux = u + currentTau * ( 1.0 / 3.0 * k1 );
-      //this->problem->applyBoundaryConditions( time + tau_3, _kAux );
-      rhsFunction( time + tau_3, currentTau, kAux, k2 );
+      rhsFunction( time + tau_3, currentTau, kAux, k2, args... );
 
       /////
       // k3
       kAux = u + currentTau * 1.0 / 6.0 * ( k1 + k2 );
-      //this->problem->applyBoundaryConditions( time + tau_3, _kAux );
-      rhsFunction( time + tau_3, currentTau, kAux, k3 );
+      rhsFunction( time + tau_3, currentTau, kAux, k3, args... );
 
       /////
       // k4
       kAux = u + currentTau * ( 0.125 * k1 + 0.375 * k3 );
-      //this->problem->applyBoundaryConditions( time + 0.5 * currentTau, _kAux );
-      rhsFunction( time + 0.5 * currentTau, currentTau, kAux, k4 );
+      rhsFunction( time + 0.5 * currentTau, currentTau, kAux, k4, args... );
 
       /////
       // k5
       kAux = u + currentTau * ( 0.5 * k1 - 1.5 * k3 + 2.0 * k4 );
-      //this->problem->applyBoundaryConditions( time + currentTau, _kAux );
-      rhsFunction( time + currentTau, currentTau, kAux, k5 );
+      rhsFunction( time + currentTau, currentTau, kAux, k5, args... );
 
       /////
       // Compute an error of the approximation.

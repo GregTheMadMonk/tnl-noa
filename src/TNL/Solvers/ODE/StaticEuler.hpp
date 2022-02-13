@@ -30,31 +30,31 @@ setup( const Config::ParameterContainer& parameters, const String& prefix )
 {
    StaticExplicitSolver< RealType, IndexType >::setup( parameters, prefix );
    if( parameters.checkParameter( prefix + "euler-cfl" ) )
-      this->setCFLCondition( parameters.getParameter< double >( prefix + "euler-cfl" ) );
+      this->setCourantNumber( parameters.getParameter< double >( prefix + "euler-courant-number" ) );
    return true;
 }
 
 template< typename Real >
 __cuda_callable__ void
 StaticEuler< Real >::
-setCFLCondition( const RealType& cfl )
+setCourantNumber( const RealType& c )
 {
-   this -> cflCondition = cfl;
+   this->courantNumber = c;
 }
 
 template< typename Real >
 __cuda_callable__  auto
 StaticEuler< Real >::
-getCFLCondition() const -> const RealType&
+getCourantNumber() const -> const RealType&
 {
-   return this -> cflCondition;
+   return this->courantNumber;
 }
 
 template< typename Real >
-   template< typename RHSFunction >
+   template< typename RHSFunction, typename... Args >
 __cuda_callable__ bool
 StaticEuler< Real >::
-solve( VectorType& u, RHSFunction&& rhsFunction )
+solve( VectorType& u, RHSFunction&& rhsFunction, Args... args )
 {
    /////
    // First setup the supporting coefficient k1.
@@ -75,13 +75,13 @@ solve( VectorType& u, RHSFunction&& rhsFunction )
    {
       /////
       // Compute the RHS
-      rhsFunction( time, currentTau, u, k1 );
+      rhsFunction( time, currentTau, u, k1, args... );
 
       RealType lastResidue = this->getResidue();
       RealType maxResidue( 0.0 );
-      if( this->cflCondition != 0.0 ) {
+      if( this->courantNumber != 0.0 ) {
          maxResidue = abs( k1 );
-         if( currentTau * maxResidue > this->cflCondition ) {
+         if( currentTau * maxResidue > this->courantNumber ) {
             currentTau *= 0.9;
             continue;
          }
@@ -110,7 +110,7 @@ solve( VectorType& u, RHSFunction&& rhsFunction )
           ( this -> getConvergenceResidue() != 0.0 && this->getResidue() < this -> getConvergenceResidue() ) )
          return true;
 
-      if( this -> cflCondition != 0.0 )
+      if( this->courantNumber != 0.0 )
       {
          currentTau /= 0.95;
          currentTau = min( currentTau, this->getMaxTau() );
@@ -136,31 +136,31 @@ setup( const Config::ParameterContainer& parameters, const String& prefix )
 {
    StaticExplicitSolver< RealType, IndexType >::setup( parameters, prefix );
    if( parameters.checkParameter( prefix + "euler-cfl" ) )
-      this->setCFLCondition( parameters.getParameter< double >( prefix + "euler-cfl" ) );
+      this->setCourantNumber( parameters.getParameter< double >( prefix + "euler-cfl" ) );
    return true;
 }
 
 template< int Size_, typename Real >
 __cuda_callable__ void
 StaticEuler< Containers::StaticVector< Size_, Real > >::
-setCFLCondition( const RealType& cfl )
+setCourantNumber( const RealType& c )
 {
-   this -> cflCondition = cfl;
+   this->courantNumber = c;
 }
 
 template< int Size_, typename Real >
 __cuda_callable__  auto
 StaticEuler< Containers::StaticVector< Size_, Real > >::
-getCFLCondition() const -> const RealType&
+getCourantNumber() const -> const RealType&
 {
-   return this -> cflCondition;
+   return this->courantNumber;
 }
 
 template< int Size_, typename Real >
-   template< typename RHSFunction >
+   template< typename RHSFunction, typename... Args >
 __cuda_callable__ bool
 StaticEuler< Containers::StaticVector< Size_, Real > >::
-solve( VectorType& u, RHSFunction&& rhsFunction )
+solve( VectorType& u, RHSFunction&& rhsFunction, Args... args )
 {
    /////
    // First setup the supporting vector k1.
@@ -181,13 +181,13 @@ solve( VectorType& u, RHSFunction&& rhsFunction )
    {
       /////
       // Compute the RHS
-      rhsFunction( time, currentTau, u, k1 );
+      rhsFunction( time, currentTau, u, k1, args... );
 
       RealType lastResidue = this->getResidue();
       RealType maxResidue( 0.0 );
-      if( this->cflCondition != 0.0 ) {
+      if( this->courantNumber != 0.0 ) {
          maxResidue = max( abs( k1 ) );
-         if( currentTau * maxResidue > this->cflCondition ) {
+         if( currentTau * maxResidue > this->courantNumber ) {
             currentTau *= 0.9;
             continue;
          }
@@ -215,7 +215,7 @@ solve( VectorType& u, RHSFunction&& rhsFunction )
           ( this -> getConvergenceResidue() != 0.0 && this->getResidue() < this -> getConvergenceResidue() ) )
          return true;
 
-      if( this -> cflCondition != 0.0 )
+      if( this->courantNumber != 0.0 )
       {
          currentTau /= 0.95;
          currentTau = min( currentTau, this->getMaxTau() );
