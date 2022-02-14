@@ -4,7 +4,15 @@
 
 ## Introduction
 
-In this part, we describes solvers [ordinary differntial equations](https://en.wikipedia.org/wiki/Ordinary_differential_equation). TNL offers the following ODE solvers:
+In this part, we describes solvers [ordinary differntial equations](https://en.wikipedia.org/wiki/Ordinary_differential_equation) having the
+following form:
+
+\f{eqnarray*}{
+  \frac{d \vec x}{dt} &=& \vec f( t, \vec x) \text{ on } (0,T) \\
+  \vec x( 0 )  &=& \vec x_{ini}.
+}
+
+TNL offers the following ODE solvers:
 
 1. \ref TNL::Solvers::ODE::Euler - the Euler method with the 1-st order of accuracy.
 2. \ref TNL::Solvers::ODE::Merson - the Runge-Kutta-Merson solver with the 4-th order of accuracy and adaptive choice of the time step.
@@ -16,6 +24,16 @@ Each solver has its static counterpart which can be run even in the GPU kernels 
 
 ## Static ODE solvers
 
+Static solvers are supposed to be used mainly when \f$ x \in R \f$ is scalar or \f$ \vec \in R^n \f$ is vector where \f$ n \f$ is small. Firstly, we show example of scalar problem of the following form:
+
+\f$ \frac{d x}{dt} = t \sin ( t )\ \rm{ on }\ (0,T) \f$
+
+\f$ x( 0 )  = x_{ini} \f$.
+
+
+This problem can be solved as follows:
+
+\includelineno Solvers/ODE/StaticODESolver-SineExample.h
 
 
 ## Non-static ODE Solvers

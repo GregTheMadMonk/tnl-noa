@@ -18,7 +18,7 @@ int main( int argc, char* argv[] )
    {
       solver.setStopTime( TNL::min( solver.getTime() + output_time_step, final_t ) );
       solver.solve( u, [] ( const Real& t, const Real& tau, const Real& u, Real& fu ) {
-         fu = sin( t ) * t;
+         fu = t * sin( t );
       } );
       std::cout << solver.getTime() << " " << u << std::endl;
    }

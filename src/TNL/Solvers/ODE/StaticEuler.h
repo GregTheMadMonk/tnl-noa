@@ -19,22 +19,21 @@ namespace ODE {
 
 /**
  * \brief Solver of ODEs with the first order of accuracy.
- * 
- * This solver is based on the (Euler method)[https://en.wikipedia.org/wiki/Euler_method] for solving of 
+ *
+ * This solver is based on the (Euler method)[https://en.wikipedia.org/wiki/Euler_method] for solving of
  * (ordinary differential equations)[https://en.wikipedia.org/wiki/Ordinary_differential_equation] having the
  * following form:
- * 
+ *
  *  \f$ \frac{d \vec x}{dt} = \vec f( t, \vec x) \text{ on } (0,T) \f$
- * 
- * \f$ \vec x( 0 )  = \vec x_{ini}.
- * 
+ *
+ * \f$ \vec x( 0 )  = \vec x_{ini} \f$.
+ *
  * It is supposed to be used when the unknown \f$ x \in R^n \f$ is expressed by a \ref Containers::StaticVector or it is a scalar, i.e.
  * \f$ x \in R \f$ expressed by a numeric type like `double` or `float`.
- *  
- * 
+ *
  * For problems where \f$ \vec x\f$ is represented by \ref TNL::Containers::Vector,
- * see \ref TNL::Solvers::ODE::Euler. 
- * 
+ * see \ref TNL::Solvers::ODE::Euler.
+ *
  * The following example demonstrates the use the solvers:
  *
  * \includelineno Solvers/ODE/StaticODESolver-SineExample.cpp
@@ -42,16 +41,16 @@ namespace ODE {
  * The result looks as follows:
  *
  * \include StaticODESolver-SineExample.out
- * 
+ *
  * Since this variant of the Euler solver is static, it can be used even inside of GPU kernels and so combined with \ref TNL::Algorithms::ParallelFor
  * as demonstrated by the following example:
  *
- * \includelineno Solvers/ODE/StaticODESolver-SineParallelExample.cpp
+ * \includelineno Solvers/ODE/StaticODESolver-SineParallelExample.h
  *
  * The result looks as follows:
  *
  * \include StaticODESolver-SineParallelExample.out
- * 
+ *
  * \tparam Real is floating point number type, it is type of \f$ x \f$ in this case.
  */
 template< typename Real >
