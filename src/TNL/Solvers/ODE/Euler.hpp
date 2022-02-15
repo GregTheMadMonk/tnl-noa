@@ -82,7 +82,7 @@ solve( VectorType& _u, RHSFunction&& rhsFunction )
 
       RealType lastResidue = this->getResidue();
       RealType maxResidue( 0.0 );
-      if( this -> CourantNumber != 0.0 ) {
+      if( this->courantNumber != 0.0 ) {
          maxResidue = max( abs( k1 ) );
          if( currentTau * maxResidue > this->courantNumber ) {
             currentTau *= 0.9;

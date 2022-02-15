@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <TNL/Solvers/ODE/StaticEuler.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/ParallelFor.h>
@@ -6,7 +7,7 @@
 using Real = double;
 
 template< typename Device >
-void solveParallelODEs()
+void solveParallelODEs( const char* file_name )
 {
    using ODESolver = TNL::Solvers::ODE::StaticEuler< Real >;
    using Vector = TNL::Containers::Vector< Real, Device >;
@@ -22,7 +23,7 @@ void solveParallelODEs()
    Vector results( time_steps * c_vals, 0.0 );
    auto results_view = results.getView();
    auto f = [=] __cuda_callable__ ( const Real& t, const Real& tau, const Real& u, Real& fu, const Real& c ) {
-         fu = sin( c * t ) * t * t;
+         fu = t * sin( c * t );
       };
    auto solve = [=] ( int idx ) mutable {
       const Real c = c_min + idx * c_step;
@@ -40,12 +41,23 @@ void solveParallelODEs()
       }
    };
    TNL::Algorithms::ParallelFor< Device >::exec( 0, c_vals, solve );
+
+   std::fstream file;
+   file.open( file_name, std::ios::out );
+   for( int k = 0; k < time_steps;k++ )
+   {
+      Real t = k * output_time_step;
+      file << t << " ";
+      for( int i = 0; i < c_vals; i++ )
+         file << results.getElement( k * c_vals + i ) << " ";
+      file << std::endl;
+   }
 }
 
 int main( int argc, char* argv[] )
 {
-   solveParallelODEs< TNL::Devices::Host >();
+   solveParallelODEs< TNL::Devices::Host >( "StaticODESolver-SineParallelExample-Host.out" );
 #ifdef HAVE_CUDA
-   solveParallelODEs< TNL::Devices::Cuda >();
+   solveParallelODEs< TNL::Devices::Cuda >( "StaticODESolver-SineParallelExample-Cuda.out" );
 #endif
 }

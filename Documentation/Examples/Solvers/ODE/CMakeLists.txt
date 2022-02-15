@@ -1,13 +1,14 @@
 set( HOST_EXAMPLES
    StaticODESolver-SineExample
-   StaticODESolver-LorentzExample
+   StaticODESolver-LorenzExample
 )
 
 set( COMMON_EXAMPLES
    StaticODESolver-SineParallelExample
-   StaticODESolver-LorentzParallelExample
+   StaticODESolver-LorenzParallelExample
+   ODESolver-HeatEquationExample
+   ODESolver-HeatEquationWithMonitorExample
 )
-
 
 foreach( target IN ITEMS ${HOST_EXAMPLES})
 add_executable( ${target} ${target}.cpp )
@@ -32,6 +33,5 @@ endif()
 IF( BUILD_CUDA )
    ADD_CUSTOM_TARGET( RunODESolversExamples-cuda ALL DEPENDS ${CUDA_OUTPUTS} )
 ELSE()
-   ADD_CUSTOM_TARGET( RunODELinearSolversExamples ALL DEPENDS ${HOST_OUTPUTS} )
+   ADD_CUSTOM_TARGET( RunODESolversExamples ALL DEPENDS ${HOST_OUTPUTS} )
 ENDIF()
-

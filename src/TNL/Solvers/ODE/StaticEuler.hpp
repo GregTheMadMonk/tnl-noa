@@ -198,7 +198,6 @@ solve( VectorType& u, RHSFunction&& rhsFunction, Args... args )
       // When time is close to stopTime the new residue may be inaccurate significantly.
       if( currentTau + time == this->stopTime ) this->setResidue( lastResidue );
       time += currentTau;
-      //this->problem->applyBoundaryConditions( time, _u );
 
       if( ! this->nextIteration() )
          return this->checkConvergence();
@@ -212,7 +211,7 @@ solve( VectorType& u, RHSFunction&& rhsFunction, Args... args )
       /////
       // Check stop conditions.
       if( time >= this->getStopTime() ||
-          ( this -> getConvergenceResidue() != 0.0 && this->getResidue() < this -> getConvergenceResidue() ) )
+          ( this->getConvergenceResidue() != 0.0 && this->getResidue() < this -> getConvergenceResidue() ) )
          return true;
 
       if( this->courantNumber != 0.0 )

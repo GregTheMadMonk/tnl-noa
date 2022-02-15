@@ -15,9 +15,9 @@ namespace TNL {
      * Solvers in this namespace represent numerical methods for the solution of
      * the [ordinary differential equations](https://en.wikipedia.org/wiki/Ordinary_differential_equation) of the following form:
      *
-     * \f$ \frac{d \vec x}{dt} = \vec f( t, \vec x)\ \rm{ on }\ (0,T) \f$
+     * \f[ \frac{d \vec u}{dt} = \vec f( t, \vec u)\ \rm{ on }\ (0,T) \f]
      *
-     * \f$ \vec x( 0 )  = \vec x_{ini} \f$.
+     * \f[ \vec u( 0 )  = \vec u_{ini}. \f]
      *
      * The following solvers are available:
      *

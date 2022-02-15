@@ -24,9 +24,9 @@ namespace ODE {
  * (ordinary differential equations)[https://en.wikipedia.org/wiki/Ordinary_differential_equation] having the
  * following form:
  *
- *  \f$ \frac{d \vec x}{dt} = \vec f( t, \vec x) \text{ on } (0,T) \f$
+ *  \f$ \frac{d \vec u}{dt} = \vec f( t, \vec u) \text{ on } (0,T) \f$
  *
- * \f$ \vec x( 0 )  = \vec x_{ini} \f$.
+ * \f$ \vec u( 0 )  = \vec u_{ini} \f$.
  *
  * It is supposed to be used when the unknown \f$ x \in R^n \f$ is expressed by a \ref Containers::StaticVector or it is a scalar, i.e.
  * \f$ x \in R \f$ expressed by a numeric type like `double` or `float`.
@@ -86,7 +86,7 @@ class StaticEuler : public StaticExplicitSolver< Real, int >
 
       /**
        * \brief Static method for setup of configuration parameters.
-       * 
+       *
        * \param config is the config description.
        * \param prefix is the prefix of the configuration parameters for this solver.
        */
@@ -94,8 +94,8 @@ class StaticEuler : public StaticExplicitSolver< Real, int >
                                const String& prefix = "" );
 
       /**
-       * \brief 
-       * 
+       * \brief
+       *
        * \param parameters is the container for configuration parameters.
        * \param prefix is the prefix of the configuration parameters for this solver.
        * \return true if the parameters where parsed sucessfuly.
@@ -106,13 +106,13 @@ class StaticEuler : public StaticExplicitSolver< Real, int >
 
       /**
        * \brief This method sets the Courant number in the (CFL condition)[https://en.wikipedia.org/wiki/Courant%E2%80%93Friedrichs%E2%80%93Lewy_condition].
-       * 
+       *
        * This method sets the constant \f$ C \f$ in the Courant–Friedrichs–Lewy condition. It means that
-       * 
+       *
        * \f[ \Delta t = \frac{C}{\| f( t,x )\|} \f],
-       * 
+       *
        * if \f$ C > 0\f$. If \f$ C = 0 \f$ the time step stays fixed.
-       * 
+       *
        * \param c is the Courant number.
        */
       __cuda_callable__
@@ -120,7 +120,7 @@ class StaticEuler : public StaticExplicitSolver< Real, int >
 
       /**
        * \brief Getter for the Courant number.
-       * 
+       *
        * \return the Courant number.
        */
       __cuda_callable__
@@ -128,10 +128,10 @@ class StaticEuler : public StaticExplicitSolver< Real, int >
 
       /**
        * \brief Solve ODE given by a lambda function.
-       * 
-       * \tparam RHSFunction 
-       * \param u 
-       * \param rhs 
+       *
+       * \tparam RHSFunction
+       * \param u
+       * \param rhs
        * \return 'true' if steady state solution has been reached, 'false' otherwise.
        */
       template< typename RHSFunction, typename... Args >
