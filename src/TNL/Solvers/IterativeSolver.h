@@ -229,7 +229,9 @@ protected:
 
    Index currentIteration = 0;
 
-   Real convergenceResidue = 1e-6;
+   // The stopping criterion based on small residue should be turned off by default.
+   // It leads to unwanted behaviour in some situations.
+   Real convergenceResidue = 0.0;
 
    // If the current residue is greater than divergenceResidue, the solver is stopped.
    Real divergenceResidue = std::numeric_limits< Real >::max();

@@ -68,6 +68,7 @@ void iterativeLinearSolverExample()
    preconditioner_ptr->update( matrix_ptr );
    solver_ptr->setMatrix( matrix_ptr );
    solver_ptr->setPreconditioner( preconditioner_ptr );
+   solver_ptr->setConvergenceResidue( 1.0e-6 );
    solver_ptr->solve( b, x );
    std::cout << "Vector x = " << x << std::endl;
 }
