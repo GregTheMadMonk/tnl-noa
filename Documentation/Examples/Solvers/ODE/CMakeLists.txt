@@ -35,3 +35,13 @@ IF( BUILD_CUDA )
 ELSE()
    ADD_CUSTOM_TARGET( RunODESolversExamples ALL DEPENDS ${HOST_OUTPUTS} )
 ENDIF()
+
+ADD_CUSTOM_COMMAND( 
+   COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/StaticODESolver-SineExample.py 
+      ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/StaticODESolver-SineExample.out
+      ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/StaticODESolver-SineExample.pdf
+   OUTPUT StaticODESolver-SineExample.pdf
+   DEPENDS ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/StaticODESolver-SineExample.out
+   VERBATIM )
+
+ADD_CUSTOM_TARGET( ProcessODESolversExamplesResults ALL DEPENDS StaticODESolver-SineExample.pdf )

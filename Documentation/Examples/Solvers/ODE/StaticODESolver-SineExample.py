@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
+import sys
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-f = open( "sine.gplt", 'r' )
+f = open( sys.argv[1], 'r' )
 x_lst = []
 y_lst = []
 for line in f:
@@ -27,7 +28,7 @@ ax.set_xbound(lower=0, upper=10)
 #ax.set(xlim=(0,10), xticks=np.arange(1, 10), ylim=(0, 10), yticks=np.arange(1, 10))
 ax.plot(x, y, linewidth=2.0)
 plt.xlim( xmin=0, xmax=10 )
-plt.savefig( f"StaticODESolver-SineExample.pdf")
+plt.savefig( sys.argv[2] )
 plt.close(fig)
 
 
