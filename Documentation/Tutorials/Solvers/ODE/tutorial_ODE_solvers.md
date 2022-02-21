@@ -45,6 +45,10 @@ The lambda function is supposed to compute just the value of `fu`. It is `t * si
 
 \include StaticODESolver-SineExample.out
 
+And the graph of the solution looks as follows:
+
+\image{inline} html StaticODESolver-SineExample.png "Solution of the scalar ODE problem"
+
 In the next example, we demonstrate use of the static ODE solver to solve a system of ODEs, namely the [Lorenz system](https://en.wikipedia.org/wiki/Lorenz_system) which reads as:
 
 \f[ \frac{dx}{dt} = \sigma( x - y),\ \rm{ on }\ (0,T) \f]
@@ -102,11 +106,11 @@ The second example is a parametric analysis of the Lorenz model
 \f[ \vec u(0) = (x(0),y(0),z(0)) = \vec u_{ini} \f]
 
  which we solve for different values of the model parameters
- 
+
  \f[ \sigma_i = \sigma_{min} + i  \Delta \sigma, \f]
  \f[ \rho_j = \rho_{min} + j  \Delta \rho, \f]
  \f[ \beta_k = \beta_{min} + k \Delta \beta, \f]
- 
+
  where we set \f$ \Delta \sigma = \Delta \rho = \Delta \beta = l / (p-1) \f$ and where \f$ i,j,k = 0, 1, \ldots, p - 1 \f$. The code of the solver looks as follows:
 
 \includelineno Solvers/ODE/StaticODESolver-LorenzParallelExample.h
