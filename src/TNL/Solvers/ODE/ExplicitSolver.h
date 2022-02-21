@@ -18,17 +18,38 @@ namespace TNL {
 namespace Solvers {
 namespace ODE {
 
+/**
+ * \brief Base class for ODE solvers and explicit solvers od PDEs.
+ *
+ * \tparam Real is type of the floating-point arithmetics.
+ * \tparam Index is type for indexing.
+ * \tparam IterativeSolverMonitor< Real, Index > is
+ */
 template< typename Real = double,
           typename Index = int,
           typename SolverMonitor = IterativeSolverMonitor< Real, Index > >
 class ExplicitSolver : public IterativeSolver< Real, Index, SolverMonitor >
 {
-   public:
+public:
 
+   /**
+    * \brief Type of the floating-point arithmetics.
+    */
    using RealType = Real;
+
+   /**
+    * \brief Indexing type.
+    */
    using IndexType = Index;
+
+   /**
+    * \brief Type of the monitor of the convergence of the solver.
+    */
    using SolverMonitorType = SolverMonitor;
 
+   /**
+    * \brief Default constructor.
+    */
    ExplicitSolver() = default;
 
    static void
