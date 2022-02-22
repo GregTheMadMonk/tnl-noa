@@ -57,7 +57,7 @@ template< typename Real >
    template< typename RHSFunction, typename... Args >
 bool __cuda_callable__
 StaticMerson< Real >::
-solve( VectorType& u, RHSFunction&& rhsFunction. Args... args )
+solve( VectorType& u, RHSFunction&& rhsFunction, Args... args )
 {
    if( this->getTau() == 0.0 )
       return false;
