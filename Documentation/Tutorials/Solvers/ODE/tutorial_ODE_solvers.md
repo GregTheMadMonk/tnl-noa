@@ -238,11 +238,8 @@ In this section we will show how to connect ODE solver with the solver monitor. 
 There are the following differences compared to the previous example:
 
 1. We have to include a header file with the iterative solver monitor (line 5).
-2. We have to setup the solver monitor (lines 43-48). First, we define the monitor type (line 43) and we create an instance of the monitor (line 44). Next we create a separate thread for the monitor (line 45), set the refresh rate to 10 miliseconds (line 46), turn on the verbose mode (line 47) and set the solver stage name (line 48). On the line 56, we connect the monitor with the solver using method \ref TNL::Solvers::IterativeSolver::setSolverMonitor. We stop the monitor after the ODE solver finishes by calling \ref TNL::Solvers::IterativeSolverMonitor::stopMainLoop in the line 76.
+2. We have to setup the solver monitor (lines 43-48). First, we define the monitor type (line 43) and we create an instance of the monitor (line 44). Next we create a separate thread for the monitor (line 45), set the refresh rate to 10 milliseconds (line 46), turn on the verbose mode (line 47) and set the solver stage name (line 48). On the line 56, we connect the monitor with the solver using method \ref TNL::Solvers::IterativeSolver::setSolverMonitor. We stop the monitor after the ODE solver finishes by calling \ref TNL::Solvers::IterativeSolverMonitor::stopMainLoop in the line 76.
 
 The result looks as follows:
 
 \include /ODESolver-HeatEquationWithMonitorExample.out
-
-### Choosing the solver and preconditioner type at runtime
-
