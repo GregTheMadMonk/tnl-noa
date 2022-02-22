@@ -21,6 +21,8 @@ namespace ODE {
 /**
  * \brief Base class for ODE solvers and explicit solvers od PDEs.
  *
+ * See also: \ref TNL::Solvers::ODE::Euler, \ref TNL::Solvers::ODE::Merson.
+ *
  * \tparam Real is type of the floating-point arithmetics.
  * \tparam Index is type for indexing.
  * \tparam IterativeSolverMonitor< Real, Index > is
@@ -52,44 +54,79 @@ public:
     */
    ExplicitSolver() = default;
 
+   /**
+    * \brief This method defines configuration entries for setup of the iterative solver.
+    */
    static void
    configSetup( Config::ConfigDescription& config, const String& prefix = "" );
 
+   /**
+    * \brief Method for setup of the iterative solver based on configuration parameters.
+    */
    bool
    setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
 
-   void setTime( const RealType& t );
+   /**
+    * \brief Settter of the current time of the evolution computed by the solver.
+    */
+   void
+   setTime( const RealType& t );
 
+   /**
+    * \brief Getter of the current time of the evolution computed by the solver.
+    */
    const RealType&
    getTime() const;
 
+   /**
+    * \brief Setter of the time where the evolution computation shall by stopped.
+    */
    void
    setStopTime( const RealType& stopTime );
 
+   /**
+    * \brief Getter of the time where the evolution computation shall by stopped.
+    */
    const RealType& getStopTime() const;
 
+   /**
+    * \brief Setter of the time step used for the computation.
+    *
+    * The time step can be changed by methods using adaptive choice of the time step.
+    */
    void
    setTau( const RealType& tau );
 
+   /**
+    * \brief Getter of the time step used for the computation.
+    */
    const RealType&
    getTau() const;
 
+   /**
+    * \brief Setter of maximal value of the time step.
+    *
+    * If methods uses adaptive choice of the time step, this sets the upper limit.
+    */
    void
    setMaxTau( const RealType& maxTau );
 
+   /**
+    * \brief Getter of maximal value of the time step.
+    */
    const RealType&
    getMaxTau() const;
 
-   void
-   setVerbose( IndexType v );
-
-   void setTestingMode( bool testingMode );
-
-   void
-   setRefreshRate( const IndexType& refreshRate );
-
+   /**
+    * \brief This method refreshes the solver monitor.
+    *
+    * The method propagates values of time, time step and others to the
+    * solver monitor.
+    */
    void
    refreshSolverMonitor( bool force = false );
+
+   void setTestingMode( bool testingMode );
 
 protected:
    /****
@@ -108,8 +145,6 @@ protected:
    RealType tau = 0.0;
 
    RealType maxTau = std::numeric_limits< RealType >::max();
-
-   IndexType verbosity = 0;
 
    bool testingMode = false;
 };

@@ -27,7 +27,7 @@ ExplicitSolver< Real, Index, SolverMonitor >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   this->setVerbose( parameters.getParameter< int >( "verbose" ) );
+   //this->setVerbose( parameters.getParameter< int >( "verbose" ) );
    return IterativeSolver< RealType, IndexType, SolverMonitor >::setup( parameters, prefix );
 }
 
@@ -96,14 +96,6 @@ setStopTime( const RealType& stopTime )
 {
    this->stopTime = stopTime;
 }
-
-template< typename Real, typename Index, typename SolverMonitor >
-void
-ExplicitSolver< Real, Index, SolverMonitor >::
-setVerbose( IndexType v )
-{
-   this->verbosity = v;
-};
 
 template< typename Real, typename Index, typename SolverMonitor >
 void

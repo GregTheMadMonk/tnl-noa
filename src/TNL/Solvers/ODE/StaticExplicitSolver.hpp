@@ -98,14 +98,6 @@ setStopTime( const RealType& stopTime )
 }
 
 template< typename Real, typename Index >
-__cuda_callable__ void
-StaticExplicitSolver< Real, Index >::
-setVerbose( IndexType v )
-{
-   this->verbosity = v;
-};
-
-template< typename Real, typename Index >
 void
 StaticExplicitSolver< Real, Index >::
 setTestingMode( bool testingMode )
