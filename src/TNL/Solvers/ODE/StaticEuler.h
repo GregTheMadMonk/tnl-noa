@@ -20,8 +20,8 @@ namespace ODE {
 /**
  * \brief Solver of ODEs with the first order of accuracy.
  *
- * This solver is based on the (Euler method)[https://en.wikipedia.org/wiki/Euler_method] for solving of
- * (ordinary differential equations)[https://en.wikipedia.org/wiki/Ordinary_differential_equation] having the
+ * This solver is based on the [Euler method](https://en.wikipedia.org/wiki/Euler_method) for solving of
+ * [ordinary differential equations](https://en.wikipedia.org/wiki/Ordinary_differential_equation) having the
  * following form:
  *
  *  \f$ \frac{d \vec u}{dt} = \vec f( t, \vec u) \text{ on } (0,T) \f$
@@ -49,138 +49,202 @@ namespace ODE {
  *
  * The result looks as follows:
  *
- * \include StaticODESolver-SineParallelExample.out
+ * \include StaticODESolver-SineParallelExample-Host.out
  *
  * \tparam Real is floating point number type, it is type of \f$ x \f$ in this case.
  */
 template< typename Real >
 class StaticEuler : public StaticExplicitSolver< Real, int >
 {
-   public:
+public:
 
-      /**
-       * \brief Type of floating-point arithemtics.
-       */
-      using RealType = Real;
+   /**
+    * \brief Type of floating-point arithemtics.
+    */
+   using RealType = Real;
 
-      /**
-       * \brief Type for indexing.
-       */
-      using IndexType  = int;
+   /**
+    * \brief Type for indexing.
+    */
+   using IndexType  = int;
 
-      /**
-       * \brief Type of unknown variable \f$ x \f$.
-       */
-      using VectorType = Real;
+   /**
+    * \brief Type of unknown variable \f$ x \f$.
+    */
+   using VectorType = Real;
 
-      /**
-       * \brief Another alias for type of unknown variable \f$ x \f$.
-       */
-      using DofVectorType = VectorType;
+   /**
+    * \brief Alias for type of unknown variable \f$ x \f$.
+    */
+   using DofVectorType = VectorType;
 
-      /**
-       * \brief Default constructor.
-       */
-      __cuda_callable__
-      StaticEuler() = default;
+   /**
+    * \brief Default constructor.
+    */
+   __cuda_callable__
+   StaticEuler() = default;
 
-      /**
-       * \brief Static method for setup of configuration parameters.
-       *
-       * \param config is the config description.
-       * \param prefix is the prefix of the configuration parameters for this solver.
-       */
-      static void configSetup( Config::ConfigDescription& config,
-                               const String& prefix = "" );
+   /**
+    * \brief Static method for setup of configuration parameters.
+    *
+    * \param config is the config description.
+    * \param prefix is the prefix of the configuration parameters for this solver.
+    */
+   static void
+   configSetup( Config::ConfigDescription& config, const String& prefix = "" );
 
-      /**
-       * \brief
-       *
-       * \param parameters is the container for configuration parameters.
-       * \param prefix is the prefix of the configuration parameters for this solver.
-       * \return true if the parameters where parsed sucessfuly.
-       * \return false if the method did not succeed to read the configuration parameters.
-       */
-      bool setup( const Config::ParameterContainer& parameters,
-                  const String& prefix = "" );
+   /**
+    * \brief Method for setup of the explicit solver based on configuration parameters.
+    *
+    * \param parameters is the container for configuration parameters.
+    * \param prefix is the prefix of the configuration parameters for this solver.
+    * \return true if the parameters where parsed successfully.
+    * \return false if the method did not succeed to read the configuration parameters.
+    */
+   bool
+   setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
 
-      /**
-       * \brief This method sets the Courant number in the (CFL condition)[https://en.wikipedia.org/wiki/Courant%E2%80%93Friedrichs%E2%80%93Lewy_condition].
-       *
-       * This method sets the constant \f$ C \f$ in the Courant–Friedrichs–Lewy condition. It means that
-       *
-       * \f[ \Delta t = \frac{C}{\| f( t,x )\|} \f],
-       *
-       * if \f$ C > 0\f$. If \f$ C = 0 \f$ the time step stays fixed.
-       *
-       * \param c is the Courant number.
-       */
-      __cuda_callable__
-      void setCourantNumber( const RealType& c );
+   /**
+    * \brief This method sets the Courant number in the (CFL condition)[https://en.wikipedia.org/wiki/Courant%E2%80%93Friedrichs%E2%80%93Lewy_condition].
+    *
+    * This method sets the constant \f$ C \f$ in the Courant–Friedrichs–Lewy condition. It means that
+    *
+    * \f[ \Delta t = \frac{C}{\| f( t,x )\|}, \f]
+    *
+    * if \f$ C > 0\f$. If \f$ C = 0 \f$ the time step stays fixed.
+    *
+    * \param c is the Courant number.
+    */
+   __cuda_callable__
+   void setCourantNumber( const RealType& c );
 
-      /**
-       * \brief Getter for the Courant number.
-       *
-       * \return the Courant number.
-       */
-      __cuda_callable__
-      const RealType& getCourantNumber() const;
+   /**
+    * \brief Getter for the Courant number.
+    *
+    * \return the Courant number.
+    */
+   __cuda_callable__
+   const RealType& getCourantNumber() const;
 
-      /**
-       * \brief Solve ODE given by a lambda function.
-       *
-       * \tparam RHSFunction
-       * \param u
-       * \param rhs
-       * \return 'true' if steady state solution has been reached, 'false' otherwise.
-       */
-      template< typename RHSFunction, typename... Args >
-      __cuda_callable__
-      bool solve( VectorType& u, RHSFunction&& rhs, Args... args );
+   /**
+    * \brief Solve ODE given by a lambda function.
+    *
+    * \tparam RHSFunction is type of a lambda function representing the right-hand side of the ODE system.
+    *    The definition of the lambda function reads as:
+    * ```
+    * auto f = [=] ( const Real& t, const Real& tau, const Vector& u, Vector& fu, Args... args ) {...}
+    * ```
+    * where `t` is the current time of the evolution, `tau` is the current time step, `u` is the solution at the current time,
+    * `fu` is variable/static vector into which the lambda function is suppsed to evaluate the function \f$ f(t, \vec x) \f$ at
+    * the current time \f$ t \f$.
+    * \param u is a variable/static vector representing the solution of the ODE system at current time.
+    * \param f is the lambda function representing the right-hand side of the ODE system.
+    * \param args are user define arguments which are passed to the lambda function `f`.
+    * \return `true` if steady state solution has been reached, `false` otherwise.
+    */
+   template< typename RHSFunction, typename... Args >
+   __cuda_callable__
+   bool solve( VectorType& u, RHSFunction&& f, Args... args );
 
-   protected:
-      DofVectorType k1;
+protected:
+   DofVectorType k1;
 
-      RealType courantNumber = 0.0;
+   RealType courantNumber = 0.0;
 };
 
-
+/**
+ * \brief Solver of ODEs with the first order of accuracy.
+ *
+ * See \ref TNL::Solvers::ODE::StaticEuler.
+ */
 template< int Size_,
           typename Real >
 class StaticEuler< Containers::StaticVector< Size_, Real > >
     : public StaticExplicitSolver< Real, int >
 {
-   public:
+public:
 
-      static constexpr int Size = Size_;
-      using RealType = Real;
-      using IndexType  = int;
-      using VectorType = TNL::Containers::StaticVector< Size, Real >;
-      using DofVectorType = VectorType;
+   /**
+    * \brief Size of the ODE system.
+    */
+   static constexpr int Size = Size_;
 
-      __cuda_callable__
-      StaticEuler() = default;
+   /**
+    * \brief Type of floating-point arithemtics.
+    */
+   using RealType = Real;
 
-      static void configSetup( Config::ConfigDescription& config,
-                               const String& prefix = "" );
+   /**
+    * \brief Type for indexing.
+    */
+   using IndexType  = int;
 
-      bool setup( const Config::ParameterContainer& parameters,
-                  const String& prefix = "" );
+   /**
+    * \brief Type of unknown variable \f$ x \f$.
+    */
+   using VectorType = TNL::Containers::StaticVector< Size, Real >;
 
-      __cuda_callable__
-      void setCourantNumber( const RealType& cfl );
+   /**
+    * \brief Alias for type of unknown variable \f$ x \f$.
+    */
+   using DofVectorType = VectorType;
 
-      __cuda_callable__
-      const RealType& getCourantNumber() const;
+   /**
+    * \brief Default constructor.
+    */
+   __cuda_callable__
+   StaticEuler() = default;
 
-      template< typename RHSFunction, typename... Args >
-      __cuda_callable__
-      bool solve( VectorType& u, RHSFunction&& rhs, Args... args );
+   /**
+    * \brief Static method for setup of configuration parameters.
+    *
+    * \param config is the config description.
+    * \param prefix is the prefix of the configuration parameters for this solver.
+    */
+   static void
+   configSetup( Config::ConfigDescription& config, const String& prefix = "" );
 
-   protected:
-      DofVectorType k1;
+   /**
+    * \brief Method for setup of the explicit solver based on configuration parameters.
+    *
+    * \param parameters is the container for configuration parameters.
+    * \param prefix is the prefix of the configuration parameters for this solver.
+    * \return true if the parameters where parsed successfully.
+    * \return false if the method did not succeed to read the configuration parameters.
+    */
+   bool
+   setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
 
-      RealType courantNumber = 0.0;
+   /**
+    * \brief This method sets the Courant number in the (CFL condition)[https://en.wikipedia.org/wiki/Courant%E2%80%93Friedrichs%E2%80%93Lewy_condition].
+    *
+    * This method sets the constant \f$ C \f$ in the Courant–Friedrichs–Lewy condition. It means that
+    *
+    * \f[ \Delta t = \frac{C}{\| f( t,x )\|} \f],
+    *
+    * if \f$ C > 0\f$. If \f$ C = 0 \f$ the time step stays fixed.
+    *
+    * \param c is the Courant number.
+    */
+   __cuda_callable__
+   void setCourantNumber( const RealType& cfl );
+
+   /**
+    * \brief Getter for the Courant number.
+    *
+    * \return the Courant number.
+    */
+   __cuda_callable__
+   const RealType& getCourantNumber() const;
+
+   template< typename RHSFunction, typename... Args >
+   __cuda_callable__
+   bool solve( VectorType& u, RHSFunction&& rhs, Args... args );
+
+protected:
+   DofVectorType k1;
+
+   RealType courantNumber = 0.0;
 };
 
 } // namespace ODE

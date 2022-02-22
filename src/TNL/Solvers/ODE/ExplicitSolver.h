@@ -56,12 +56,20 @@ public:
 
    /**
     * \brief This method defines configuration entries for setup of the iterative solver.
+    *
+    * \param config is the config description.
+    * \param prefix is the prefix of the configuration parameters for this solver.
     */
    static void
    configSetup( Config::ConfigDescription& config, const String& prefix = "" );
 
    /**
     * \brief Method for setup of the iterative solver based on configuration parameters.
+    *
+    * \param parameters is the container for configuration parameters.
+    * \param prefix is the prefix of the configuration parameters for this solver.
+    * \return true if the parameters where parsed sucessfuly.
+    * \return false if the method did not succeed to read the configuration parameters.
     */
    bool
    setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
