@@ -28,13 +28,13 @@ namespace ODE {
  *
  * \f$ u( 0 )  = u_{ini} \f$.
  *
- * It is supposed to be used when the unknown \f$ x \in R \f$ is expressed by a \ref Containers::StaticVector or it is a scalar, i.e.
- * \f$ x \in R \f$ expressed by a numeric type like `double` or `float`.
+ * It is supposed to be used when the unknown \f$ x \in R \f$ is expressed by a scalar, i.e.
+ * by a numeric type like `double` or `float`.
  *
  * For problems where \f$ \vec x\f$ is represented by \ref TNL::Containers::StaticVector,
  * see \ref TNL::Solvers::ODE::StaticEuler<Containers::StaticVector<Size_,Real>>.
  * For problems where \f$ \vec x\f$ is represented by \ref TNL::Containers::Vector,
- * see \ref TNL::Solvers::ODE::Euler.
+ * or \ref TNL::Containers::VectorView, see \ref TNL::Solvers::ODE::Euler.
  *
  * The following example demonstrates the use the solvers:
  *
@@ -48,10 +48,6 @@ namespace ODE {
  * as demonstrated by the following example:
  *
  * \includelineno Solvers/ODE/StaticODESolver-SineParallelExample.h
- *
- * The result looks as follows:
- *
- * \include StaticODESolver-SineParallelExample-Host.out
  *
  * \tparam Real is floating point number type, it is type of \f$ x \f$ in this case.
  */
@@ -165,12 +161,11 @@ protected:
  *
  * \f$ \vec u( 0 )  = \vec u_{ini} \f$.
  *
- * It is supposed to be used when the unknown \f$ x \in R^n \f$ is expressed by a \ref Containers::StaticVector or it is a scalar, i.e.
- * \f$ x \in R \f$ expressed by a numeric type like `double` or `float`.
+ * It is supposed to be used when the unknown \f$ \vec x \in R^n \f$ is expressed by a \ref Containers::StaticVector.
  *
- * For problems where \f$ x\f$ is represented by floating-point number, see
- * \ref TNL::Solvers::ODE::StaticEuler. For problems where \f$ \vec x\f$ is
- * represented by \ref TNL::Containers::Vector, see \ref TNL::Solvers::ODE::Euler.
+ * For problems where \f$ x\f$ is represented by floating-point number, see \ref TNL::Solvers::ODE::StaticEuler.
+ * For problems where \f$ \vec x\f$ is represented by \ref TNL::Containers::Vector or \ref TNL::Containers::VectorView,
+ * see \ref TNL::Solvers::ODE::Euler.
  *
  * The following example demonstrates the use the solvers:
  *

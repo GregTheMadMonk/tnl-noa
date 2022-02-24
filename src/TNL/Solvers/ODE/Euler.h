@@ -28,7 +28,7 @@ namespace ODE {
  *
  * \f$ \vec u( 0 )  = \vec u_{ini} \f$.
  *
- * It is supposed to be used when the unknown \f$ x \in R^n \f$ is expressed by a \ref Containers::Vector.
+ * It is supposed to be used when the unknown \f$ \vec x \in R^n \f$ is expressed by a \ref Containers::Vector.
  *
  * For problems where \f$ \vec x\f$ is represented by \ref TNL::Containers::StaticVector,
  * see \ref TNL::Solvers::ODE::StaticEuler<Containers::StaticVector<Size_,Real>>.
