@@ -11,22 +11,30 @@ set( COMMON_EXAMPLES
 )
 
 foreach( target IN ITEMS ${HOST_EXAMPLES})
-add_executable( ${target} ${target}.cpp )
-add_custom_command( COMMAND ${target} > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}.out OUTPUT ${target}.out )
-set( HOST_OUTPUTS ${HOST_OUTPUTS} ${target}.out )
+   add_executable( ${target} ${target}.cpp )
+   add_custom_command( COMMAND ${target} > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}.out
+      OUTPUT ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}.out
+             ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}-result.out )
+   set( HOST_OUTPUTS ${HOST_OUTPUTS} ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}.out )
 endforeach()
 
 if( BUILD_CUDA )
    foreach( target IN ITEMS ${COMMON_EXAMPLES} )
       cuda_add_executable( ${target}-cuda ${target}.cu OPTIONS )
-      add_custom_command( COMMAND ${target}-cuda > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}.out OUTPUT ${target}.out )
-      set( CUDA_OUTPUTS ${CUDA_OUTPUTS} ${target}.out )
+      add_custom_command( COMMAND ${target}-cuda ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}
+         > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}.out
+         OUTPUT ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}.out 
+                ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}-result.out)
+      set( CUDA_OUTPUTS ${CUDA_OUTPUTS} ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}.out )
    endforeach()
 else()
-   foreach( target IN ITEMS ${COMMON_EXAMPLES})
+   foreach( target IN ITEMS ${COMMON_EXAMPLES} )
       add_executable( ${target} ${target}.cpp )
-      add_custom_command( COMMAND ${target} > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}.out OUTPUT ${target}.out )
-      set( HOST_OUTPUTS ${HOST_OUTPUTS} ${target}.out )
+      add_custom_command( COMMAND ${target} ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}
+         > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}.out
+         OUTPUT ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}.out
+                ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}-result.out )
+      set( HOST_OUTPUTS ${HOST_OUTPUTS} ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}.out )
    endforeach()
 endif()
 
@@ -44,6 +52,14 @@ ADD_CUSTOM_COMMAND(
    DEPENDS ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/StaticODESolver-SineExample.out
    VERBATIM )
 
+   ADD_CUSTOM_COMMAND(
+      COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/StaticODESolver-SineParallelExample.py
+         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/StaticODESolver-SineParallelExample-result.out
+         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/StaticODESolver-SineParallelExample.png
+      OUTPUT StaticODESolver-SineParallelExample.png
+      DEPENDS ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/StaticODESolver-SineParallelExample.out
+      VERBATIM )
+
 ADD_CUSTOM_COMMAND(
    COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/StaticODESolver-LorenzExample.py
       ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/StaticODESolver-LorenzExample.out
@@ -52,6 +68,17 @@ ADD_CUSTOM_COMMAND(
    DEPENDS ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/StaticODESolver-LorenzExample.out
    VERBATIM )
 
-   ADD_CUSTOM_TARGET( ProcessODESolversExamplesResults ALL DEPENDS
-       StaticODESolver-SineExample.png
-       StaticODESolver-LorenzExample.png )
+ADD_CUSTOM_COMMAND(
+   COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/StaticODESolver-LorenzParallelExample.py
+      ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/StaticODESolver-LorenzParallelExample-result.out
+      ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/StaticODESolver-LorenzParallelExample
+   OUTPUT StaticODESolver-LorenzParallelExample.png
+   DEPENDS ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/StaticODESolver-LorenzParallelExample.out
+   VERBATIM )
+
+
+ADD_CUSTOM_TARGET( ProcessODESolversExamplesResults ALL DEPENDS
+      StaticODESolver-SineExample.png
+      StaticODESolver-SineParallelExample.png
+      StaticODESolver-LorenzExample.png
+      StaticODESolver-LorenzParallelExample.png )

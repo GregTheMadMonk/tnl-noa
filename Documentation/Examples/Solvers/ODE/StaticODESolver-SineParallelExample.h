@@ -16,9 +16,9 @@ void solveParallelODEs( const char* file_name )
    const Real output_time_step = 0.1;
    const Real c_min = 1.0;
    const Real c_max = 5.0;
-   const int c_vals = 11.0;
+   const int c_vals = 5.0;
    const Real c_step = ( c_max - c_min ) / ( c_vals - 1 );
-   const int time_steps = final_t / tau + 1;
+   const int time_steps = final_t / output_time_step + 2;
 
    Vector results( time_steps * c_vals, 0.0 );
    auto results_view = results.getView();
@@ -45,10 +45,12 @@ void solveParallelODEs( const char* file_name )
    std::fstream file;
    file.open( file_name, std::ios::out );
    for( int k = 0; k < time_steps;k++ )
+      file << k * output_time_step << " ";
+   file << std::endl;
+
+   for( int i = 0; i < c_vals; i++ )
    {
-      Real t = k * output_time_step;
-      file << t << " ";
-      for( int i = 0; i < c_vals; i++ )
+      for( int k = 0; k < time_steps;k++ )
          file << results.getElement( k * c_vals + i ) << " ";
       file << std::endl;
    }
@@ -56,8 +58,10 @@ void solveParallelODEs( const char* file_name )
 
 int main( int argc, char* argv[] )
 {
-   solveParallelODEs< TNL::Devices::Host >( "StaticODESolver-SineParallelExample-Host.out" );
+   TNL::String file_name( argv[ 1 ] );
+   file_name += "/StaticODESolver-SineParallelExample-result.out";
+   solveParallelODEs< TNL::Devices::Host >( file_name.getString() );
 #ifdef HAVE_CUDA
-   solveParallelODEs< TNL::Devices::Cuda >( "StaticODESolver-SineParallelExample-Cuda.out" );
+   solveParallelODEs< TNL::Devices::Cuda >( file_name.getString() );
 #endif
 }

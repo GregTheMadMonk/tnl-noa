@@ -84,7 +84,7 @@ The first example solves ODE given by
 
 \f[ u( 0 )  = 0, \f]
 
-where \f$ c \f$ is a constant. We will solve it in parallel ODEs with different values \f$ c \in \langle c_{min}, c_{max} \rangle \f$. The code reads as follows:
+where \f$ c \f$ is a constant. We will solve it in parallel ODEs with different values \f$ c \in \langle c_{min}, c_{max} \rangle \f$. The exact solution can be found [here](https://www.wolframalpha.com/input?i=y%27%28t%29+%3D++t+sin%28+a+t%29). The code reads as follows:
 
 \includelineno Solvers/ODE/StaticODESolver-SineParallelExample.h
 
@@ -94,7 +94,8 @@ Note, how we pass the value of parameter `c` to the lambda function `f`. The met
 
 The result of this example looks as follows:
 
-\include StaticODESolver-SineParallelExample-Host.out
+\image{inline} html StaticODESolver-SineParallelExample.png ""
+
 
 ### Solving the Lorenz system in parallel
 
@@ -124,6 +125,12 @@ It is very similar to the previous one. There are just the following changes:
 5. When all ODEs ares solved, we copy all the solutions from the vector `results` into an output file.
 
 The result looks as follows:
+
+\image{inline} html StaticODESolver-LorenzParallelExample-1.png ""
+\image{inline} html StaticODESolver-LorenzParallelExample-2.png ""
+
+\image{inline} html StaticODESolver-LorenzParallelExample-3.png ""
+\image{inline} html StaticODESolver-LorenzParallelExample-4.png ""
 
 ## Non-static ODE Solvers
 

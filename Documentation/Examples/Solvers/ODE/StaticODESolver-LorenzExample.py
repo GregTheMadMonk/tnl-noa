@@ -2,6 +2,7 @@
 
 import sys
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import axes3d, Axes3D
 import numpy as np
 
 plt.rcParams['text.usetex'] = True
@@ -22,7 +23,8 @@ y = np.array(y_lst)
 z = np.array(z_lst)
 
 fig = plt.figure()
-ax = fig.gca(projection='3d')
+#ax = fig.gca(projection='3d')
+ax = Axes3D(fig)
 theta = np.linspace(-4 * np.pi, 4 * np.pi, 100)
 ax.plot(x, y, z, label='Lorenz attractor')
 ax.legend()

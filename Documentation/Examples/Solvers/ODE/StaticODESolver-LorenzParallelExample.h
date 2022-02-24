@@ -11,12 +11,14 @@ void solveParallelODEs( const char* file_name )
 {
    using Vector = TNL::Containers::StaticVector< 3, Real >;
    using ODESolver = TNL::Solvers::ODE::StaticEuler< Vector >;
-   const Real final_t = 10.0;
+   const Real final_t = 50.0;
    const Real tau = 0.001;
-   const Real output_time_step = 0.01;
-   const Real sigma_min( 0.0 ), rho_min( 0.0 ), beta_min( 0.0 );
+   const Real output_time_step = 0.005;
+   const Real sigma_min( 10.0 ), rho_min( 15.0 ), beta_min( 1.0 );
    const int parametric_steps = 4;
-   const Real parametric_step = 30.0 / ( parametric_steps - 1 );
+   const Real sigma_step = 30.0 / ( parametric_steps - 1 );
+   const Real rho_step = 21.0 / ( parametric_steps - 1 );
+   const Real beta_step = 15.0 / ( parametric_steps - 1 );
    const int output_time_steps = final_t / output_time_step + 1;
 
    const int results_size( output_time_steps * parametric_steps * parametric_steps * parametric_steps );
@@ -32,16 +34,16 @@ void solveParallelODEs( const char* file_name )
          fu[ 2 ] = -beta_k * z + x * y;
       };
    auto solve = [=] ( int i, int j, int k ) mutable {
-      const Real sigma_i = sigma_min + i * parametric_step;
-      const Real rho_j   = rho_min + j * parametric_step;
-      const Real beta_k  = beta_min + k * parametric_step;
+      const Real sigma_i = sigma_min + i * sigma_step;
+      const Real rho_j   = rho_min + j * rho_step;
+      const Real beta_k  = beta_min + k * beta_step;
 
       ODESolver solver;
       solver.setTau(  tau );
       solver.setTime( 0.0 );
       Vector u( 1.0, 1.0, 1.0 );
       int time_step( 0 );
-      results_view[ ( i * parametric_step + j ) * parametric_step + k ] = u;
+      results_view[ ( i * parametric_steps + j ) * parametric_steps + k ] = u;
       while( solver.getTime() < final_t )
       {
          solver.setStopTime( TNL::min( solver.getTime() + output_time_step, final_t ) );
@@ -58,11 +60,11 @@ void solveParallelODEs( const char* file_name )
       for( int rho_idx = 0; rho_idx < parametric_steps; rho_idx++ )
          for( int beta_idx = 0; beta_idx < parametric_steps; beta_idx++ )
          {
-            Real sigma = sigma_min + sigma_idx * parametric_step;
-            Real rho   = rho_min   + rho_idx * parametric_step;
-            Real beta  = beta_min  + beta_idx * parametric_step;
+            Real sigma = sigma_min + sigma_idx * sigma_step;
+            Real rho   = rho_min   + rho_idx * rho_step;
+            Real beta  = beta_min  + beta_idx * beta_step;
             file << "# sigma " << sigma << " rho " << rho << " beta " << beta << std::endl;
-            for( int i = 0; i < output_time_steps; i++ )
+            for( int i = 0; i < output_time_steps - 1; i++ )
             {
                int offset = ( ( i * parametric_steps + sigma_idx ) * parametric_steps + rho_idx ) * parametric_steps + beta_idx;
                auto u = results.getElement(  offset );
@@ -74,8 +76,11 @@ void solveParallelODEs( const char* file_name )
 
 int main( int argc, char* argv[] )
 {
-   solveParallelODEs< TNL::Devices::Host >( "StaticODESolver-LorenzParallelExample-Host.out" );
+   TNL::String file_name( argv[ 1 ] );
+   file_name += "/StaticODESolver-LorenzParallelExample-result.out";
+
+   solveParallelODEs< TNL::Devices::Host >( file_name.getString() );
 #ifdef HAVE_CUDA
-   solveParallelODEs< TNL::Devices::Cuda >( "StaticODESolver-LorenzParallelExample-Cuda.out" );
+   solveParallelODEs< TNL::Devices::Cuda >( file_name.getString() );
 #endif
 }
