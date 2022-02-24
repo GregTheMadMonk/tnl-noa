@@ -206,7 +206,6 @@ public:
     * \param list The initializer list containing elements to be copied.
     * \param allocator The allocator to be associated with this array.
     */
-   // clang-format off
    template< typename InValue >
    Array( const std::initializer_list< InValue >& list, const AllocatorType& allocator = AllocatorType() );
 
