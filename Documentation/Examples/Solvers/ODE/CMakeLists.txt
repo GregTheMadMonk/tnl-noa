@@ -44,4 +44,14 @@ ADD_CUSTOM_COMMAND(
    DEPENDS ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/StaticODESolver-SineExample.out
    VERBATIM )
 
-ADD_CUSTOM_TARGET( ProcessODESolversExamplesResults ALL DEPENDS StaticODESolver-SineExample.png )
+ADD_CUSTOM_COMMAND(
+   COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/StaticODESolver-LorenzExample.py
+      ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/StaticODESolver-LorenzExample.out
+      ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/StaticODESolver-LorenzExample.png
+   OUTPUT StaticODESolver-LorenzExample.png
+   DEPENDS ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/StaticODESolver-LorenzExample.out
+   VERBATIM )
+
+   ADD_CUSTOM_TARGET( ProcessODESolversExamplesResults ALL DEPENDS
+       StaticODESolver-SineExample.png
+       StaticODESolver-LorenzExample.png )

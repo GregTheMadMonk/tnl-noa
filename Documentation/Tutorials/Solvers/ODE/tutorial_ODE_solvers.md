@@ -70,7 +70,7 @@ The code is very similar to the previous example. There are the following differ
 
 The result looks as follows:
 
-[comment]: <> (\include StaticODESolver-LorenzExample.out)
+\image{inline} html StaticODESolver-LorenzExample.png "Solution of the Lorenz problem"
 
 ## Combining static ODE solvers with parallel for
 

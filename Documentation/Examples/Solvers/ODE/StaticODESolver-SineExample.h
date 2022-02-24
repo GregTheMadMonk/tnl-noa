@@ -8,7 +8,7 @@ int main( int argc, char* argv[] )
    using ODESolver = TNL::Solvers::ODE::StaticEuler< Real >;
    const Real final_t = 10.0;
    const Real tau = 0.001;
-   const Real output_time_step = 0.5;
+   const Real output_time_step = 0.25;
 
    ODESolver solver;
    solver.setTau(  tau );

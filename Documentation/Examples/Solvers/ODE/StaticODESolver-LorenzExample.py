@@ -9,21 +9,23 @@ plt.rcParams['text.usetex'] = True
 f = open( sys.argv[1], 'r' )
 x_lst = []
 y_lst = []
+z_lst = []
 for line in f:
    line = line.strip()
    a = line.split()
    x_lst.append( float( a[ 0 ] ) )
    y_lst.append( float( a[ 1 ] ) )
+   z_lst.append( float( a[ 2 ] ) )
 
 x = np.array(x_lst)
 y = np.array(y_lst)
+z = np.array(z_lst)
 
-fig, ax = plt.subplots()
-ax.set_xlim( [0,10] )
-ax.set_ylim( [-10,10] )
-ax.plot(x, y, linewidth=2.0)
-ax.set_xlabel( "t" )
-ax.set_ylabel( "u(t)" )
+fig = plt.figure()
+ax = fig.gca(projection='3d')
+theta = np.linspace(-4 * np.pi, 4 * np.pi, 100)
+ax.plot(x, y, z, label='Lorenz attractor')
+ax.legend()
 
 plt.savefig( sys.argv[2] )
 plt.close(fig)
