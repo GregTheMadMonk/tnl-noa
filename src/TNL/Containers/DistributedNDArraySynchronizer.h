@@ -76,9 +76,7 @@ operator&( SyncDirection a, SyncDirection b )
 template< typename DistributedNDArray,
           // This can be set to false to optimize out buffering when it is not needed
           // (e.g. for LBM with 1D distribution and specific orientation of the ndarray)
-          bool buffered = true,
-          // switch for the LBM hack: only 9 of 27 distribution functions will be sent
-          bool LBM_HACK = false >
+          bool buffered = true >
 class DistributedNDArraySynchronizer
 {
 private:
@@ -96,6 +94,11 @@ private:
    int gpu_id = 0;
 
    int tag_offset = 0;
+
+   int tag_from_left = -1;
+   int tag_from_right = -1;
+   int tag_to_left = -1;
+   int tag_to_right = -1;
 
    static int
    reserve_tags( int count )
@@ -120,6 +123,71 @@ public:
    DistributedNDArraySynchronizer( int max_threads = 1 )
    : tp( max_threads ), tag_offset( reserve_tags( 2 ) )  // reserve 2 communication tags (for left and right)
    {}
+
+   // async::threadpool is not move-constructible (due to std::atomic), so we need
+   // custom move-constructor that skips moving tp
+   DistributedNDArraySynchronizer( DistributedNDArraySynchronizer&& other )
+   : tp( other.tp.size() ), gpu_id( std::move( other.gpu_id ) ), tag_offset( std::move( other.tag_offset ) )
+   {}
+
+   void
+   setTagOffset( int offset )
+   {
+      tag_offset = offset;
+   }
+
+   void
+   setTags( int from_left_id, int to_left_id, int from_right_id, int to_right_id )
+   {
+      tag_from_left = from_left_id;
+      tag_to_left = to_left_id;
+      tag_from_right = from_right_id;
+      tag_to_right = to_right_id;
+   }
+
+   // special thing for the A-A pattern in LBM
+   template< std::size_t dim >
+   void
+   setBuffersShift( int shift )
+   {
+      auto& dim_buffers = buffers.template getDimBuffers< dim >();
+
+      constexpr std::size_t overlap = DistributedNDArrayView::LocalViewType::IndexerType::template getOverlap< dim >();
+      if( overlap == 0 ) {
+         dim_buffers.reset();
+         return;
+      }
+
+      using LocalBegins = typename DistributedNDArray::LocalBeginsType;
+      using SizesHolder = typename DistributedNDArray::SizesHolderType;
+      const LocalBegins& localBegins = array_view.getLocalBegins();
+      const SizesHolder& localEnds = array_view.getLocalEnds();
+
+      // offsets for left-send
+      dim_buffers.left_send_offsets = localBegins;
+      dim_buffers.left_send_offsets.template setSize< dim >( localBegins.template getSize< dim >() - shift );
+
+      // offsets for left-receive
+      dim_buffers.left_recv_offsets = localBegins;
+      dim_buffers.left_recv_offsets.template setSize< dim >( localBegins.template getSize< dim >() - overlap + shift );
+
+      // offsets for right-send
+      dim_buffers.right_send_offsets = localBegins;
+      dim_buffers.right_send_offsets.template setSize< dim >( localEnds.template getSize< dim >() - overlap + shift );
+
+      // offsets for right-receive
+      dim_buffers.right_recv_offsets = localBegins;
+      dim_buffers.right_recv_offsets.template setSize< dim >( localEnds.template getSize< dim >() - shift );
+   }
+
+   template< std::size_t dim >
+   void
+   setNeighbors( int left, int right )
+   {
+      auto& dim_buffers = buffers.template getDimBuffers< dim >();
+      dim_buffers.left_neighbor = left;
+      dim_buffers.right_neighbor = right;
+   }
 
    void
    synchronize( DistributedNDArray& array )
@@ -253,13 +321,24 @@ protected:
             copyHelper< dim >( buffers, array_view, true, mask );
          } );
 
+      // set default tags from tag_offset
+      if( tag_from_left < 0 )
+         tag_from_left = tag_offset + 1;
+      if( tag_to_left < 0 )
+         tag_to_left = tag_offset;
+      if( tag_from_right < 0 )
+         tag_from_right = tag_offset;
+      if( tag_to_right < 0 )
+         tag_to_right = tag_offset + 1;
+
       // issue all send and receive async operations
       RequestsVector requests;
       const MPI_Comm communicator = array_view.getCommunicator();
       Algorithms::staticFor< std::size_t, 0, DistributedNDArray::getDimension() >(
          [ & ]( auto dim )
          {
-            sendHelper< dim >( buffers, requests, communicator, tag_offset, mask );
+            sendHelper< dim >(
+               buffers, requests, communicator, tag_from_left, tag_to_left, tag_from_right, tag_to_right, mask );
          } );
 
       return requests;
@@ -313,6 +392,7 @@ protected:
 
       // offsets for left-send
       dim_buffers.left_send_offsets = localBegins;
+      dim_buffers.left_send_offsets.template setSize< dim >( localBegins.template getSize< dim >() );
 
       // offsets for left-receive
       dim_buffers.left_recv_offsets = localBegins;
@@ -326,12 +406,14 @@ protected:
       dim_buffers.right_recv_offsets = localBegins;
       dim_buffers.right_recv_offsets.template setSize< dim >( localEnds.template getSize< dim >() );
 
-      // FIXME: set proper neighbor IDs !!!
+      // set default neighbor IDs
       const MPI_Comm communicator = array_view.getCommunicator();
       const int rank = MPI::GetRank( communicator );
       const int nproc = MPI::GetSize( communicator );
-      dim_buffers.left_neighbor = ( rank + nproc - 1 ) % nproc;
-      dim_buffers.right_neighbor = ( rank + 1 ) % nproc;
+      if( dim_buffers.left_neighbor < 0 )
+         dim_buffers.left_neighbor = ( rank + nproc - 1 ) % nproc;
+      if( dim_buffers.right_neighbor < 0 )
+         dim_buffers.right_neighbor = ( rank + 1 ) % nproc;
    }
 
    template< std::size_t dim >
@@ -389,7 +471,14 @@ protected:
 
    template< std::size_t dim >
    static void
-   sendHelper( Buffers& buffers, RequestsVector& requests, MPI_Comm communicator, int tag_offset, SyncDirection mask )
+   sendHelper( Buffers& buffers,
+               RequestsVector& requests,
+               MPI_Comm communicator,
+               int tag_from_left,
+               int tag_to_left,
+               int tag_from_right,
+               int tag_to_right,
+               SyncDirection mask )
    {
       constexpr std::size_t overlap = DistributedNDArrayView::LocalViewType::IndexerType::template getOverlap< dim >();
       if( overlap == 0 )
@@ -397,54 +486,28 @@ protected:
 
       auto& dim_buffers = buffers.template getDimBuffers< dim >();
 
-      if( LBM_HACK == false ) {
-         if( mask & SyncDirection::Left ) {
-            requests.push_back( MPI::Isend( dim_buffers.left_send_view.getData(),
-                                            dim_buffers.left_send_view.getStorageSize(),
-                                            dim_buffers.left_neighbor,
-                                            tag_offset + 0,
-                                            communicator ) );
-            requests.push_back( MPI::Irecv( dim_buffers.right_recv_view.getData(),
-                                            dim_buffers.right_recv_view.getStorageSize(),
-                                            dim_buffers.right_neighbor,
-                                            tag_offset + 0,
-                                            communicator ) );
-         }
-         if( mask & SyncDirection::Right ) {
-            requests.push_back( MPI::Isend( dim_buffers.right_send_view.getData(),
-                                            dim_buffers.right_send_view.getStorageSize(),
-                                            dim_buffers.right_neighbor,
-                                            tag_offset + 1,
-                                            communicator ) );
-            requests.push_back( MPI::Irecv( dim_buffers.left_recv_view.getData(),
-                                            dim_buffers.left_recv_view.getStorageSize(),
-                                            dim_buffers.left_neighbor,
-                                            tag_offset + 1,
-                                            communicator ) );
-         }
-      }
-      else {
-         requests.push_back( MPI::Isend( dim_buffers.left_send_view.getData() + 0,
-                                         dim_buffers.left_send_view.getStorageSize() / 27 * 9,
+      if( mask & SyncDirection::Left ) {
+         requests.push_back( MPI::Isend( dim_buffers.left_send_view.getData(),
+                                         dim_buffers.left_send_view.getStorageSize(),
                                          dim_buffers.left_neighbor,
-                                         tag_offset + 0,
+                                         tag_to_left,
                                          communicator ) );
-         requests.push_back(
-            MPI::Irecv( dim_buffers.left_recv_view.getData() + dim_buffers.left_recv_view.getStorageSize() / 27 * 18,
-                        dim_buffers.left_recv_view.getStorageSize() / 27 * 9,
-                        dim_buffers.left_neighbor,
-                        tag_offset + 1,
-                        communicator ) );
-         requests.push_back(
-            MPI::Isend( dim_buffers.right_send_view.getData() + dim_buffers.left_recv_view.getStorageSize() / 27 * 18,
-                        dim_buffers.right_send_view.getStorageSize() / 27 * 9,
-                        dim_buffers.right_neighbor,
-                        tag_offset + 1,
-                        communicator ) );
-         requests.push_back( MPI::Irecv( dim_buffers.right_recv_view.getData() + 0,
-                                         dim_buffers.right_recv_view.getStorageSize() / 27 * 9,
+         requests.push_back( MPI::Irecv( dim_buffers.right_recv_view.getData(),
+                                         dim_buffers.right_recv_view.getStorageSize(),
                                          dim_buffers.right_neighbor,
-                                         tag_offset + 0,
+                                         tag_from_right,
+                                         communicator ) );
+      }
+      if( mask & SyncDirection::Right ) {
+         requests.push_back( MPI::Isend( dim_buffers.right_send_view.getData(),
+                                         dim_buffers.right_send_view.getStorageSize(),
+                                         dim_buffers.right_neighbor,
+                                         tag_to_right,
+                                         communicator ) );
+         requests.push_back( MPI::Irecv( dim_buffers.left_recv_view.getData(),
+                                         dim_buffers.left_recv_view.getStorageSize(),
+                                         dim_buffers.left_neighbor,
+                                         tag_from_left,
                                          communicator ) );
       }
    }
