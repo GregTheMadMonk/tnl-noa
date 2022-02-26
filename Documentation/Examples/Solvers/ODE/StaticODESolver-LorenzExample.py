@@ -12,18 +12,17 @@ x_lst = []
 y_lst = []
 z_lst = []
 for line in f:
-   line = line.strip()
-   a = line.split()
-   x_lst.append( float( a[ 0 ] ) )
-   y_lst.append( float( a[ 1 ] ) )
-   z_lst.append( float( a[ 2 ] ) )
+    line = line.strip()
+    a = line.split()
+    x_lst.append( float( a[ 0 ] ) )
+    y_lst.append( float( a[ 1 ] ) )
+    z_lst.append( float( a[ 2 ] ) )
 
 x = np.array(x_lst)
 y = np.array(y_lst)
 z = np.array(z_lst)
 
 fig = plt.figure()
-#ax = fig.gca(projection='3d')
 ax = Axes3D(fig)
 theta = np.linspace(-4 * np.pi, 4 * np.pi, 100)
 ax.plot(x, y, z, label='Lorenz attractor')

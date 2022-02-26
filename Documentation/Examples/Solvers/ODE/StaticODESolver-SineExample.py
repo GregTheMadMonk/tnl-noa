@@ -10,10 +10,10 @@ f = open( sys.argv[1], 'r' )
 x_lst = []
 y_lst = []
 for line in f:
-   line = line.strip()
-   a = line.split()
-   x_lst.append( float( a[ 0 ] ) )
-   y_lst.append( float( a[ 1 ] ) )
+    line = line.strip()
+    a = line.split()
+    x_lst.append( float( a[ 0 ] ) )
+    y_lst.append( float( a[ 1 ] ) )
 
 x = np.array(x_lst)
 y = np.array(y_lst)
