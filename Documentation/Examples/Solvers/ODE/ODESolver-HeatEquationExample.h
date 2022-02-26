@@ -65,8 +65,11 @@ void solveHeatEquation( const char* file_name )
 
 int main( int argc, char* argv[] )
 {
-   solveHeatEquation< TNL::Devices::Host >( "ODESolver-HeatEquationExample-Host" );
+   TNL::String file_name( argv[ 1 ] );
+   file_name += "/ODESolver-HeatEquationExample-result";
+
+   solveHeatEquation< TNL::Devices::Host >( file_name.getString() );
 #ifdef HAVE_CUDA
-   solveHeatEquation< TNL::Devices::Cuda >( "ODESolver-HeatEquationExample-Cuda" );
+   solveHeatEquation< TNL::Devices::Cuda >( file_name.getString() );
 #endif
 }
