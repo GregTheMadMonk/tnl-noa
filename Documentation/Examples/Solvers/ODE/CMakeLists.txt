@@ -23,7 +23,7 @@ if( BUILD_CUDA )
       cuda_add_executable( ${target}-cuda ${target}.cu OPTIONS )
       add_custom_command( COMMAND ${target}-cuda ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}
          > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}.out
-         OUTPUT ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}.out 
+         OUTPUT ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}.out
                 ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}-result.out)
       set( CUDA_OUTPUTS ${CUDA_OUTPUTS} ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}.out )
    endforeach()
@@ -76,9 +76,18 @@ ADD_CUSTOM_COMMAND(
    DEPENDS ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/StaticODESolver-LorenzParallelExample.out
    VERBATIM )
 
+ADD_CUSTOM_COMMAND(
+COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/ODESolver-HeatEquationExample.py
+   ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/ODESolver-HeatEquationExample-result.out
+   ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/ODESolver-HeatEquationExample
+OUTPUT ODESolver-HeatEquationExample.png
+DEPENDS ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/ODESolver-HeatEquationExample.out
+VERBATIM )
+
 
 ADD_CUSTOM_TARGET( ProcessODESolversExamplesResults ALL DEPENDS
       StaticODESolver-SineExample.png
       StaticODESolver-SineParallelExample.png
       StaticODESolver-LorenzExample.png
-      StaticODESolver-LorenzParallelExample.png )
+      StaticODESolver-LorenzParallelExample.png
+      ODESolver-HeatEquationExample.png )

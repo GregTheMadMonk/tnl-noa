@@ -18,9 +18,9 @@ void solveHeatEquation( const char* file_name )
    /***
     * Parameters of the discertisation
     */
-   const Real final_t = 0.5;
-   const Real output_time_step = 0.05;
-   const Index n = 21;
+   const Real final_t = 0.05;
+   const Real output_time_step = 0.005;
+   const Index n = 41;
    const Real h = 1.0 / ( n - 1 );
    const Real tau = 0.001 * h * h;
    const Real h_sqr_inv = 1.0 / ( h * h );
@@ -28,6 +28,8 @@ void solveHeatEquation( const char* file_name )
    /***
     * Initial condition
     */
+   std::fstream file;
+   file.open( file_name, std::ios::out );
    Vector u( n );
    u.forAllElements( [=] __cuda_callable__ ( Index i, Real& value ) {
       const Real x = i * h;
@@ -35,7 +37,7 @@ void solveHeatEquation( const char* file_name )
          value = 1.0;
       else value = 0.0;
    } );
-   write( u, file_name, n, h, 0 );
+   write( file, u, n, h, ( Real ) 0.0 );
 
    /***
     * Setup monitor for the ODE solver.
@@ -71,15 +73,18 @@ void solveHeatEquation( const char* file_name )
       auto time_stepping = [=] ( const Real& t, const Real& tau, const VectorView& u, VectorView& fu ) {
          TNL::Algorithms::ParallelFor< Device >::exec( 0, n, f, u, fu ); };
       solver.solve( u, time_stepping );
-      write( u, file_name, n, h, output_idx++ ); // write the current state to a file
+      write( file, u, n, h, solver.getTime() ); // write the current state to a file
    }
    monitor.stopMainLoop();
 }
 
 int main( int argc, char* argv[] )
 {
-   solveHeatEquation< TNL::Devices::Host >( "ODESolver-HeatEquationWithMonitorExample-Host-" );
+   TNL::String file_name( argv[ 1 ] );
+   file_name += "/ODESolver-HeatEquationExample-result.out";
+
+   solveHeatEquation< TNL::Devices::Host >( file_name.getString() );
 #ifdef HAVE_CUDA
-   solveHeatEquation< TNL::Devices::Cuda >( "ODESolver-HeatEquationWithMonitorExample-Cuda-" );
+   solveHeatEquation< TNL::Devices::Cuda >( file_name.getString() );
 #endif
 }

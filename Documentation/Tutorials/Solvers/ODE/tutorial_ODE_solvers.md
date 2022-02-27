@@ -236,6 +236,8 @@ The function uses auxiliary object \ref TNL::FileName which allows to construct 
 
 The result looks as follows:
 
+\image{inline} html ODESolver-HeatEquationExample.png "Heat equation"
+
 ### Setup with a solver monitor
 
 In this section we will show how to connect ODE solver with the solver monitor. Look at the following example:
