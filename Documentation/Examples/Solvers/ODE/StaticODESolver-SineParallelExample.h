@@ -25,7 +25,7 @@ void solveParallelODEs( const char* file_name )
    auto f = [=] __cuda_callable__ ( const Real& t, const Real& tau, const Real& u, Real& fu, const Real& c ) {
          fu = t * sin( c * t );
       };
-   auto solve = [=] ( int idx ) mutable {
+   auto solve = [=] __cuda_callable__ ( int idx ) mutable {
       const Real c = c_min + idx * c_step;
       ODESolver solver;
       solver.setTau(  tau );

@@ -33,7 +33,7 @@ void solveParallelODEs( const char* file_name )
          fu[ 1 ] = rho_j * x - y - x * z;
          fu[ 2 ] = -beta_k * z + x * y;
       };
-   auto solve = [=] ( int i, int j, int k ) mutable {
+   auto solve = [=] __cuda_callable__ ( int i, int j, int k ) mutable {
       const Real sigma_i = sigma_min + i * sigma_step;
       const Real rho_j   = rho_min + j * rho_step;
       const Real beta_k  = beta_min + k * beta_step;
