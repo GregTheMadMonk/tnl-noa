@@ -48,7 +48,7 @@ public:
     * \brief Default constructor.
     */
    __cuda_callable__
-   StaticExplicitSolver() = default;
+   StaticExplicitSolver();
 
    /**
     * \brief This method defines configuration entries for setup of the iterative solver.

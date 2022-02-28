@@ -13,12 +13,20 @@ namespace Solvers {
 namespace ODE {
 
 template< typename Real, typename Index, typename SolverMonitor >
+ExplicitSolver< Real, Index, SolverMonitor >::
+ExplicitSolver()
+{
+   // Zero is better default value for ODE/PDE solvers.
+   this->convergenceResidue = 0.0;
+}
+
+template< typename Real, typename Index, typename SolverMonitor >
 void
 ExplicitSolver< Real, Index, SolverMonitor >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
-   // IterativeSolver< typename Problem::RealType, typename Problem::IndexType >::configSetup( config, prefix );
+   IterativeSolver< Real, Index >::configSetup( config, prefix );
 }
 
 template< typename Real, typename Index, typename SolverMonitor >
@@ -27,7 +35,6 @@ ExplicitSolver< Real, Index, SolverMonitor >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   //this->setVerbose( parameters.getParameter< int >( "verbose" ) );
    return IterativeSolver< RealType, IndexType, SolverMonitor >::setup( parameters, prefix );
 }
 

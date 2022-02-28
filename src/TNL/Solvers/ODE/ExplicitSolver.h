@@ -52,7 +52,7 @@ public:
    /**
     * \brief Default constructor.
     */
-   ExplicitSolver() = default;
+   ExplicitSolver();
 
    /**
     * \brief This method defines configuration entries for setup of the iterative solver.

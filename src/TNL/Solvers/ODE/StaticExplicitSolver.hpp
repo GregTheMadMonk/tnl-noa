@@ -13,12 +13,21 @@ namespace Solvers {
 namespace ODE {
 
 template< typename Real, typename Index >
+__cuda_callable__
+StaticExplicitSolver< Real, Index >::
+StaticExplicitSolver()
+{
+   // Zero is better default value for ODE/PDE solvers.
+   this->convergenceResidue = 0.0;
+};
+
+template< typename Real, typename Index >
 void
 StaticExplicitSolver< Real, Index >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
-   //IterativeSolver< typename Problem::RealType, typename Problem::IndexType >::configSetup( config, prefix );
+   StaticIterativeSolver< Real, Index >::configSetup( config, prefix );
 }
 
 template< typename Real, typename Index >
