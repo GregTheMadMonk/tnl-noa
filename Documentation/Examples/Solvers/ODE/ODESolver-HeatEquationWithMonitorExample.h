@@ -28,8 +28,6 @@ void solveHeatEquation( const char* file_name )
    /***
     * Initial condition
     */
-   std::fstream file;
-   file.open( file_name, std::ios::out );
    Vector u( n );
    u.forAllElements( [=] __cuda_callable__ ( Index i, Real& value ) {
       const Real x = i * h;
@@ -37,6 +35,8 @@ void solveHeatEquation( const char* file_name )
          value = 1.0;
       else value = 0.0;
    } );
+   std::fstream file;
+   file.open( file_name, std::ios::out );
    write( file, u, n, h, ( Real ) 0.0 );
 
    /***

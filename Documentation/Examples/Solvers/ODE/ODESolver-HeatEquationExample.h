@@ -15,7 +15,7 @@ void solveHeatEquation( const char* file_name )
    using ODESolver = TNL::Solvers::ODE::Euler< Vector >;
 
    /***
-    * Parameters of the discertisation
+    * Parameters of the discretisation
     */
    const Real final_t = 0.05;
    const Real output_time_step = 0.005;
@@ -27,8 +27,6 @@ void solveHeatEquation( const char* file_name )
    /***
     * Initial condition
     */
-   std::fstream file;
-   file.open( file_name, std::ios::out );
    Vector u( n );
    u.forAllElements( [=] __cuda_callable__ ( Index i, Real& value ) {
       const Real x = i * h;
@@ -36,6 +34,8 @@ void solveHeatEquation( const char* file_name )
          value = 1.0;
       else value = 0.0;
    } );
+   std::fstream file;
+   file.open( file_name, std::ios::out );
    write( file, u, n, h, ( Real ) 0.0 );
 
    /***

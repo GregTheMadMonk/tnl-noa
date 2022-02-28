@@ -8,4 +8,5 @@ void write( std::fstream& file, const Vector& u, const Index n, const Real& h, c
    file << "# time = " << time << std::endl;
    for( Index i = 0; i < n; i++ )
       file << i*h << " " << u.getElement( i ) << std::endl;
+   file << std::endl;
 }
