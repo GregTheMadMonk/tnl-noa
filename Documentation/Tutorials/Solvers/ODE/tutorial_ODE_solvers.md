@@ -23,7 +23,7 @@ Each solver has its static counterpart which can be run even in the GPU kernels 
 
 ## Static ODE solvers
 
-Static solvers are supposed to be used mainly when \f$ x \in R \f$ is scalar or \f$ \vec \in R^n \f$ is vector where \f$ n \f$ is small. Firstly, we show example of scalar problem of the following form:
+Static solvers are supposed to be used mainly when \f$ x \in R \f$ is scalar or \f$ \vec x \in R^n \f$ is vector where \f$ n \f$ is small. Firstly, we show example of scalar problem of the following form:
 
 \f[ \frac{d u}{dt} = t \sin ( t )\ \rm{ on }\ (0,T), \f]
 
@@ -45,7 +45,17 @@ The lambda function is supposed to compute just the value of `fu`. It is `t * si
 
 \include StaticODESolver-SineExample.out
 
-And the graph of the solution looks as follows:
+Such data can by visualized using [Gnuplot](http://www.gnuplot.info/) as follows
+
+```
+plot 'StaticODESolver-SineExample.out' with lines
+```
+
+or it can be processed by the following [Python](https://www.python.org/) script which draws graph of the function \f$ u(t) \f$ using [Matplotlib](https://matplotlib.org/).
+
+\includelineno Solvers/ODE/StaticODESolver-SineExample.py
+
+ We first parse the input file (lines 13-20) and convert the data into [NumPy](https://numpy.org/) arrays (lines 24-25). Finaly, these arrays are drawn into a graph (lines 29-36). The graph of the solution looks as follows:
 
 \image{inline} html StaticODESolver-SineExample.png "Solution of the scalar ODE problem"
 
@@ -68,7 +78,26 @@ The code is very similar to the previous example. There are the following differ
 4. In the lambda function representing the right-hand side of the Lorenz system (lines 25-32), we first define auxiliary aliases `x` ,`y` and `z` (lines 26-28) to make the code easier to read. The main right-hand side of the Lorenz system is implemented on the lines (29-31).
 5. In the line 3, we print all components of the vector `u`.
 
-The result looks as follows:
+The solver creates file with the solution \f$ (\sigma(i \tau), \rho( i \tau), \beta( i \tau )) \f$ for '\f$ i = 0, 1, \ldots N \f$ on separate lines. It looks as follows:
+
+```
+sigma[ 0 ] rho[ 0 ] beta[ 0 ]
+sigma[ 1 ] rho[ 1 ] beta[ 1 ]
+sigma[ 2 ] rho[ 2 ] beta[ 2 ]
+...
+```
+
+Such file can visualized using [Gnuplot](http://www.gnuplot.info) interactively in 3D as follows
+
+```
+splot 'StaticODESolver-LorenzExample.out' with lines
+```
+
+or it can be processed by the following [Python](https://www.python.org) script:
+
+\includelineno Solvers/ODE/StaticODESolver-LorenzExample.py
+
+The script has very similar structure as in the previous example. The result looks as follows:
 
 \image{inline} html StaticODESolver-LorenzExample.png "Solution of the Lorenz problem"
 
@@ -88,9 +117,33 @@ where \f$ c \f$ is a constant. We will solve it in parallel ODEs with different 
 
 \includelineno Solvers/ODE/StaticODESolver-SineParallelExample.h
 
-In this example we also show, how to run it on GPU. Therefore we moved the main solver to separate function `solveParallelODEs` which has one template parameter `Device` telling on what device it is supposed to run. The results of particular ODEs are stored in a memory and at the end they are copied to a file with given filename `file_name`. The variable \f$ u \f$ is scalar therefore we represent it by the type `Real` in the solver (line 12). Next we define parameters of the ODE solver (`final_t`, `tau` and `output_time_step`, lines 14-16), interval for the parameter of the ODE \f$ c \in \langle c_{min}, c_{max} \rangle \f$ ( `c_min`, `c_max`, lines 17-18) and number of values `c_vals` (line 19) distributed equidistantly in the interval with step `c_step` (line 20). We use the number of different values of the parameter `c` as a range for the parallel for on the line 43. This parallel for processes the lambda function `solve` which is defined on the lines 28-42. It receives a parameter `idx` which is index of the value of the parameter `c`. We compute its value on the line 29. Next we create the ODE solver (line 30) and setup its parameters (lines 31-32). We set initial condition of the given ODE and we define variable `time_step` which counts checkpoints which we store in the memory in vector `results` allocated in the line 23 and accessed in the lambda function via vector view `results_view` (defined on the line 24). We iterate over the interval \f$ (0, T) \f$ in the  while loop starting on the line 36. We set the stop time of the ODE solver (line 38) and we run the solver (line 39). Finally we store the result at given checkpoint into vector view `results_view`. If the solver runs on the GPU, it cannot write the checkpoints into a file. This is done in postprocessing in the lines 45-54.
+In this example we also show, how to run it on GPU. Therefore we moved the main solver to separate function `solveParallelODEs` which has one template parameter `Device` telling on what device it is supposed to run. The results of particular ODEs are stored in a memory and at the end they are copied to a file with given filename `file_name`. The variable \f$ u \f$ is scalar therefore we represent it by the type `Real` in the solver (line 12). Next we define parameters of the ODE solver (`final_t`, `tau` and `output_time_step`, lines 14-16), interval for the parameter of the ODE \f$ c \in \langle c_{min}, c_{max} \rangle \f$ ( `c_min`, `c_max`, lines 17-18) and number of values `c_vals` (line 19) distributed equidistantly in the interval with step `c_step` (line 20). We use the number of different values of the parameter `c` as a range for the parallel for on the line 43. This parallel for processes the lambda function `solve` which is defined on the lines 28-42. It receives a parameter `idx` which is index of the value of the parameter `c`. We compute its value on the line 29. Next we create the ODE solver (line 30) and setup its parameters (lines 31-32). We set initial condition of the given ODE and we define variable `time_step` which counts checkpoints which we store in the memory in vector `results` allocated in the line 23 and accessed in the lambda function via vector view `results_view` (defined on the line 24). We iterate over the interval \f$ (0, T) \f$ in the  while loop starting on the line 36. We set the stop time of the ODE solver (line 38) and we run the solver (line 39). Finally we store the result at given checkpoint into vector view `results_view`. If the solver runs on the GPU, it cannot write the checkpoints into a file. This is done in postprocessing in the lines 45-53.
 
 Note, how we pass the value of parameter `c` to the lambda function `f`. The method `solve` of the ODE solvers(\ref TNL::Solvers::ODE::StaticEuler::solve, for example) accepts user defined parameters via [variadic templates](https://en.wikipedia.org/wiki/Variadic_template). It means that in addition to the variable `u` and the right-hand side `f` we can add any other parameters like `c` in this example (line 39). This parameter appears in the lambda function `f` (line 25). The reason for this is that the `nvcc` compiler (version 10.1) does not accept lambda function defined within another lambda function. If such a construction is accepted by a compiler, the lambda function `f` which can be defined within the lambda function `solve` and the variable `c` defined in the lambda function `solve` could be captured by `f`.
+
+The solver generates file of the following format:
+
+```
+# c = c[ 0 ]
+x[ 0 ] u( c[ 0 ], x[ 0 ] )
+x[ 1 ] u( c[ 0 ], x[ 1 ] )
+....
+
+# c = c[ 1 ]
+x[ 0 ] u( c[ 1 ], x[ 0 ] )
+x[ 1 ] u( c[ 1 ], x[ 1 ] )
+...
+```
+
+The file an visualized using [Gnuplot](http://www.gnuplot.info) as follows
+
+```
+splot 'StaticODESolver-SineParallelExample-result.out' with lines
+```
+
+or it can be processed by the following [Python](https://www.python.org) script:
+
+\includelineno Solvers/ODE/StaticODESolver-SineParallelExample.py
 
 The result of this example looks as follows:
 
@@ -123,6 +176,25 @@ It is very similar to the previous one. There are just the following changes:
 3. Next we define the lambda function `f` representing the right-hand side of the Lorenz problem (lines 25-33) and the lambda function `solve` representing the ODE solver for the Lorenz problem with particular setup of the parameters (lines 34-52). This lambda function is processed by \ref TNL::Algorithms::ParallelFor3D called on the line 53. Therefore the lambda function `solve` receives three indexes `i`, `j` and `k` which are used to compute particular values of the parameters \f$ \sigma_i, \rho_j, \beta_k \f$ which are represented by variables `sigma_i`, `rho_j` and `beta_k` (lines 35-37). These parameters must be passed to the lambda function `f` explicitly (line 48). The reason is the same as in the previous example - nvcc (version 10.1) does not accept a lambda function defined within another lambda function.
 4. The initial condition for the Lorenz problem is set to vector \f$ (1,1,1) \f$ (line 42). Finally, we start the time loop (lines 45-51) and we store the state of the solution into the vector `results` using related vector view `results_view` in the time intervals given by the variable `output_time_step`.
 5. When all ODEs ares solved, we copy all the solutions from the vector `results` into an output file.
+
+The files has the following format:
+
+
+```
+# sigma = c[ 0 ] rho = rho[ 0 ] beta = beta[ 0 ]
+x[ 0 ] u( sigma[ 0 ], rho[ 0 ], beta[ 0 ], x[ 0 ] )
+x[ 1 ] u( sigma[ 0 ], rho[ 0 ], beta[ 0 ], x[ 1 ] )
+....
+
+# sigma = c[ 1 ] rho = rho[ 1 ] beta = beta[ 1 ]
+x[ 0 ] u( sigma[ 1 ], rho[ 1 ], beta[ 1 ], x[ 0 ] )
+x[ 1 ] u( sigma[ 1 ], rho[ 1 ], beta[ 1 ], x[ 1 ] )
+...
+```
+
+The file can be processed by the following [Python](https://www.python.org) script:
+
+\includelineno Solvers/ODE/StaticODESolver-LorenzParallelExample.py
 
 The result looks as follows:
 
@@ -232,7 +304,30 @@ The function accepts the following parameters:
 4. `h` is space step, i.e. distance between two consecutive nodes.
 5. `time` is the current time of the evolution being computed.
 
-The function writes the results in a format compatible with [Gnuplot](http://www.gnuplot.info/) or it can be easily parsed in [Python](https://www.python.org/) and processes by [Matplotlib](https://matplotlib.org/) for example.
+The solver writes the results in the following format:
+
+```
+# time = t[ 0 ]
+x[ 0 ] u( t[ 0 ], x[ 0 ] )
+x[ 1 ] u( t[ 0 ], x[ 1 ] )
+x[ 2 ] u( t[ 0 ], x[ 2 ] )
+...
+
+# time = t[ 1 ]
+x[ 0 ] u( t[ 1 ], x[ 0 ] )
+x[ 1 ] u( t[ 1 ], x[ 1 ] )
+x[ 2 ] u( t[ 1 ], x[ 2 ] )
+...
+```
+
+The solution can be visualised with [Gnuplot](http://www.gnuplot.info/) as follows:
+
+```
+plot 'ODESolver-HeatEquationExample-result.out' with lines
+```
+or it can be easily parsed in [Python](https://www.python.org/) and processes by [Matplotlib](https://matplotlib.org/) using the following script:
+
+\includelineno Solvers/ODE/ODESolver-HeatEquationExample.py
 
 The result looks as follows:
 

@@ -4,36 +4,51 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 
+###
+# Enable latex for labels
 plt.rcParams['text.usetex'] = True
 
+###
+# Parse the input file
 f = open( sys.argv[1], 'r' )
-data_lst = []
-size = 0
+current_c = 0.0
+x_lst = []
+u_lst = []
+x_data = []
+u_data = []
+parameters = []
+
 for line in f:
     line = line.strip()
     a = line.split()
-    aux = []
-    for num in a:
-        aux.append( float( num ) )
-    data_lst.append( aux )
+    if not a:
+        continue
+    if a[ 0 ] == "#":
+        if x_lst:
+            parameters.append( current_c )
+            u_data.append( np.array( u_lst ) )
+            if not x_data:
+                x_data.append( np.array( x_lst ) )
+            u_lst.clear()
 
+        current_c = float( a [ 3 ] )
+    else:
+        if not x_data:
+            x_lst.append( float( a[ 0 ] ) )
+        u_lst.append( float( a[ 1 ] ) )
+parameters.append( current_c )
+u_data.append( np.array( u_lst ) )
 
-arrays = []
-for a in data_lst:
-    arrays.append( np.array( a ) )
-
-n = len( arrays )
-print( n )
-
-fig, ax = plt.subplots( 1, n-1, figsize=(15, 3), sharey=True )
+###
+# Draw the graph of u(t) using Matplotlib
+n = len( parameters )
+fig, ax = plt.subplots( 1, n, figsize=(15, 3), sharey=True )
 idx = 0
-for array in arrays:
-    if idx > 0:
-        ax[ idx - 1 ].plot(arrays[0], array, linewidth=2.0)
-        ax[ idx - 1 ].set_xlabel( "t" )
-        ax[ idx - 1 ].set_ylabel( "u(t)" )
+for u in u_data:
+    ax[ idx ].plot( x_data[0], u, linewidth=2.0, label=f"$c={parameters[idx]}$" )
+    ax[ idx ].set_xlabel( "t" )
+    ax[ idx ].set_ylabel( "u(t)" )
     idx = idx + 1
-
 plt.savefig( sys.argv[2] )
 plt.close(fig)
 

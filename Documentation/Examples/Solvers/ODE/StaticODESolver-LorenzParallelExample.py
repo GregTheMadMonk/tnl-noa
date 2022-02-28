@@ -7,6 +7,8 @@ from mpl_toolkits.mplot3d import axes3d, Axes3D
 
 plt.rcParams['text.usetex'] = True
 
+###
+# Enable latex for labels
 f = open( sys.argv[1], 'r' )
 current_sigma = 0.0
 current_rho = 0.0
@@ -56,6 +58,8 @@ parameters.append( parameters_tuple )
 data_tuple = ( np.array( x_lst ), np.array( y_lst ), np.array( z_lst ) )
 data[ parameters_tuple ] = data_tuple
 
+###
+# Draw the graph of u(t) using Matplotlib
 sigma_n = len( sigma_lst )
 sigma_idx = 1
 for sigma in sigma_lst:
@@ -64,7 +68,7 @@ for sigma in sigma_lst:
 
     fig, ax = plt.subplots( rho_n, beta_n, figsize=(8, 8), sharey=True, sharex=True )
     fig.suptitle( f'$\sigma={sigma}$')
-    #ax = Axes3D(fig)  dos not work with ax indexing
+    #ax = Axes3D(fig)  does not work with ax indexing
     rho_idx = 0
     beta_idx = 0
     for rho in rho_lst:

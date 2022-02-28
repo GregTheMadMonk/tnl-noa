@@ -44,14 +44,11 @@ void solveParallelODEs( const char* file_name )
 
    std::fstream file;
    file.open( file_name, std::ios::out );
-   for( int k = 0; k < time_steps;k++ )
-      file << k * output_time_step << " ";
-   file << std::endl;
-
    for( int i = 0; i < c_vals; i++ )
    {
+      file << "# c = " << c_min + i * c_step << std::endl;
       for( int k = 0; k < time_steps;k++ )
-         file << results.getElement( k * c_vals + i ) << " ";
+         file << k * output_time_step << " " << results.getElement( k * c_vals + i ) << std::endl;
       file << std::endl;
    }
 }
