@@ -48,7 +48,7 @@ public:
     * \brief Default constructor.
     */
    __cuda_callable__
-   StaticExplicitSolver();
+   StaticExplicitSolver() = default;
 
    /**
     * \brief This method defines configuration entries for setup of the iterative solver.
@@ -114,6 +114,16 @@ public:
    __cuda_callable__
    const RealType& getMaxTau() const;
 
+   /**
+    * \brief Checks if the solver is allowed to do the next iteration.
+    *
+    * \return true \e true if the solver is allowed to do the next iteration.
+    * \return \e false if the solver is \b not allowed to do the next iteration. This may
+    *    happen because the divergence occurred.
+    */
+   bool __cuda_callable__
+   checkNextIteration();
+
    __cuda_callable__
    void setTestingMode( bool testingMode );
 
@@ -135,6 +145,8 @@ protected:
    RealType tau = 0.0;
 
    RealType maxTau = std::numeric_limits< RealType >::max();
+
+   bool stopOnSteadyState = false;
 
    bool testingMode = false;
 };

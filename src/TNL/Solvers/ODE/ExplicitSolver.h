@@ -52,7 +52,7 @@ public:
    /**
     * \brief Default constructor.
     */
-   ExplicitSolver();
+   ExplicitSolver() = default;
 
    /**
     * \brief This method defines configuration entries for setup of the iterative solver.
@@ -134,6 +134,16 @@ public:
    void
    refreshSolverMonitor( bool force = false );
 
+   /**
+    * \brief Checks if the solver is allowed to do the next iteration.
+    *
+    * \return true \e true if the solver is allowed to do the next iteration.
+    * \return \e false if the solver is \b not allowed to do the next iteration. This may
+    *    happen because the divergence occurred.
+    */
+   bool
+   checkNextIteration();
+
    void setTestingMode( bool testingMode );
 
 protected:
@@ -153,6 +163,8 @@ protected:
    RealType tau = 0.0;
 
    RealType maxTau = std::numeric_limits< RealType >::max();
+
+   bool stopOnSteadyState = false;
 
    bool testingMode = false;
 };
