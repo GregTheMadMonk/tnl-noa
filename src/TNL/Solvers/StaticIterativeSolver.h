@@ -210,7 +210,7 @@ class StaticIterativeSolver
 
       Index currentIteration = 0;
 
-      Real convergenceResidue = 1.0e-6;
+      Real convergenceResidue = 1e-6;
 
       // If the current residue is greater than divergenceResidue, the solver is stopped.
       Real divergenceResidue = std::numeric_limits< Real >::max();
