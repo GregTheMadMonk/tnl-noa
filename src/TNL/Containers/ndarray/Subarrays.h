@@ -90,10 +90,10 @@ private:
    struct IndexChecker
    {
       template< typename... IndexTypes >
-      static bool
+      static constexpr bool
       check( IndexTypes&&... indices )
       {
-         static constexpr std::size_t d = get< level >( Dimensions{} );
+         constexpr std::size_t d = get< level >( Dimensions{} );
          if( get_from_pack< d >( std::forward< IndexTypes >( indices )... ) != 0 )
             return false;
          return IndexChecker< level + 1 >::check( std::forward< IndexTypes >( indices )... );
@@ -104,10 +104,10 @@ private:
    struct IndexChecker< Dimensions::size() - 1, _unused >
    {
       template< typename... IndexTypes >
-      static bool
+      static constexpr bool
       check( IndexTypes&&... indices )
       {
-         static constexpr std::size_t d = get< Dimensions::size() - 1 >( Dimensions{} );
+         constexpr std::size_t d = get< Dimensions::size() - 1 >( Dimensions{} );
          if( get_from_pack< d >( std::forward< IndexTypes >( indices )... ) != 0 )
             return false;
          return true;
