@@ -152,7 +152,7 @@ public:
 
       using Getter = __ndarray_impl::SubarrayGetter< typename Indexer::NDBaseType, PermutationType, Dimensions... >;
       using Subpermutation = typename Getter::Subpermutation;
-      auto& begin = operator()( std::forward< IndexTypes >( indices )... );
+      ValueType* begin = getData() + getStorageIndex( std::forward< IndexTypes >( indices )... );
       auto subarray_sizes = Getter::filterSizes( getSizes(), std::forward< IndexTypes >( indices )... );
       auto strides = Getter::getStrides( getSizes(), std::forward< IndexTypes >( indices )... );
       static_assert( Subpermutation::size() == sizeof...( Dimensions ), "Bug - wrong subpermutation length." );
@@ -163,7 +163,7 @@ public:
       using Subindexer =
          NDArrayIndexer< decltype( subarray_sizes ), Subpermutation, typename Indexer::NDBaseType, decltype( strides ) >;
       using SubarrayView = NDArrayView< ValueType, Device, Subindexer >;
-      return SubarrayView{ &begin, subarray_sizes, strides };
+      return SubarrayView{ begin, subarray_sizes, strides };
    }
 
    template< typename... IndexTypes >
