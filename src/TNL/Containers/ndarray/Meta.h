@@ -284,11 +284,11 @@ count_smaller( T threshold, V&& value, Values&&... vals )
 
 // C++14 version, with hard-coded predicate
 template< typename Mask, typename Index, Index val >
-constexpr typename std::
-   conditional_t< is_in_sequence( val, Mask{} ), std::integer_sequence< Index, val >, std::integer_sequence< Index > >
-   FilterSingle( std::integer_sequence< Index, val > )
+constexpr auto
+FilterSingle( std::integer_sequence< Index, val > )
 {
-   return {};
+   return std::
+      conditional_t< is_in_sequence( val, Mask{} ), std::integer_sequence< Index, val >, std::integer_sequence< Index > >{};
 }
 
 /*
