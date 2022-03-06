@@ -10,6 +10,7 @@
 
 #include <limits>
 
+#include <TNL/Containers/Array.h>
 #include <TNL/Containers/StaticVector.h>  // TNL::product
 #include <TNL/Meshes/Writers/VTIWriter.h>
 #include <TNL/Endianness.h>
@@ -152,8 +153,7 @@ VTIWriter< Mesh >::writeDataArray( const Array& array, const std::string& name, 
 {
    // use a host buffer if direct access to the array elements is not possible
    if( std::is_same< typename Array::DeviceType, Devices::Cuda >::value ) {
-      using HostArray = typename Array::
-         template Self< std::remove_const_t< typename Array::ValueType >, Devices::Host, typename Array::IndexType >;
+      using HostArray = TNL::Containers::Array< std::remove_const_t< typename Array::ValueType >, Devices::Host, typename Array::IndexType >;
       HostArray hostBuffer;
       hostBuffer = array;
       writeDataArray( hostBuffer, name, numberOfComponents );
