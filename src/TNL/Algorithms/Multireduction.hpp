@@ -42,7 +42,7 @@ void constexpr Multireduction< Devices::Sequential >::reduce( Result identity,
    if( blocks > 1 ) {
       // initialize array for unrolled results
       // (it is accessed as a row-major matrix with n rows and 4 columns)
-      Result r[ n * 4 ];
+      std::unique_ptr< Result[] > r{ new Result[ n * 4 ] };
       for( int k = 0; k < n * 4; k++ )
          r[ k ] = identity;
 
@@ -50,7 +50,7 @@ void constexpr Multireduction< Devices::Sequential >::reduce( Result identity,
       for( int b = 0; b < blocks; b++ ) {
          const Index offset = b * block_size;
          for( int k = 0; k < n; k++ ) {
-            Result* _r = r + 4 * k;
+            Result* _r = r.get() + 4 * k;
             for( int i = 0; i < block_size; i += 4 ) {
                _r[ 0 ] = reduction( _r[ 0 ], dataFetcher( offset + i, k ) );
                _r[ 1 ] = reduction( _r[ 1 ], dataFetcher( offset + i + 1, k ) );
@@ -62,14 +62,14 @@ void constexpr Multireduction< Devices::Sequential >::reduce( Result identity,
 
       // reduction of the last, incomplete block (not unrolled)
       for( int k = 0; k < n; k++ ) {
-         Result* _r = r + 4 * k;
+         Result* _r = r.get() + 4 * k;
          for( Index i = blocks * block_size; i < size; i++ )
             _r[ 0 ] = reduction( _r[ 0 ], dataFetcher( i, k ) );
       }
 
       // reduction of unrolled results
       for( int k = 0; k < n; k++ ) {
-         Result* _r = r + 4 * k;
+         Result* _r = r.get() + 4 * k;
          _r[ 0 ] = reduction( _r[ 0 ], _r[ 1 ] );
          _r[ 0 ] = reduction( _r[ 0 ], _r[ 2 ] );
          _r[ 0 ] = reduction( _r[ 0 ], _r[ 3 ] );
@@ -126,7 +126,7 @@ Multireduction< Devices::Host >::reduce( Result identity,
 
          // initialize array for thread-local results
          // (it is accessed as a row-major matrix with n rows and 4 columns)
-         Result r[ n * 4 ];
+         std::unique_ptr< Result[] > r{ new Result[ n * 4 ] };
          for( int k = 0; k < n * 4; k++ )
             r[ k ] = identity;
 
@@ -134,7 +134,7 @@ Multireduction< Devices::Host >::reduce( Result identity,
          for( int b = 0; b < blocks; b++ ) {
             const Index offset = b * block_size;
             for( int k = 0; k < n; k++ ) {
-               Result* _r = r + 4 * k;
+               Result* _r = r.get() + 4 * k;
                for( int i = 0; i < block_size; i += 4 ) {
                   _r[ 0 ] = reduction( _r[ 0 ], dataFetcher( offset + i, k ) );
                   _r[ 1 ] = reduction( _r[ 1 ], dataFetcher( offset + i + 1, k ) );
@@ -148,7 +148,7 @@ Multireduction< Devices::Host >::reduce( Result identity,
          #pragma omp single nowait
          {
             for( int k = 0; k < n; k++ ) {
-               Result* _r = r + 4 * k;
+               Result* _r = r.get() + 4 * k;
                for( Index i = blocks * block_size; i < size; i++ )
                   _r[ 0 ] = reduction( _r[ 0 ], dataFetcher( i, k ) );
             }
@@ -156,7 +156,7 @@ Multireduction< Devices::Host >::reduce( Result identity,
 
          // local reduction of unrolled results
          for( int k = 0; k < n; k++ ) {
-            Result* _r = r + 4 * k;
+            Result* _r = r.get() + 4 * k;
             _r[ 0 ] = reduction( _r[ 0 ], _r[ 1 ] );
             _r[ 0 ] = reduction( _r[ 0 ], _r[ 2 ] );
             _r[ 0 ] = reduction( _r[ 0 ], _r[ 3 ] );
