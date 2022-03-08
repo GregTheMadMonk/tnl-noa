@@ -13,6 +13,8 @@
  * The algorithms should be incorporated into the Matrices::Dense class.
  */
 
+#include <memory>  // std::unique_ptr
+
 #include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
@@ -54,7 +56,7 @@ public:
       TNL_ASSERT_GT( n, 0, "n must be positive" );
       TNL_ASSERT_GE( lda, m, "lda must be at least m" );
 
-      RealType alphax[ n ];
+      std::unique_ptr< RealType[] > alphax{ new RealType[ n ] };
       for( IndexType k = 0; k < n; k++ )
          alphax[ k ] = alpha * x[ k ];
 
