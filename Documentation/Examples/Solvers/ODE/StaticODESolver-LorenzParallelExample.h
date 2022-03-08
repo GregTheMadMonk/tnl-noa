@@ -19,7 +19,7 @@ void solveParallelODEs( const char* file_name )
    const Real sigma_step = 30.0 / ( parametric_steps - 1 );
    const Real rho_step = 21.0 / ( parametric_steps - 1 );
    const Real beta_step = 15.0 / ( parametric_steps - 1 );
-   const int output_time_steps = final_t / output_time_step + 1;
+   const int output_time_steps = ceil( final_t / output_time_step ) + 1;
 
    const int results_size( output_time_steps * parametric_steps * parametric_steps * parametric_steps );
    TNL::Containers::Vector< Vector, Device > results( results_size, 0.0 );
@@ -42,9 +42,9 @@ void solveParallelODEs( const char* file_name )
       solver.setTau(  tau );
       solver.setTime( 0.0 );
       Vector u( 1.0, 1.0, 1.0 );
-      int time_step( 0 );
+      int time_step( 1 );
       results_view[ ( i * parametric_steps + j ) * parametric_steps + k ] = u;
-      while( solver.getTime() < final_t )
+      while( time_step < output_time_steps )
       {
          solver.setStopTime( TNL::min( solver.getTime() + output_time_step, final_t ) );
          solver.solve( u, f, sigma_i, rho_j, beta_k );
