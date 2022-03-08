@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include <memory>  // std::unique_ptr
+
 #include "ILU0.h"
 #include <TNL/Solvers/Linear/Utils/TriangularSolve.h>
 #include <TNL/Algorithms/ParallelFor.h>
@@ -62,16 +64,16 @@ ILU0_impl< Matrix, Real, Devices::Host, Index >::update( const MatrixPointer& ma
       // copy all non-zero entries from A into L and U
       const auto row = localMatrix.getRow( i );
       const auto max_length = row.getSize();
-      IndexType all_columns[ max_length ];
-      RealType all_values[ max_length ];
+      std::unique_ptr< IndexType[] > all_columns{ new IndexType[ max_length ] };
+      std::unique_ptr< RealType[] > all_values{ new RealType[ max_length ] };
       for( IndexType j = 0; j < max_length; j++ ) {
          all_columns[ j ] = row.getColumnIndex( j );
          all_values[ j ] = row.getValue( j );
       }
 
       // skip non-local elements
-      IndexType* columns = all_columns;
-      RealType* values = all_values;
+      IndexType* columns = all_columns.get();
+      RealType* values = all_values.get();
       while( columns[ 0 ] < minColumn ) {
          columns++;
          values++;

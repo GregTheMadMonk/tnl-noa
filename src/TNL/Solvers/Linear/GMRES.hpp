@@ -10,6 +10,7 @@
 
 #include <type_traits>
 #include <cmath>
+#include <memory>  // std::unique_ptr
 
 #include <TNL/Algorithms/Multireduction.h>
 #include <TNL/Matrices/MatrixOperations.h>
@@ -210,7 +211,7 @@ GMRES< Matrix >::orthogonalize_CGS( const int m, const RealType normb, const Rea
       const int reorthogonalize = ( variant == Variant::CGSR ) ? 2 : 1;
       for( int l = 0; l < reorthogonalize; l++ ) {
          // auxiliary array for the H coefficients of the current l-loop
-         RealType H_l[ i + 1 ];
+         std::unique_ptr< RealType[] > H_l{ new RealType[ i + 1 ] };
 
          // CGS part 1: compute projection coefficients
          //         for( int k = 0; k <= i; k++ ) {
@@ -226,7 +227,7 @@ GMRES< Matrix >::orthogonalize_CGS( const int m, const RealType normb, const Rea
          {
             return _V[ idx + k * ldSize ] * _w[ idx ];
          };
-         Algorithms::Multireduction< DeviceType >::reduce( (RealType) 0, fetch, std::plus<>{}, size, i + 1, H_l );
+         Algorithms::Multireduction< DeviceType >::reduce( (RealType) 0, fetch, std::plus<>{}, size, i + 1, H_l.get() );
          for( int k = 0; k <= i; k++ )
             H[ k + i * ( m + 1 ) ] += H_l[ k ];
 
@@ -241,7 +242,7 @@ GMRES< Matrix >::orthogonalize_CGS( const int m, const RealType normb, const Rea
                                                          (RealType) -1.0,
                                                          V.getData(),
                                                          ldSize,
-                                                         H_l,
+                                                         H_l.get(),
                                                          (RealType) 1.0,
                                                          Traits::getLocalView( w ).getData() );
       }
@@ -507,7 +508,7 @@ GMRES< Matrix >::hauseholder_generate( const int i, VectorViewType y_i, ConstVec
    T[ i + i * ( restarting_max + 1 ) ] = t_i;
    if( i > 0 ) {
       // aux = Y_{i-1}^T * y_i
-      RealType aux[ i ];
+      std::unique_ptr< RealType[] > aux{ new RealType[ i ] };
       const RealType* _Y = Y.getData();
       const RealType* _y_i = Traits::getConstLocalView( y_i ).getData();
       const IndexType ldSize = this->ldSize;
@@ -515,9 +516,9 @@ GMRES< Matrix >::hauseholder_generate( const int i, VectorViewType y_i, ConstVec
       {
          return _Y[ idx + k * ldSize ] * _y_i[ idx ];
       };
-      Algorithms::Multireduction< DeviceType >::reduce( (RealType) 0, fetch, std::plus<>{}, size, i, aux );
+      Algorithms::Multireduction< DeviceType >::reduce( (RealType) 0, fetch, std::plus<>{}, size, i, aux.get() );
       // no-op if the problem is not distributed
-      MPI::Allreduce( aux, i, MPI_SUM, Traits::getCommunicator( *this->matrix ) );
+      MPI::Allreduce( aux.get(), i, MPI_SUM, Traits::getCommunicator( *this->matrix ) );
 
       // [T_i]_{0..i-1} = - T_{i-1} * t_i * aux
       for( int k = 0; k < i; k++ ) {
@@ -551,9 +552,9 @@ GMRES< Matrix >::hauseholder_apply_trunc( HostView out, const int i, VectorViewT
             out[ k ] = z[ k ] - y_i[ k ] * aux;
       }
       if( std::is_same< DeviceType, Devices::Cuda >::value ) {
-         RealType host_z[ i + 1 ];
+         std::unique_ptr< RealType[] > host_z{ new RealType[ i + 1 ] };
          Algorithms::MultiDeviceMemoryOperations< Devices::Host, Devices::Cuda >::copy(
-            host_z, Traits::getConstLocalView( z ).getData(), i + 1 );
+            host_z.get(), Traits::getConstLocalView( z ).getData(), i + 1 );
          for( int k = 0; k <= i; k++ )
             out[ k ] = host_z[ k ] - YL_i[ k ] * aux;
       }
@@ -568,7 +569,7 @@ void
 GMRES< Matrix >::hauseholder_cwy( VectorViewType v, const int i )
 {
    // aux = Y_i^T * e_i
-   RealType aux[ i + 1 ];
+   std::unique_ptr< RealType[] > aux{ new RealType[ i + 1 ] };
    // the upper (m+1)x(m+1) submatrix of Y is duplicated on host
    // (faster access than from the device and it is broadcasted to all processes)
    for( int k = 0; k <= i; k++ )
@@ -584,8 +585,14 @@ GMRES< Matrix >::hauseholder_cwy( VectorViewType v, const int i )
    }
 
    // v = e_i - Y_i * aux
-   Matrices::MatrixOperations< DeviceType >::gemv(
-      size, (IndexType) i + 1, (RealType) -1.0, Y.getData(), ldSize, aux, (RealType) 0.0, Traits::getLocalView( v ).getData() );
+   Matrices::MatrixOperations< DeviceType >::gemv( size,
+                                                   (IndexType) i + 1,
+                                                   (RealType) -1.0,
+                                                   Y.getData(),
+                                                   ldSize,
+                                                   aux.get(),
+                                                   (RealType) 0.0,
+                                                   Traits::getLocalView( v ).getData() );
    if( localOffset == 0 )
       v.setElement( i, 1.0 + v.getElement( i ) );
 }
@@ -595,7 +602,7 @@ void
 GMRES< Matrix >::hauseholder_cwy_transposed( VectorViewType z, const int i, ConstVectorViewType w )
 {
    // aux = Y_i^T * w
-   RealType aux[ i + 1 ];
+   std::unique_ptr< RealType[] > aux{ new RealType[ i + 1 ] };
    const RealType* _Y = Y.getData();
    const RealType* _w = Traits::getConstLocalView( w ).getData();
    const IndexType ldSize = this->ldSize;
@@ -603,9 +610,9 @@ GMRES< Matrix >::hauseholder_cwy_transposed( VectorViewType z, const int i, Cons
    {
       return _Y[ idx + k * ldSize ] * _w[ idx ];
    };
-   Algorithms::Multireduction< DeviceType >::reduce( (RealType) 0, fetch, std::plus<>{}, size, i + 1, aux );
+   Algorithms::Multireduction< DeviceType >::reduce( (RealType) 0, fetch, std::plus<>{}, size, i + 1, aux.get() );
    // no-op if the problem is not distributed
-   MPI::Allreduce( aux, i + 1, MPI_SUM, Traits::getCommunicator( *this->matrix ) );
+   MPI::Allreduce( aux.get(), i + 1, MPI_SUM, Traits::getCommunicator( *this->matrix ) );
 
    // aux = T_i^T * aux
    // Note that T_i^T is lower triangular, so we can overwrite the aux vector with the result in place
@@ -618,8 +625,14 @@ GMRES< Matrix >::hauseholder_cwy_transposed( VectorViewType z, const int i, Cons
 
    // z = w - Y_i * aux
    z = w;
-   Matrices::MatrixOperations< DeviceType >::gemv(
-      size, (IndexType) i + 1, (RealType) -1.0, Y.getData(), ldSize, aux, (RealType) 1.0, Traits::getLocalView( z ).getData() );
+   Matrices::MatrixOperations< DeviceType >::gemv( size,
+                                                   (IndexType) i + 1,
+                                                   (RealType) -1.0,
+                                                   Y.getData(),
+                                                   ldSize,
+                                                   aux.get(),
+                                                   (RealType) 1.0,
+                                                   Traits::getLocalView( z ).getData() );
 }
 
 template< typename Matrix >
@@ -627,7 +640,7 @@ template< typename Vector >
 void
 GMRES< Matrix >::update( const int k, const int m, const HostVector& H, const HostVector& s, DeviceVector& V, Vector& x )
 {
-   RealType y[ m + 1 ];
+   std::unique_ptr< RealType[] > y{ new RealType[ m + 1 ] };
 
    for( int i = 0; i <= m; i++ )
       y[ i ] = s[ i ];
@@ -652,15 +665,21 @@ GMRES< Matrix >::update( const int k, const int m, const HostVector& H, const Ho
 
    if( variant != Variant::CWY ) {
       // x = V * y + x
-      Matrices::MatrixOperations< DeviceType >::gemv(
-         size, (IndexType) k + 1, (RealType) 1.0, V.getData(), ldSize, y, (RealType) 1.0, Traits::getLocalView( x ).getData() );
+      Matrices::MatrixOperations< DeviceType >::gemv( size,
+                                                      (IndexType) k + 1,
+                                                      (RealType) 1.0,
+                                                      V.getData(),
+                                                      ldSize,
+                                                      y.get(),
+                                                      (RealType) 1.0,
+                                                      Traits::getLocalView( x ).getData() );
    }
    else {
       // The vectors v_i are not stored, they can be reconstructed as P_0...P_j * e_j.
       // Hence, for j = 0, ... k:  x += y_j P_0...P_j e_j,
       // or equivalently: x += \sum_0^k y_j e_j - Y_k T_k \sum_0^k y_j Y_j^T e_j
 
-      RealType aux[ k + 1 ];
+      std::unique_ptr< RealType[] > aux{ new RealType[ k + 1 ] };
       for( int j = 0; j <= k; j++ )
          aux[ j ] = 0;
 
@@ -687,7 +706,7 @@ GMRES< Matrix >::update( const int k, const int m, const HostVector& H, const Ho
                                                       (RealType) -1.0,
                                                       Y.getData(),
                                                       ldSize,
-                                                      aux,
+                                                      aux.get(),
                                                       (RealType) 1.0,
                                                       Traits::getLocalView( x ).getData() );
 
