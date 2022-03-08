@@ -274,14 +274,14 @@ operator>>( File& file, std::string& str )
       throw Exceptions::FileDeserializationError( file.getFileName(), "unable to read string length." );
    }
    if( length > 0 ) {
-      char buffer[ length ];
+      std::unique_ptr< char[] > buffer{ new char[ length ] };
       try {
-         file.load( buffer, length );
+         file.load( buffer.get(), length );
       }
       catch( ... ) {
          throw Exceptions::FileDeserializationError( file.getFileName(), "unable to read a C-string." );
       }
-      str.assign( buffer, length );
+      str.assign( buffer.get(), length );
    }
    return file;
 }
