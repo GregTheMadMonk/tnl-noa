@@ -7,7 +7,7 @@
 #pragma once
 
 #include <cfenv>
-#include <signal.h>
+#include <csignal>
 
 #include <TNL/Debugging/StackBacktrace.h>
 
@@ -49,7 +49,7 @@ printStackBacktraceAndAbort( int sig = 0 )
  * int main()
  * {
  *    #ifndef NDEBUG
- *       registerFloatingPointExceptionTracking()
+ *       TNL::Debugging::trackFloatingPointExceptions()
  *    #endif
  *    [start some computation here...]
  * }
