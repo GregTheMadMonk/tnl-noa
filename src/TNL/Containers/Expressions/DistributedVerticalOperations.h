@@ -8,6 +8,7 @@
 
 #include <TNL/MPI/Wrappers.h>
 #include <TNL/Algorithms/reduce.h>
+#include <memory>
 
 namespace TNL {
 namespace Containers {
@@ -50,21 +51,18 @@ DistributedExpressionArgMin( const Expression& expression )
 
       // scatter local result to all processes and gather their results
       const int nproc = MPI::GetSize( communicator );
-      ResultType dataForScatter[ nproc ];
+      std::unique_ptr< ResultType[] > dataForScatter{ new ResultType[ nproc ] };
       for( int i = 0; i < nproc; i++ )
          dataForScatter[ i ] = localResult;
-      ResultType gatheredResults[ nproc ];
+      std::unique_ptr< ResultType[] > gatheredResults{ new ResultType[ nproc ] };
       // NOTE: exchanging general data types does not work with MPI
-      // MPI::Alltoall( dataForScatter, 1, gatheredResults, 1, communicator );
+      // MPI::Alltoall( dataForScatter.get(), 1, gatheredResults.get(), 1, communicator );
       MPI::Alltoall(
-         (char*) dataForScatter, sizeof( ResultType ), (char*) gatheredResults, sizeof( ResultType ), communicator );
+         (char*) dataForScatter.get(), sizeof( ResultType ), (char*) gatheredResults.get(), sizeof( ResultType ), communicator );
 
-      // reduce the gathered data
-      //    workaround for nvcc which does not allow to capture variable-length arrays (even in pure host code!)
-      const auto* _data = gatheredResults;
-      auto fetch = [ _data ]( IndexType i )
+      auto fetch = [ &gatheredResults ]( IndexType i )
       {
-         return _data[ i ].first;
+         return gatheredResults[ i ].first;
       };
       result = Algorithms::reduceWithArgument< Devices::Host >( (IndexType) 0, (IndexType) nproc, fetch, TNL::MinWithArg{} );
       result.second = gatheredResults[ result.second ].second;
@@ -109,21 +107,18 @@ DistributedExpressionArgMax( const Expression& expression )
 
       // scatter local result to all processes and gather their results
       const int nproc = MPI::GetSize( communicator );
-      ResultType dataForScatter[ nproc ];
+      std::unique_ptr< ResultType[] > dataForScatter{ new ResultType[ nproc ] };
       for( int i = 0; i < nproc; i++ )
          dataForScatter[ i ] = localResult;
-      ResultType gatheredResults[ nproc ];
+      std::unique_ptr< ResultType[] > gatheredResults{ new ResultType[ nproc ] };
       // NOTE: exchanging general data types does not work with MPI
-      // MPI::Alltoall( dataForScatter, 1, gatheredResults, 1, communicator );
+      // MPI::Alltoall( dataForScatter.get(), 1, gatheredResults.get(), 1, communicator );
       MPI::Alltoall(
-         (char*) dataForScatter, sizeof( ResultType ), (char*) gatheredResults, sizeof( ResultType ), communicator );
+         (char*) dataForScatter.get(), sizeof( ResultType ), (char*) gatheredResults.get(), sizeof( ResultType ), communicator );
 
-      // reduce the gathered data
-      //    workaround for nvcc which does not allow to capture variable-length arrays (even in pure host code!)
-      const auto* _data = gatheredResults;
-      auto fetch = [ _data ]( IndexType i )
+      auto fetch = [ &gatheredResults ]( IndexType i )
       {
-         return _data[ i ].first;
+         return gatheredResults[ i ].first;
       };
       result = Algorithms::reduceWithArgument< Devices::Host >( (IndexType) 0, (IndexType) nproc, fetch, TNL::MaxWithArg{} );
       result.second = gatheredResults[ result.second ].second;

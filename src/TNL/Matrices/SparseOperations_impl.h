@@ -11,6 +11,7 @@
 #include <type_traits>
 #include <stdexcept>
 #include <algorithm>
+#include <memory>  // std::unique_ptr
 
 #include <TNL/Pointers/DevicePointer.h>
 #include <TNL/Algorithms/ParallelFor.h>
@@ -286,25 +287,22 @@ reorderSparseMatrix( const Matrix1& matrix1, Matrix2& matrix2, const Permutation
       const auto row1 = matrix1.getRow( perm[ i ] );
 
       // permute
-      typename Matrix2::IndexType columns[ rowLength ];
-      typename Matrix2::RealType values[ rowLength ];
+      std::unique_ptr< typename Matrix2::IndexType[] > columns{ new typename Matrix2::IndexType[ rowLength ] };
+      std::unique_ptr< typename Matrix2::RealType[] > values{ new typename Matrix2::RealType[ rowLength ] };
       for( IndexType j = 0; j < rowLength; j++ ) {
          columns[ j ] = iperm[ row1.getColumnIndex( j ) ];
          values[ j ] = row1.getValue( j );
       }
 
       // sort
-      IndexType indices[ rowLength ];
+      std::unique_ptr< IndexType[] > indices{ new IndexType[ rowLength ] };
       for( IndexType j = 0; j < rowLength; j++ )
          indices[ j ] = j;
-      // nvcc does not allow lambdas to capture VLAs, even in host code (WTF!?)
-      //    error: a variable captured by a lambda cannot have a type involving a variable-length array
-      IndexType* _columns = columns;
-      auto comparator = [ = ]( IndexType a, IndexType b )
+      auto comparator = [ &columns ]( IndexType a, IndexType b )
       {
-         return _columns[ a ] < _columns[ b ];
+         return columns[ a ] < columns[ b ];
       };
-      std::sort( indices, indices + rowLength, comparator );
+      std::sort( indices.get(), indices.get() + rowLength, comparator );
 
       // set the row
       auto row2 = matrix2.getRow( i );

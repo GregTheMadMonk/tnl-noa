@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <memory>  // std::unique_ptr
 #include <experimental/filesystem>
 
 #include <TNL/Meshes/Writers/PVTIWriter.h>
@@ -206,25 +207,25 @@ PVTIWriter< Grid >::addPiece( const std::string& mainFileName,
 
    // exchange globalBegin and globalEnd among the ranks
    const int nproc = MPI::GetSize( communicator );
-   typename Grid::CoordinatesType beginsForScatter[ nproc ];
-   typename Grid::CoordinatesType endsForScatter[ nproc ];
+   std::unique_ptr< typename Grid::CoordinatesType[] > beginsForScatter{ new typename Grid::CoordinatesType[ nproc ] };
+   std::unique_ptr< typename Grid::CoordinatesType[] > endsForScatter{ new typename Grid::CoordinatesType[ nproc ] };
    for( int i = 0; i < nproc; i++ ) {
       beginsForScatter[ i ] = globalBegin;
       endsForScatter[ i ] = globalEnd;
    }
-   typename Grid::CoordinatesType globalBegins[ nproc ];
-   typename Grid::CoordinatesType globalEnds[ nproc ];
+   std::unique_ptr< typename Grid::CoordinatesType[] > globalBegins{ new typename Grid::CoordinatesType[ nproc ] };
+   std::unique_ptr< typename Grid::CoordinatesType[] > globalEnds{ new typename Grid::CoordinatesType[ nproc ] };
    // NOTE: exchanging general data types does not work with MPI
-   // MPI::Alltoall( beginsForScatter, 1, globalBegins, 1, communicator );
-   // MPI::Alltoall( endsForScatter, 1, globalEnds, 1, communicator );
-   MPI::Alltoall( (char*) beginsForScatter,
+   // MPI::Alltoall( beginsForScatter.get(), 1, globalBegins.get(), 1, communicator );
+   // MPI::Alltoall( endsForScatter.get(), 1, globalEnds.get(), 1, communicator );
+   MPI::Alltoall( (char*) beginsForScatter.get(),
                   sizeof( typename Grid::CoordinatesType ),
-                  (char*) globalBegins,
+                  (char*) globalBegins.get(),
                   sizeof( typename Grid::CoordinatesType ),
                   communicator );
-   MPI::Alltoall( (char*) endsForScatter,
+   MPI::Alltoall( (char*) endsForScatter.get(),
                   sizeof( typename Grid::CoordinatesType ),
-                  (char*) globalEnds,
+                  (char*) globalEnds.get(),
                   sizeof( typename Grid::CoordinatesType ),
                   communicator );
 

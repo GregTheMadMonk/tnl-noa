@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include <memory>  // std::unique_ptr
+
 #include "Scan.h"
 
 #include <TNL/Containers/Array.h>
@@ -48,12 +50,12 @@ struct DistributedScan
 
          // exchange local results between ranks
          const int nproc = MPI::GetSize( communicator );
-         ValueType dataForScatter[ nproc ];
+         std::unique_ptr< ValueType[] > dataForScatter{ new ValueType[ nproc ] };
          for( int i = 0; i < nproc; i++ )
             dataForScatter[ i ] = local_result;
          Containers::Array< ValueType, Devices::Host > rank_results( nproc );
          // NOTE: exchanging general data types does not work with MPI
-         MPI::Alltoall( dataForScatter, 1, rank_results.getData(), 1, communicator );
+         MPI::Alltoall( dataForScatter.get(), 1, rank_results.getData(), 1, communicator );
 
          // compute the scan of the per-rank results
          Scan< Devices::Host, ScanType::Exclusive, ScanPhaseType::WriteInSecondPhase >::perform(

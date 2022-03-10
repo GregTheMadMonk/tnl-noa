@@ -144,7 +144,7 @@ public:
                    PeriodicBoundariesMaskPointer( nullptr ) );  // the mask is used only when receiving data );
 
       // async send and receive
-      MPI_Request requests[ 2 * this->getNeighborsCount() ];
+      std::unique_ptr< MPI_Request[] > requests{ new MPI_Request[ 2 * this->getNeighborsCount() ] };
       MPI_Comm communicator = distributedGrid->getCommunicator();
       int requestsCount( 0 );
 
@@ -182,7 +182,7 @@ public:
 
       // wait until send is done
       // TNL_MPI_PRINT( "Waiting for data ..." )
-      MPI::Waitall( requests, requestsCount );
+      MPI::Waitall( requests.get(), requestsCount );
 
       // copy data from receive buffers
       // TNL_MPI_PRINT( "Copying data ..." )

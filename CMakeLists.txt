@@ -74,7 +74,7 @@ set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set( CMAKE_CXX_EXTENSIONS OFF )
 
 # set default build options
-set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -Wall" )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -Wall -Werror=vla" )
 set( CMAKE_CXX_FLAGS_DEBUG "-g" )
 set( CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG" )
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELEASE} ${CMAKE_CXX_FLAGS_DEBUG}" )
@@ -91,7 +91,7 @@ set( CMAKE_SHARED_LINKER_FLAGS_RELEASE "" )
 
 if( ${WITH_CI_FLAGS} )
    # enforce (more or less) warning-free builds
-   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wno-error=deprecated -Wno-error=deprecated-declarations -Wno-error=uninitialized -Wno-error=vla" )
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wno-error=deprecated -Wno-error=deprecated-declarations -Wno-error=uninitialized" )
 endif()
 
 # set additional Debug/Release options using generator expressions
@@ -238,8 +238,6 @@ if( ${WITH_CUDA} )
         set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -Wno-deprecated-gpu-targets -Xcudafe --diag_suppress=code_is_unreachable -Xcudafe --diag_suppress=loop_not_reachable -Xcudafe --diag_suppress=implicit_return_from_non_void_function -Xcudafe --diag_suppress=unsigned_compare_with_zero -Xcudafe --display_error_number)
         # This diagnostic is just plain wrong in CUDA 9 and later, see https://github.com/kokkos/kokkos/issues/1470
         set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -Xcudafe --diag_suppress=esa_on_defaulted_function_ignored)
-        # temporarily disable host-compler warnings about VLAs, which are caused by nvcc's modifications to the source code
-        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -Xcompiler -Wno-vla)
         # Select GPU architecture
         ## cmake bug: cuda_select_nvcc_arch_flags does not work with CMAKE_EXECUTABLE_SUFFIX
         ## see https://gitlab.kitware.com/cmake/cmake/issues/19636

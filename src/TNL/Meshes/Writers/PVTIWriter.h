@@ -38,7 +38,7 @@ public:
    writeMetadata( std::int32_t cycle = -1, double time = -1 );
 
    void
-   writeImageData( const DistributedMeshes::DistributedMesh< Grid >& distributedMesh );
+   writeImageData( const DistributedMeshes::DistributedMesh< Grid >& distributedGrid );
 
    void
    writeImageData( const Grid& globalGrid, unsigned GhostLevel = 0, unsigned MinCommonVertices = 0 );
