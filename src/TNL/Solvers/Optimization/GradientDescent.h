@@ -19,7 +19,7 @@ namespace TNL {
 template< typename Vector, typename SolverMonitor =  IterativeSolverMonitor< typename Vector::RealType, typename Vector::IndexType > >
 class GradientDescent : public IterativeSolver< typename Vector::RealType, typename Vector::IndexType, SolverMonitor >
 {
-
+public:
    using RealType = typename Vector::RealType;
    using DeviceType = typename Vector::DeviceType;
    using IndexType = typename Vector::IndexType;

@@ -23,7 +23,7 @@ GradientDescent< Vector, SolverMonitor >::
 configSetup( Config::ConfigDescription& config, const String& prefix )
 {
    IterativeSolver< RealType, IndexType, SolverMonitor >::configSetup( config, prefix );
-   config.addEntry< double >( prefix + "gd-relaxation", "Relaxation parameter for the gradient descent.", 1.0 )
+   config.addEntry< double >( prefix + "gd-relaxation", "Relaxation parameter for the gradient descent.", 1.0 );
 }
 
 template< typename Vector, typename SolverMonitor >
