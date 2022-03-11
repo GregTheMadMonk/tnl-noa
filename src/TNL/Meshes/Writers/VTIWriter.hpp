@@ -153,7 +153,8 @@ VTIWriter< Mesh >::writeDataArray( const Array& array, const std::string& name, 
 {
    // use a host buffer if direct access to the array elements is not possible
    if( std::is_same< typename Array::DeviceType, Devices::Cuda >::value ) {
-      using HostArray = TNL::Containers::Array< std::remove_const_t< typename Array::ValueType >, Devices::Host, typename Array::IndexType >;
+      using HostArray =
+         TNL::Containers::Array< std::remove_const_t< typename Array::ValueType >, Devices::Host, typename Array::IndexType >;
       HostArray hostBuffer;
       hostBuffer = array;
       writeDataArray( hostBuffer, name, numberOfComponents );

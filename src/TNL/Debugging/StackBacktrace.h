@@ -70,7 +70,8 @@ printStackBacktrace( std::ostream& out = std::cout, unsigned int max_frames = 64
 
          // mangled name is now in [begin_name, begin_offset) and caller
          // offset in [begin_offset, end_offset).
-         std::cout << "  " << i << " " << symbollist.get()[ i ] << " : " << TNL::detail::demangle( begin_name ) << "+" << begin_offset << "\n";
+         std::cout << "  " << i << " " << symbollist.get()[ i ] << " : " << TNL::detail::demangle( begin_name ) << "+"
+                   << begin_offset << "\n";
       }
       else {
          // couldn't parse the line? print the whole line.

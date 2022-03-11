@@ -57,8 +57,11 @@ DistributedExpressionArgMin( const Expression& expression )
       std::unique_ptr< ResultType[] > gatheredResults{ new ResultType[ nproc ] };
       // NOTE: exchanging general data types does not work with MPI
       // MPI::Alltoall( dataForScatter.get(), 1, gatheredResults.get(), 1, communicator );
-      MPI::Alltoall(
-         (char*) dataForScatter.get(), sizeof( ResultType ), (char*) gatheredResults.get(), sizeof( ResultType ), communicator );
+      MPI::Alltoall( (char*) dataForScatter.get(),
+                     sizeof( ResultType ),
+                     (char*) gatheredResults.get(),
+                     sizeof( ResultType ),
+                     communicator );
 
       auto fetch = [ &gatheredResults ]( IndexType i )
       {
@@ -113,8 +116,11 @@ DistributedExpressionArgMax( const Expression& expression )
       std::unique_ptr< ResultType[] > gatheredResults{ new ResultType[ nproc ] };
       // NOTE: exchanging general data types does not work with MPI
       // MPI::Alltoall( dataForScatter.get(), 1, gatheredResults.get(), 1, communicator );
-      MPI::Alltoall(
-         (char*) dataForScatter.get(), sizeof( ResultType ), (char*) gatheredResults.get(), sizeof( ResultType ), communicator );
+      MPI::Alltoall( (char*) dataForScatter.get(),
+                     sizeof( ResultType ),
+                     (char*) gatheredResults.get(),
+                     sizeof( ResultType ),
+                     communicator );
 
       auto fetch = [ &gatheredResults ]( IndexType i )
       {
