@@ -46,7 +46,6 @@ template< typename Vector,
 class Euler : public ExplicitSolver< typename Vector::RealType, typename Vector::IndexType, SolverMonitor >
 {
 public:
-
    /**
     * \brief Type of floating-point arithemtics.
     */
@@ -60,7 +59,7 @@ public:
    /**
     * \brief Type for indexing.
     */
-   using IndexType  = typename Vector::IndexType;
+   using IndexType = typename Vector::IndexType;
 
    /**
     * \brief Type of unknown variable \f$ \vec x \f$.
@@ -108,7 +107,8 @@ public:
    setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
 
    /**
-    * \brief This method sets the Courant number in the [CFL condition](https://en.wikipedia.org/wiki/Courant%E2%80%93Friedrichs%E2%80%93Lewy_condition).
+    * \brief This method sets the Courant number in the [CFL
+    * condition](https://en.wikipedia.org/wiki/Courant%E2%80%93Friedrichs%E2%80%93Lewy_condition).
     *
     * This method sets the constant \f$ C \f$ in the Courant–Friedrichs–Lewy condition. It means that
     *
@@ -118,14 +118,16 @@ public:
     *
     * \param c is the Courant number.
     */
-   void setCourantNumber( const RealType& cfl );
+   void
+   setCourantNumber( const RealType& cfl );
 
    /**
     * \brief Getter for the Courant number.
     *
     * \return the Courant number.
     */
-   const RealType& getCourantNumber() const;
+   const RealType&
+   getCourantNumber() const;
 
    /**
     * \brief Solve ODE given by a lambda function.
@@ -144,7 +146,8 @@ public:
     * \return `true` if steady state solution has been reached, `false` otherwise.
     */
    template< typename RHSFunction >
-   bool solve( VectorType& u, RHSFunction&& f );
+   bool
+   solve( VectorType& u, RHSFunction&& f );
 
 protected:
    DofVectorType _k1;
@@ -152,8 +155,8 @@ protected:
    RealType courantNumber = 0.0;
 };
 
-} // namespace ODE
-} // namespace Solvers
-} // namespace TNL
+}  // namespace ODE
+}  // namespace Solvers
+}  // namespace TNL
 
 #include <TNL/Solvers/ODE/Euler.hpp>

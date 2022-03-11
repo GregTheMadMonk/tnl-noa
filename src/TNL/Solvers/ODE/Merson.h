@@ -42,7 +42,6 @@ template< class Vector,
 class Merson : public ExplicitSolver< typename Vector::RealType, typename Vector::IndexType, SolverMonitor >
 {
 public:
-
    /**
     * \brief Type of floating-point arithemtics.
     */
@@ -56,7 +55,7 @@ public:
    /**
     * \brief Type for indexing.
     */
-   using IndexType  = typename Vector::IndexType;
+   using IndexType = typename Vector::IndexType;
 
    /**
     * \brief Type of unknown variable \f$ \vec x \f$.
@@ -111,7 +110,8 @@ public:
     * \param adaptivity new value of the parameter controlling the adaptive choice of
     *    integration time step.
     */
-   void setAdaptivity( const RealType& adaptivity );
+   void
+   setAdaptivity( const RealType& adaptivity );
 
    /**
     * \brief Getter of the parameter controlling the adaptive choice of the integration time step.
@@ -119,7 +119,8 @@ public:
     * \returns the current value of the parameter controlling the adaptive choice of
     *    integration time step.
     */
-   const RealType& getAdaptivity() const;
+   const RealType&
+   getAdaptivity() const;
 
    /**
     * \brief Solve ODE given by a lambda function.
@@ -138,9 +139,11 @@ public:
     * \return `true` if steady state solution has been reached, `false` otherwise.
     */
    template< typename RHSFunction >
-   bool solve( VectorType& u, RHSFunction&& rhs );
+   bool
+   solve( VectorType& u, RHSFunction&& rhs );
 
-   void writeGrids( const DofVectorType& u );
+   void
+   writeGrids( const DofVectorType& u );
 
 protected:
    DofVectorType _k1, _k2, _k3, _k4, _k5, _kAux;

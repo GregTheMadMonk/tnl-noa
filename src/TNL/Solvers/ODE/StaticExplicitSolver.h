@@ -28,12 +28,10 @@ namespace ODE {
  * \tparam Real is type of the floating-point arithmetics or static vector ( \ref TNL::Containers::StaticVector ).
  * \tparam Index is type for indexing.
  */
-template< typename Real = double,
-          typename Index = int >
+template< typename Real = double, typename Index = int >
 class StaticExplicitSolver : public StaticIterativeSolver< Real, Index >
 {
 public:
-
    /**
     * \brief Type of the floating-point arithmetics or static vector.
     */
@@ -66,25 +64,29 @@ public:
     * \brief Settter of the current time of the evolution computed by the solver.
     */
    __cuda_callable__
-   void setTime( const RealType& t );
+   void
+   setTime( const RealType& t );
 
    /**
     * \brief Getter of the current time of the evolution computed by the solver.
     */
    __cuda_callable__
-   const RealType& getTime() const;
+   const RealType&
+   getTime() const;
 
    /**
     * \brief Setter of the time where the evolution computation shall by stopped.
     */
    __cuda_callable__
-   void setStopTime( const RealType& stopTime );
+   void
+   setStopTime( const RealType& stopTime );
 
    /**
     * \brief Getter of the time where the evolution computation shall by stopped.
     */
    __cuda_callable__
-   const RealType& getStopTime() const;
+   const RealType&
+   getStopTime() const;
 
    /**
     * \brief Setter of the time step used for the computation.
@@ -92,13 +94,15 @@ public:
     * The time step can be changed by methods using adaptive choice of the time step.
     */
    __cuda_callable__
-   void setTau( const RealType& tau );
+   void
+   setTau( const RealType& tau );
 
    /**
     * \brief Getter of the time step used for the computation.
     */
    __cuda_callable__
-   const RealType& getTau() const;
+   const RealType&
+   getTau() const;
 
    /**
     * \brief Setter of maximal value of the time step.
@@ -106,13 +110,15 @@ public:
     * If methods uses adaptive choice of the time step, this sets the upper limit.
     */
    __cuda_callable__
-   void setMaxTau( const RealType& maxTau );
+   void
+   setMaxTau( const RealType& maxTau );
 
    /**
     * \brief Getter of maximal value of the time step.
     */
    __cuda_callable__
-   const RealType& getMaxTau() const;
+   const RealType&
+   getMaxTau() const;
 
    /**
     * \brief Checks if the solver is allowed to do the next iteration.
@@ -125,10 +131,10 @@ public:
    checkNextIteration();
 
    __cuda_callable__
-   void setTestingMode( bool testingMode );
+   void
+   setTestingMode( bool testingMode );
 
 protected:
-
    /****
     * Current time of the parabolic problem.
     */
@@ -151,8 +157,8 @@ protected:
    bool testingMode = false;
 };
 
-} // namespace ODE
-} // namespace Solvers
-} // namespace TNL
+}  // namespace ODE
+}  // namespace Solvers
+}  // namespace TNL
 
 #include <TNL/Solvers/ODE/StaticExplicitSolver.hpp>

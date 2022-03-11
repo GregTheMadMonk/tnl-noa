@@ -44,8 +44,8 @@ namespace ODE {
  *
  * \include StaticODESolver-SineExample.out
  *
- * Since this variant of the Euler solver is static, it can be used even inside of GPU kernels and so combined with \ref TNL::Algorithms::ParallelFor
- * as demonstrated by the following example:
+ * Since this variant of the Euler solver is static, it can be used even inside of GPU kernels and so combined with \ref
+ * TNL::Algorithms::ParallelFor as demonstrated by the following example:
  *
  * \includelineno Solvers/ODE/StaticODESolver-SineParallelExample.h
  *
@@ -55,7 +55,6 @@ template< typename Real >
 class StaticEuler : public StaticExplicitSolver< Real, int >
 {
 public:
-
    /**
     * \brief Type of floating-point arithemtics.
     */
@@ -64,7 +63,7 @@ public:
    /**
     * \brief Type for indexing.
     */
-   using IndexType  = int;
+   using IndexType = int;
 
    /**
     * \brief Type of unknown variable \f$ x \f$.
@@ -103,7 +102,8 @@ public:
    setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
 
    /**
-    * \brief This method sets the Courant number in the [CFL condition](https://en.wikipedia.org/wiki/Courant%E2%80%93Friedrichs%E2%80%93Lewy_condition).
+    * \brief This method sets the Courant number in the [CFL
+    * condition](https://en.wikipedia.org/wiki/Courant%E2%80%93Friedrichs%E2%80%93Lewy_condition).
     *
     * This method sets the constant \f$ C \f$ in the Courant–Friedrichs–Lewy condition. It means that
     *
@@ -114,7 +114,8 @@ public:
     * \param c is the Courant number.
     */
    __cuda_callable__
-   void setCourantNumber( const RealType& c );
+   void
+   setCourantNumber( const RealType& c );
 
    /**
     * \brief Getter for the Courant number.
@@ -122,7 +123,8 @@ public:
     * \return the Courant number.
     */
    __cuda_callable__
-   const RealType& getCourantNumber() const;
+   const RealType&
+   getCourantNumber() const;
 
    /**
     * \brief Solve ODE given by a lambda function.
@@ -142,7 +144,8 @@ public:
     */
    template< typename RHSFunction, typename... Args >
    __cuda_callable__
-   bool solve( VectorType& u, RHSFunction&& f, Args... args );
+   bool
+   solve( VectorType& u, RHSFunction&& f, Args... args );
 
 protected:
    DofVectorType k1;
@@ -171,21 +174,18 @@ protected:
  *
  * \includelineno Solvers/ODE/StaticODESolver-LorenzExample.h
  *
- * Since this variant of the Euler solver is static, it can be used even inside of GPU kernels and so combined with \ref TNL::Algorithms::ParallelFor
- * as demonstrated by the following example:
+ * Since this variant of the Euler solver is static, it can be used even inside of GPU kernels and so combined with \ref
+ * TNL::Algorithms::ParallelFor as demonstrated by the following example:
  *
  * \includelineno Solvers/ODE/StaticODESolver-LorenzParallelExample.h
  *
  * \tparam Size is size of the ODE system.
  * \tparam Real is floating point number type, it is type of \f$ x \f$ in this case.
  */
-template< int Size_,
-          typename Real >
-class StaticEuler< Containers::StaticVector< Size_, Real > >
-    : public StaticExplicitSolver< Real, int >
+template< int Size_, typename Real >
+class StaticEuler< Containers::StaticVector< Size_, Real > > : public StaticExplicitSolver< Real, int >
 {
 public:
-
    /**
     * \brief Size of the ODE system.
     */
@@ -199,7 +199,7 @@ public:
    /**
     * \brief Type for indexing.
     */
-   using IndexType  = int;
+   using IndexType = int;
 
    /**
     * \brief Type of unknown variable \f$ x \f$.
@@ -238,7 +238,8 @@ public:
    setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
 
    /**
-    * \brief This method sets the Courant number in the [CFL condition](https://en.wikipedia.org/wiki/Courant%E2%80%93Friedrichs%E2%80%93Lewy_condition).
+    * \brief This method sets the Courant number in the [CFL
+    * condition](https://en.wikipedia.org/wiki/Courant%E2%80%93Friedrichs%E2%80%93Lewy_condition).
     *
     * This method sets the constant \f$ C \f$ in the Courant–Friedrichs–Lewy condition. It means that
     *
@@ -249,7 +250,8 @@ public:
     * \param c is the Courant number.
     */
    __cuda_callable__
-   void setCourantNumber( const RealType& cfl );
+   void
+   setCourantNumber( const RealType& cfl );
 
    /**
     * \brief Getter for the Courant number.
@@ -257,7 +259,8 @@ public:
     * \return the Courant number.
     */
    __cuda_callable__
-   const RealType& getCourantNumber() const;
+   const RealType&
+   getCourantNumber() const;
 
    /**
     * \brief Solve ODE given by a lambda function.
@@ -277,7 +280,8 @@ public:
     */
    template< typename RHSFunction, typename... Args >
    __cuda_callable__
-   bool solve( VectorType& u, RHSFunction&& f, Args... args );
+   bool
+   solve( VectorType& u, RHSFunction&& f, Args... args );
 
 protected:
    DofVectorType k1;
@@ -285,8 +289,8 @@ protected:
    RealType courantNumber = 0.0;
 };
 
-} // namespace ODE
-} // namespace Solvers
-} // namespace TNL
+}  // namespace ODE
+}  // namespace Solvers
+}  // namespace TNL
 
 #include <TNL/Solvers/ODE/StaticEuler.hpp>

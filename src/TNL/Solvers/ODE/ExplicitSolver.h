@@ -27,13 +27,10 @@ namespace ODE {
  * \tparam Index is type for indexing.
  * \tparam IterativeSolverMonitor< Real, Index > is
  */
-template< typename Real = double,
-          typename Index = int,
-          typename SolverMonitor = IterativeSolverMonitor< Real, Index > >
+template< typename Real = double, typename Index = int, typename SolverMonitor = IterativeSolverMonitor< Real, Index > >
 class ExplicitSolver : public IterativeSolver< Real, Index, SolverMonitor >
 {
 public:
-
    /**
     * \brief Type of the floating-point arithmetics.
     */
@@ -95,7 +92,8 @@ public:
    /**
     * \brief Getter of the time where the evolution computation shall by stopped.
     */
-   const RealType& getStopTime() const;
+   const RealType&
+   getStopTime() const;
 
    /**
     * \brief Setter of the time step used for the computation.
@@ -144,7 +142,8 @@ public:
    bool
    checkNextIteration();
 
-   void setTestingMode( bool testingMode );
+   void
+   setTestingMode( bool testingMode );
 
 protected:
    /****

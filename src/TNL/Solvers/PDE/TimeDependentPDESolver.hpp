@@ -79,7 +79,7 @@ TimeDependentPDESolver< Problem, TimeStepper >::setup( const Config::ParameterCo
    TNL_ASSERT_GT( problem->getDofs(), 0, "number of DOFs must be positive" );
    this->dofs.setSize( problem->getDofs() );
    this->dofs = 0.0;
-   //this->problem->bindDofs( this->dofs );
+   // this->problem->bindDofs( this->dofs );
 
    /***
     * Set-up the initial condition
@@ -248,8 +248,7 @@ TimeDependentPDESolver< Problem, TimeStepper >::solve()
    this->computeTimer->reset();
 
    this->ioTimer->start();
-   if( ! this->problem->makeSnapshot( t, step, this->dofs ) )
-   {
+   if( ! this->problem->makeSnapshot( t, step, this->dofs ) ) {
       std::cerr << "Making the snapshot failed." << std::endl;
       return false;
    }
@@ -259,19 +258,17 @@ TimeDependentPDESolver< Problem, TimeStepper >::solve()
    /****
     * Initialize the time stepper
     */
-   //this->timeStepper.setProblem( * ( this->problem ) );
+   // this->timeStepper.setProblem( * ( this->problem ) );
    if( MPI::GetSize() > 1 ) {
-      this->timeStepper.init(); // distributedMeshPointer->getLocalMesh() );
+      this->timeStepper.init();  // distributedMeshPointer->getLocalMesh() );
       this->timeStepper.setTimeStep( this->getRefinedTimeStep( distributedMeshPointer->getLocalMesh(), this->timeStep ) );
    }
    else {
-      this->timeStepper.init();// *meshPointer );
+      this->timeStepper.init();  // *meshPointer );
       this->timeStepper.setTimeStep( this->getRefinedTimeStep( *meshPointer, this->timeStep ) );
    }
-   while( step < allSteps )
-   {
-      RealType tau = min( this->snapshotPeriod,
-                          this->finalTime - t );
+   while( step < allSteps ) {
+      RealType tau = min( this->snapshotPeriod, this->finalTime - t );
       if( ! this->timeStepper.solve( t, t + tau, this->dofs ) )
          return false;
       step++;
@@ -279,8 +276,7 @@ TimeDependentPDESolver< Problem, TimeStepper >::solve()
 
       this->ioTimer->start();
       this->computeTimer->stop();
-      if( ! this->problem->makeSnapshot( t, step, this->dofs ) )
-      {
+      if( ! this->problem->makeSnapshot( t, step, this->dofs ) ) {
          std::cerr << "Making the snapshot failed." << std::endl;
          return false;
       }

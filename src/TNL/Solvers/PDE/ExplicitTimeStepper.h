@@ -17,21 +17,20 @@ namespace TNL {
 namespace Solvers {
 namespace PDE {
 
-template< typename DofVector,
-          template < typename DofVector_, typename SolverMonitor > class OdeSolver >
+template< typename DofVector, template< typename DofVector_, typename SolverMonitor > class OdeSolver >
 class ExplicitTimeStepper
 {
 public:
-      using RealType = typename DofVector::RealType;
-      using DeviceType = typename DofVector::DeviceType;
-      using IndexType = typename DofVector::IndexType;
-      using DofVectorType = DofVector;
-      //using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
-      using SolverMonitorType = IterativeSolverMonitor< RealType, IndexType >;
-      using OdeSolverType = OdeSolver< DofVectorType, SolverMonitorType >;
-      //using OdeSolverPointer = Pointers::SharedPointer< OdeSolverType, DeviceType >;
+   using RealType = typename DofVector::RealType;
+   using DeviceType = typename DofVector::DeviceType;
+   using IndexType = typename DofVector::IndexType;
+   using DofVectorType = DofVector;
+   // using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
+   using SolverMonitorType = IterativeSolverMonitor< RealType, IndexType >;
+   using OdeSolverType = OdeSolver< DofVectorType, SolverMonitorType >;
+   // using OdeSolverPointer = Pointers::SharedPointer< OdeSolverType, DeviceType >;
 
-      ExplicitTimeStepper() = default;
+   ExplicitTimeStepper() = default;
 
    bool
    setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
@@ -39,7 +38,8 @@ public:
    bool
    init( const MeshType& mesh );
 
-      bool init();
+   bool
+   init();
 
    void
    setSolverMonitor( SolverMonitorType& solverMonitor );
@@ -47,44 +47,41 @@ public:
    void
    setProblem( ProblemType& problem );
 
-      //void setProblem( ProblemType& problem );
+   // void setProblem( ProblemType& problem );
 
-      //ProblemType* getProblem() const;
+   // ProblemType* getProblem() const;
 
    bool
    solve( const RealType& time, const RealType& stopTime, DofVectorPointer& dofVector );
 
-      bool solve( const RealType& time,
-                   const RealType& stopTime,
-                   DofVectorType& dofVector );
+   bool
+   solve( const RealType& time, const RealType& stopTime, DofVectorType& dofVector );
 
    void
    getExplicitUpdate( const RealType& time, const RealType& tau, DofVectorPointer& _u, DofVectorPointer& _fu );
 
-      void getExplicitUpdate( const RealType& time,
-                           const RealType& tau,
-                           DofVectorType& _u,
-                           DofVectorType& _fu );
+   void
+   getExplicitUpdate( const RealType& time, const RealType& tau, DofVectorType& _u, DofVectorType& _fu );
 
-      void applyBoundaryConditions( const RealType& time,
-                                 DofVectorType& _u );
+   void
+   applyBoundaryConditions( const RealType& time, DofVectorType& _u );
 
 protected:
    OdeSolverPointer odeSolver;
 
    SolverMonitorType* solverMonitor;
 
-      OdeSolverType odeSolver;
+   OdeSolverType odeSolver;
 
    RealType timeStep;
 
-      //Problem* problem;
+   // Problem* problem;
 
-      RealType timeStep = 0.0;
+   RealType timeStep = 0.0;
 
-      Timer preIterateTimer, explicitUpdaterTimer, mainTimer, postIterateTimer;
+   Timer preIterateTimer, explicitUpdaterTimer, mainTimer, postIterateTimer;
 
-      long long int allIterations = 0;
+   long long int allIterations = 0;
 };
 
 }  // namespace PDE

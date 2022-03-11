@@ -15,16 +15,14 @@ namespace ODE {
 
 template< typename Vector, typename SolverMonitor >
 void
-Euler< Vector, SolverMonitor >::
-configSetup( Config::ConfigDescription& config, const String& prefix )
+Euler< Vector, SolverMonitor >::configSetup( Config::ConfigDescription& config, const String& prefix )
 {
    config.addEntry< double >( prefix + "euler-cfl", "Coefficient C in the Courant–Friedrichs–Lewy condition.", 0.0 );
 };
 
 template< typename Vector, typename SolverMonitor >
 bool
-Euler< Vector, SolverMonitor >::
-setup( const Config::ParameterContainer& parameters, const String& prefix )
+Euler< Vector, SolverMonitor >::setup( const Config::ParameterContainer& parameters, const String& prefix )
 {
    ExplicitSolver< RealType, IndexType, SolverMonitor >::setup( parameters, prefix );
    if( parameters.checkParameter( prefix + "euler-cfl" ) )
@@ -34,25 +32,22 @@ setup( const Config::ParameterContainer& parameters, const String& prefix )
 
 template< typename Vector, typename SolverMonitor >
 void
-Euler< Vector, SolverMonitor >::
-setCourantNumber( const RealType& c )
+Euler< Vector, SolverMonitor >::setCourantNumber( const RealType& c )
 {
    this->courantNumber = c;
 }
 
 template< typename Vector, typename SolverMonitor >
 auto
-Euler< Vector, SolverMonitor >::
-getCourantNumber() const -> const RealType&
+Euler< Vector, SolverMonitor >::getCourantNumber() const -> const RealType&
 {
    return this->courantNumber;
 }
 
 template< typename Vector, typename SolverMonitor >
-   template< typename RHSFunction >
+template< typename RHSFunction >
 bool
-Euler< Vector, SolverMonitor >::
-solve( VectorType& _u, RHSFunction&& rhsFunction )
+Euler< Vector, SolverMonitor >::solve( VectorType& _u, RHSFunction&& rhsFunction )
 {
    /////
    // First setup the supporting vector k1.
@@ -74,8 +69,7 @@ solve( VectorType& _u, RHSFunction&& rhsFunction )
 
    /////
    // Start the main loop
-   while( 1 )
-   {
+   while( 1 ) {
       /////
       // Compute the RHS
       rhsFunction( time, currentTau, u, k1 );
@@ -89,27 +83,30 @@ solve( VectorType& _u, RHSFunction&& rhsFunction )
             continue;
          }
       }
-      this->setResidue( addAndReduceAbs( u, currentTau * k1, TNL::Plus(), ( RealType ) 0.0 ) / ( currentTau * ( RealType ) u.getSize() ) );
+      this->setResidue( addAndReduceAbs( u, currentTau * k1, TNL::Plus(), (RealType) 0.0 )
+                        / ( currentTau * (RealType) u.getSize() ) );
 
       /////
       // When time is close to stopTime the new residue may be inaccurate significantly.
-      if( currentTau + time == this->stopTime ) this->setResidue( lastResidue );
+      if( currentTau + time == this->stopTime )
+         this->setResidue( lastResidue );
       time += currentTau;
-      //this->problem->applyBoundaryConditions( time, _u );
+      // this->problem->applyBoundaryConditions( time, _u );
 
       if( ! this->nextIteration() )
          return this->checkConvergence();
 
       /////
       // Compute the new time step.
-      if( time + currentTau > this -> getStopTime() )
-         currentTau = this -> getStopTime() - time; //we don't want to keep such tau
-      else this -> tau = currentTau;
+      if( time + currentTau > this->getStopTime() )
+         currentTau = this->getStopTime() - time;  // we don't want to keep such tau
+      else
+         this->tau = currentTau;
 
       /////
       // Check stop conditions.
-      if( time >= this->getStopTime() ||
-          ( this -> getConvergenceResidue() != 0.0 && this->getResidue() < this -> getConvergenceResidue() ) )
+      if( time >= this->getStopTime()
+          || ( this->getConvergenceResidue() != 0.0 && this->getResidue() < this->getConvergenceResidue() ) )
          return true;
 
       if( this->courantNumber != 0.0 ) {
@@ -117,7 +114,7 @@ solve( VectorType& _u, RHSFunction&& rhsFunction )
          currentTau = min( currentTau, this->getMaxTau() );
       }
    }
-   return false; // just to avoid warnings
+   return false;  // just to avoid warnings
 };
 
 }  // namespace ODE

@@ -19,17 +19,18 @@ namespace ODE {
 
 template< typename Vector, typename SolverMonitor >
 void
-Merson< Vector, SolverMonitor >::
-configSetup( Config::ConfigDescription& config, const String& prefix )
+Merson< Vector, SolverMonitor >::configSetup( Config::ConfigDescription& config, const String& prefix )
 {
    ExplicitSolver< RealType, IndexType >::configSetup( config, prefix );
-   config.addEntry< double >( prefix + "merson-adaptivity", "Time step adaptivity controlling coefficient (the smaller the more precise the computation is, zero means no adaptivity).", 1.0e-4 );
+   config.addEntry< double >( prefix + "merson-adaptivity",
+                              "Time step adaptivity controlling coefficient (the smaller the more precise the computation is, "
+                              "zero means no adaptivity).",
+                              1.0e-4 );
 };
 
 template< typename Vector, typename SolverMonitor >
 bool
-Merson< Vector, SolverMonitor >::
-setup( const Config::ParameterContainer& parameters, const String& prefix )
+Merson< Vector, SolverMonitor >::setup( const Config::ParameterContainer& parameters, const String& prefix )
 {
    ExplicitSolver< Vector, SolverMonitor >::setup( parameters, prefix );
    if( parameters.checkParameter( prefix + "merson-adaptivity" ) )
@@ -39,28 +40,24 @@ setup( const Config::ParameterContainer& parameters, const String& prefix )
 
 template< typename Vector, typename SolverMonitor >
 void
-Merson< Vector, SolverMonitor >::
-setAdaptivity( const RealType& a )
+Merson< Vector, SolverMonitor >::setAdaptivity( const RealType& a )
 {
    this->adaptivity = a;
 };
 
 template< typename Vector, typename SolverMonitor >
 auto
-Merson< Vector, SolverMonitor >::
-getAdaptivity() const -> const RealType&
+Merson< Vector, SolverMonitor >::getAdaptivity() const -> const RealType&
 {
    return this->adaptivity;
 };
 
 template< typename Vector, typename SolverMonitor >
-   template< typename RHSFunction >
+template< typename RHSFunction >
 bool
-Merson< Vector, SolverMonitor >::
-solve( VectorType& _u, RHSFunction&& rhsFunction )
+Merson< Vector, SolverMonitor >::solve( VectorType& _u, RHSFunction&& rhsFunction )
 {
-   if( this->getTau() == 0.0 )
-   {
+   if( this->getTau() == 0.0 ) {
       std::cerr << "The time step for the Merson ODE solver is zero." << std::endl;
       return false;
    }
@@ -112,25 +109,25 @@ solve( VectorType& _u, RHSFunction&& rhsFunction )
       /////
       // k2
       kAux = u + currentTau * ( 1.0 / 3.0 * k1 );
-      //this->problem->applyBoundaryConditions( time + tau_3, _kAux );
+      // this->problem->applyBoundaryConditions( time + tau_3, _kAux );
       rhsFunction( time + tau_3, currentTau, kAux, k2 );
 
       /////
       // k3
       kAux = u + currentTau * 1.0 / 6.0 * ( k1 + k2 );
-      //this->problem->applyBoundaryConditions( time + tau_3, _kAux );
+      // this->problem->applyBoundaryConditions( time + tau_3, _kAux );
       rhsFunction( time + tau_3, currentTau, kAux, k3 );
 
       /////
       // k4
       kAux = u + currentTau * ( 0.125 * k1 + 0.375 * k3 );
-      //this->problem->applyBoundaryConditions( time + 0.5 * currentTau, _kAux );
+      // this->problem->applyBoundaryConditions( time + 0.5 * currentTau, _kAux );
       rhsFunction( time + 0.5 * currentTau, currentTau, kAux, k4 );
 
       /////
       // k5
       kAux = u + currentTau * ( 0.5 * k1 - 1.5 * k3 + 2.0 * k4 );
-      //this->problem->applyBoundaryConditions( time + currentTau, _kAux );
+      // this->problem->applyBoundaryConditions( time + currentTau, _kAux );
       rhsFunction( time + currentTau, currentTau, kAux, k5 );
 
       if( this->testingMode )
@@ -140,7 +137,7 @@ solve( VectorType& _u, RHSFunction&& rhsFunction )
       // Compute an error of the approximation.
       RealType error( 0.0 );
       if( adaptivity != 0.0 )
-         error = max( currentTau / 3.0 * abs( 0.2 * k1 -0.9 * k3 + 0.8 * k4 -0.1 * k5 ) );
+         error = max( currentTau / 3.0 * abs( 0.2 * k1 - 0.9 * k3 + 0.8 * k4 - 0.1 * k5 ) );
       /*{
          const RealType localError =
             max( currentTau / 3.0 * abs( 0.2 * k1 -0.9 * k3 + 0.8 * k4 -0.1 * k5 ) );
@@ -186,8 +183,7 @@ solve( VectorType& _u, RHSFunction&& rhsFunction )
 
 template< typename Vector, typename SolverMonitor >
 void
-Merson< Vector, SolverMonitor >::
-writeGrids( const DofVectorType& u )
+Merson< Vector, SolverMonitor >::writeGrids( const DofVectorType& u )
 {
    std::cout << "Writing Merson solver grids ...";
    File( "Merson-u.tnl", std::ios_base::out ) << u;

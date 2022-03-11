@@ -17,9 +17,10 @@ namespace ODE {
 /**
  * \brief Solver of ODEs with the first order of accuracy.
  *
- * This solver is based on the [Runge-Kutta-Merson method](http://geraldine.fjfi.cvut.cz/~oberhuber/data/vyzkum/publikace/11-oberhuber-suzuki-zabka-mean-crv-flow-in-cuda.pdf)
- * with adaptive choice of the integration time step for solving of [ordinary differential equations](https://en.wikipedia.org/wiki/Ordinary_differential_equation)
- * having the following form:
+ * This solver is based on the [Runge-Kutta-Merson
+ * method](http://geraldine.fjfi.cvut.cz/~oberhuber/data/vyzkum/publikace/11-oberhuber-suzuki-zabka-mean-crv-flow-in-cuda.pdf)
+ * with adaptive choice of the integration time step for solving of [ordinary differential
+ * equations](https://en.wikipedia.org/wiki/Ordinary_differential_equation) having the following form:
  *
  *  \f$ \frac{d u}{dt} = f( t, u) \text{ on } (0,T) \f$
  *
@@ -41,8 +42,8 @@ namespace ODE {
  *
  * \include StaticODESolver-SineExample.out
  *
- * Since this variant of the Euler solver is static, it can be used even inside of GPU kernels and so combined with \ref TNL::Algorithms::ParallelFor
- * as demonstrated by the following example:
+ * Since this variant of the Euler solver is static, it can be used even inside of GPU kernels and so combined with \ref
+ * TNL::Algorithms::ParallelFor as demonstrated by the following example:
  *
  * \includelineno Solvers/ODE/StaticODESolver-SineParallelExample.h
  *
@@ -52,7 +53,6 @@ template< class Real >
 class StaticMerson : public StaticExplicitSolver< Real, int >
 {
 public:
-
    /**
     * \brief Type of floating-point arithemtics.
     */
@@ -61,7 +61,7 @@ public:
    /**
     * \brief Type for indexing.
     */
-   using IndexType  = int;
+   using IndexType = int;
 
    /**
     * \brief Type of unknown variable \f$ x \f$.
@@ -108,7 +108,8 @@ public:
     *    integration time step.
     */
    __cuda_callable__
-   void setAdaptivity( const RealType& adaptivity );
+   void
+   setAdaptivity( const RealType& adaptivity );
 
    /**
     * \brief Getter of the parameter controlling the adaptive choice of the integration time step.
@@ -117,7 +118,8 @@ public:
     *    integration time step.
     */
    __cuda_callable__
-   const RealType& getAdaptivity() const;
+   const RealType&
+   getAdaptivity() const;
 
    /**
     * \brief Solve ODE given by a lambda function.
@@ -137,10 +139,10 @@ public:
     */
    template< typename RHSFunction, typename... Args >
    __cuda_callable__
-   bool solve( VectorType& u, RHSFunction&& f, Args... args );
+   bool
+   solve( VectorType& u, RHSFunction&& f, Args... args );
 
 protected:
-
    DofVectorType k1, k2, k3, k4, k5, kAux;
 
    /****
@@ -152,9 +154,10 @@ protected:
 /**
  * \brief Solver of ODEs with the first order of accuracy.
  *
- * This solver is based on the [Runge-Kutta-Merson method](http://geraldine.fjfi.cvut.cz/~oberhuber/data/vyzkum/publikace/11-oberhuber-suzuki-zabka-mean-crv-flow-in-cuda.pdf)
- * with adaptive choice of the integration time step for solving of [ordinary differential equations](https://en.wikipedia.org/wiki/Ordinary_differential_equation)
- * having the following form:
+ * This solver is based on the [Runge-Kutta-Merson
+ * method](http://geraldine.fjfi.cvut.cz/~oberhuber/data/vyzkum/publikace/11-oberhuber-suzuki-zabka-mean-crv-flow-in-cuda.pdf)
+ * with adaptive choice of the integration time step for solving of [ordinary differential
+ * equations](https://en.wikipedia.org/wiki/Ordinary_differential_equation) having the following form:
  *
  *  \f$ \frac{d u}{dt} = f( t, u) \text{ on } (0,T) \f$
  *
@@ -169,8 +172,8 @@ protected:
  *
  * \includelineno Solvers/ODE/StaticODESolver-LorenzExample.h
  *
- * Since this variant of the Euler solver is static, it can be used even inside of GPU kernels and so combined with \ref TNL::Algorithms::ParallelFor
- * as demonstrated by the following example:
+ * Since this variant of the Euler solver is static, it can be used even inside of GPU kernels and so combined with \ref
+ * TNL::Algorithms::ParallelFor as demonstrated by the following example:
  *
  * \includelineno Solvers/ODE/StaticODESolver-LorenzParallelExample.h
  *
@@ -178,11 +181,9 @@ protected:
  * \tparam Real is floating point number type, it is type of \f$ x \f$ in this case.
  */
 template< int Size_, class Real >
-class StaticMerson< Containers::StaticVector< Size_, Real > >
-   : public StaticExplicitSolver< Real, int >
+class StaticMerson< Containers::StaticVector< Size_, Real > > : public StaticExplicitSolver< Real, int >
 {
 public:
-
    /**
     * \brief Size of the ODE system.
     */
@@ -196,7 +197,7 @@ public:
    /**
     * \brief Type for indexing.
     */
-   using IndexType  = int;
+   using IndexType = int;
 
    /**
     * \brief Type of unknown variable \f$ x \f$.
@@ -231,7 +232,8 @@ public:
     * \return true if the parameters where parsed successfully.
     * \return false if the method did not succeed to read the configuration parameters.
     */
-   bool setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
+   bool
+   setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
 
    /**
     * \brief Setter of the parameter controlling the adaptive choice of the integration time step.
@@ -242,7 +244,8 @@ public:
     *    integration time step.
     */
    __cuda_callable__
-   void setAdaptivity( const RealType& adaptivity );
+   void
+   setAdaptivity( const RealType& adaptivity );
 
    /**
     * \brief Getter of the parameter controlling the adaptive choice of the integration time step.
@@ -251,7 +254,8 @@ public:
     *    integration time step.
     */
    __cuda_callable__
-   const RealType& getAdaptivity() const;
+   const RealType&
+   getAdaptivity() const;
 
    /**
     * \brief Solve ODE given by a lambda function.
@@ -271,10 +275,10 @@ public:
     */
    template< typename RHSFunction, typename... Args >
    __cuda_callable__
-   bool solve( VectorType& u, RHSFunction&& f, Args... args );
+   bool
+   solve( VectorType& u, RHSFunction&& f, Args... args );
 
 protected:
-
    DofVectorType k1, k2, k3, k4, k5, kAux;
 
    /****
@@ -283,9 +287,8 @@ protected:
    RealType adaptivity = 0.00001;
 };
 
-
-} // namespace ODE
-} // namespace Solvers
-} // namespace TNL
+}  // namespace ODE
+}  // namespace Solvers
+}  // namespace TNL
 
 #include <TNL/Solvers/ODE/StaticMerson.hpp>
