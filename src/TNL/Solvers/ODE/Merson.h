@@ -21,7 +21,7 @@ namespace ODE {
  * [ordinary differential equations](https://en.wikipedia.org/wiki/Ordinary_differential_equation) having the
  * following form:
  *
- *  \f$ \frac{d \vec u}{dt} = \vec f( t, \vec u) \text{ on } (0,T) \f$
+ * \f$ \frac{d \vec u}{dt} = \vec f( t, \vec u) \text{ on } (0,T) \f$
  *
  * \f$ \vec u( 0 )  = \vec u_{ini} \f$.
  * It is supposed to be used when the unknown \f$ \vec x \in R^n \f$ is expressed by a \ref Containers::Vector.

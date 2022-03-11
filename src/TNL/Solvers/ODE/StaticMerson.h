@@ -17,12 +17,12 @@ namespace ODE {
 /**
  * \brief Solver of ODEs with the first order of accuracy.
  *
- * This solver is based on the [Runge-Kutta-Merson
- * method](http://geraldine.fjfi.cvut.cz/~oberhuber/data/vyzkum/publikace/11-oberhuber-suzuki-zabka-mean-crv-flow-in-cuda.pdf)
- * with adaptive choice of the integration time step for solving of [ordinary differential
- * equations](https://en.wikipedia.org/wiki/Ordinary_differential_equation) having the following form:
+ * This solver is based on the [Runge-Kutta-Merson method](
+ * http://geraldine.fjfi.cvut.cz/~oberhuber/data/vyzkum/publikace/11-oberhuber-suzuki-zabka-mean-crv-flow-in-cuda.pdf)
+ * with adaptive choice of the integration time step for solving of [ordinary differential equations](
+ * https://en.wikipedia.org/wiki/Ordinary_differential_equation) having the following form:
  *
- *  \f$ \frac{d u}{dt} = f( t, u) \text{ on } (0,T) \f$
+ * \f$ \frac{d u}{dt} = f( t, u) \text{ on } (0,T) \f$
  *
  * \f$ u( 0 )  = u_{ini} \f$.
  *
@@ -154,12 +154,12 @@ protected:
 /**
  * \brief Solver of ODEs with the first order of accuracy.
  *
- * This solver is based on the [Runge-Kutta-Merson
- * method](http://geraldine.fjfi.cvut.cz/~oberhuber/data/vyzkum/publikace/11-oberhuber-suzuki-zabka-mean-crv-flow-in-cuda.pdf)
- * with adaptive choice of the integration time step for solving of [ordinary differential
- * equations](https://en.wikipedia.org/wiki/Ordinary_differential_equation) having the following form:
+ * This solver is based on the [Runge-Kutta-Merson method](
+ * http://geraldine.fjfi.cvut.cz/~oberhuber/data/vyzkum/publikace/11-oberhuber-suzuki-zabka-mean-crv-flow-in-cuda.pdf)
+ * with adaptive choice of the integration time step for solving of [ordinary differential equations](
+ * https://en.wikipedia.org/wiki/Ordinary_differential_equation) having the following form:
  *
- *  \f$ \frac{d u}{dt} = f( t, u) \text{ on } (0,T) \f$
+ * \f$ \frac{d u}{dt} = f( t, u) \text{ on } (0,T) \f$
  *
  * \f$ u( 0 )  = u_{ini} \f$.
  * It is supposed to be used when the unknown \f$ \vec x \in R^n \f$ is expressed by a \ref Containers::StaticVector.

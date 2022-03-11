@@ -24,7 +24,7 @@ namespace ODE {
  * [ordinary differential equations](https://en.wikipedia.org/wiki/Ordinary_differential_equation) having the
  * following form:
  *
- *  \f$ \frac{d u}{dt} = f( t, u) \text{ on } (0,T) \f$
+ * \f$ \frac{d u}{dt} = f( t, u) \text{ on } (0,T) \f$
  *
  * \f$ u( 0 )  = u_{ini} \f$.
  *
@@ -102,12 +102,12 @@ public:
    setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
 
    /**
-    * \brief This method sets the Courant number in the [CFL
-    * condition](https://en.wikipedia.org/wiki/Courant%E2%80%93Friedrichs%E2%80%93Lewy_condition).
+    * \brief This method sets the Courant number in the
+    * [CFL condition](https://en.wikipedia.org/wiki/Courant%E2%80%93Friedrichs%E2%80%93Lewy_condition).
     *
     * This method sets the constant \f$ C \f$ in the Courant–Friedrichs–Lewy condition. It means that
     *
-    * \f[ \Delta t = \frac{C}{\| f( t,x )\|}, \f]
+    * \f[ \Delta t = \frac{C}{\| f( t,x )\|}, \f].
     *
     * if \f$ C > 0\f$. If \f$ C = 0 \f$ the time step stays fixed.
     *
@@ -238,12 +238,12 @@ public:
    setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
 
    /**
-    * \brief This method sets the Courant number in the [CFL
-    * condition](https://en.wikipedia.org/wiki/Courant%E2%80%93Friedrichs%E2%80%93Lewy_condition).
+    * \brief This method sets the Courant number in the
+    * [CFL condition](https://en.wikipedia.org/wiki/Courant%E2%80%93Friedrichs%E2%80%93Lewy_condition).
     *
     * This method sets the constant \f$ C \f$ in the Courant–Friedrichs–Lewy condition. It means that
     *
-    * \f[ \Delta t = \frac{C}{\| f( t,x )\|} \f],
+    * \f[ \Delta t = \frac{C}{\| f( t,x )\|}, \f],
     *
     * if \f$ C > 0\f$. If \f$ C = 0 \f$ the time step stays fixed.
     *

@@ -24,7 +24,7 @@ namespace ODE {
  * [ordinary differential equations](https://en.wikipedia.org/wiki/Ordinary_differential_equation) having the
  * following form:
  *
- *  \f$ \frac{d \vec u}{dt} = \vec f( t, \vec u) \text{ on } (0,T) \f$
+ * \f$ \frac{d \vec u}{dt} = \vec f( t, \vec u) \text{ on } (0,T) \f$
  *
  * \f$ \vec u( 0 )  = \vec u_{ini} \f$.
  *
@@ -69,7 +69,7 @@ public:
    /**
     * \brief Alias for type of unknown variable \f$ \vec x \f$.
     *
-    * Note, \e VectorType can be \ref TNL::Containers::VectorView but
+    * Note that \e VectorType can be \ref TNL::Containers::VectorView but
     * \e DofVectorType is always \ref TNL::Containers::Vector.
     */
    using DofVectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
@@ -107,8 +107,8 @@ public:
    setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
 
    /**
-    * \brief This method sets the Courant number in the [CFL
-    * condition](https://en.wikipedia.org/wiki/Courant%E2%80%93Friedrichs%E2%80%93Lewy_condition).
+    * \brief This method sets the Courant number in the
+    * [CFL condition](https://en.wikipedia.org/wiki/Courant%E2%80%93Friedrichs%E2%80%93Lewy_condition).
     *
     * This method sets the constant \f$ C \f$ in the Courant–Friedrichs–Lewy condition. It means that
     *
