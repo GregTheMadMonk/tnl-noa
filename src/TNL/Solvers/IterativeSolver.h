@@ -204,7 +204,7 @@ public:
    nextIteration();
 
    /**
-    * \brief Checks if the solver is allowed to the next iteration.
+    * \brief Checks if the solver is allowed to do the next iteration.
     *
     * \return true \e true if the solver is allowed to do the next iteration.
     * \return \e false if the solver is \b not allowed to do the next iteration. This may

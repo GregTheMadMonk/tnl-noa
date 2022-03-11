@@ -84,6 +84,7 @@ void iterativeLinearSolverExample()
    monitor.setTimer( timer );
    timer.start();
    solver.setSolverMonitor(monitor);
+   solver.setConvergenceResidue( 1.0e-6 );
    solver.solve( b, x );
    monitor.stopMainLoop();
    std::cout << "Vector x = " << x << std::endl;

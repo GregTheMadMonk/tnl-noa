@@ -66,6 +66,7 @@ void iterativeLinearSolverExample()
    using LinearSolver = TNL::Solvers::Linear::TFQMR< MatrixType >;
    LinearSolver solver;
    solver.setMatrix( matrix_ptr );
+   solver.setConvergenceResidue( 1.0e-6 );
    solver.solve( b, x );
    std::cout << "Vector x = " << x << std::endl;
 }

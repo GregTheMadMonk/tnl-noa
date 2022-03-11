@@ -80,6 +80,7 @@ void iterativeLinearSolverExample()
    monitor.setVerbose(1);
    monitor.setStage( "Jacobi stage:" );
    solver.setSolverMonitor(monitor);
+   solver.setConvergenceResidue( 1.0e-6 );
    solver.solve( b, x );
    monitor.stopMainLoop();
    std::cout << "Vector x = " << x << std::endl;

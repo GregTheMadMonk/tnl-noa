@@ -6,6 +6,7 @@ ADD_SUBDIRECTORY( Functions )
 ADD_SUBDIRECTORY( Meshes )
 ADD_SUBDIRECTORY( MPI )
 ADD_SUBDIRECTORY( Pointers )
+ADD_SUBDIRECTORY( Solvers )
 
 set( CPP_TESTS  AssertTest
                 base64Test

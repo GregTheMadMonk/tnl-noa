@@ -6,69 +6,58 @@
 
 #pragma once
 
+#include <TNL/Containers/StaticVector.h>
 #include <TNL/Solvers/ODE/Euler.h>
 
 namespace TNL {
 namespace Solvers {
 namespace ODE {
 
-#ifdef HAVE_CUDA
-template< typename RealType, typename Index >
-__global__
+template< typename Vector, typename SolverMonitor >
 void
-updateUEuler( const Index size, const RealType tau, const RealType* k1, RealType* u, RealType* cudaBlockResidue );
-#endif
-
-template< typename Problem, typename SolverMonitor >
-Euler< Problem, SolverMonitor >::Euler() : cflCondition( 0.0 ){};
-
-template< typename Problem, typename SolverMonitor >
-void
-Euler< Problem, SolverMonitor >::configSetup( Config::ConfigDescription& config, const String& prefix )
+Euler< Vector, SolverMonitor >::configSetup( Config::ConfigDescription& config, const String& prefix )
 {
-   // ExplicitSolver< Problem >::configSetup( config, prefix );
    config.addEntry< double >( prefix + "euler-cfl", "Coefficient C in the Courant–Friedrichs–Lewy condition.", 0.0 );
 };
 
-template< typename Problem, typename SolverMonitor >
+template< typename Vector, typename SolverMonitor >
 bool
-Euler< Problem, SolverMonitor >::setup( const Config::ParameterContainer& parameters, const String& prefix )
+Euler< Vector, SolverMonitor >::setup( const Config::ParameterContainer& parameters, const String& prefix )
 {
-   ExplicitSolver< Problem, SolverMonitor >::setup( parameters, prefix );
+   ExplicitSolver< RealType, IndexType, SolverMonitor >::setup( parameters, prefix );
    if( parameters.checkParameter( prefix + "euler-cfl" ) )
-      this->setCFLCondition( parameters.getParameter< double >( prefix + "euler-cfl" ) );
+      this->setCourantNumber( parameters.getParameter< double >( prefix + "euler-cfl" ) );
    return true;
 }
 
-template< typename Problem, typename SolverMonitor >
+template< typename Vector, typename SolverMonitor >
 void
-Euler< Problem, SolverMonitor >::setCFLCondition( const RealType& cfl )
+Euler< Vector, SolverMonitor >::setCourantNumber( const RealType& c )
 {
-   this->cflCondition = cfl;
+   this->courantNumber = c;
 }
 
-template< typename Problem, typename SolverMonitor >
-const typename Problem ::RealType&
-Euler< Problem, SolverMonitor >::getCFLCondition() const
+template< typename Vector, typename SolverMonitor >
+auto
+Euler< Vector, SolverMonitor >::getCourantNumber() const -> const RealType&
 {
-   return this->cflCondition;
+   return this->courantNumber;
 }
 
-template< typename Problem, typename SolverMonitor >
+template< typename Vector, typename SolverMonitor >
+template< typename RHSFunction >
 bool
-Euler< Problem, SolverMonitor >::solve( DofVectorPointer& _u )
+Euler< Vector, SolverMonitor >::solve( VectorType& _u, RHSFunction&& rhsFunction )
 {
-   /****
-    * First setup the supporting meshes k1...k5 and k_tmp.
-    */
-   _k1->setLike( *_u );
-   auto k1 = _k1->getView();
-   auto u = _u->getView();
+   /////
+   // First setup the supporting vector k1.
+   _k1.setLike( _u );
+   auto k1 = _k1.getView();
+   auto u = _u.getView();
    k1 = 0.0;
 
-   /****
-    * Set necessary parameters
-    */
+   /////
+   // Set necessary parameters
    RealType& time = this->time;
    RealType currentTau = min( this->getTau(), this->getMaxTau() );
    if( time + currentTau > this->getStopTime() )
@@ -78,59 +67,54 @@ Euler< Problem, SolverMonitor >::solve( DofVectorPointer& _u )
    this->resetIterations();
    this->setResidue( this->getConvergenceResidue() + 1.0 );
 
-   /****
-    * Start the main loop
-    */
+   /////
+   // Start the main loop
    while( 1 ) {
-      /****
-       * Compute the RHS
-       */
-      this->problem->getExplicitUpdate( time, currentTau, _u, _k1 );
+      /////
+      // Compute the RHS
+      rhsFunction( time, currentTau, u, k1 );
 
       RealType lastResidue = this->getResidue();
       RealType maxResidue( 0.0 );
-      if( this->cflCondition != 0.0 ) {
-         maxResidue = max( abs( k1 ) );  // k1->absMax();
-         if( currentTau * maxResidue > this->cflCondition ) {
+      if( this->courantNumber != 0.0 ) {
+         maxResidue = max( abs( k1 ) );
+         if( currentTau * maxResidue > this->courantNumber ) {
             currentTau *= 0.9;
             continue;
          }
       }
-      this->setResidue( addAndReduceAbs( u, currentTau * k1, std::plus<>{}, (RealType) 0.0 )
+      this->setResidue( addAndReduceAbs( u, currentTau * k1, TNL::Plus(), (RealType) 0.0 )
                         / ( currentTau * (RealType) u.getSize() ) );
 
-      /****
-       * When time is close to stopTime the new residue
-       * may be inaccurate significantly.
-       */
+      /////
+      // When time is close to stopTime the new residue may be inaccurate significantly.
       if( currentTau + time == this->stopTime )
          this->setResidue( lastResidue );
       time += currentTau;
-      this->problem->applyBoundaryConditions( time, _u );
+      // this->problem->applyBoundaryConditions( time, _u );
 
       if( ! this->nextIteration() )
          return this->checkConvergence();
 
-      /****
-       * Compute the new time step.
-       */
+      /////
+      // Compute the new time step.
       if( time + currentTau > this->getStopTime() )
          currentTau = this->getStopTime() - time;  // we don't want to keep such tau
       else
          this->tau = currentTau;
 
-      /****
-       * Check stop conditions.
-       */
+      /////
+      // Check stop conditions.
       if( time >= this->getStopTime()
           || ( this->getConvergenceResidue() != 0.0 && this->getResidue() < this->getConvergenceResidue() ) )
          return true;
 
-      if( this->cflCondition != 0.0 ) {
+      if( this->courantNumber != 0.0 ) {
          currentTau /= 0.95;
          currentTau = min( currentTau, this->getMaxTau() );
       }
    }
+   return false;  // just to avoid warnings
 };
 
 }  // namespace ODE

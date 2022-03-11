@@ -42,7 +42,7 @@ public:
    configSetup( Config::ConfigDescription& config, const String& prefix = "" );
 
    bool
-   setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
+   init();  // const MeshType& mesh );
 
    bool
    init( const MeshType& mesh );
