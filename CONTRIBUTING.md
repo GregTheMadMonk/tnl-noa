@@ -70,6 +70,10 @@ The development of new features should follow the rebase-based workflow:
     - This is also a good time to squash small commits (e.g. typos, forgotten
       changes or trivial corrections) with relevant bigger commits to make the
       review easier.
+- When your work in the _feature_ branch is finished, you should also do an
+  [interactive rebase](https://thoughtbot.com/blog/git-interactive-rebase-squash-amend-rewriting-history)
+  and squash small commits (notably when fixing typos or compilation problems),
+  reword commit messages (check all typos) and overall make the history _nice_.
 - When reviewed, the feature branch can be merged into the develop branch.
 
 The main advantages of this workflow are linear history, clear commits and
