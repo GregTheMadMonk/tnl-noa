@@ -46,7 +46,7 @@ setRelaxation( const RealType& lambda )
 template< typename Vector, typename SolverMonitor >
 auto
 GradientDescent< Vector, SolverMonitor >::
-getRelaxation() const -> RealType&
+getRelaxation() const -> const RealType&
 {
    return this->relaxation;
 }
