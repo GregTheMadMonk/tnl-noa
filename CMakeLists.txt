@@ -1,12 +1,3 @@
-###############################################################################
-#                      Cmake project script for TNL
-#                             -------------------
-#    begin               : Dec 8, 2010
-#    copyright           : (C) 2010 by Tomas Oberhuber et al.
-#    email               : tomas.oberhuber@fjfi.cvut.cz
-#
-###############################################################################
-
 # cmake 3.12.2 is required due to compatibility with CUDA 10
 # (see the issue reported here: https://github.com/clab/dynet/issues/1457 )
 # cmake 3.13 is required for add_link_options
