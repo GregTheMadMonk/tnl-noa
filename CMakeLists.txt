@@ -333,34 +333,6 @@ endif()
 # https://clang.llvm.org/docs/JSONCompilationDatabase.html
 set( CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "" )
 
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Template Numerical Library")
-set(CPACK_PACKAGE_VENDOR "MMG")
-#set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/ReadMe.txt")
-#set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/Copyright.txt")
-set(CPACK_PACKAGE_VERSION_MAJOR "0")
-set(CPACK_PACKAGE_VERSION_MINOR "1")
-set(CPACK_PACKAGE_VERSION_PATCH "0")
-set(CPACK_PACKAGE_INSTALL_DIRECTORY "CMake ${CMake_VERSION_MAJOR}.${CMake_VERSION_MINOR}")
-if(WIN32 AND NOT UNIX)
-  # There is a bug in NSI that does not handle full unix paths properly. Make
-  # sure there is at least one set of four (4) backlasshes.
-  #set(CPACK_PACKAGE_ICON "${CMake_SOURCE_DIR}/Utilities/Release\\\\InstallIcon.bmp")
-  #set(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\MyExecutable.exe")
-  set(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY} Template Numerical Library")
-  set(CPACK_NSIS_HELP_LINK "http:\\\\\\\\geraldine.fjfi.cvut.cz/~oberhuber/doku-wiki-tnl")
-  set(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\geraldine.fjfi.cvut.cz/~oberhuber/doku-wiki-tnl")
-  set(CPACK_NSIS_CONTACT "tomas.oberhuber@fjfi.cvut.cz")
-  set(CPACK_NSIS_MODIFY_PATH ON)
-else(WIN32 AND NOT UNIX)
-#  set(CPACK_STRIP_FILES "bin/MyExecutable")
-endif(WIN32 AND NOT UNIX)
-
-set(CPACK_SOURCE_STRIP_FILES "Debug")
-set(CPACK_SOURCE_STRIP_FILES "Release")
-
-#set(CPACK_PACKAGE_EXECUTABLES "MyExecutable" "My Executable")
-INCLUDE( CPack )
-
 # Print custom build options
 message( "-- Build options:" )
 message( "   OFFLINE_BUILD = ${OFFLINE_BUILD}" )
