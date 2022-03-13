@@ -66,8 +66,9 @@ private:
       static void
       setSizes( NewSizes& newSizes, const OldSizes& oldSizes )
       {
-         if( oldSizes.template getStaticSize< level >() == 0 )
-            newSizes.template setSize< level >( oldSizes.template getSize< get< level >( Dimensions{} ) >() );
+         constexpr std::size_t oldLevel = get< level >( Dimensions{} );
+         if( oldSizes.template getStaticSize< oldLevel >() == 0 )
+            newSizes.template setSize< level >( oldSizes.template getSize< oldLevel >() );
          SizeSetterHelper< level + 1 >::setSizes( newSizes, oldSizes );
       }
    };
@@ -81,8 +82,9 @@ private:
       setSizes( NewSizes& newSizes, const OldSizes& oldSizes )
       {
          static constexpr std::size_t level = Dimensions::size() - 1;
-         if( oldSizes.template getStaticSize< level >() == 0 )
-            newSizes.template setSize< level >( oldSizes.template getSize< get< level >( Dimensions{} ) >() );
+         constexpr std::size_t oldLevel = get< level >( Dimensions{} );
+         if( oldSizes.template getStaticSize< oldLevel >() == 0 )
+            newSizes.template setSize< level >( oldSizes.template getSize< oldLevel >() );
       }
    };
 
@@ -108,9 +110,7 @@ private:
       check( IndexTypes&&... indices )
       {
          constexpr std::size_t d = get< Dimensions::size() - 1 >( Dimensions{} );
-         if( get_from_pack< d >( std::forward< IndexTypes >( indices )... ) != 0 )
-            return false;
-         return true;
+         return get_from_pack< d >( std::forward< IndexTypes >( indices )... ) == 0;
       }
    };
 
