@@ -32,6 +32,17 @@ code.
 [clang-format]: https://clang.llvm.org/docs/ClangFormat.html
 [mirroring]: https://en.wikipedia.org/wiki/Mirroring_(psychology)
 
+## Code linting
+
+The continuous integration on Gitlab features a code linting job using
+[clang-tidy](https://clang.llvm.org/extra/clang-tidy/) to help developers
+diagnosing and fixing common programming errors. The configuration is provided
+in the [.clang-tidy](src/.clang-tidy) file. Various editors and IDEs provide
+[integrations](https://clang.llvm.org/extra/clang-tidy/Integrations.html) either
+directly for _clang-tidy_ or for [clangd](https://clangd.llvm.org/) (which
+integrates _clang-tidy_). This way you can get full linting directly in your
+editor without having to rely on the continuous integration.
+
 ## How to configure git
 
 It is important to [configure your git username and email address](
