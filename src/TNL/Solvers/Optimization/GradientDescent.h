@@ -44,7 +44,7 @@ protected:
 
    RealType relaxation = 1.0;
 
-   VectorType aux;
+   VectorType gradient;
 
 };
 
