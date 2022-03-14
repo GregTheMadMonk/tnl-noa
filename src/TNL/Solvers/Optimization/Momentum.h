@@ -48,7 +48,7 @@ public:
 
 protected:
 
-   RealType relaxation = 1.0, momentum = 1.0;
+   RealType relaxation = 1.0, momentum = 0.9;
 
    VectorType gradient, v;
 
