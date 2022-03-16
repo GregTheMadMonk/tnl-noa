@@ -51,7 +51,7 @@ struct CSRHybridKernel
                    const Real& zero ) const;
 
 protected:
-   int threadsPerSegment;
+   int threadsPerSegment = 0;
 };
 
 }  // namespace Segments
