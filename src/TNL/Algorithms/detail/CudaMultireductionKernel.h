@@ -32,6 +32,9 @@ static constexpr int Multireduction_registersPerThread = 32;   // empirically de
 #if( __CUDA_ARCH__ == 750 )
 // Turing has a limit of 1024 threads per multiprocessor
 static constexpr int Multireduction_minBlocksPerMultiprocessor = 4;
+#elif( __CUDA_ARCH__ == 860 )
+// Ampere 8.6 has a limit of 1536 threads per multiprocessor
+static constexpr int Multireduction_minBlocksPerMultiprocessor = 6;
 #else
 static constexpr int Multireduction_minBlocksPerMultiprocessor = 8;
 #endif
