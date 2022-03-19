@@ -336,14 +336,12 @@ protected:
          } );
 
       // set default tags from tag_offset
-      if( tag_from_left < 0 )
+      if( tag_from_left < 0 && tag_to_left < 0 && tag_from_right < 0 && tag_to_right < 0 ) {
          tag_from_left = tag_offset + 1;
-      if( tag_to_left < 0 )
          tag_to_left = tag_offset;
-      if( tag_from_right < 0 )
          tag_from_right = tag_offset;
-      if( tag_to_right < 0 )
          tag_to_right = tag_offset + 1;
+      }
 
       // issue all send and receive async operations
       RequestsVector requests;
@@ -501,28 +499,40 @@ protected:
       auto& dim_buffers = buffers.template getDimBuffers< dim >();
 
       if( ( mask & SyncDirection::Left ) != SyncDirection::None ) {
-         requests.push_back( MPI::Isend( dim_buffers.left_send_view.getData(),
-                                         dim_buffers.left_send_view.getStorageSize(),
-                                         dim_buffers.left_neighbor,
-                                         tag_to_left,
-                                         communicator ) );
-         requests.push_back( MPI::Irecv( dim_buffers.right_recv_view.getData(),
-                                         dim_buffers.right_recv_view.getStorageSize(),
-                                         dim_buffers.right_neighbor,
-                                         tag_from_right,
-                                         communicator ) );
+         // negative tags are not valid according to the MPI standard and may be used by
+         // applications to skip communication, e.g. over the periodic boundary
+         if( tag_to_left >= 0 ) {
+            requests.push_back( MPI::Isend( dim_buffers.left_send_view.getData(),
+                                            dim_buffers.left_send_view.getStorageSize(),
+                                            dim_buffers.left_neighbor,
+                                            tag_to_left,
+                                            communicator ) );
+         }
+         if( tag_from_right >= 0 ) {
+            requests.push_back( MPI::Irecv( dim_buffers.right_recv_view.getData(),
+                                            dim_buffers.right_recv_view.getStorageSize(),
+                                            dim_buffers.right_neighbor,
+                                            tag_from_right,
+                                            communicator ) );
+         }
       }
       if( ( mask & SyncDirection::Right ) != SyncDirection::None ) {
-         requests.push_back( MPI::Isend( dim_buffers.right_send_view.getData(),
-                                         dim_buffers.right_send_view.getStorageSize(),
-                                         dim_buffers.right_neighbor,
-                                         tag_to_right,
-                                         communicator ) );
-         requests.push_back( MPI::Irecv( dim_buffers.left_recv_view.getData(),
-                                         dim_buffers.left_recv_view.getStorageSize(),
-                                         dim_buffers.left_neighbor,
-                                         tag_from_left,
-                                         communicator ) );
+         // negative tags are not valid according to the MPI standard and may be used by
+         // applications to skip communication, e.g. over the periodic boundary
+         if( tag_to_right >= 0 ) {
+            requests.push_back( MPI::Isend( dim_buffers.right_send_view.getData(),
+                                            dim_buffers.right_send_view.getStorageSize(),
+                                            dim_buffers.right_neighbor,
+                                            tag_to_right,
+                                            communicator ) );
+         }
+         if( tag_from_left >= 0 ) {
+            requests.push_back( MPI::Irecv( dim_buffers.left_recv_view.getData(),
+                                            dim_buffers.left_recv_view.getStorageSize(),
+                                            dim_buffers.left_neighbor,
+                                            tag_from_left,
+                                            communicator ) );
+         }
       }
    }
 
