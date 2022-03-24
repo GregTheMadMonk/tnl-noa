@@ -56,16 +56,12 @@ getRankOnNode( MPI_Comm communicator = MPI_COMM_WORLD )
 #ifdef HAVE_MPI
    const int rank = GetRank( communicator );
 
-   MPI_Info info;
-   MPI_Info_create( &info );
-
    MPI_Comm local_comm;
-   MPI_Comm_split_type( communicator, MPI_COMM_TYPE_SHARED, rank, info, &local_comm );
+   MPI_Comm_split_type( communicator, MPI_COMM_TYPE_SHARED, rank, MPI_INFO_NULL, &local_comm );
 
    const int local_rank = GetRank( local_comm );
 
    MPI_Comm_free( &local_comm );
-   MPI_Info_free( &info );
 
    return local_rank;
 #else
