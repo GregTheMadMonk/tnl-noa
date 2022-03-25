@@ -11,7 +11,6 @@
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Solvers/ODE/ExplicitSolver.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/Containers/StaticVector.h>
 
 namespace TNL {
 namespace Solvers {

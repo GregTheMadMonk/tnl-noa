@@ -6,8 +6,7 @@
 
 #pragma once
 
-#include <TNL/Devices/Host.h>
-#include <TNL/Devices/Cuda.h>
+#include <TNL/Math.h>
 #include <TNL/Config/ParameterContainer.h>
 
 #include "StaticMerson.h"
@@ -138,7 +137,7 @@ StaticMerson< Real >::solve( VectorType& u, RHSFunction&& rhsFunction, Args... a
       /////
       // Compute the new time step.
       if( adaptivity != 0.0 && error != 0.0 ) {
-         currentTau *= 0.8 * ::pow( adaptivity / error, 0.2 );
+         currentTau *= 0.8 * TNL::pow( adaptivity / error, 0.2 );
          currentTau = min( currentTau, this->getMaxTau() );
       }
       if( time + currentTau > this->getStopTime() )
