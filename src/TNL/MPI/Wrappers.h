@@ -134,18 +134,6 @@ GetSize( MPI_Comm communicator = MPI_COMM_WORLD )
 
 // wrappers for MPI helper functions
 
-inline MPI_Comm
-Comm_split( MPI_Comm comm, int color, int key )
-{
-#ifdef HAVE_MPI
-   MPI_Comm newcomm;
-   MPI_Comm_split( comm, color, key, &newcomm );
-   return newcomm;
-#else
-   return comm;
-#endif
-}
-
 /**
  * \brief Wrapper for \ref MPI_Dims_create.
  *

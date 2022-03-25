@@ -10,7 +10,7 @@
 
 #include <TNL/Cuda/CheckDevice.h>
 
-#include "Utils.h"
+#include "Comm.h"
 
 namespace TNL {
 namespace MPI {

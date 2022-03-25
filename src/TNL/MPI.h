@@ -22,6 +22,7 @@
 #include "MPI/selectGPU.h"
 #include "MPI/Wrappers.h"
 #include "MPI/Utils.h"
+#include "MPI/Comm.h"
 #include "MPI/ScopedInitializer.h"
 #include "MPI/Config.h"
 #include "MPI/Print.h"

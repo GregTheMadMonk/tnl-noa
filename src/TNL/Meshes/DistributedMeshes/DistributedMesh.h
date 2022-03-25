@@ -10,6 +10,7 @@
 
 #include <TNL/Containers/Array.h>
 #include <TNL/MPI/Wrappers.h>
+#include <TNL/MPI/Comm.h>
 #include <TNL/Meshes/DistributedMeshes/GlobalIndexStorage.h>
 #include <TNL/Meshes/MeshDetails/IndexPermutationApplier.h>
 
@@ -94,12 +95,12 @@ public:
     * Methods specific to the distributed mesh
     */
    void
-   setCommunicator( MPI_Comm communicator )
+   setCommunicator( MPI::Comm&& communicator )
    {
-      this->communicator = communicator;
+      this->communicator = std::move( communicator );
    }
 
-   MPI_Comm
+   const MPI::Comm&
    getCommunicator() const
    {
       return communicator;
@@ -241,7 +242,7 @@ public:
 
 protected:
    MeshType localMesh;
-   MPI_Comm communicator = MPI_COMM_NULL;
+   MPI::Comm communicator = MPI_COMM_NULL;
    int ghostLevels = 0;
 
    // vtkGhostType arrays for points and cells (cached for output into VTK formats)

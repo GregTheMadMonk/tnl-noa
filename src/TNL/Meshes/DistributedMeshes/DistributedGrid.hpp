@@ -237,13 +237,13 @@ DistributedMesh< Grid< Dimension, Real, Device, Index > >::getEntitiesCount() co
 
 template< int Dimension, typename Real, typename Device, typename Index >
 void
-DistributedMesh< Grid< Dimension, Real, Device, Index > >::setCommunicator( MPI_Comm communicator )
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::setCommunicator( MPI::Comm&& communicator )
 {
-   this->communicator = communicator;
+   this->communicator = std::move( communicator );
 }
 
 template< int Dimension, typename Real, typename Device, typename Index >
-MPI_Comm
+const MPI::Comm&
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::getCommunicator() const
 {
    return this->communicator;
@@ -383,7 +383,7 @@ DistributedMesh< Grid< Dimension, Real, Device, Index > >::SetupByCut(
       // TODO: set interiorBegin, interiorEnd
 
       const int newRank = getRankOfProcCoord( this->subdomainCoordinates );
-      this->communicator = MPI::Comm_split( oldCommunicator, 1, newRank );
+      this->communicator = MPI::Comm::split( oldCommunicator, 1, newRank );
 
       setupNeighbors();
 
@@ -396,7 +396,7 @@ DistributedMesh< Grid< Dimension, Real, Device, Index > >::SetupByCut(
       return true;
    }
    else {
-      this->communicator = MPI::Comm_split( oldCommunicator, MPI_UNDEFINED, 0 );
+      this->communicator = MPI::Comm::split( oldCommunicator, MPI_UNDEFINED, 0 );
       return false;
    }
 }

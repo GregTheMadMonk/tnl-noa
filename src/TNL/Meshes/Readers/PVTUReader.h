@@ -228,10 +228,10 @@ public:
       if( minCount == 0 ) {
          // split the communicator, remove the ranks which did not get a subdomain
          const int color = ( pointsCount > 0 && cellsCount > 0 ) ? 0 : MPI_UNDEFINED;
-         const MPI_Comm subCommunicator = MPI::Comm_split( communicator, color, 0 );
+         MPI::Comm subCommunicator = MPI::Comm::split( communicator, color, 0 );
 
          // set the communicator
-         mesh.setCommunicator( subCommunicator );
+         mesh.setCommunicator( std::move( subCommunicator ) );
       }
       else {
          // set the communicator
