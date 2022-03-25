@@ -9,7 +9,6 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/MPI/Wrappers.h>
 
 #include "StaticMerson.h"
 

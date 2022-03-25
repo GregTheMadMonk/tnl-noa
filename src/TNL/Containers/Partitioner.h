@@ -15,6 +15,7 @@
 #include "ByteArraySynchronizer.h"
 
 #include <TNL/Math.h>
+#include <TNL/MPI/Comm.h>
 
 namespace TNL {
 namespace Containers {

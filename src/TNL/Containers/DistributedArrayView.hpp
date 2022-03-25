@@ -11,6 +11,7 @@
 #include "DistributedArrayView.h"
 
 #include <TNL/Algorithms/ParallelFor.h>
+#include <TNL/MPI/Wrappers.h>
 
 namespace TNL {
 namespace Containers {

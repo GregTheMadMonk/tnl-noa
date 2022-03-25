@@ -13,6 +13,7 @@
 #include <async/threadpool.h>
 
 #include <TNL/Containers/ndarray/SynchronizerBuffers.h>
+#include <TNL/MPI/Comm.h>
 #include <TNL/MPI/Wrappers.h>
 #include <TNL/Timer.h>
 

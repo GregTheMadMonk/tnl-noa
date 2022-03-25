@@ -9,7 +9,7 @@
 #include "TimeDependentPDESolver.h"
 #include <TNL/Meshes/TypeResolver/resolveMeshType.h>
 #include <TNL/Meshes/TypeResolver/resolveDistributedMeshType.h>
-#include <TNL/MPI/Wrappers.h>
+#include <TNL/MPI/Comm.h>
 
 namespace TNL {
 namespace Solvers {

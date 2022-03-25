@@ -14,6 +14,34 @@
 namespace TNL {
 namespace MPI {
 
+inline int
+GetRank( MPI_Comm communicator = MPI_COMM_WORLD )
+{
+   TNL_ASSERT_NE( communicator, MPI_COMM_NULL, "GetRank cannot be called with MPI_COMM_NULL" );
+#ifdef HAVE_MPI
+   TNL_ASSERT_TRUE( Initialized() && ! Finalized(), "Fatal Error - MPI is not initialized" );
+   int rank;
+   MPI_Comm_rank( communicator, &rank );
+   return rank;
+#else
+   return 0;
+#endif
+}
+
+inline int
+GetSize( MPI_Comm communicator = MPI_COMM_WORLD )
+{
+   TNL_ASSERT_NE( communicator, MPI_COMM_NULL, "GetSize cannot be called with MPI_COMM_NULL" );
+#ifdef HAVE_MPI
+   TNL_ASSERT_TRUE( Initialized() && ! Finalized(), "Fatal Error - MPI is not initialized" );
+   int size;
+   MPI_Comm_size( communicator, &size );
+   return size;
+#else
+   return 1;
+#endif
+}
+
 /**
  * \brief An RAII wrapper for custom MPI communicators.
  *

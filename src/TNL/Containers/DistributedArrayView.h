@@ -13,7 +13,7 @@
 #include <TNL/Containers/ArrayView.h>
 #include <TNL/Containers/Subrange.h>
 #include <TNL/Containers/ByteArraySynchronizer.h>
-#include <TNL/MPI/Wrappers.h>
+#include <TNL/MPI/Comm.h>
 
 namespace TNL {
 namespace Containers {

@@ -7,6 +7,7 @@
 #pragma once
 
 #include <TNL/Solvers/PDE/PDESolver.h>
+#include <TNL/MPI/Comm.h>
 #include <TNL/MPI/Utils.h>
 
 namespace TNL {
