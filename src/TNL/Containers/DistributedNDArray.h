@@ -83,7 +83,7 @@ public:
       return localArray.getAllocator();
    }
 
-   MPI_Comm
+   const MPI::Comm&
    getCommunicator() const
    {
       return communicator;
@@ -389,7 +389,7 @@ public:
 
    template< std::size_t level >
    void
-   setDistribution( IndexType begin, IndexType end, MPI_Comm communicator = MPI_COMM_WORLD )
+   setDistribution( IndexType begin, IndexType end, const MPI::Comm& communicator = MPI_COMM_WORLD )
    {
       static_assert( SizesHolderType::template getStaticSize< level >() == 0,
                      "NDArray cannot be distributed in static dimensions." );
@@ -472,7 +472,7 @@ public:
 
 protected:
    NDArray localArray;
-   MPI_Comm communicator = MPI_COMM_NULL;
+   MPI::Comm communicator = MPI_COMM_NULL;
    SizesHolderType globalSizes;
    // static sizes should have different type: localBegin is always 0, localEnd is always the full size
    LocalBeginsType localBegins;

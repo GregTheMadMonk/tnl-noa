@@ -38,7 +38,7 @@ void
 DistributedArrayView< Value, Device, Index >::bind( const LocalRangeType& localRange,
                                                     IndexType ghosts,
                                                     IndexType globalSize,
-                                                    MPI_Comm communicator,
+                                                    const MPI::Comm& communicator,
                                                     LocalViewType localData )
 {
    TNL_ASSERT_EQ( localData.getSize(),
@@ -93,7 +93,7 @@ DistributedArrayView< Value, Device, Index >::getGhosts() const
 }
 
 template< typename Value, typename Device, typename Index >
-MPI_Comm
+const MPI::Comm&
 DistributedArrayView< Value, Device, Index >::getCommunicator() const
 {
    return communicator;

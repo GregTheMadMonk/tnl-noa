@@ -95,9 +95,9 @@ public:
     * Methods specific to the distributed mesh
     */
    void
-   setCommunicator( MPI::Comm&& communicator )
+   setCommunicator( const MPI::Comm& communicator )
    {
-      this->communicator = std::move( communicator );
+      this->communicator = communicator;
    }
 
    const MPI::Comm&

@@ -100,7 +100,7 @@ public:
    getSubdomainCoordinates() const;
 
    void
-   setCommunicator( MPI::Comm&& communicator );
+   setCommunicator( const MPI::Comm& communicator );
 
    const MPI::Comm&
    getCommunicator() const;

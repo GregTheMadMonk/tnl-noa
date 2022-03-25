@@ -44,9 +44,9 @@ public:
    DistributedArrayView( const LocalRangeType& localRange,
                          IndexType ghosts,
                          IndexType globalSize,
-                         MPI_Comm communicator,
+                         MPI::Comm communicator,
                          LocalViewType localData )
-   : localRange( localRange ), ghosts( ghosts ), globalSize( globalSize ), communicator( communicator ), localData( localData )
+   : localRange( localRange ), ghosts( ghosts ), globalSize( globalSize ), communicator( std::move( communicator ) ), localData( localData )
    {
       TNL_ASSERT_EQ( localData.getSize(),
                      localRange.getSize() + ghosts,
@@ -71,7 +71,7 @@ public:
    bind( const LocalRangeType& localRange,
          IndexType ghosts,
          IndexType globalSize,
-         MPI_Comm communicator,
+         const MPI::Comm& communicator,
          LocalViewType localData );
 
    // Note that you can also bind directly to DistributedArray and other types implicitly
@@ -91,7 +91,7 @@ public:
    IndexType
    getGhosts() const;
 
-   MPI_Comm
+   const MPI::Comm&
    getCommunicator() const;
 
    LocalViewType
@@ -256,7 +256,7 @@ protected:
    LocalRangeType localRange;
    IndexType ghosts = 0;
    IndexType globalSize = 0;
-   MPI_Comm communicator = MPI_COMM_NULL;
+   MPI::Comm communicator = MPI_COMM_NULL;
    LocalViewType localData;
 
    std::shared_ptr< SynchronizerType > synchronizer = nullptr;

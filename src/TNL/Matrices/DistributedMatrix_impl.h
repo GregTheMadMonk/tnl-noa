@@ -17,7 +17,7 @@ template< typename Matrix >
 DistributedMatrix< Matrix >::DistributedMatrix( LocalRangeType localRowRange,
                                                 IndexType rows,
                                                 IndexType columns,
-                                                MPI_Comm communicator )
+                                                const MPI::Comm& communicator )
 {
    setDistribution( localRowRange, rows, columns, communicator );
 }
@@ -27,12 +27,12 @@ void
 DistributedMatrix< Matrix >::setDistribution( LocalRangeType localRowRange,
                                               IndexType rows,
                                               IndexType columns,
-                                              MPI_Comm communicator )
+                                              const MPI::Comm& communicator )
 {
    this->localRowRange = localRowRange;
    this->rows = rows;
    this->communicator = communicator;
-   if( communicator != MPI_COMM_NULL )
+   if( this->communicator != MPI_COMM_NULL )
       localMatrix.setDimensions( localRowRange.getSize(), columns );
 }
 
@@ -44,7 +44,7 @@ DistributedMatrix< Matrix >::getLocalRowRange() const
 }
 
 template< typename Matrix >
-MPI_Comm
+const MPI::Comm&
 DistributedMatrix< Matrix >::getCommunicator() const
 {
    return communicator;

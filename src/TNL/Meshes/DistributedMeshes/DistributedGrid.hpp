@@ -237,9 +237,9 @@ DistributedMesh< Grid< Dimension, Real, Device, Index > >::getEntitiesCount() co
 
 template< int Dimension, typename Real, typename Device, typename Index >
 void
-DistributedMesh< Grid< Dimension, Real, Device, Index > >::setCommunicator( MPI::Comm&& communicator )
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::setCommunicator( const MPI::Comm& communicator )
 {
-   this->communicator = std::move( communicator );
+   this->communicator = communicator;
 }
 
 template< int Dimension, typename Real, typename Device, typename Index >
@@ -337,7 +337,7 @@ DistributedMesh< Grid< Dimension, Real, Device, Index > >::SetupByCut(
    }
 
    // create new communicator with used nodes
-   const MPI_Comm oldCommunicator = inputDistributedGrid.getCommunicator();
+   const MPI::Comm oldCommunicator = inputDistributedGrid.getCommunicator();
    if( isInCut ) {
       this->isSet = true;
 
@@ -383,7 +383,7 @@ DistributedMesh< Grid< Dimension, Real, Device, Index > >::SetupByCut(
       // TODO: set interiorBegin, interiorEnd
 
       const int newRank = getRankOfProcCoord( this->subdomainCoordinates );
-      this->communicator = MPI::Comm::split( oldCommunicator, 1, newRank );
+      this->communicator = oldCommunicator.split( 1, newRank );
 
       setupNeighbors();
 
@@ -396,7 +396,7 @@ DistributedMesh< Grid< Dimension, Real, Device, Index > >::SetupByCut(
       return true;
    }
    else {
-      this->communicator = MPI::Comm::split( oldCommunicator, MPI_UNDEFINED, 0 );
+      this->communicator = oldCommunicator.split( MPI_UNDEFINED, 0 );
       return false;
    }
 }
