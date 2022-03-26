@@ -179,6 +179,12 @@ public:
    {}
 
    void
+   setCommunicator( const MPI::Comm& communicator )
+   {
+      this->communicator = communicator;
+   }
+
+   void
    detectMesh() override
    {
 #ifdef HAVE_TINYXML2
