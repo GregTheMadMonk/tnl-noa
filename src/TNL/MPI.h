@@ -25,3 +25,4 @@
 #include "MPI/ScopedInitializer.h"
 #include "MPI/Config.h"
 #include "MPI/Print.h"
+#include "MPI/optimizeRanks.h"
