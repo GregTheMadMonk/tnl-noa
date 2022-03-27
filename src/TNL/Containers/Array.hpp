@@ -24,6 +24,7 @@ template< typename Value, typename Device, typename Index, typename Allocator >
 Array< Value, Device, Index, Allocator >::Array( Array&& array ) noexcept
 : data( std::move( array.data ) ), size( std::move( array.size ) ), allocator( std::move( array.allocator ) )
 {
+   array.size = 0;
    array.data = nullptr;
 }
 
@@ -411,7 +412,6 @@ template< typename Value, typename Device, typename Index, typename Allocator >
 Array< Value, Device, Index, Allocator >&
 Array< Value, Device, Index, Allocator >::operator=( const Array< Value, Device, Index, Allocator >& array )
 {
-   // TNL_ASSERT_EQ( array.getSize(), this->getSize(), "Array sizes must be the same." );
    if( this->getSize() != array.getSize() )
       this->setLike( array );
    if( this->getSize() > 0 )
