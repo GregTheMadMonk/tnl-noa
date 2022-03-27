@@ -10,7 +10,7 @@
 
 #include <experimental/filesystem>
 
-#include <TNL/MPI/Wrappers.h>
+#include <TNL/MPI/Comm.h>
 #include <TNL/MPI/Utils.h>
 #include <TNL/Meshes/Readers/VTIReader.h>
 #include <TNL/Meshes/MeshDetails/layers/EntityTags/Traits.h>
@@ -137,14 +137,14 @@ class PVTIReader : public XMLVTK
          throw MeshReaderError( "PVTIReader", "the file does not contain any <Piece> element." );
 
       // check that the number of pieces matches the number of MPI ranks
-      const int nproc = MPI::GetSize( communicator );
+      const int nproc = communicator.size();
       if( (int) pieceSources.size() != nproc )
          throw MeshReaderError( "PVTIReader",
                                 "the number of subdomains does not match the number of MPI ranks ("
                                    + std::to_string( pieceSources.size() ) + " vs " + std::to_string( nproc ) + ")." );
 
       // read the local piece source
-      const int rank = MPI::GetRank( communicator );
+      const int rank = communicator.rank();
       localReader.setFileName( pieceSources[ rank ] );
       localReader.detectMesh();
 
@@ -174,9 +174,15 @@ class PVTIReader : public XMLVTK
 public:
    PVTIReader() = default;
 
-   PVTIReader( const std::string& fileName, MPI_Comm communicator = MPI_COMM_WORLD )
-   : XMLVTK( fileName ), communicator( communicator )
+   PVTIReader( const std::string& fileName, MPI::Comm communicator = MPI_COMM_WORLD )
+   : XMLVTK( fileName ), communicator( std::move( communicator ) )
    {}
+
+   void
+   setCommunicator( const MPI::Comm& communicator )
+   {
+      this->communicator = communicator;
+   }
 
    void
    detectMesh() override
@@ -249,7 +255,7 @@ public:
       localReader.loadMesh( localMesh );
       if( localMesh != mesh.getLocalMesh() ) {
          std::stringstream msg;
-         msg << "The grid from the " << MPI::GetRank( communicator )
+         msg << "The grid from the " << communicator.rank()
              << "-th subdomain .vti file does not match the local grid of the DistributedGrid."
              << "\n- Grid from the .vti file:\n"
              << localMesh << "\n- Local grid from the DistributedGrid:\n"
@@ -323,7 +329,7 @@ public:
    }
 
 protected:
-   MPI_Comm communicator;
+   MPI::Comm communicator;
 
    int ghostLevels = 0;
    int minCommonVertices = 0;

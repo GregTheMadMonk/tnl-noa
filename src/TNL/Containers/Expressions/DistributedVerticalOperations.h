@@ -6,9 +6,11 @@
 
 #pragma once
 
+#include <memory>
+
+#include <TNL/MPI/Comm.h>
 #include <TNL/MPI/Wrappers.h>
 #include <TNL/Algorithms/reduce.h>
-#include <memory>
 
 namespace TNL {
 namespace Containers {
@@ -42,7 +44,7 @@ DistributedExpressionArgMin( const Expression& expression )
    static_assert( std::numeric_limits< RealType >::is_specialized,
                   "std::numeric_limits is not specialized for the reduction's real type" );
    ResultType result( -1, std::numeric_limits< RealType >::max() );
-   const MPI_Comm communicator = expression.getCommunicator();
+   const MPI::Comm& communicator = expression.getCommunicator();
    if( communicator != MPI_COMM_NULL ) {
       // compute local argMin
       ResultType localResult = Algorithms::reduceWithArgument( expression.getConstLocalView(), TNL::MinWithArg{} );
@@ -101,7 +103,7 @@ DistributedExpressionArgMax( const Expression& expression )
    static_assert( std::numeric_limits< RealType >::is_specialized,
                   "std::numeric_limits is not specialized for the reduction's real type" );
    ResultType result( -1, std::numeric_limits< RealType >::lowest() );
-   const MPI_Comm communicator = expression.getCommunicator();
+   const MPI::Comm& communicator = expression.getCommunicator();
    if( communicator != MPI_COMM_NULL ) {
       // compute local argMax
       ResultType localResult = Algorithms::reduceWithArgument( expression.getConstLocalView(), TNL::MaxWithArg{} );

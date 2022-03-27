@@ -10,3 +10,18 @@
 #add_subdirectory( flow )
 #add_subdirectory( flow-sw )
 #add_subdirectory( flow-vl )
+
+set( CPP_TARGETS  tnl-optimize-ranks )
+set( CUDA_TARGETS  tnl-optimize-ranks-cuda )
+
+foreach( target IN ITEMS ${CPP_TARGETS} )
+   add_executable( ${target} ${target}.cpp )
+endforeach()
+install( TARGETS ${CPP_TARGETS} RUNTIME DESTINATION bin )
+
+if( BUILD_CUDA )
+   foreach( target IN ITEMS ${CUDA_TARGETS} )
+      cuda_add_executable( ${target} ${target}.cu )
+   endforeach()
+   install( TARGETS ${CUDA_TARGETS} RUNTIME DESTINATION bin )
+endif()

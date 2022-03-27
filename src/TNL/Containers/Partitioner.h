@@ -8,12 +8,14 @@
 
 #pragma once
 
+#include <utility>
 #include <vector>
 
 #include "Subrange.h"
 #include "ByteArraySynchronizer.h"
 
 #include <TNL/Math.h>
+#include <TNL/MPI/Comm.h>
 
 namespace TNL {
 namespace Containers {
@@ -25,11 +27,11 @@ public:
    using SubrangeType = Subrange< Index >;
 
    static SubrangeType
-   splitRange( Index globalSize, MPI_Comm communicator )
+   splitRange( Index globalSize, const MPI::Comm& communicator )
    {
       if( communicator != MPI_COMM_NULL ) {
-         const int rank = MPI::GetRank( communicator );
-         const int partitions = MPI::GetSize( communicator );
+         const int rank = communicator.rank();
+         const int partitions = communicator.size();
          const Index begin = TNL::min( globalSize, rank * globalSize / partitions );
          const Index end = TNL::min( globalSize, ( rank + 1 ) * globalSize / partitions );
          return SubrangeType( begin, end );
@@ -76,7 +78,7 @@ public:
 
       SubrangeType localRange;
       int overlaps;
-      MPI_Comm communicator;
+      MPI::Comm communicator;
 
    public:
       using ByteArrayView = typename Base::ByteArrayView;
@@ -91,24 +93,24 @@ public:
 
       ArraySynchronizer() = delete;
 
-      ArraySynchronizer( SubrangeType localRange, int overlaps, MPI_Comm communicator )
-      : localRange( localRange ), overlaps( overlaps ), communicator( communicator )
+      ArraySynchronizer( SubrangeType localRange, int overlaps, MPI::Comm communicator )
+      : localRange( localRange ), overlaps( overlaps ), communicator( std::move( communicator ) )
       {}
 
-      virtual void
+      void
       synchronizeByteArray( ByteArrayView array, int bytesPerValue ) override
       {
          auto requests = synchronizeByteArrayAsyncWorker( array, bytesPerValue );
          MPI::Waitall( requests.data(), requests.size() );
       }
 
-      virtual RequestsVector
+      RequestsVector
       synchronizeByteArrayAsyncWorker( ByteArrayView array, int bytesPerValue ) override
       {
          TNL_ASSERT_EQ( array.getSize(), bytesPerValue * ( localRange.getSize() + 2 * overlaps ), "unexpected array size" );
 
-         const int rank = MPI::GetRank( communicator );
-         const int nproc = MPI::GetSize( communicator );
+         const int rank = communicator.rank();
+         const int nproc = communicator.size();
          const int left = ( rank > 0 ) ? rank - 1 : nproc - 1;
          const int right = ( rank < nproc - 1 ) ? rank + 1 : 0;
 

@@ -10,6 +10,7 @@
 
 #include <TNL/Containers/NDArrayView.h>
 #include <TNL/Containers/Subrange.h>
+#include <TNL/MPI/Comm.h>
 #include <TNL/MPI/Wrappers.h>
 
 namespace TNL {
@@ -40,8 +41,8 @@ public:
                            SizesHolderType globalSizes,
                            LocalBeginsType localBegins,
                            SizesHolderType localEnds,
-                           MPI_Comm communicator )
-   : localView( localView ), communicator( communicator ), globalSizes( globalSizes ), localBegins( localBegins ),
+                           MPI::Comm communicator )
+   : localView( localView ), communicator( std::move( communicator ) ), globalSizes( globalSizes ), localBegins( localBegins ),
      localEnds( localEnds )
    {}
 
@@ -113,7 +114,7 @@ public:
       return NDArrayView::getDimension();
    }
 
-   MPI_Comm
+   const MPI::Comm&
    getCommunicator() const
    {
       return communicator;
@@ -405,7 +406,7 @@ public:
 
 protected:
    NDArrayView localView;
-   MPI_Comm communicator = MPI_COMM_NULL;
+   MPI::Comm communicator = MPI_COMM_NULL;
    SizesHolderType globalSizes;
    // static sizes should have different type: localBegin is always 0, localEnd is always the full size
    LocalBeginsType localBegins;

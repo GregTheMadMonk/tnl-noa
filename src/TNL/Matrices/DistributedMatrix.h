@@ -42,15 +42,15 @@ public:
 
    DistributedMatrix( DistributedMatrix& ) = default;
 
-   DistributedMatrix( LocalRangeType localRowRange, IndexType rows, IndexType columns, MPI_Comm communicator );
+   DistributedMatrix( LocalRangeType localRowRange, IndexType rows, IndexType columns, const MPI::Comm& communicator );
 
    void
-   setDistribution( LocalRangeType localRowRange, IndexType rows, IndexType columns, MPI_Comm communicator );
+   setDistribution( LocalRangeType localRowRange, IndexType rows, IndexType columns, const MPI::Comm& communicator );
 
    const LocalRangeType&
    getLocalRowRange() const;
 
-   MPI_Comm
+   const MPI::Comm&
    getCommunicator() const;
 
    const Matrix&
@@ -212,7 +212,7 @@ public:
 protected:
    LocalRangeType localRowRange;
    IndexType rows = 0;  // global rows count
-   MPI_Comm communicator = MPI_COMM_NULL;
+   MPI::Comm communicator = MPI_COMM_NULL;
    Matrix localMatrix;
 };
 

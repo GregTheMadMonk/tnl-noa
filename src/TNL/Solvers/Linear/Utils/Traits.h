@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <TNL/MPI/Wrappers.h>
+#include <TNL/MPI/Comm.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Containers/DistributedVector.h>
@@ -50,7 +50,7 @@ struct Traits
       return v;
    }
 
-   static MPI_Comm
+   static MPI::Comm
    getCommunicator( const Matrix& m )
    {
       return MPI_COMM_WORLD;
@@ -98,7 +98,7 @@ struct Traits< Matrices::DistributedMatrix< Matrix > >
       return v.getLocalView();
    }
 
-   static MPI_Comm
+   static const MPI::Comm&
    getCommunicator( const Matrices::DistributedMatrix< Matrix >& m )
    {
       return m.getCommunicator();

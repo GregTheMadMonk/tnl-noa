@@ -13,6 +13,7 @@
 #include <async/threadpool.h>
 
 #include <TNL/Containers/ndarray/SynchronizerBuffers.h>
+#include <TNL/MPI/Comm.h>
 #include <TNL/MPI/Wrappers.h>
 #include <TNL/Timer.h>
 
@@ -345,7 +346,7 @@ protected:
 
       // issue all send and receive async operations
       RequestsVector requests;
-      const MPI_Comm communicator = array_view.getCommunicator();
+      const MPI::Comm& communicator = array_view.getCommunicator();
       Algorithms::staticFor< std::size_t, 0, DistributedNDArray::getDimension() >(
          [ & ]( auto dim )
          {
@@ -419,9 +420,9 @@ protected:
       dim_buffers.right_recv_offsets.template setSize< dim >( localEnds.template getSize< dim >() );
 
       // set default neighbor IDs
-      const MPI_Comm communicator = array_view.getCommunicator();
-      const int rank = MPI::GetRank( communicator );
-      const int nproc = MPI::GetSize( communicator );
+      const MPI::Comm& communicator = array_view.getCommunicator();
+      const int rank = communicator.rank();
+      const int nproc = communicator.size();
       if( dim_buffers.left_neighbor < 0 )
          dim_buffers.left_neighbor = ( rank + nproc - 1 ) % nproc;
       if( dim_buffers.right_neighbor < 0 )
@@ -485,7 +486,7 @@ protected:
    static void
    sendHelper( Buffers& buffers,
                RequestsVector& requests,
-               MPI_Comm communicator,
+               const MPI::Comm& communicator,
                int tag_from_left,
                int tag_to_left,
                int tag_from_right,

@@ -34,7 +34,7 @@ struct DistributedScan
       using ValueType = typename OutputDistributedArray::ValueType;
       using DeviceType = typename OutputDistributedArray::DeviceType;
 
-      const auto communicator = input.getCommunicator();
+      const auto& communicator = input.getCommunicator();
       if( communicator != MPI_COMM_NULL ) {
          // adjust begin and end for the local range
          const auto localRange = input.getLocalRange();
@@ -49,7 +49,7 @@ struct DistributedScan
          const ValueType local_result = block_results.getElement( block_results.getSize() - 1 );
 
          // exchange local results between ranks
-         const int nproc = MPI::GetSize( communicator );
+         const int nproc = communicator.size();
          std::unique_ptr< ValueType[] > dataForScatter{ new ValueType[ nproc ] };
          for( int i = 0; i < nproc; i++ )
             dataForScatter[ i ] = local_result;
@@ -62,7 +62,7 @@ struct DistributedScan
             rank_results, rank_results, 0, nproc, 0, reduction, identity );
 
          // perform the second phase, using the per-block and per-rank results
-         const int rank = MPI::GetRank( communicator );
+         const int rank = communicator.rank();
          Scan< DeviceType, Type, PhaseType >::performSecondPhase(
             inputLocalView, outputLocalView, block_results, begin, end, begin, reduction, identity, rank_results[ rank ] );
       }

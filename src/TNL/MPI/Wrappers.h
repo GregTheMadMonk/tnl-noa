@@ -24,61 +24,7 @@
 namespace TNL {
 namespace MPI {
 
-// forward declaration to break cyclic inclusion
-inline void
-selectGPU();
-
 // wrappers for basic MPI functions
-
-inline void
-Init( int& argc, char**& argv, int required_thread_level = MPI_THREAD_SINGLE )
-{
-#ifdef HAVE_MPI
-   switch( required_thread_level ) {
-      case MPI_THREAD_SINGLE:      // application is single-threaded
-      case MPI_THREAD_FUNNELED:    // application is multithreaded, but all MPI calls will be issued from the master thread only
-      case MPI_THREAD_SERIALIZED:  // application is multithreaded and any thread may issue MPI calls, but different threads
-                                   // will never issue MPI calls at the same time
-      case MPI_THREAD_MULTIPLE:    // application is multithreaded and any thread may issue MPI calls at any time
-         break;
-      default:
-         std::cerr << "ERROR: invalid argument for the 'required' thread level support: " << required_thread_level << std::endl;
-         MPI_Abort( MPI_COMM_WORLD, 1 );
-   }
-
-   int provided;
-   MPI_Init_thread( &argc, &argv, required_thread_level, &provided );
-   if( provided < required_thread_level ) {
-      const char* level = "";
-      switch( required_thread_level ) {
-         case MPI_THREAD_SINGLE:
-            level = "MPI_THREAD_SINGLE";
-            break;
-         case MPI_THREAD_FUNNELED:
-            level = "MPI_THREAD_FUNNELED";
-            break;
-         case MPI_THREAD_SERIALIZED:
-            level = "MPI_THREAD_SERIALIZED";
-            break;
-         case MPI_THREAD_MULTIPLE:
-            level = "MPI_THREAD_MULTIPLE";
-            break;
-      }
-      std::cerr << "ERROR: The MPI library does not have the required level of thread support: " << level << std::endl;
-      MPI_Abort( MPI_COMM_WORLD, 1 );
-   }
-
-   selectGPU();
-#endif
-}
-
-inline void
-Finalize()
-{
-#ifdef HAVE_MPI
-   MPI_Finalize();
-#endif
-}
 
 inline bool
 Initialized()
@@ -104,47 +50,7 @@ Finalized()
 #endif
 }
 
-inline int
-GetRank( MPI_Comm communicator = MPI_COMM_WORLD )
-{
-   TNL_ASSERT_NE( communicator, MPI_COMM_NULL, "GetRank cannot be called with MPI_COMM_NULL" );
-#ifdef HAVE_MPI
-   TNL_ASSERT_TRUE( Initialized() && ! Finalized(), "Fatal Error - MPI is not initialized" );
-   int rank;
-   MPI_Comm_rank( communicator, &rank );
-   return rank;
-#else
-   return 0;
-#endif
-}
-
-inline int
-GetSize( MPI_Comm communicator = MPI_COMM_WORLD )
-{
-   TNL_ASSERT_NE( communicator, MPI_COMM_NULL, "GetSize cannot be called with MPI_COMM_NULL" );
-#ifdef HAVE_MPI
-   TNL_ASSERT_TRUE( Initialized() && ! Finalized(), "Fatal Error - MPI is not initialized" );
-   int size;
-   MPI_Comm_size( communicator, &size );
-   return size;
-#else
-   return 1;
-#endif
-}
-
 // wrappers for MPI helper functions
-
-inline MPI_Comm
-Comm_split( MPI_Comm comm, int color, int key )
-{
-#ifdef HAVE_MPI
-   MPI_Comm newcomm;
-   MPI_Comm_split( comm, color, key, &newcomm );
-   return newcomm;
-#else
-   return comm;
-#endif
-}
 
 /**
  * \brief Wrapper for \ref MPI_Dims_create.
@@ -362,6 +268,3 @@ Alltoall( const T* sendData, int sendCount, T* receiveData, int receiveCount, MP
 
 }  // namespace MPI
 }  // namespace TNL
-
-// late inclusion to break cyclic inclusion
-#include "selectGPU.h"

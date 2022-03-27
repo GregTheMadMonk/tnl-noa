@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include <TNL/Containers/StaticVector.h>
 #include <TNL/Solvers/ODE/StaticEuler.h>
 
 namespace TNL {

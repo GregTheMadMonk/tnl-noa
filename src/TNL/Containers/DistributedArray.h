@@ -78,11 +78,11 @@ public:
    DistributedArray( LocalRangeType localRange,
                      Index ghosts,
                      Index globalSize,
-                     MPI_Comm communicator,
+                     const MPI::Comm& communicator,
                      const AllocatorType& allocator = AllocatorType() );
 
    void
-   setDistribution( LocalRangeType localRange, Index ghosts, Index globalSize, MPI_Comm communicator );
+   setDistribution( LocalRangeType localRange, Index ghosts, Index globalSize, const MPI::Comm& communicator );
 
    const LocalRangeType&
    getLocalRange() const;
@@ -90,7 +90,7 @@ public:
    IndexType
    getGhosts() const;
 
-   MPI_Comm
+   const MPI::Comm&
    getCommunicator() const;
 
    AllocatorType

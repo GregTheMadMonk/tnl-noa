@@ -12,6 +12,7 @@
 #include <TNL/Containers/ByteArraySynchronizer.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Matrices/DenseMatrix.h>
+#include <TNL/MPI/Comm.h>
 #include <TNL/MPI/Wrappers.h>
 
 namespace TNL {
@@ -58,8 +59,8 @@ public:
                      "Global indices are not allocated properly." );
 
       communicator = mesh.getCommunicator();
-      const int rank = MPI::GetRank( communicator );
-      const int nproc = MPI::GetSize( communicator );
+      const int rank = communicator.rank();
+      const int nproc = communicator.size();
 
       // exchange the global index offsets so that each rank can determine the
       // owner of every entity by its global index
@@ -207,8 +208,8 @@ public:
                      bytesPerValue * ghostOffsets[ ghostOffsets.getSize() - 1 ],
                      "The array does not have the expected size." );
 
-      const int rank = MPI::GetRank( communicator );
-      const int nproc = MPI::GetSize( communicator );
+      const int rank = communicator.rank();
+      const int nproc = communicator.size();
 
       // allocate send buffers (setSize does nothing if the array size is already correct)
       sendBuffers.setSize( bytesPerValue * ghostNeighborOffsets[ nproc ] );
@@ -271,8 +272,8 @@ public:
    {
       TNL_ASSERT_EQ( pattern.getRows(), ghostOffsets[ ghostOffsets.getSize() - 1 ], "invalid sparse pattern matrix" );
 
-      const int rank = MPI::GetRank( communicator );
-      const int nproc = MPI::GetSize( communicator );
+      const int rank = communicator.rank();
+      const int nproc = communicator.size();
 
       // buffer for asynchronous communication requests
       RequestsVector requests;
@@ -461,7 +462,7 @@ public:
 
 protected:
    // communicator taken from the distributed mesh
-   MPI_Comm communicator;
+   MPI::Comm communicator;
 
    /**
     * Global offsets: array of size nproc where the i-th value is the lowest

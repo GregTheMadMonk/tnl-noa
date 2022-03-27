@@ -32,17 +32,26 @@ resolveDistributedMeshType( Functor&& functor, const std::string& fileName, cons
 
 template< typename ConfigTag, typename Device, typename Functor >
 bool
-resolveAndLoadDistributedMesh( Functor&& functor, const std::string& fileName, const std::string& fileFormat )
+resolveAndLoadDistributedMesh( Functor&& functor,
+                               const std::string& fileName,
+                               const std::string& fileFormat,
+                               const MPI::Comm& communicator )
 {
    auto wrapper = [ & ]( Readers::MeshReader& reader, auto&& mesh ) -> bool
    {
       using MeshType = std::decay_t< decltype( mesh ) >;
       std::cout << "Loading a mesh from the file " << fileName << " ..." << std::endl;
       try {
-         if( reader.getMeshType() == "Meshes::DistributedMesh" )
-            dynamic_cast< Readers::PVTUReader& >( reader ).loadMesh( mesh );
-         else if( reader.getMeshType() == "Meshes::DistributedGrid" )
-            dynamic_cast< Readers::PVTIReader& >( reader ).loadMesh( mesh );
+         if( reader.getMeshType() == "Meshes::DistributedMesh" ) {
+            auto& pvtu = dynamic_cast< Readers::PVTUReader& >( reader );
+            pvtu.setCommunicator( communicator );
+            pvtu.loadMesh( mesh );
+         }
+         else if( reader.getMeshType() == "Meshes::DistributedGrid" ) {
+            auto& pvti = dynamic_cast< Readers::PVTIReader& >( reader );
+            pvti.setCommunicator( communicator );
+            pvti.loadMesh( mesh );
+         }
          else
             throw std::runtime_error( "Unknown type of a distributed mesh: " + reader.getMeshType() );
       }
@@ -59,7 +68,8 @@ template< typename Mesh >
 bool
 loadDistributedMesh( DistributedMeshes::DistributedMesh< Mesh >& distributedMesh,
                      const std::string& fileName,
-                     const std::string& fileFormat )
+                     const std::string& fileFormat,
+                     const MPI::Comm& communicator )
 {
    namespace fs = std::experimental::filesystem;
    std::string format = fileFormat;
@@ -71,12 +81,12 @@ loadDistributedMesh( DistributedMeshes::DistributedMesh< Mesh >& distributedMesh
    }
 
    if( format == "pvtu" ) {
-      Readers::PVTUReader reader( fileName );
+      Readers::PVTUReader reader( fileName, communicator );
       reader.loadMesh( distributedMesh );
       return true;
    }
    else if( format == "pvti" ) {
-      Readers::PVTIReader reader( fileName );
+      Readers::PVTIReader reader( fileName, communicator );
       reader.loadMesh( distributedMesh );
       return true;
    }

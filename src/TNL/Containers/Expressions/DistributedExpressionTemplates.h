@@ -109,7 +109,7 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionV
       return op1.getGhosts();
    }
 
-   MPI_Comm
+   const MPI::Comm&
    getCommunicator() const
    {
       return op1.getCommunicator();
@@ -201,7 +201,7 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionV
       return op1.getGhosts();
    }
 
-   MPI_Comm
+   const MPI::Comm&
    getCommunicator() const
    {
       return op1.getCommunicator();
@@ -292,7 +292,7 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariabl
       return op2.getGhosts();
    }
 
-   MPI_Comm
+   const MPI::Comm&
    getCommunicator() const
    {
       return op2.getCommunicator();
@@ -385,7 +385,7 @@ struct DistributedUnaryExpressionTemplate
       return operand.getGhosts();
    }
 
-   MPI_Comm
+   const MPI::Comm&
    getCommunicator() const
    {
       return operand.getCommunicator();

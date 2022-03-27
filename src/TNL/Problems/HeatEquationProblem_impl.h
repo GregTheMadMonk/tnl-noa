@@ -16,7 +16,7 @@
 #include <TNL/Matrices/MatrixSetter.h>
 #include <TNL/Logger.h>
 #include <TNL/Solvers/PDE/BoundaryConditionsSetter.h>
-#include <TNL/MPI/Wrappers.h>
+#include <TNL/MPI/Comm.h>
 
 #include "HeatEquationProblem.h"
 

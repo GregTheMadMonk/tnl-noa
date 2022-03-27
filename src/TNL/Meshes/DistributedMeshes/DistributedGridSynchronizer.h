@@ -145,7 +145,7 @@ public:
 
       // async send and receive
       std::unique_ptr< MPI_Request[] > requests{ new MPI_Request[ 2 * this->getNeighborsCount() ] };
-      MPI_Comm communicator = distributedGrid->getCommunicator();
+      const MPI::Comm& communicator = distributedGrid->getCommunicator();
       int requestsCount( 0 );
 
       // send everything, recieve everything

@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include <math.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Solvers/ODE/ExplicitSolver.h>
 

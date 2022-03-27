@@ -200,13 +200,13 @@ std::string
 PVTIWriter< Grid >::addPiece( const std::string& mainFileName,
                               const DistributedMeshes::DistributedMesh< Grid >& distributedMesh )
 {
-   const MPI_Comm communicator = distributedMesh.getCommunicator();
+   const MPI::Comm& communicator = distributedMesh.getCommunicator();
    const typename Grid::CoordinatesType& globalBegin = distributedMesh.getGlobalBegin() - distributedMesh.getLowerOverlap();
    const typename Grid::CoordinatesType& globalEnd =
       globalBegin + distributedMesh.getLocalSize() + distributedMesh.getUpperOverlap();
 
    // exchange globalBegin and globalEnd among the ranks
-   const int nproc = MPI::GetSize( communicator );
+   const int nproc = communicator.size();
    std::unique_ptr< typename Grid::CoordinatesType[] > beginsForScatter{ new typename Grid::CoordinatesType[ nproc ] };
    std::unique_ptr< typename Grid::CoordinatesType[] > endsForScatter{ new typename Grid::CoordinatesType[ nproc ] };
    for( int i = 0; i < nproc; i++ ) {
@@ -231,9 +231,9 @@ PVTIWriter< Grid >::addPiece( const std::string& mainFileName,
 
    // add pieces for all ranks, return the source for the current rank
    std::string source;
-   for( int i = 0; i < MPI::GetSize( communicator ); i++ ) {
+   for( int i = 0; i < communicator.size(); i++ ) {
       const std::string s = addPiece( mainFileName, i, globalBegins[ i ], globalEnds[ i ] );
-      if( i == MPI::GetRank( communicator ) )
+      if( i == communicator.rank() )
          source = s;
    }
    return source;

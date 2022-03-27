@@ -23,6 +23,7 @@
 #include <TNL/SystemInfo.h>
 #include <TNL/Cuda/DeviceInfo.h>
 #include <TNL/Config/ConfigDescription.h>
+#include <TNL/MPI/Comm.h>
 #include <TNL/MPI/Wrappers.h>
 
 namespace TNL {

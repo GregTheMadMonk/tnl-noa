@@ -9,6 +9,7 @@
 #ifndef HAVE_MPI
 using MPI_Request = int;
 using MPI_Comm = int;
+using MPI_Info = int;
 
 enum MPI_Op
 {
@@ -24,6 +25,15 @@ enum MPI_Op
    MPI_BXOR,
    MPI_MINLOC,
    MPI_MAXLOC,
+};
+
+// Comparison results
+enum
+{
+   MPI_IDENT,
+   MPI_CONGRUENT,
+   MPI_SIMILAR,
+   MPI_UNEQUAL
 };
 
 // MPI_Init_thread constants

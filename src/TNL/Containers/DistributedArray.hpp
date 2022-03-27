@@ -45,7 +45,7 @@ template< typename Value, typename Device, typename Index, typename Allocator >
 DistributedArray< Value, Device, Index, Allocator >::DistributedArray( LocalRangeType localRange,
                                                                        IndexType ghosts,
                                                                        IndexType globalSize,
-                                                                       MPI_Comm communicator,
+                                                                       const MPI::Comm& communicator,
                                                                        const Allocator& allocator )
 : localData( allocator )
 {
@@ -57,7 +57,7 @@ void
 DistributedArray< Value, Device, Index, Allocator >::setDistribution( LocalRangeType localRange,
                                                                       IndexType ghosts,
                                                                       IndexType globalSize,
-                                                                      MPI_Comm communicator )
+                                                                      const MPI::Comm& communicator )
 {
    TNL_ASSERT_LE( localRange.getEnd(), globalSize, "end of the local range is outside of the global range" );
    if( communicator != MPI_COMM_NULL )
@@ -80,7 +80,7 @@ DistributedArray< Value, Device, Index, Allocator >::getGhosts() const
 }
 
 template< typename Value, typename Device, typename Index, typename Allocator >
-MPI_Comm
+const MPI::Comm&
 DistributedArray< Value, Device, Index, Allocator >::getCommunicator() const
 {
    return view.getCommunicator();

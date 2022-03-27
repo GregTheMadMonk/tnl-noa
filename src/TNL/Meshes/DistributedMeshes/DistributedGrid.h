@@ -100,9 +100,9 @@ public:
    getSubdomainCoordinates() const;
 
    void
-   setCommunicator( MPI_Comm communicator );
+   setCommunicator( const MPI::Comm& communicator );
 
-   MPI_Comm
+   const MPI::Comm&
    getCommunicator() const;
 
    template< int EntityDimension >
@@ -168,7 +168,7 @@ public:
 
    bool isSet = false;
 
-   MPI_Comm communicator = MPI_COMM_WORLD;
+   MPI::Comm communicator = MPI_COMM_WORLD;
 };
 
 template< int Dimension, typename Real, typename Device, typename Index >

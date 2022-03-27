@@ -9,8 +9,9 @@
 #pragma once
 
 #include <experimental/filesystem>
+#include <utility>
 
-#include <TNL/MPI/Wrappers.h>
+#include <TNL/MPI/Comm.h>
 #include <TNL/MPI/Utils.h>
 #include <TNL/Meshes/Readers/VTUReader.h>
 #include <TNL/Meshes/MeshDetails/layers/EntityTags/Traits.h>
@@ -65,14 +66,14 @@ class PVTUReader : public XMLVTK
          throw MeshReaderError( "PVTUReader", "the file does not contain any <Piece> element." );
 
       // check that the number of pieces matches the number of MPI ranks
-      const int nproc = MPI::GetSize( communicator );
+      const int nproc = communicator.size();
       if( (int) pieceSources.size() != nproc )
          throw MeshReaderError( "PVTUReader",
                                 "the number of subdomains does not match the number of MPI ranks ("
                                    + std::to_string( pieceSources.size() ) + " vs " + std::to_string( nproc ) + ")." );
 
       // read the local piece source
-      const int rank = MPI::GetRank( communicator );
+      const int rank = communicator.rank();
       localReader.setFileName( pieceSources[ rank ] );
       localReader.detectMesh();
 
@@ -101,9 +102,15 @@ class PVTUReader : public XMLVTK
 public:
    PVTUReader() = default;
 
-   PVTUReader( const std::string& fileName, MPI_Comm communicator = MPI_COMM_WORLD )
-   : XMLVTK( fileName ), communicator( communicator )
+   PVTUReader( const std::string& fileName, MPI::Comm communicator = MPI_COMM_WORLD )
+   : XMLVTK( fileName ), communicator( std::move( communicator ) )
    {}
+
+   void
+   setCommunicator( const MPI::Comm& communicator )
+   {
+      this->communicator = communicator;
+   }
 
    void
    detectMesh() override
@@ -228,10 +235,10 @@ public:
       if( minCount == 0 ) {
          // split the communicator, remove the ranks which did not get a subdomain
          const int color = ( pointsCount > 0 && cellsCount > 0 ) ? 0 : MPI_UNDEFINED;
-         const MPI_Comm subCommunicator = MPI::Comm_split( communicator, color, 0 );
+         MPI::Comm subCommunicator = communicator.split( color, 0 );
 
          // set the communicator
-         mesh.setCommunicator( subCommunicator );
+         mesh.setCommunicator( std::move( subCommunicator ) );
       }
       else {
          // set the communicator
@@ -262,7 +269,7 @@ public:
    }
 
 protected:
-   MPI_Comm communicator;
+   MPI::Comm communicator;
 
    int ghostLevels = 0;
    int minCommonVertices = 0;

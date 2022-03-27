@@ -6,10 +6,14 @@
 
 #pragma once
 
+#include <cstdlib>  // std::getenv
+
+#include <TNL/Cuda/CheckDevice.h>
 #include <TNL/Debugging/OutputRedirection.h>
 #include <TNL/TypeTraits.h>
 
 #include "Wrappers.h"
+#include "Comm.h"
 
 namespace TNL {
 namespace MPI {
@@ -42,34 +46,27 @@ restoreRedirection()
    }
 }
 
-/**
- * \brief Returns a local rank ID of the current process within a group of
- * processes running on a shared-memory node.
- *
- * The given MPI communicator is split into groups according to the
- * `MPI_COMM_TYPE_SHARED` type (from MPI-3) and the rank ID of the process
- * within the group is returned.
- */
-inline int
-getRankOnNode( MPI_Comm communicator = MPI_COMM_WORLD )
+inline void
+selectGPU()
 {
 #ifdef HAVE_MPI
-   const int rank = GetRank( communicator );
+   #ifdef HAVE_CUDA
+   int gpuCount;
+   cudaGetDeviceCount( &gpuCount );
 
-   MPI_Info info;
-   MPI_Info_create( &info );
+   const int local_rank = getRankOnNode();
+   const int gpuNumber = local_rank % gpuCount;
 
-   MPI_Comm local_comm;
-   MPI_Comm_split_type( communicator, MPI_COMM_TYPE_SHARED, rank, info, &local_comm );
+   // write debug output before calling cudaSetDevice
+   const char* cuda_visible_devices = std::getenv( "CUDA_VISIBLE_DEVICES" );
+   if( ! cuda_visible_devices )
+      cuda_visible_devices = "";
+   std::cout << "Rank " << GetRank() << ": rank on node is " << local_rank << ", using GPU id " << gpuNumber << " of "
+             << gpuCount << ", CUDA_VISIBLE_DEVICES=" << cuda_visible_devices << std::endl;
 
-   const int local_rank = GetRank( local_comm );
-
-   MPI_Comm_free( &local_comm );
-   MPI_Info_free( &info );
-
-   return local_rank;
-#else
-   return 0;
+   cudaSetDevice( gpuNumber );
+   TNL_CHECK_CUDA_DEVICE;
+   #endif
 #endif
 }
 
