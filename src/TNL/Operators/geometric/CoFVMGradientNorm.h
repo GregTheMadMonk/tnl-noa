@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Meshes/Grid.h>
-#include <noa/3rdparty/TNL/Operators/geometric/ExactGradientNorm.h>
-#include <noa/3rdparty/TNL/Operators/interpolants/MeshEntitiesInterpolants.h>
-#include <noa/3rdparty/TNL/Operators/Operator.h>
-#include <noa/3rdparty/TNL/Operators/OperatorComposition.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/geometric/ExactGradientNorm.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/interpolants/MeshEntitiesInterpolants.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/Operator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/OperatorComposition.h>
 
 namespace noa::TNL {
 namespace Operators {   

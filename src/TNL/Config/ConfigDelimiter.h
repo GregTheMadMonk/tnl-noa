@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Config/ConfigEntryBase.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ConfigEntryBase.h>
 
 namespace noa::TNL {
 namespace Config {

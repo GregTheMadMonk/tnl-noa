@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Pointers/SharedPointer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/SharedPointer.h>
 
 namespace noa::TNL {
 namespace Matrices {
@@ -159,4 +159,4 @@ class MatrixSetter< Meshes::Grid< Dimension, Real, Device, Index >,
 } // namespace Matrices
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Matrices/MatrixSetter_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixSetter_impl.h>

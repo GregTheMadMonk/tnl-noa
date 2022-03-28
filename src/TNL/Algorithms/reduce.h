@@ -10,9 +10,9 @@
 
 #include <utility>  // std::pair, std::forward
 
-#include <noa/3rdparty/TNL/Functional.h>  // extension of STL functionals for reduction
-#include <noa/3rdparty/TNL/Algorithms/detail/Reduction.h>
-#include <noa/3rdparty/TNL/Containers/Expressions/TypeTraits.h>  // RemoveET
+#include <noa/3rdparty/tnl-noa/src/TNL/Functional.h>  // extension of STL functionals for reduction
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/detail/Reduction.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/TypeTraits.h>  // RemoveET
 
 namespace noa::TNL {
 namespace Algorithms {

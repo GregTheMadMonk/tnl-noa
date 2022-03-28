@@ -7,7 +7,7 @@
 #pragma once
 
 #include <iostream>
-#include <noa/3rdparty/TNL/Functions/VectorFieldGnuplotWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/VectorFieldGnuplotWriter.h>
 
 namespace noa::TNL {
 namespace Functions {

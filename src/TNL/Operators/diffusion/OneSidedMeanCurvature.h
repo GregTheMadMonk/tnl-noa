@@ -12,14 +12,14 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Operators/Operator.h>
-#include <noa/3rdparty/TNL/Operators/FunctionInverseOperator.h>
-#include <noa/3rdparty/TNL/Operators/geometric/FDMGradientNorm.h>
-#include <noa/3rdparty/TNL/Operators/NeumannBoundaryConditions.h>
-#include <noa/3rdparty/TNL/Operators/diffusion/OneSidedNonlinearDiffusion.h>
-#include <noa/3rdparty/TNL/Functions/OperatorFunction.h>
-#include <noa/3rdparty/TNL/Functions/Analytic/Constant.h>
-#include <noa/3rdparty/TNL/Operators/diffusion/ExactMeanCurvature.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/Operator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/FunctionInverseOperator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/geometric/FDMGradientNorm.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/NeumannBoundaryConditions.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/diffusion/OneSidedNonlinearDiffusion.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/OperatorFunction.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/Constant.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/diffusion/ExactMeanCurvature.h>
 
 namespace noa::TNL {
 namespace Operators {   

@@ -10,10 +10,10 @@
 
 #include <memory>
 
-#include <noa/3rdparty/TNL/Containers/ArrayView.h>
-#include <noa/3rdparty/TNL/Containers/Subrange.h>
-#include <noa/3rdparty/TNL/Containers/ByteArraySynchronizer.h>
-#include <noa/3rdparty/TNL/MPI/Wrappers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ArrayView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Subrange.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ByteArraySynchronizer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Wrappers.h>
 
 namespace noa::TNL {
 namespace Containers {

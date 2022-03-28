@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Devices/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Host.h>
 
 namespace noa::TNL {
 namespace Meshes {
@@ -49,6 +49,6 @@ std::ostream& operator<<( std::ostream& str, const Grid< Dimension, Real, Device
 } // namespace Meshes
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Meshes/GridDetails/Grid1D.h>
-#include <noa/3rdparty/TNL/Meshes/GridDetails/Grid2D.h>
-#include <noa/3rdparty/TNL/Meshes/GridDetails/Grid3D.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/Grid1D.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/Grid2D.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/Grid3D.h>

@@ -12,11 +12,11 @@
 #include <set>
 #include <filesystem>
 
-#include <noa/3rdparty/TNL/Meshes/Readers/MeshReader.h>
-#include <noa/3rdparty/TNL/base64.h>
-#include <noa/3rdparty/TNL/Endianness.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Readers/MeshReader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/base64.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Endianness.h>
 
-#include <noa/3rdparty/TNL/zlib_compression.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/zlib_compression.h>
 
 #include <noa/3rdparty/tinyxml2.hh>
 

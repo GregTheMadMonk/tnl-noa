@@ -14,7 +14,7 @@
 #include <sys/utsname.h>
 #include <sys/stat.h>
 
-#include <noa/3rdparty/TNL/SystemInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/SystemInfo.h>
 
 namespace noa::TNL {
 

@@ -12,13 +12,13 @@
 
 //#define CUDA_REDUCTION_PROFILING
 
-#include <noa/3rdparty/TNL/Assert.h>
-#include <noa/3rdparty/TNL/Algorithms/Multireduction.h>
-#include <noa/3rdparty/TNL/Algorithms/MultiDeviceMemoryOperations.h>
-#include <noa/3rdparty/TNL/Algorithms/detail/CudaMultireductionKernel.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Multireduction.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/MultiDeviceMemoryOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/detail/CudaMultireductionKernel.h>
 
 #ifdef CUDA_REDUCTION_PROFILING
-#include <noa/3rdparty/TNL/Timer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Timer.h>
 #include <iostream>
 #endif
 

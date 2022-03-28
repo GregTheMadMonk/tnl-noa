@@ -8,14 +8,14 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Containers/NDArrayIndexer.h>
-#include <noa/3rdparty/TNL/Containers/ndarray/SizesHolder.h>
-#include <noa/3rdparty/TNL/Containers/ndarray/Subarrays.h>
-#include <noa/3rdparty/TNL/Containers/ndarray/Executors.h>
-#include <noa/3rdparty/TNL/Containers/ndarray/BoundaryExecutors.h>
-#include <noa/3rdparty/TNL/Containers/ndarray/Operations.h>
-#include <noa/3rdparty/TNL/Algorithms/MemoryOperations.h>
-#include <noa/3rdparty/TNL/Algorithms/MultiDeviceMemoryOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/NDArrayIndexer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ndarray/SizesHolder.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ndarray/Subarrays.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ndarray/Executors.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ndarray/BoundaryExecutors.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ndarray/Operations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/MemoryOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/MultiDeviceMemoryOperations.h>
 
 namespace noa::TNL {
 namespace Containers {

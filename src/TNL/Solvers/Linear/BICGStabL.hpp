@@ -10,7 +10,7 @@
 
 #include "BICGStabL.h"
 
-#include <noa/3rdparty/TNL/Matrices/MatrixOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixOperations.h>
 
 namespace noa::TNL {
 namespace Solvers {

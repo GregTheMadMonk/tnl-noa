@@ -12,11 +12,11 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Operators/diffusion/OneSidedMeanCurvature.h>
-#include <noa/3rdparty/TNL/Problems/PDEProblem.h>
-#include <noa/3rdparty/TNL/Operators/operator-Q/tnlOneSideDiffOperatorQ.h>
-#include <noa/3rdparty/TNL/Matrices/CSR.h>
-#include <noa/3rdparty/TNL/Functions/MeshFunction.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/diffusion/OneSidedMeanCurvature.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Problems/PDEProblem.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/operator-Q/tnlOneSideDiffOperatorQ.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/CSR.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/MeshFunction.h>
 
 namespace noa::TNL {
 namespace Problems {

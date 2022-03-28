@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Assert.h>
-#include <noa/3rdparty/TNL/Matrices/DenseMatrix.h>
-#include <noa/3rdparty/TNL/Exceptions/NotImplementedError.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/DenseMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/NotImplementedError.h>
 
 namespace noa::TNL {
 namespace Matrices {

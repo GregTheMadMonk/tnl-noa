@@ -8,7 +8,7 @@
 
 #include <cstdlib>  // std::getenv
 
-#include <noa/3rdparty/TNL/Cuda/CheckDevice.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CheckDevice.h>
 
 #include "Utils.h"
 

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Exceptions/CudaRuntimeError.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/CudaRuntimeError.h>
 
 namespace noa::TNL {
 namespace Cuda {

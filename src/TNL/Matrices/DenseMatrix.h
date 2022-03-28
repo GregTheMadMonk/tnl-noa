@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Allocators/Default.h>
-#include <noa/3rdparty/TNL/Devices/Host.h>
-#include <noa/3rdparty/TNL/Matrices/DenseMatrixRowView.h>
-#include <noa/3rdparty/TNL/Matrices/Matrix.h>
-#include <noa/3rdparty/TNL/Matrices/DenseMatrixView.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/Ellpack.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Allocators/Default.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/DenseMatrixRowView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/Matrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/DenseMatrixView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/Ellpack.h>
 
 namespace noa::TNL {
 namespace Matrices {
@@ -1101,4 +1101,4 @@ bool operator!=( const DenseMatrixView< Real, Device, Index, Organization >& lef
 } // namespace Matrices
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Matrices/DenseMatrix.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/DenseMatrix.hpp>

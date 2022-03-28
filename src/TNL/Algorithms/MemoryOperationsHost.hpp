@@ -10,9 +10,9 @@
 #include <stdexcept>
 #include <algorithm>  // std::copy, std::equal
 
-#include <noa/3rdparty/TNL/Algorithms/MemoryOperations.h>
-#include <noa/3rdparty/TNL/Algorithms/ParallelFor.h>
-#include <noa/3rdparty/TNL/Algorithms/reduce.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/MemoryOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/ParallelFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/reduce.h>
 
 namespace noa::TNL {
 namespace Algorithms {

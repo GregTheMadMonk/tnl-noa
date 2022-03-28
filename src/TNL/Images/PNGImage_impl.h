@@ -6,7 +6,7 @@
 
 #pragma once 
 
-#include <noa/3rdparty/TNL/Images//PNGImage.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images//PNGImage.h>
 
 namespace noa::TNL {
 namespace Images {   

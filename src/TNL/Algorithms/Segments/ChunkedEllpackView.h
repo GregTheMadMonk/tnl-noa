@@ -8,12 +8,12 @@
 
 #include <type_traits>
 
-#include <noa/3rdparty/TNL/TypeTraits.h>
-#include <noa/3rdparty/TNL/Containers/Vector.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/ElementsOrganization.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/ChunkedEllpackSegmentView.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/detail/ChunkedEllpack.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/SegmentsPrinting.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/ElementsOrganization.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/ChunkedEllpackSegmentView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/detail/ChunkedEllpack.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/SegmentsPrinting.h>
 
 namespace noa::TNL {
    namespace Algorithms {
@@ -231,4 +231,4 @@ class ChunkedEllpackView
    }  // namespace Algorithms
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Algorithms/Segments/ChunkedEllpackView.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/ChunkedEllpackView.hpp>

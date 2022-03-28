@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/String.h>
-#include <noa/3rdparty/TNL/Devices/Cuda.h>
-#include <noa/3rdparty/TNL/Operators/Operator.h>
-#include <noa/3rdparty/TNL/Operators/ExactIdentityOperator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/Operator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/ExactIdentityOperator.h>
 
 namespace noa::TNL {
 namespace Operators {

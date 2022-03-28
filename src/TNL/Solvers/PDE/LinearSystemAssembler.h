@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Pointers/SharedPointer.h>
-#include <noa/3rdparty/TNL/Functions/FunctionAdapter.h>
-#include <noa/3rdparty/TNL/Meshes/Traverser.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/SharedPointer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/FunctionAdapter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Traverser.h>
 
 namespace noa::TNL {
 namespace Solvers {

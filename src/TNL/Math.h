@@ -10,8 +10,8 @@
 #include <type_traits>
 #include <algorithm>
 
-#include <noa/3rdparty/TNL/TypeTraits.h>
-#include <noa/3rdparty/TNL/Cuda/CudaCallable.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CudaCallable.h>
 
 namespace noa::TNL {
 

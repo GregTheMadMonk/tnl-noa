@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Meshes/MeshEntity.h>
-#include <noa/3rdparty/TNL/Meshes/Topologies/Triangle.h>
-#include <noa/3rdparty/TNL/Meshes/Topologies/Quadrangle.h>
-#include <noa/3rdparty/TNL/Meshes/Topologies/Tetrahedron.h>
-#include <noa/3rdparty/TNL/Meshes/Topologies/Hexahedron.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshEntity.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Triangle.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Quadrangle.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Tetrahedron.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Hexahedron.h>
 
 namespace noa::TNL {
 namespace Meshes {

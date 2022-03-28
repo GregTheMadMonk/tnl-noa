@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/TypeInfo.h>
-#include <noa/3rdparty/TNL/Math.h>
-#include <noa/3rdparty/TNL/Containers/StaticArray.h>
-#include <noa/3rdparty/TNL/Containers/detail/StaticArrayAssignment.h>
-#include <noa/3rdparty/TNL/Algorithms/unrolledFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Math.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticArray.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/detail/StaticArrayAssignment.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/unrolledFor.h>
 
 namespace noa::TNL {
 namespace Containers {

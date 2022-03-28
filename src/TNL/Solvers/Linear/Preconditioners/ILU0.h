@@ -10,10 +10,10 @@
 
 #include "Preconditioner.h"
 
-#include <noa/3rdparty/TNL/Containers/Vector.h>
-#include <noa/3rdparty/TNL/Matrices/SparseMatrix.h>
-#include <noa/3rdparty/TNL/Pointers/UniquePointer.h>
-#include <noa/3rdparty/TNL/Exceptions/NotImplementedError.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/SparseMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/UniquePointer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/NotImplementedError.h>
 
 #if defined(HAVE_CUDA) && defined(HAVE_CUSPARSE)
 #include <cusparse.h>

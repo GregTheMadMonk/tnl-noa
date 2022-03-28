@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Solvers/SolverMonitor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/SolverMonitor.h>
 
 namespace noa::TNL {
    namespace Solvers {
@@ -138,4 +138,4 @@ class IterativeSolverMonitor : public SolverMonitor
    } // namespace Solvers
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Solvers/IterativeSolverMonitor.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/IterativeSolverMonitor.hpp>

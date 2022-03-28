@@ -12,10 +12,10 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/File.h>
-#include <noa/3rdparty/TNL/Meshes/DimensionTag.h>
-#include <noa/3rdparty/TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <noa/3rdparty/TNL/Meshes/MeshDetails/traits/WeakStorageTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/File.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DimensionTag.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/traits/MeshTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/traits/WeakStorageTraits.h>
 
 namespace noa::TNL {
 namespace Meshes {

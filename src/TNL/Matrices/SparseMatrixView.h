@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Matrices/Matrix.h>
-#include <noa/3rdparty/TNL/Matrices/MatrixType.h>
-#include <noa/3rdparty/TNL/Allocators/Default.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/CSR.h>
-#include <noa/3rdparty/TNL/Matrices/SparseMatrixRowView.h>
-#include <noa/3rdparty/TNL/TypeTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/Matrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixType.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Allocators/Default.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/CSR.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/SparseMatrixRowView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeTraits.h>
 
 namespace noa::TNL {
 namespace Matrices {
@@ -935,4 +935,4 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
    } // namespace Matrices
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Matrices/SparseMatrixView.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/SparseMatrixView.hpp>

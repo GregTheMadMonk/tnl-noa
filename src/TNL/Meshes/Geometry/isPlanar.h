@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Meshes/Geometry/getEntityMeasure.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Geometry/getEntityMeasure.h>
 
 namespace noa::TNL {
 namespace Meshes {

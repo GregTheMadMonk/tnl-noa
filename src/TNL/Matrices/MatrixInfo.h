@@ -6,15 +6,15 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/String.h>
-#include <noa/3rdparty/TNL/Matrices/DenseMatrix.h>
-#include <noa/3rdparty/TNL/Matrices/DenseMatrixView.h>
-#include <noa/3rdparty/TNL/Matrices/SparseMatrix.h>
-#include <noa/3rdparty/TNL/Matrices/SparseMatrixView.h>
-#include <noa/3rdparty/TNL/Matrices/Sandbox/SparseSandboxMatrix.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/CSRView.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/EllpackView.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/SlicedEllpackView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/DenseMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/DenseMatrixView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/SparseMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/SparseMatrixView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/Sandbox/SparseSandboxMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/CSRView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/EllpackView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/SlicedEllpackView.h>
 #include <Benchmarks/SpMV/ReferenceFormats/Legacy/CSR.h>
 #include <Benchmarks/SpMV/ReferenceFormats/Legacy/Ellpack.h>
 #include <Benchmarks/SpMV/ReferenceFormats/Legacy/SlicedEllpack.h>

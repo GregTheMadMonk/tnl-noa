@@ -10,12 +10,12 @@
 
 #include <limits>
 
-#include <noa/3rdparty/TNL/Containers/StaticVector.h>  // noa::TNL::product
-#include <noa/3rdparty/TNL/Meshes/Writers/VTIWriter.h>
-#include <noa/3rdparty/TNL/Endianness.h>
-#include <noa/3rdparty/TNL/base64.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticVector.h>  // noa::TNL::product
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/VTIWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Endianness.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/base64.h>
 #include <stdexcept>
-#include <noa/3rdparty/TNL/zlib_compression.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/zlib_compression.h>
 
 
 namespace noa::TNL {

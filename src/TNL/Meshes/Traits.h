@@ -8,8 +8,8 @@
 
 #include <type_traits>
 
-#include <noa/3rdparty/TNL/Meshes/Grid.h>
-#include <noa/3rdparty/TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
 namespace noa::TNL {
 namespace Meshes {

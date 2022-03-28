@@ -7,10 +7,10 @@
 #ifndef Upwind_H
 #define Upwind_H
 
-#include <noa/3rdparty/TNL/Containers/Vector.h>
-#include <noa/3rdparty/TNL/Meshes/Grid.h>
-#include <noa/3rdparty/TNL/Functions/VectorField.h>
-#include <noa/3rdparty/TNL/Pointers/SharedPointer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/VectorField.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/SharedPointer.h>
 
 namespace noa::TNL {
    namespace Operators {

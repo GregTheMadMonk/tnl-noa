@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Assert.h>
-#include <noa/3rdparty/TNL/Cuda/LaunchHelpers.h>
-#include <noa/3rdparty/TNL/Containers/VectorView.h>
-#include <noa/3rdparty/TNL/Algorithms/ParallelFor.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/detail/LambdaAdapter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/LaunchHelpers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/VectorView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/ParallelFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/detail/LambdaAdapter.h>
 
 namespace noa::TNL {
    namespace Algorithms {
@@ -56,4 +56,4 @@ struct CSRVectorKernel
    }  // namespace Algorithms
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Algorithms/Segments/Kernels/CSRVectorKernel.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/Kernels/CSRVectorKernel.hpp>

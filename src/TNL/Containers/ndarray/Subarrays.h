@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Containers/ndarray/Meta.h>
-#include <noa/3rdparty/TNL/Containers/ndarray/SizesHolder.h>
-#include <noa/3rdparty/TNL/Containers/ndarray/Indexing.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ndarray/Meta.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ndarray/SizesHolder.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ndarray/Indexing.h>
 
 namespace noa::TNL {
 namespace Containers {

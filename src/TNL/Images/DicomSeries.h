@@ -8,13 +8,13 @@
 
 #include <list>
 
-#include <noa/3rdparty/TNL/Containers/Array.h>
-#include <noa/3rdparty/TNL/String.h>
-#include <noa/3rdparty/TNL/TypeInfo.h>
-#include <noa/3rdparty/TNL/Images//Image.h>
-#include <noa/3rdparty/TNL/Images//DicomHeader.h>
-#include <noa/3rdparty/TNL/Images//RegionOfInterest.h>
-#include <noa/3rdparty/TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images//Image.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images//DicomHeader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images//RegionOfInterest.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
 
 #ifdef HAVE_DCMTK_H
 #define USING_STD_NAMESPACE
@@ -113,5 +113,5 @@ class DicomSeries : public Image< int >
 } // namespace Images
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Images//DicomSeries_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images//DicomSeries_impl.h>
 

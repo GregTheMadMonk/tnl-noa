@@ -12,11 +12,11 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Containers/Vector.h>
-#include <noa/3rdparty/TNL/Functions/MeshFunction.h>
-#include <noa/3rdparty/TNL/Meshes/Grid.h>
-#include <noa/3rdparty/TNL/Operators/Operator.h>
-#include <noa/3rdparty/TNL/Operators/diffusion/ExactLinearDiffusion.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/MeshFunction.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/Operator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/diffusion/ExactLinearDiffusion.h>
 
 namespace noa::TNL {
 namespace Operators {   
@@ -178,4 +178,4 @@ class LinearDiffusion< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Ind
 } // namespace Operators
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Operators/diffusion/LinearDiffusion_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/diffusion/LinearDiffusion_impl.h>

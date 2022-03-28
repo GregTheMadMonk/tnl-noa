@@ -8,10 +8,10 @@
 
 #include <stdexcept>
 
-#include <noa/3rdparty/TNL/Assert.h>
-#include <noa/3rdparty/TNL/Containers/Expressions/ExpressionVariableType.h>
-#include <noa/3rdparty/TNL/Algorithms/reduce.h>
-#include <noa/3rdparty/TNL/Algorithms/MultiDeviceMemoryOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/ExpressionVariableType.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/reduce.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/MultiDeviceMemoryOperations.h>
 
 namespace noa::TNL {
 namespace Containers {

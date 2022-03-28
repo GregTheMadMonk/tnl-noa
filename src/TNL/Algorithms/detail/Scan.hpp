@@ -13,11 +13,11 @@
 #include "Scan.h"
 #include "CudaScanKernel.h"
 
-#include <noa/3rdparty/TNL/Assert.h>
-#include <noa/3rdparty/TNL/Containers/Array.h>
-#include <noa/3rdparty/TNL/Containers/StaticArray.h>
-#include <noa/3rdparty/TNL/Algorithms/reduce.h>
-#include <noa/3rdparty/TNL/Exceptions/CudaSupportMissing.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticArray.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/reduce.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/CudaSupportMissing.h>
 
 namespace noa::TNL {
 namespace Algorithms {

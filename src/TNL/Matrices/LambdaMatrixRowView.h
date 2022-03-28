@@ -8,9 +8,9 @@
 
 #include <ostream>
 
-#include <noa/3rdparty/TNL/Cuda/CudaCallable.h>
-#include <noa/3rdparty/TNL/Matrices/LambdaMatrixRowViewIterator.h>
-#include <noa/3rdparty/TNL/Matrices/LambdaMatrixElement.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CudaCallable.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/LambdaMatrixRowViewIterator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/LambdaMatrixElement.h>
 
 
 namespace noa::TNL {
@@ -221,4 +221,4 @@ std::ostream& operator<<( std::ostream& str, const LambdaMatrixRowView< MatrixEl
 } // namespace Matrices
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Matrices/LambdaMatrixRowView.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/LambdaMatrixRowView.hpp>

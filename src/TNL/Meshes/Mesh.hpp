@@ -12,9 +12,9 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Meshes/Mesh.h>
-#include <noa/3rdparty/TNL/Meshes/MeshDetails/IndexPermutationApplier.h>
-#include <noa/3rdparty/TNL/Meshes/MeshDetails/initializer/Initializer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Mesh.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/IndexPermutationApplier.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/initializer/Initializer.h>
 
 namespace noa::TNL {
 namespace Meshes {

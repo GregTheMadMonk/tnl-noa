@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Meshes/GridDetails/GridTraverser.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/GridTraverser.h>
 
 #include "Traverser_Grid3D.h"
 

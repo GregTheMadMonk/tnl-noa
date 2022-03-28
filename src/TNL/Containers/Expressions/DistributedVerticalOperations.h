@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/MPI/Wrappers.h>
-#include <noa/3rdparty/TNL/Algorithms/reduce.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Wrappers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/reduce.h>
 
 namespace noa::TNL {
 namespace Containers {

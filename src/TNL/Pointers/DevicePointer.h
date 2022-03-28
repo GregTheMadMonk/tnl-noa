@@ -8,12 +8,12 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Allocators/Default.h>
-#include <noa/3rdparty/TNL/Devices/Host.h>
-#include <noa/3rdparty/TNL/Devices/Cuda.h>
-#include <noa/3rdparty/TNL/Pointers/SmartPointer.h>
-#include <noa/3rdparty/TNL/Pointers/SmartPointersRegister.h>
-#include <noa/3rdparty/TNL/TypeInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Allocators/Default.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/SmartPointer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/SmartPointersRegister.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeInfo.h>
 
 #include <cstring>  // std::memcpy, std::memcmp
 

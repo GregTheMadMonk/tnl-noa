@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Matrices/Sandbox/SparseSandboxMatrixRowView.h>
-#include <noa/3rdparty/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/Sandbox/SparseSandboxMatrixRowView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
 
 namespace noa::TNL {
    namespace Matrices {

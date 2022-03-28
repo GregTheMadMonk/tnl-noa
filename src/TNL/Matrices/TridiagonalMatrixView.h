@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Matrices/MatrixView.h>
-#include <noa/3rdparty/TNL/Containers/Vector.h>
-#include <noa/3rdparty/TNL/Matrices/TridiagonalMatrixRowView.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/Ellpack.h>
-#include <noa/3rdparty/TNL/Matrices/details/TridiagonalMatrixIndexer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/TridiagonalMatrixRowView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/Ellpack.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/details/TridiagonalMatrixIndexer.h>
 
 namespace noa::TNL {
 namespace Matrices {
@@ -842,4 +842,4 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 } // namespace Matrices
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Matrices/TridiagonalMatrixView.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/TridiagonalMatrixView.hpp>

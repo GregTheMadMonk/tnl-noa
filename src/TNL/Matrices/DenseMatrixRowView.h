@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Cuda/CudaCallable.h>
-#include <noa/3rdparty/TNL/Matrices/MatrixRowViewIterator.h>
-#include <noa/3rdparty/TNL/Matrices/DenseMatrixElement.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CudaCallable.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixRowViewIterator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/DenseMatrixElement.h>
 
 namespace noa::TNL {
    namespace Matrices {
@@ -203,4 +203,4 @@ class DenseMatrixRowView
    } // namespace Matrices
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Matrices/DenseMatrixRowView.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/DenseMatrixRowView.hpp>

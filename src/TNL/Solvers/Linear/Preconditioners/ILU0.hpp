@@ -9,9 +9,9 @@
 #pragma once
 
 #include "ILU0.h"
-#include <noa/3rdparty/TNL/Solvers/Linear/Utils/TriangularSolve.h>
-#include <noa/3rdparty/TNL/Algorithms/ParallelFor.h>
-#include <noa/3rdparty/TNL/Exceptions/CudaSupportMissing.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/Utils/TriangularSolve.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/ParallelFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/CudaSupportMissing.h>
 
 namespace noa::TNL {
 namespace Solvers {

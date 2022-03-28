@@ -12,11 +12,11 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Containers/Array.h>
-#include <noa/3rdparty/TNL/Containers/UnorderedIndexedSet.h>
-#include <noa/3rdparty/TNL/Meshes/Topologies/SubentityVertexMap.h>
-#include <noa/3rdparty/TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <noa/3rdparty/TNL/Meshes/MeshDetails/initializer/EntitySeed.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/UnorderedIndexedSet.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/SubentityVertexMap.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/traits/MeshTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/initializer/EntitySeed.h>
 
 #include <unordered_set>
 

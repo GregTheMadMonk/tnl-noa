@@ -10,10 +10,10 @@
 #include <png.h>
 #endif
 
-#include <noa/3rdparty/TNL/String.h>
-#include <noa/3rdparty/TNL/Images/Image.h>
-#include <noa/3rdparty/TNL/Images/RegionOfInterest.h>
-#include <noa/3rdparty/TNL/Functions/MeshFunction.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/Image.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/RegionOfInterest.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/MeshFunction.h>
 
 namespace noa::TNL {
 namespace Images {   
@@ -81,5 +81,5 @@ class PNGImage : public Image< Index >
 } // namespace Images
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Images//PNGImage_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images//PNGImage_impl.h>
 

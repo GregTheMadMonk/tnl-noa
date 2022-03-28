@@ -13,8 +13,8 @@
 
 #include <limits>
 
-#include <noa/3rdparty/TNL/String.h>
-#include <noa/3rdparty/TNL/Solvers/IterativeSolverMonitor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/IterativeSolverMonitor.h>
 
 namespace noa::TNL {
 namespace Benchmarks {

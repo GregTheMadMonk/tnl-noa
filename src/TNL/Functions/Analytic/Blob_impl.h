@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Functions/Analytic/Blob.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/Blob.h>
 
 namespace noa::TNL {
 namespace Functions {

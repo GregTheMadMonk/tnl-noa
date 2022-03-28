@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Config/ConfigDescription.h>
-#include <noa/3rdparty/TNL/Solvers/ODE/ExplicitSolver.h>
-#include <noa/3rdparty/TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ConfigDescription.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/ODE/ExplicitSolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
 
 namespace noa::TNL {
 namespace Solvers {
@@ -52,4 +52,4 @@ class Euler : public ExplicitSolver< Problem, SolverMonitor >
 } // namespace Solvers
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Solvers/ODE/Euler.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/ODE/Euler.hpp>

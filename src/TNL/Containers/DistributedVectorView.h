@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Containers/DistributedArrayView.h>
-#include <noa/3rdparty/TNL/Containers/Expressions/DistributedExpressionTemplates.h>
-#include <noa/3rdparty/TNL/Containers/VectorView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/DistributedArrayView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/DistributedExpressionTemplates.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/VectorView.h>
 
 namespace noa::TNL {
 namespace Containers {
@@ -164,4 +164,4 @@ namespace Expressions {
 } // namespace Containers
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Containers/DistributedVectorView.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/DistributedVectorView.hpp>

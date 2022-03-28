@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Functional.h>
-#include <noa/3rdparty/TNL/Solvers/Linear/Jacobi.h>
-#include <noa/3rdparty/TNL/Solvers/Linear/Utils/LinearResidueGetter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functional.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/Jacobi.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/Utils/LinearResidueGetter.h>
 
 namespace noa::TNL {
    namespace Solvers {

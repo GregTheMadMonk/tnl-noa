@@ -6,9 +6,9 @@
 
 #pragma once 
 
-#include <noa/3rdparty/TNL/String.h>
-#include <noa/3rdparty/TNL/Images//Image.h>
-#include <noa/3rdparty/TNL/Images//RegionOfInterest.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images//Image.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images//RegionOfInterest.h>
 #include <fstream>
 
 namespace noa::TNL {
@@ -74,6 +74,6 @@ class PGMImage : public Image< Index >
 } // namespace Images
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Images//PGMImage_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images//PGMImage_impl.h>
 
 

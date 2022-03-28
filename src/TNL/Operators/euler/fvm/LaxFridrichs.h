@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Containers/SharedVector.h>
-#include <noa/3rdparty/TNL/Meshes/Grid.h>
-#include <noa/3rdparty/TNL/Meshes/tnlIdenticalGridGeometry.h>
-#include <noa/3rdparty/TNL/Operators/gradient/tnlCentralFDMGradient.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/SharedVector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/tnlIdenticalGridGeometry.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/gradient/tnlCentralFDMGradient.h>
 
 namespace noa::TNL {
 namespace Operators {   
@@ -160,4 +160,4 @@ class LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeomet
 } // namespace Operators
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/implementation/operators/euler/fvm/LaxFridrichs_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/implementation/operators/euler/fvm/LaxFridrichs_impl.h>

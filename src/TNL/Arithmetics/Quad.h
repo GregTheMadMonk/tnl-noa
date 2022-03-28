@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
 
 namespace noa::TNL {
 namespace Arithmetics {    

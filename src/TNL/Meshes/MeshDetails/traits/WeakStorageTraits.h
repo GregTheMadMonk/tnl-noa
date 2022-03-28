@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Meshes/MeshDetails/traits/MeshSubentityTraits.h>
-#include <noa/3rdparty/TNL/Meshes/MeshDetails/traits/MeshSuperentityTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/traits/MeshSubentityTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/traits/MeshSuperentityTraits.h>
 
 namespace noa::TNL {
 namespace Meshes {

@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Meshes/Mesh.h>
-#include <noa/3rdparty/TNL/Meshes/VTKTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Mesh.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/VTKTraits.h>
 
 namespace noa::TNL {
 namespace Meshes {
@@ -59,4 +59,4 @@ protected:
 } // namespace Meshes
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Meshes/Writers/FPMAWriter.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/FPMAWriter.hpp>

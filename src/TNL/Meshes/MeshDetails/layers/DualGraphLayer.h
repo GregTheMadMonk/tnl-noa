@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Meshes/MeshDetails/traits/MeshTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 
 namespace noa::TNL {
 namespace Meshes {

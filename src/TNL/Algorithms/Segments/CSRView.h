@@ -8,14 +8,14 @@
 
 #include <type_traits>
 
-#include <noa/3rdparty/TNL/Containers/Vector.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/SegmentView.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/Kernels/CSRScalarKernel.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/Kernels/CSRVectorKernel.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/Kernels/CSRHybridKernel.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/Kernels/CSRLightKernel.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/Kernels/CSRAdaptiveKernel.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/SegmentsPrinting.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/SegmentView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/Kernels/CSRScalarKernel.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/Kernels/CSRVectorKernel.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/Kernels/CSRHybridKernel.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/Kernels/CSRLightKernel.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/Kernels/CSRAdaptiveKernel.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/SegmentsPrinting.h>
 
 namespace noa::TNL {
    namespace Algorithms {
@@ -185,4 +185,4 @@ using CSRViewDefault = CSRViewScalar< Device, Index >;
    }  // namespace Algorithms
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Algorithms/Segments/CSRView.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/CSRView.hpp>

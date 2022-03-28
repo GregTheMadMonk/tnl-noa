@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
 
 namespace noa::TNL {
 
@@ -150,4 +150,4 @@ String removeFileNameExtension( String fileName );
 
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/FileName.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/FileName.hpp>

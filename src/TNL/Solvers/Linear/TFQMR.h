@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Solvers/Linear/LinearSolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/LinearSolver.h>
 
 namespace noa::TNL {
    namespace Solvers {
@@ -76,4 +76,4 @@ class TFQMR
    } // namespace Solvers
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Solvers/Linear/TFQMR.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/TFQMR.hpp>

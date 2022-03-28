@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Config/ConfigDescription.h>
-#include <noa/3rdparty/TNL/Problems/PDEProblem.h>
-#include <noa/3rdparty/TNL/Solvers/BuildConfigTags.h>
-#include <noa/3rdparty/TNL/Solvers/PDE/ExplicitTimeStepper.h>
-#include <noa/3rdparty/TNL/Solvers/PDE/TimeDependentPDESolver.h>
-#include <noa/3rdparty/TNL/Solvers/LinearSolverTypeResolver.h>
-#include <noa/3rdparty/TNL/Matrices/SparseMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ConfigDescription.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Problems/PDEProblem.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/BuildConfigTags.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/ExplicitTimeStepper.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/TimeDependentPDESolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/LinearSolverTypeResolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/SparseMatrix.h>
 
 namespace noa::TNL {
 namespace Solvers {

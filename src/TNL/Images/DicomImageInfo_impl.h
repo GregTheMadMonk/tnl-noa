@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Images//DicomImageInfo.h>
-#include <noa/3rdparty/TNL/Images//DicomHeader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images//DicomImageInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images//DicomHeader.h>
 
 namespace noa::TNL {
 namespace Images {   

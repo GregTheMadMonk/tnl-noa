@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Algorithms/scan.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/scan.h>
 
 namespace noa::TNL {
    namespace Algorithms {

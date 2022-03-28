@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Containers/Vector.h>
-#include <noa/3rdparty/TNL/Containers/SharedVector.h>
-#include <noa/3rdparty/TNL/Meshes/Grid.h>
-#include <noa/3rdparty/TNL/Functions/tnlFunction.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/SharedVector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/tnlFunction.h>
 
 namespace noa::TNL {
 namespace Operators {   
@@ -74,4 +74,4 @@ class tnlFunctionType< ExactOperatorCurvature< ExactOperatorQ, Dimension > >
 } // namespace Operators
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Operators/operator-curvature/ExactOperatorCurvature_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/operator-curvature/ExactOperatorCurvature_impl.h>

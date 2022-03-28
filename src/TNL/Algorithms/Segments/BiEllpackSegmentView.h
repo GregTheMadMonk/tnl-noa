@@ -7,8 +7,8 @@
 #pragma once
 
 #include <math.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/ElementsOrganization.h>
-#include <noa/3rdparty/TNL/Containers/StaticVector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/ElementsOrganization.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticVector.h>
 
 namespace noa::TNL {
    namespace Algorithms {

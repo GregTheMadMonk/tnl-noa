@@ -6,14 +6,14 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Config/ConfigDescription.h>
-#include <noa/3rdparty/TNL/Config/ParameterContainer.h>
-#include <noa/3rdparty/TNL/Logger.h>
-#include <noa/3rdparty/TNL/Pointers/SharedPointer.h>
-#include <noa/3rdparty/TNL/Solvers/PDE/PDESolver.h>
-#include <noa/3rdparty/TNL/Solvers/PDE/MeshDependentTimeSteps.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ConfigDescription.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Logger.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/SharedPointer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/PDESolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/MeshDependentTimeSteps.h>
 
-#include <noa/3rdparty/TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
 
 namespace noa::TNL {
@@ -99,4 +99,4 @@ class TimeDependentPDESolver
 } // namespace Solvers
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Solvers/PDE/TimeDependentPDESolver.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/TimeDependentPDESolver.hpp>

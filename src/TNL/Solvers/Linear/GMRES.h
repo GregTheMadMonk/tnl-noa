@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Solvers/Linear/LinearSolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/LinearSolver.h>
 
 namespace noa::TNL {
    namespace Solvers {
@@ -237,4 +237,4 @@ class GMRES
    } // namespace Solvers
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Solvers/Linear/GMRES.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/GMRES.hpp>

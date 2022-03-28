@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Solvers/Linear/LinearSolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/LinearSolver.h>
 
 namespace noa::TNL {
    namespace Solvers {
@@ -135,4 +135,4 @@ class Jacobi
    } // namespace Solvers
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Solvers/Linear/Jacobi.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/Jacobi.hpp>

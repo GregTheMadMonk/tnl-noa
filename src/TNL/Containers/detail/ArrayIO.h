@@ -8,9 +8,9 @@
 
 #include <type_traits>
 
-#include <noa/3rdparty/TNL/Object.h>
-#include <noa/3rdparty/TNL/File.h>
-#include <noa/3rdparty/TNL/TypeInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Object.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/File.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeInfo.h>
 
 namespace noa::TNL {
 namespace Containers {

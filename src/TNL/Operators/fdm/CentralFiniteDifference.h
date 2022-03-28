@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Operators/fdm/FiniteDifferences.h>
-#include <noa/3rdparty/TNL/Operators/fdm/ExactDifference.h>
-#include <noa/3rdparty/TNL/Operators/Operator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/fdm/FiniteDifferences.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/fdm/ExactDifference.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/Operator.h>
 
 namespace noa::TNL {
 namespace Operators {   

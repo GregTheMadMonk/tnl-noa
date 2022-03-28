@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Operators/fdm/ForwardFiniteDifference.h>
-#include <noa/3rdparty/TNL/Operators/geometric/ExactGradientNorm.h>
-#include <noa/3rdparty/TNL/Operators/Operator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/fdm/ForwardFiniteDifference.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/geometric/ExactGradientNorm.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/Operator.h>
 
 namespace noa::TNL {
 namespace Operators {   

@@ -7,9 +7,9 @@
 #pragma once
 
 #include <type_traits>
-#include <noa/3rdparty/TNL/String.h>
-#include <noa/3rdparty/TNL/Devices/Host.h>
-#include <noa/3rdparty/TNL/Matrices/LambdaMatrixRowView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/LambdaMatrixRowView.h>
 
 namespace noa::TNL {
 namespace Matrices {
@@ -608,4 +608,4 @@ struct LambdaMatrixFactory
 } //namespace Matrices
 } //namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Matrices/LambdaMatrix.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/LambdaMatrix.hpp>

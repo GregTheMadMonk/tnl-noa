@@ -8,8 +8,8 @@
 
 #include <utility>
 
-#include <noa/3rdparty/TNL/Meshes/Grid.h>
-#include <noa/3rdparty/TNL/Meshes/TypeResolver/GridTypeResolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/TypeResolver/GridTypeResolver.h>
 
 namespace noa::TNL {
 namespace Meshes {

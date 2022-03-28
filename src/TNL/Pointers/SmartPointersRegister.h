@@ -9,11 +9,11 @@
 #include <unordered_set>
 #include <unordered_map>
 
-#include <noa/3rdparty/TNL/Pointers/SmartPointer.h>
-#include <noa/3rdparty/TNL/Timer.h>
-#include <noa/3rdparty/TNL/Cuda/DeviceInfo.h>
-#include <noa/3rdparty/TNL/Devices/Sequential.h>
-#include <noa/3rdparty/TNL/Devices/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/SmartPointer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Timer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/DeviceInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Sequential.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Host.h>
 
 namespace noa::TNL {
 namespace Pointers {

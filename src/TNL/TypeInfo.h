@@ -24,7 +24,7 @@
    #include <cstdlib>  // std::free
 #endif
 
-#include <noa/3rdparty/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
 
 namespace noa::TNL {
 namespace detail {

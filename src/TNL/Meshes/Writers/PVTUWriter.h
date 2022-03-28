@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Meshes/Writers/VTUWriter.h>
-#include <noa/3rdparty/TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/VTUWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
 namespace noa::TNL {
 namespace Meshes {
@@ -97,4 +97,4 @@ protected:
 } // namespace Meshes
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Meshes/Writers/PVTUWriter.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/PVTUWriter.hpp>

@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Config/ParameterContainer.h>
-#include <noa/3rdparty/TNL/Timer.h>
-#include <noa/3rdparty/TNL/Solvers/SolverMonitor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Timer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/SolverMonitor.h>
 #include <ostream>
 
 namespace noa::TNL {
@@ -41,4 +41,4 @@ class SolverStarter
 } // namespace Solvers
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Solvers/SolverStarter.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/SolverStarter.hpp>

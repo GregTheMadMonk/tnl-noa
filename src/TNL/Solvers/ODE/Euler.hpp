@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Solvers/ODE/Euler.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/ODE/Euler.h>
 
 namespace noa::TNL {
 namespace Solvers {

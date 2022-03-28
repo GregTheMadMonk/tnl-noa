@@ -8,7 +8,7 @@
 
 #include <ostream>
 
-#include <noa/3rdparty/TNL/Cuda/CudaCallable.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CudaCallable.h>
 
 namespace noa::TNL {
    namespace Algorithms {

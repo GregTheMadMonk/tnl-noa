@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Solvers/PDE/PDESolver.h>
-#include <noa/3rdparty/TNL/MPI/Utils.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/PDESolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Utils.h>
 
 namespace noa::TNL {
 namespace Solvers {

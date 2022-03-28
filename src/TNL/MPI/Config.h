@@ -17,8 +17,8 @@
 #include <unistd.h>  // getpid
 #endif
 
-#include <noa/3rdparty/TNL/Config/ConfigDescription.h>
-#include <noa/3rdparty/TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ConfigDescription.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
 #include "Utils.h"
 
 namespace noa::TNL {

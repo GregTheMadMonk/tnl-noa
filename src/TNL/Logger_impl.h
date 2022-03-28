@@ -9,9 +9,9 @@
 #include <sstream>
 #include <iomanip>
 
-#include <noa/3rdparty/TNL/Logger.h>
-#include <noa/3rdparty/TNL/Cuda/DeviceInfo.h>
-#include <noa/3rdparty/TNL/SystemInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Logger.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/DeviceInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/SystemInfo.h>
 
 namespace noa::TNL {
 

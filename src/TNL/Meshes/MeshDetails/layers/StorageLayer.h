@@ -12,11 +12,11 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/File.h>
-#include <noa/3rdparty/TNL/Meshes/MeshDetails/traits/WeakStorageTraits.h>
-#include <noa/3rdparty/TNL/Meshes/MeshDetails/layers/SubentityStorageLayer.h>
-#include <noa/3rdparty/TNL/Meshes/MeshDetails/layers/SuperentityStorageLayer.h>
-#include <noa/3rdparty/TNL/Meshes/MeshDetails/layers/DualGraphLayer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/File.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/traits/WeakStorageTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/layers/SubentityStorageLayer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/layers/SuperentityStorageLayer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/layers/DualGraphLayer.h>
 
 namespace noa::TNL {
 namespace Meshes {

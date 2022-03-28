@@ -9,8 +9,8 @@
 #include <iostream>
 #include <sstream>
 
-#include <noa/3rdparty/TNL/String.h>
-#include <noa/3rdparty/TNL/MPI/Utils.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Utils.h>
 
 #ifdef HAVE_MPI
 #define TNL_MPI_PRINT( message )                                                                                                 \

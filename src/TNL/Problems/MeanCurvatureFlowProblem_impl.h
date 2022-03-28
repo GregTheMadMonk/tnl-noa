@@ -12,14 +12,14 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/FileName.h>
-#include <noa/3rdparty/TNL/Matrices/MatrixSetter.h>
-#include <noa/3rdparty/TNL/Matrices/MultidiagonalMatrixSetter.h>
-#include <noa/3rdparty/TNL/Logger.h>
-#include <noa/3rdparty/TNL/Solvers/PDE/ExplicitUpdater.h>
-#include <noa/3rdparty/TNL/Solvers/PDE/BoundaryConditionsSetter.h>
-#include <noa/3rdparty/TNL/Solvers/PDE/LinearSystemAssembler.h>
-#include <noa/3rdparty/TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/FileName.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixSetter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MultidiagonalMatrixSetter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Logger.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/ExplicitUpdater.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/BoundaryConditionsSetter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/LinearSystemAssembler.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 
 #include "MeanCurvatureFlowProblem.h"
 

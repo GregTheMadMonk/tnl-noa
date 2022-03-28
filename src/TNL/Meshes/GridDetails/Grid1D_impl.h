@@ -8,11 +8,11 @@
 
 #include <fstream>
 #include <iomanip>
-#include <noa/3rdparty/TNL/Assert.h>
-#include <noa/3rdparty/TNL/Meshes/GridDetails/GridEntityGetter_impl.h>
-#include <noa/3rdparty/TNL/Meshes/GridDetails/NeighborGridEntityGetter1D_impl.h>
-#include <noa/3rdparty/TNL/Meshes/GridDetails/Grid1D.h>
-#include <noa/3rdparty/TNL/Meshes/GridDetails/GridEntityMeasureGetter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/GridEntityGetter_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/NeighborGridEntityGetter1D_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/Grid1D.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/GridEntityMeasureGetter.h>
 
 namespace noa::TNL {
 namespace Meshes {

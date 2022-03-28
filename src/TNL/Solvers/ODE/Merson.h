@@ -7,8 +7,8 @@
 #pragma once
 
 #include <math.h>
-#include <noa/3rdparty/TNL/Config/ConfigDescription.h>
-#include <noa/3rdparty/TNL/Solvers/ODE/ExplicitSolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ConfigDescription.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/ODE/ExplicitSolver.h>
 
 namespace noa::TNL {
 namespace Solvers {
@@ -58,4 +58,4 @@ class Merson : public ExplicitSolver< Problem, SolverMonitor >
 } // namespace Solvers
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Solvers/ODE/Merson.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/ODE/Merson.hpp>

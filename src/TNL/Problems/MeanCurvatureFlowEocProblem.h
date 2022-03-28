@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Problems/MeanCurvatureFlowProblem.h>
-#include <noa/3rdparty/TNL/Operators/operator-Q/tnlOneSideDiffOperatorQ.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Problems/MeanCurvatureFlowProblem.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/operator-Q/tnlOneSideDiffOperatorQ.h>
 
 namespace noa::TNL {
 namespace Problems {
@@ -35,4 +35,4 @@ class MeanCurvatureFlowEocProblem : public MeanCurvatureFlowProblem< Mesh, Bound
 } // namespace Problems
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Problems/MeanCurvatureFlowEocProblem_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Problems/MeanCurvatureFlowEocProblem_impl.h>

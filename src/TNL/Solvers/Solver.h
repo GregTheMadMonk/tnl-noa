@@ -6,14 +6,14 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Solvers/BuildConfigTags.h>
-#include <noa/3rdparty/TNL/Solvers/SolverInitiator.h>
-#include <noa/3rdparty/TNL/Solvers/SolverStarter.h>
-#include <noa/3rdparty/TNL/Solvers/SolverConfig.h>
-#include <noa/3rdparty/TNL/Config/parseCommandLine.h>
-#include <noa/3rdparty/TNL/Devices/Cuda.h>
-#include <noa/3rdparty/TNL/MPI/ScopedInitializer.h>
-#include <noa/3rdparty/TNL/MPI/Config.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/BuildConfigTags.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/SolverInitiator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/SolverStarter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/SolverConfig.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/parseCommandLine.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/ScopedInitializer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Config.h>
 
 namespace noa::TNL {
 namespace Solvers {

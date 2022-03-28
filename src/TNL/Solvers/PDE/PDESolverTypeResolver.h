@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Solvers/PDE/TimeDependentPDESolver.h>
-#include <noa/3rdparty/TNL/Solvers/PDE/TimeIndependentPDESolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/TimeDependentPDESolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/TimeIndependentPDESolver.h>
 
 namespace noa::TNL {
 namespace Solvers {

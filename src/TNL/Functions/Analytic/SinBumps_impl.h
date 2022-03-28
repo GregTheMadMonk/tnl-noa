@@ -9,7 +9,7 @@
  */
 #pragma once
 
-#include <noa/3rdparty/TNL/Functions/Analytic/SinBumps.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/SinBumps.h>
 
 namespace noa::TNL {
 namespace Functions {

@@ -10,7 +10,7 @@
 #include <fstream>
 #include <cstring>
 
-#include <noa/3rdparty/TNL/Object.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Object.h>
 
 namespace noa::TNL {
 

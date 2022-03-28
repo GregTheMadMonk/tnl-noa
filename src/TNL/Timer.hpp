@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Timer.h>
-#include <noa/3rdparty/TNL/Logger.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Timer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Logger.h>
 
 // check if we are on a POSIX system or Windows,
 // see https://stackoverflow.com/a/4575466

@@ -12,9 +12,9 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Operators/diffusion/ExactNonlinearDiffusion.h>
-#include <noa/3rdparty/TNL/Operators/ExactFunctionInverseOperator.h>
-#include <noa/3rdparty/TNL/Operators/geometric/ExactGradientNorm.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/diffusion/ExactNonlinearDiffusion.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/ExactFunctionInverseOperator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/geometric/ExactGradientNorm.h>
 
 namespace noa::TNL {
 namespace Operators {   

@@ -4,7 +4,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#include <noa/3rdparty/TNL/Experimental/Arithmetics/FlopsCounter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Experimental/Arithmetics/FlopsCounter.h>
 
 namespace noa::TNL {
 

@@ -8,11 +8,11 @@
 
 #include <iomanip>
 #include <functional>
-#include <noa/3rdparty/TNL/Matrices/SparseMatrixView.h>
-#include <noa/3rdparty/TNL/Algorithms/reduce.h>
-#include <noa/3rdparty/TNL/Algorithms/AtomicOperations.h>
-#include <noa/3rdparty/TNL/Matrices/details/SparseMatrix.h>
-#include <noa/3rdparty/TNL/Exceptions/NotImplementedError.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/SparseMatrixView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/reduce.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/AtomicOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/details/SparseMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/NotImplementedError.h>
 
 namespace noa::TNL {
 namespace Matrices {

@@ -10,11 +10,11 @@
 #include <memory>  // std::unique_ptr
 #include <stdexcept>
 
-#include <noa/3rdparty/TNL/Algorithms/MemoryOperations.h>
-#include <noa/3rdparty/TNL/Algorithms/MultiDeviceMemoryOperations.h>
-#include <noa/3rdparty/TNL/Algorithms/ParallelFor.h>
-#include <noa/3rdparty/TNL/Algorithms/reduce.h>
-#include <noa/3rdparty/TNL/Exceptions/CudaSupportMissing.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/MemoryOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/MultiDeviceMemoryOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/ParallelFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/reduce.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/CudaSupportMissing.h>
 
 namespace noa::TNL {
 namespace Algorithms {

@@ -62,5 +62,5 @@ class DicomHeader
 } // namespace Images
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Images//DicomHeader_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images//DicomHeader_impl.h>
 

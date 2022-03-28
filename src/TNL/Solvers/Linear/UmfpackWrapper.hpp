@@ -12,7 +12,7 @@
 
 #include "UmfpackWrapper.h"
 
-#include <noa/3rdparty/TNL/Solvers/Linear/Utils/LinearResidueGetter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/Utils/LinearResidueGetter.h>
 
 namespace noa::TNL {
 namespace Solvers {

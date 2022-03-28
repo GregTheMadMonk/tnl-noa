@@ -10,8 +10,8 @@
 
 #include "Scan.h"
 
-#include <noa/3rdparty/TNL/Containers/Array.h>
-#include <noa/3rdparty/TNL/MPI/Wrappers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Wrappers.h>
 
 namespace noa::TNL {
 namespace Algorithms {

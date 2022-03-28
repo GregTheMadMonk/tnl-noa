@@ -6,7 +6,7 @@
 
 #pragma once 
 
-#include <noa/3rdparty/TNL/Functions/Analytic/ParaboloidSDF.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/ParaboloidSDF.h>
 
 namespace noa::TNL {
    namespace Functions {

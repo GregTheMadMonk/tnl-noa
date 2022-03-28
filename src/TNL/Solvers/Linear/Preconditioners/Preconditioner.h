@@ -11,8 +11,8 @@
 #include <type_traits>  // std::add_const_t
 #include <memory>  // std::shared_ptr
 
-#include <noa/3rdparty/TNL/Config/ParameterContainer.h>
-#include <noa/3rdparty/TNL/Solvers/Linear/Utils/Traits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/Utils/Traits.h>
 
 namespace noa::TNL {
    namespace Solvers {

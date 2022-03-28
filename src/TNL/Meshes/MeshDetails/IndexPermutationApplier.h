@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Meshes/DimensionTag.h>
-#include <noa/3rdparty/TNL/Meshes/Mesh.h>
-#include <noa/3rdparty/TNL/Matrices/MatrixPermutationApplier.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DimensionTag.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Mesh.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixPermutationApplier.h>
 
 namespace noa::TNL {
 namespace Meshes {

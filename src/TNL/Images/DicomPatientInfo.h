@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
 
 #ifdef HAVE_DCMTK_H
 #define HAVE_CONFIG_H
@@ -67,5 +67,5 @@ class DicomPatientInfo
 } // namespace Images
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Images//DicomPatientInfo_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images//DicomPatientInfo_impl.h>
 

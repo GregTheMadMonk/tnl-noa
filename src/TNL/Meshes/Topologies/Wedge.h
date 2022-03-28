@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Meshes/Topologies/SubentityVertexCount.h>
-#include <noa/3rdparty/TNL/Meshes/Topologies/Polygon.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/SubentityVertexCount.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Polygon.h>
 
 namespace noa::TNL {
 namespace Meshes {

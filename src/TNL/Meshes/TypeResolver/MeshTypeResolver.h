@@ -8,7 +8,7 @@
 
 #include <type_traits>
 
-#include <noa/3rdparty/TNL/Meshes/TypeResolver/BuildConfigTags.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/TypeResolver/BuildConfigTags.h>
 
 namespace noa::TNL {
 namespace Meshes {
@@ -139,4 +139,4 @@ protected:
 } // namespace Meshes
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Meshes/TypeResolver/MeshTypeResolver.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/TypeResolver/MeshTypeResolver.hpp>

@@ -8,10 +8,10 @@
 
 #include <iomanip>
 #include <sstream>
-#include <noa/3rdparty/TNL/String.h>
-#include <noa/3rdparty/TNL/Containers/Vector.h>
-#include <noa/3rdparty/TNL/Timer.h>
-#include <noa/3rdparty/TNL/Matrices/MatrixReader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Timer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixReader.h>
 
 namespace noa::TNL {
 namespace Matrices {

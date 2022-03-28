@@ -6,8 +6,8 @@
 
 #pragma once
 
-//#include <noa/3rdparty/TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <noa/3rdparty/TNL/Meshes/Topologies/IsDynamicTopology.h>
+//#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/traits/MeshTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/IsDynamicTopology.h>
 
 namespace noa::TNL {
 namespace Meshes {

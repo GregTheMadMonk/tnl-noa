@@ -10,9 +10,9 @@
 
 #include <utility>  // std::pair, std::forward
 
-#include <noa/3rdparty/TNL/Devices/Sequential.h>
-#include <noa/3rdparty/TNL/Devices/Host.h>
-#include <noa/3rdparty/TNL/Devices/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Sequential.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Cuda.h>
 
 namespace noa::TNL {
    namespace Algorithms {
@@ -103,4 +103,4 @@ struct Reduction< Devices::Cuda >
    } // namespace Algorithms
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Algorithms/detail/Reduction.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/detail/Reduction.hpp>

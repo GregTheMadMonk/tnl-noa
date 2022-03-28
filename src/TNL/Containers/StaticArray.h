@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/String.h>
-#include <noa/3rdparty/TNL/File.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/File.h>
 
 namespace noa::TNL {
 namespace Containers {
@@ -315,4 +315,4 @@ File& operator>>( File&& file, StaticArray< Size, Value >& array );
 } // namespace Containers
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Containers/StaticArray.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticArray.hpp>

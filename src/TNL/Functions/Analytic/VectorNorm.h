@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Math.h>
-#include <noa/3rdparty/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Math.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
 
 namespace noa::TNL {
 namespace Functions {

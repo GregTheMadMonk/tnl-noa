@@ -5,9 +5,9 @@
 // SPDX-License-Identifier: MIT
 
 #pragma once
-#include <noa/3rdparty/TNL/Containers/Array.h>
-#include <noa/3rdparty/TNL/Algorithms/Sorting/detail/blockBitonicSort.h>
-#include <noa/3rdparty/TNL/Algorithms/Sorting/detail/helpers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/detail/blockBitonicSort.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/detail/helpers.h>
 
 namespace noa::TNL {
     namespace Algorithms {

@@ -8,7 +8,7 @@
 
 #include <limits>
 
-#include <noa/3rdparty/TNL/Meshes/Writers/FPMAWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/FPMAWriter.h>
 
 namespace noa::TNL {
 namespace Meshes {

@@ -9,7 +9,7 @@
 #include <thread>
 #include <atomic>
 
-#include <noa/3rdparty/TNL/Timer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Timer.h>
 
 namespace noa::TNL {
    namespace Solvers {

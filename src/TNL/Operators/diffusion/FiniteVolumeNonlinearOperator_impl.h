@@ -13,7 +13,7 @@
 #pragma once
 
 #include "FiniteVolumeNonlinearOperator.h"
-#include <noa/3rdparty/TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
 
 namespace noa::TNL {
 namespace Operators {   

@@ -8,12 +8,12 @@
 
 #include <iomanip>
 #include <functional>
-#include <noa/3rdparty/TNL/Containers/Vector.h>
-#include <noa/3rdparty/TNL/Matrices/LambdaMatrix.h>
-#include <noa/3rdparty/TNL/Algorithms/ParallelFor.h>
-#include <noa/3rdparty/TNL/Matrices/LambdaMatrix.h>
-#include <noa/3rdparty/TNL/Matrices/details/SparseMatrix.h>
-#include <noa/3rdparty/TNL/Exceptions/NotImplementedError.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/LambdaMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/ParallelFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/LambdaMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/details/SparseMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/NotImplementedError.h>
 
 namespace noa::TNL {
 namespace Matrices {

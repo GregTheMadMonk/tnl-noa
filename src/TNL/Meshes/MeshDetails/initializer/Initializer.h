@@ -12,10 +12,10 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Meshes/DimensionTag.h>
-#include <noa/3rdparty/TNL/Meshes/MeshDetails/initializer/EntityInitializer.h>
-#include <noa/3rdparty/TNL/Meshes/MeshDetails/initializer/SubentitySeedsCreator.h>
-#include <noa/3rdparty/TNL/Meshes/MeshDetails/initializer/EntitySeed.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DimensionTag.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/initializer/EntityInitializer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/initializer/SubentitySeedsCreator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/initializer/EntitySeed.h>
 
 /*
  * How this beast works:

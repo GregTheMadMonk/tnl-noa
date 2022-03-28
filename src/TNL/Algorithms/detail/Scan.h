@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Devices/Sequential.h>
-#include <noa/3rdparty/TNL/Devices/Host.h>
-#include <noa/3rdparty/TNL/Devices/Cuda.h>
-#include <noa/3rdparty/TNL/Algorithms/detail/ScanType.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Sequential.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/detail/ScanType.h>
 
 namespace noa::TNL {
 namespace Algorithms {

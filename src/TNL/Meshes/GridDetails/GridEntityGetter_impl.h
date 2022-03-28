@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Meshes/GridDetails/GridEntityGetter.h>
-#include <noa/3rdparty/TNL/Meshes/GridDetails/Grid1D.h>
-#include <noa/3rdparty/TNL/Meshes/GridDetails/Grid2D.h>
-#include <noa/3rdparty/TNL/Meshes/GridDetails/Grid3D.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/GridEntityGetter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/Grid1D.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/Grid2D.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/Grid3D.h>
 
 namespace noa::TNL {
 namespace Meshes {

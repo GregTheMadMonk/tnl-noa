@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Functions/OperatorFunction.h>
-#include <noa/3rdparty/TNL/Functions/MeshFunction.h>
-#include <noa/3rdparty/TNL/Operators/Operator.h>
-#include <noa/3rdparty/TNL/Operators/ExactOperatorComposition.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/OperatorFunction.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/MeshFunction.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/Operator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/ExactOperatorComposition.h>
 
 namespace noa::TNL {
 namespace Operators {

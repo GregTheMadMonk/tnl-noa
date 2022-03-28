@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Containers/IndexedSet.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/IndexedSet.h>
 
 namespace noa::TNL {
 namespace Containers {

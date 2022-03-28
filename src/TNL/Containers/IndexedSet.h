@@ -50,4 +50,4 @@ std::ostream& operator <<( std::ostream& str, IndexedSet< Element, Index >& set 
 } // namespace Containers
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Containers/IndexedSet_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/IndexedSet_impl.h>

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Images//JPEGImage.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images//JPEGImage.h>
 #include <setjmp.h>
 
 namespace noa::TNL {

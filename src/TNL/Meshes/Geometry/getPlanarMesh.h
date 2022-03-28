@@ -6,17 +6,17 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Meshes/Mesh.h>
-#include <noa/3rdparty/TNL/Meshes/MeshEntity.h>
-#include <noa/3rdparty/TNL/Meshes/MeshBuilder.h>
-#include <noa/3rdparty/TNL/Meshes/Topologies/Triangle.h>
-#include <noa/3rdparty/TNL/Meshes/Topologies/Tetrahedron.h>
-#include <noa/3rdparty/TNL/Meshes/Topologies/Polygon.h>
-#include <noa/3rdparty/TNL/Meshes/Topologies/Polyhedron.h>
-#include <noa/3rdparty/TNL/Meshes/Geometry/isPlanar.h>
-#include <noa/3rdparty/TNL/Meshes/Geometry/EntityDecomposer.h>
-#include <noa/3rdparty/TNL/Algorithms/ParallelFor.h>
-#include <noa/3rdparty/TNL/Algorithms/scan.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Mesh.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshEntity.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshBuilder.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Triangle.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Tetrahedron.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Polygon.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Polyhedron.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Geometry/isPlanar.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Geometry/EntityDecomposer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/ParallelFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/scan.h>
 
 namespace noa::TNL {
 namespace Meshes {

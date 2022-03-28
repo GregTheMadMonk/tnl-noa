@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
 
 namespace noa::TNL {
 namespace Functions {
@@ -179,4 +179,4 @@ public:
 } // namespace Functions
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Functions/VectorFieldGnuplotWriter_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/VectorFieldGnuplotWriter_impl.h>

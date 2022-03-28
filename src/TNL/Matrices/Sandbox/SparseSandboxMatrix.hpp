@@ -8,8 +8,8 @@
 
 #include <functional>
 #include <sstream>
-#include <noa/3rdparty/TNL/Algorithms/reduce.h>
-#include <noa/3rdparty/TNL/Matrices/Sandbox/SparseSandboxMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/reduce.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/Sandbox/SparseSandboxMatrix.h>
 
 namespace noa::TNL {
    namespace Matrices {

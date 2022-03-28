@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Algorithms/Sorting/detail/Quicksorter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/detail/Quicksorter.h>
 
 namespace noa::TNL {
    namespace Algorithms {

@@ -11,9 +11,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include <noa/3rdparty/TNL/Config/ConfigEntryType.h>
-#include <noa/3rdparty/TNL/TypeInfo.h>
-#include <noa/3rdparty/TNL/Exceptions/ConfigError.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ConfigEntryType.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/ConfigError.h>
 
 namespace noa::TNL {
 namespace Config {

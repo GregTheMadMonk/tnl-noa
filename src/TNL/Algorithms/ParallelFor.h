@@ -6,14 +6,14 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Devices/Sequential.h>
-#include <noa/3rdparty/TNL/Devices/Host.h>
-#include <noa/3rdparty/TNL/Devices/Cuda.h>
-#include <noa/3rdparty/TNL/Cuda/CheckDevice.h>
-#include <noa/3rdparty/TNL/Cuda/DeviceInfo.h>
-#include <noa/3rdparty/TNL/Cuda/LaunchHelpers.h>
-#include <noa/3rdparty/TNL/Exceptions/CudaSupportMissing.h>
-#include <noa/3rdparty/TNL/Math.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Sequential.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CheckDevice.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/DeviceInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/LaunchHelpers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/CudaSupportMissing.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Math.h>
 
 /****
  * The implementation of ParallelFor is not meant to provide maximum performance

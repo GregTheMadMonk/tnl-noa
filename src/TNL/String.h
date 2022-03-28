@@ -393,4 +393,4 @@ template<> inline String convertToString( const bool& b )
 
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/String.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.hpp>

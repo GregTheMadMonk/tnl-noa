@@ -10,7 +10,7 @@
 
 #include <filesystem>
 
-#include <noa/3rdparty/TNL/Meshes/Writers/PVTUWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/PVTUWriter.h>
 
 namespace noa::TNL {
 namespace Meshes {

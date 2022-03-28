@@ -8,9 +8,9 @@
 #include <utility>
 #include <memory>
 
-#include <noa/3rdparty/TNL/Containers/Expressions/ExpressionTemplates.h>
-#include <noa/3rdparty/TNL/Containers/Expressions/DistributedComparison.h>
-#include <noa/3rdparty/TNL/Containers/Expressions/DistributedVerticalOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/ExpressionTemplates.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/DistributedComparison.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/DistributedVerticalOperations.h>
 
 namespace noa::TNL {
 namespace Containers {

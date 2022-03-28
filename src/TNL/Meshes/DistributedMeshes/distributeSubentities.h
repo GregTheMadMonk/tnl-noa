@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
-#include <noa/3rdparty/TNL/Meshes/MeshDetails/layers/EntityTags/Traits.h>
-#include <noa/3rdparty/TNL/Algorithms/scan.h>
-#include <noa/3rdparty/TNL/Algorithms/contains.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/layers/EntityTags/Traits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/scan.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/contains.h>
 
 namespace noa::TNL {
 namespace Meshes {

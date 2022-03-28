@@ -10,10 +10,10 @@
 
 #include <filesystem>
 
-#include <noa/3rdparty/TNL/MPI/Wrappers.h>
-#include <noa/3rdparty/TNL/MPI/Utils.h>
-#include <noa/3rdparty/TNL/Meshes/Readers/VTUReader.h>
-#include <noa/3rdparty/TNL/Meshes/MeshDetails/layers/EntityTags/Traits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Wrappers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Utils.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Readers/VTUReader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/layers/EntityTags/Traits.h>
 
 namespace noa::TNL {
 namespace Meshes {

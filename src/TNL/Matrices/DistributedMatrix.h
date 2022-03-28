@@ -10,10 +10,10 @@
 
 #include <type_traits>
 
-#include <noa/3rdparty/TNL/Containers/Subrange.h>
-#include <noa/3rdparty/TNL/Containers/DistributedVector.h>
-#include <noa/3rdparty/TNL/Containers/DistributedVectorView.h>
-#include <noa/3rdparty/TNL/Exceptions/NotImplementedError.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Subrange.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/DistributedVector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/DistributedVectorView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/NotImplementedError.h>
 
 namespace noa::TNL {
 namespace Matrices {

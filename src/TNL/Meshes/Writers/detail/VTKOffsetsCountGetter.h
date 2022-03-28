@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Meshes/Writers/detail/VerticesPerEntity.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/detail/VerticesPerEntity.h>
 
 namespace noa::TNL {
 namespace Meshes {

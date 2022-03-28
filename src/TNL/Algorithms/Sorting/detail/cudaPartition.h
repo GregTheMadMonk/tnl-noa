@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Containers/Array.h>
-#include <noa/3rdparty/TNL/Algorithms/Sorting/detail/task.h>
-#include <noa/3rdparty/TNL/Algorithms/detail/CudaScanKernel.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/detail/task.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/detail/CudaScanKernel.h>
 
 namespace noa::TNL {
    namespace Algorithms {

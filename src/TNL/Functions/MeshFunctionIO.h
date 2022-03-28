@@ -9,13 +9,13 @@
 #include <type_traits>
 #include <filesystem>
 
-#include <noa/3rdparty/TNL/Meshes/Traits.h>
-#include <noa/3rdparty/TNL/Meshes/Readers/getMeshReader.h>
-#include <noa/3rdparty/TNL/Meshes/Writers/VTKWriter.h>
-#include <noa/3rdparty/TNL/Meshes/Writers/VTUWriter.h>
-#include <noa/3rdparty/TNL/Meshes/Writers/VTIWriter.h>
-#include <noa/3rdparty/TNL/Meshes/Writers/PVTIWriter.h>
-#include <noa/3rdparty/TNL/Functions/MeshFunctionGnuplotWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Traits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Readers/getMeshReader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/VTKWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/VTUWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/VTIWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/PVTIWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/MeshFunctionGnuplotWriter.h>
 
 namespace noa::TNL {
 namespace Functions {

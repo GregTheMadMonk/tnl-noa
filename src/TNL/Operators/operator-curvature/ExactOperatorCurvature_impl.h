@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Operators/operator-curvature/ExactOperatorCurvature.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/operator-curvature/ExactOperatorCurvature.h>
 
 namespace noa::TNL {
 namespace Operators {   

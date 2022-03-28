@@ -12,11 +12,11 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/FileName.h>
-#include <noa/3rdparty/TNL/Matrices/MatrixSetter.h>
-#include <noa/3rdparty/TNL/Logger.h>
-#include <noa/3rdparty/TNL/Solvers/PDE/BoundaryConditionsSetter.h>
-#include <noa/3rdparty/TNL/MPI/Wrappers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/FileName.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixSetter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Logger.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/BoundaryConditionsSetter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Wrappers.h>
 
 #include "HeatEquationProblem.h"
 

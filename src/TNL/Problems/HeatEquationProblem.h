@@ -12,15 +12,15 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Problems/PDEProblem.h>
-#include <noa/3rdparty/TNL/Operators/diffusion/LinearDiffusion.h>
-#include <noa/3rdparty/TNL/Functions/MeshFunctionView.h>
-#include <noa/3rdparty/TNL/Timer.h>
-#include <noa/3rdparty/TNL/Solvers/PDE/ExplicitUpdater.h>
-#include <noa/3rdparty/TNL/Solvers/PDE/LinearSystemAssembler.h>
-#include <noa/3rdparty/TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Problems/PDEProblem.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/diffusion/LinearDiffusion.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/MeshFunctionView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Timer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/ExplicitUpdater.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/LinearSystemAssembler.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 
-#include <noa/3rdparty/TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 
 namespace noa::TNL {
 namespace Problems {
@@ -125,4 +125,4 @@ class HeatEquationProblem : public PDEProblem< Mesh,
 } // namespace Problems
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Problems/HeatEquationProblem_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Problems/HeatEquationProblem_impl.h>

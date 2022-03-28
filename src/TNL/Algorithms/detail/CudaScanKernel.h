@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Math.h>
-#include <noa/3rdparty/TNL/Cuda/SharedMemory.h>
-#include <noa/3rdparty/TNL/Exceptions/CudaBadAlloc.h>
-#include <noa/3rdparty/TNL/Containers/Array.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Math.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/SharedMemory.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/CudaBadAlloc.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
 #include "ScanType.h"
 
 namespace noa::TNL {

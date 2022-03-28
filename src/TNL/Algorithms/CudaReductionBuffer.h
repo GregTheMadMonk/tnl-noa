@@ -10,9 +10,9 @@
 
 #include <stdlib.h>
 
-#include <noa/3rdparty/TNL/Cuda/CheckDevice.h>
-#include <noa/3rdparty/TNL/Exceptions/CudaBadAlloc.h>
-#include <noa/3rdparty/TNL/Exceptions/CudaSupportMissing.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CheckDevice.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/CudaBadAlloc.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/CudaSupportMissing.h>
 
 namespace noa::TNL {
 namespace Algorithms {

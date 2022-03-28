@@ -8,12 +8,12 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Assert.h>
-#include <noa/3rdparty/TNL/Math.h>
-#include <noa/3rdparty/TNL/Cuda/DeviceInfo.h>
-#include <noa/3rdparty/TNL/Cuda/SharedMemory.h>
-#include <noa/3rdparty/TNL/Algorithms/CudaReductionBuffer.h>
-#include <noa/3rdparty/TNL/Exceptions/CudaSupportMissing.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Math.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/DeviceInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/SharedMemory.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/CudaReductionBuffer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/CudaSupportMissing.h>
 
 namespace noa::TNL {
 namespace Algorithms {

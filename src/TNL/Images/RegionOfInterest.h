@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Config/ParameterContainer.h>
-#include <noa/3rdparty/TNL/Meshes/Grid.h>
-#include <noa/3rdparty/TNL/Images//Image.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images//Image.h>
 
 namespace noa::TNL {
 namespace Images {   
@@ -51,6 +51,6 @@ class RegionOfInterest
 } // namespace Images
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Images//RegionOfInterest_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images//RegionOfInterest_impl.h>
 
 

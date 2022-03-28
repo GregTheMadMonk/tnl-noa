@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Containers/NDArray.h>
-#include <noa/3rdparty/TNL/Containers/DistributedNDArrayView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/NDArray.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/DistributedNDArrayView.h>
 
 namespace noa::TNL {
 namespace Containers {

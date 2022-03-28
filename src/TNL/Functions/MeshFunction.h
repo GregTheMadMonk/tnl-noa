@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/File.h>
-#include <noa/3rdparty/TNL/Containers/Vector.h>
-#include <noa/3rdparty/TNL/Functions/Domain.h>
-#include <noa/3rdparty/TNL/Pointers/SharedPointer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/File.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Domain.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/SharedPointer.h>
 
 namespace noa::TNL {
 namespace Functions {
@@ -127,4 +127,4 @@ std::ostream& operator << ( std::ostream& str, const MeshFunction< Mesh, MeshEnt
 } // namespace Functions
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Functions/MeshFunction.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/MeshFunction.hpp>

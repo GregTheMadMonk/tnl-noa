@@ -11,13 +11,13 @@
 #include <memory>
 #include <filesystem>
 
-#include <noa/3rdparty/TNL/Meshes/Readers/NetgenReader.h>
-#include <noa/3rdparty/TNL/Meshes/Readers/VTKReader.h>
-#include <noa/3rdparty/TNL/Meshes/Readers/VTUReader.h>
-#include <noa/3rdparty/TNL/Meshes/Readers/VTIReader.h>
-#include <noa/3rdparty/TNL/Meshes/Readers/PVTUReader.h>
-#include <noa/3rdparty/TNL/Meshes/Readers/PVTIReader.h>
-#include <noa/3rdparty/TNL/Meshes/Readers/FPMAReader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Readers/NetgenReader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Readers/VTKReader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Readers/VTUReader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Readers/VTIReader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Readers/PVTUReader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Readers/PVTIReader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Readers/FPMAReader.h>
 
 namespace noa::TNL {
 namespace Meshes {

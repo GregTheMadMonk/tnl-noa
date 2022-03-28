@@ -9,9 +9,9 @@
 #include <sstream>
 #include <iomanip>
 
-#include <noa/3rdparty/TNL/FileName.h>
-#include <noa/3rdparty/TNL/String.h>
-#include <noa/3rdparty/TNL/Math.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/FileName.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Math.h>
 
 #include "FileName.h"
 

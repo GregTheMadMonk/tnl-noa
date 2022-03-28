@@ -25,7 +25,7 @@ class FiniteDifferences
 } // namespace Operators
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Operators/fdm/FiniteDifferences_1D.h>
-#include <noa/3rdparty/TNL/Operators/fdm/FiniteDifferences_2D.h>
-#include <noa/3rdparty/TNL/Operators/fdm/FiniteDifferences_3D.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/fdm/FiniteDifferences_1D.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/fdm/FiniteDifferences_2D.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/fdm/FiniteDifferences_3D.h>
 

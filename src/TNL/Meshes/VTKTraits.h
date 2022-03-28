@@ -10,15 +10,15 @@
 #include <string>
 #include <cstdint>
 
-#include <noa/3rdparty/TNL/Meshes/Topologies/Edge.h>
-#include <noa/3rdparty/TNL/Meshes/Topologies/Triangle.h>
-#include <noa/3rdparty/TNL/Meshes/Topologies/Quadrangle.h>
-#include <noa/3rdparty/TNL/Meshes/Topologies/Tetrahedron.h>
-#include <noa/3rdparty/TNL/Meshes/Topologies/Hexahedron.h>
-#include <noa/3rdparty/TNL/Meshes/Topologies/Polygon.h>
-#include <noa/3rdparty/TNL/Meshes/Topologies/Wedge.h>
-#include <noa/3rdparty/TNL/Meshes/Topologies/Pyramid.h>
-#include <noa/3rdparty/TNL/Meshes/Topologies/Polyhedron.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Edge.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Triangle.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Quadrangle.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Tetrahedron.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Hexahedron.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Polygon.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Wedge.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Pyramid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Polyhedron.h>
 
 namespace noa::TNL {
 namespace Meshes {

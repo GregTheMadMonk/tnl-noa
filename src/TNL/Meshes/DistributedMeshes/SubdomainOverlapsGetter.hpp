@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/MPI/Wrappers.h>
-#include <noa/3rdparty/TNL/Assert.h>
-#include <noa/3rdparty/TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Wrappers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
 
 namespace noa::TNL {
 namespace Meshes {

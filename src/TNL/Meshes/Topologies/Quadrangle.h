@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Meshes/Topologies/Edge.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Edge.h>
 
 namespace noa::TNL {
 namespace Meshes {

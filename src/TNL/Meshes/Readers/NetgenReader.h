@@ -16,7 +16,7 @@
 #include <fstream>
 #include <sstream>
 
-#include <noa/3rdparty/TNL/Meshes/Readers/MeshReader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Readers/MeshReader.h>
 
 namespace noa::TNL {
 namespace Meshes {

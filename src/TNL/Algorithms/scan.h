@@ -10,8 +10,8 @@
 
 #include <utility>  // std::forward
 
-#include <noa/3rdparty/TNL/Algorithms/detail/Scan.h>
-#include <noa/3rdparty/TNL/Functional.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/detail/Scan.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functional.h>
 
 namespace noa::TNL {
 namespace Algorithms {

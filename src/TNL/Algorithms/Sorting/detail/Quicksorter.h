@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Containers/Array.h>
-#include <noa/3rdparty/TNL/Algorithms/Sorting/detail/task.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/detail/task.h>
 
 namespace noa::TNL {
    namespace Algorithms {
@@ -102,4 +102,4 @@ class Quicksorter< Value, Devices::Cuda >
     } // namespace Algorithms
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Algorithms/Sorting/detail/Quicksorter.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/detail/Quicksorter.hpp>

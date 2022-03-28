@@ -12,9 +12,9 @@
 // 3rd-party async library providing a thread-pool
 #include <noa/3rdparty/async/threadpool.h>
 
-#include <noa/3rdparty/TNL/Containers/ndarray/SynchronizerBuffers.h>
-#include <noa/3rdparty/TNL/MPI/Wrappers.h>
-#include <noa/3rdparty/TNL/Timer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ndarray/SynchronizerBuffers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Wrappers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Timer.h>
 
 namespace noa::TNL {
 namespace Containers {

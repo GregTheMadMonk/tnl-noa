@@ -11,8 +11,8 @@
 #include <type_traits>
 #include <cmath>
 
-#include <noa/3rdparty/TNL/Algorithms/Multireduction.h>
-#include <noa/3rdparty/TNL/Matrices/MatrixOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Multireduction.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixOperations.h>
 
 #include "GMRES.h"
 

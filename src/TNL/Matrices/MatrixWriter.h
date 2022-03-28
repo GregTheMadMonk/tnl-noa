@@ -8,7 +8,7 @@
 
 #include <ostream>
 #include <iostream>
-#include <noa/3rdparty/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
 
 namespace noa::TNL {
 namespace Matrices {
@@ -173,4 +173,4 @@ class MatrixWriter< Matrix, noa::TNL::Devices::Host >
 } // namespace Matrices
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Matrices/MatrixWriter.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixWriter.hpp>

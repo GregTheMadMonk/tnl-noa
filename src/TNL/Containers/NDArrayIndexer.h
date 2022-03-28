@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Containers/ndarray/Indexing.h>
-#include <noa/3rdparty/TNL/Containers/ndarray/SizesHolderHelpers.h>   // StorageSizeGetter
-#include <noa/3rdparty/TNL/Containers/ndarray/Subarrays.h>   // DummyStrideBase
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ndarray/Indexing.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ndarray/SizesHolderHelpers.h>   // StorageSizeGetter
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ndarray/Subarrays.h>   // DummyStrideBase
 
 namespace noa::TNL {
 namespace Containers {

@@ -7,7 +7,7 @@
 #pragma once 
 
 #include <cstring>
-#include <noa/3rdparty/TNL/Images//PGMImage.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images//PGMImage.h>
 
 namespace noa::TNL {
 namespace Images {   

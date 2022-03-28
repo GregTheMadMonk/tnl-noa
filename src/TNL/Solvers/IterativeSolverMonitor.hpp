@@ -16,7 +16,7 @@
    #include <unistd.h>
 #endif
 
-#include <noa/3rdparty/TNL/Solvers/IterativeSolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/IterativeSolver.h>
 
 namespace noa::TNL {
 namespace Solvers {

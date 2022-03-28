@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Object.h>
-#include <noa/3rdparty/TNL/Allocators/Default.h>
-#include <noa/3rdparty/TNL/Devices/Host.h>
-#include <noa/3rdparty/TNL/Containers/Vector.h>
-#include <noa/3rdparty/TNL/Containers/VectorView.h>
-#include <noa/3rdparty/TNL/Matrices/MatrixView.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/ElementsOrganization.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Object.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Allocators/Default.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/VectorView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/ElementsOrganization.h>
 
 namespace noa::TNL {
 /**
@@ -260,4 +260,4 @@ std::ostream& operator << ( std::ostream& str, const Matrix< Real, Device, Index
 } // namespace Matrices
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Matrices/Matrix.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/Matrix.hpp>

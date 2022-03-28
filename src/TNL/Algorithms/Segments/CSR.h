@@ -8,10 +8,10 @@
 
 #include <type_traits>
 
-#include <noa/3rdparty/TNL/Containers/Vector.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/CSRView.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/SegmentView.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/ElementsOrganization.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/CSRView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/SegmentView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/ElementsOrganization.h>
 
 namespace noa::TNL {
    namespace Algorithms {
@@ -565,4 +565,4 @@ using CSRDefault = CSRScalar< Device, Index, IndexAllocator >;
    }  // namespace Algorithms
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Algorithms/Segments/CSR.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/CSR.hpp>

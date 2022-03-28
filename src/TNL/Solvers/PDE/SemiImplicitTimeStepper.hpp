@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Math.h>
-#include <noa/3rdparty/TNL/Solvers/PDE/SemiImplicitTimeStepper.h>
-#include <noa/3rdparty/TNL/Solvers/LinearSolverTypeResolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Math.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/SemiImplicitTimeStepper.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/LinearSolverTypeResolver.h>
 
 namespace noa::TNL {
 namespace Solvers {

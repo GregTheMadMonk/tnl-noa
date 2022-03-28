@@ -1,3 +1,9 @@
+# Warning
+This fork is made to be used exclusively with [noa](https://github.com/grinisrit/noa).
+Actually, the only part of it that concerns us is **src/TNL**.
+Changes include: removed dependancy on `mpark::variant`, changes to header file paths _as they are in **noa**_.
+This repo only exists to make the process of merging custom changes with upstream TNL easier.
+
 [![pipeline status](https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev/badges/develop/pipeline.svg)](https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev/commits/develop)
 
 # Template Numerical Library

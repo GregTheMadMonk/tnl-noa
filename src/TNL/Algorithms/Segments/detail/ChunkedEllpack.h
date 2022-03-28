@@ -7,9 +7,9 @@
 #pragma once
 
 #include <type_traits>
-#include <noa/3rdparty/TNL/Containers/Vector.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/ChunkedEllpackSegmentView.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/detail/CheckLambdas.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/ChunkedEllpackSegmentView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/detail/CheckLambdas.h>
 
 namespace noa::TNL {
    namespace Algorithms {

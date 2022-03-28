@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Assert.h>
-#include <noa/3rdparty/TNL/Pointers/DevicePointer.h>
-#include <noa/3rdparty/TNL/Functions/MeshFunctionView.h>
-#include <noa/3rdparty/TNL/Functions/MeshFunctionEvaluator.h>
-#include <noa/3rdparty/TNL/Functions/MeshFunctionNormGetter.h>
-#include <noa/3rdparty/TNL/Functions/MeshFunctionIO.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/DevicePointer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/MeshFunctionView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/MeshFunctionEvaluator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/MeshFunctionNormGetter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/MeshFunctionIO.h>
 
 namespace noa::TNL {
 namespace Functions {

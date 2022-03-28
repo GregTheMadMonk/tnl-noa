@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Matrices/DenseMatrixRowView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/DenseMatrixRowView.h>
 
 namespace noa::TNL {
    namespace Matrices {

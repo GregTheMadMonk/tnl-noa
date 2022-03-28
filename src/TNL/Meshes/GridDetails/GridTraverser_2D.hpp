@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Meshes/Grid.h>
-#include <noa/3rdparty/TNL/Pointers/SharedPointer.h>
-#include <noa/3rdparty/TNL/Cuda/StreamPool.h>
-#include <noa/3rdparty/TNL/Exceptions/CudaSupportMissing.h>
-#include <noa/3rdparty/TNL/Meshes/GridDetails/GridTraverser.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/SharedPointer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/StreamPool.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/CudaSupportMissing.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/GridTraverser.h>
 
 namespace noa::TNL {
 namespace Meshes {

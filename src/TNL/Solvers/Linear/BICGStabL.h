@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Solvers/Linear/LinearSolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/LinearSolver.h>
 
 namespace noa::TNL {
    namespace Solvers {
@@ -155,4 +155,4 @@ class BICGStabL
    } // namespace Solvers
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Solvers/Linear/BICGStabL.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/BICGStabL.hpp>

@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Containers/ArrayView.h>
-#include <noa/3rdparty/TNL/Containers/Expressions/ExpressionTemplates.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ArrayView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/ExpressionTemplates.h>
 
 namespace noa::TNL {
 namespace Containers {
@@ -235,4 +235,4 @@ namespace Expressions {
 } // namespace Containers
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Containers/VectorView.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/VectorView.hpp>

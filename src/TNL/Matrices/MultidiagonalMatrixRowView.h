@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Matrices/MultidiagonalMatrixElement.h>
-#include <noa/3rdparty/TNL/Matrices/MatrixRowViewIterator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MultidiagonalMatrixElement.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixRowViewIterator.h>
 
 namespace noa::TNL {
 namespace Matrices {
@@ -218,4 +218,4 @@ class MultidiagonalMatrixRowView
 } // namespace Matrices
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Matrices/MultidiagonalMatrixRowView.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MultidiagonalMatrixRowView.hpp>

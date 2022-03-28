@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Solvers/cfd/navier-stokes/NavierStokesSolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/cfd/navier-stokes/NavierStokesSolver.h>
 
 namespace noa::TNL {
 

@@ -12,8 +12,8 @@
 #include <set>
 
 #include "ILUT.h"
-#include <noa/3rdparty/TNL/Solvers/Linear/Utils/TriangularSolve.h>
-#include <noa/3rdparty/TNL/Timer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/Utils/TriangularSolve.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Timer.h>
 
 namespace noa::TNL {
 namespace Solvers {

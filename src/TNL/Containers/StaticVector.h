@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Containers/StaticArray.h>
-#include <noa/3rdparty/TNL/Containers/Expressions/StaticExpressionTemplates.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticArray.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/StaticExpressionTemplates.h>
 
 namespace noa::TNL {
 namespace Containers {
@@ -183,7 +183,7 @@ namespace Expressions {
 } // namespace Containers
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Containers/StaticVector.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticVector.hpp>
 
 // TODO: move to some other source file
 namespace noa::TNL {

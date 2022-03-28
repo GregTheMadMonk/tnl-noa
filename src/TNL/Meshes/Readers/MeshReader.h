@@ -12,9 +12,9 @@
 #include <vector>
 #include <variant>
 
-#include <noa/3rdparty/TNL/Meshes/MeshBuilder.h>
-#include <noa/3rdparty/TNL/Meshes/VTKTraits.h>
-#include <noa/3rdparty/TNL/Meshes/Traits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshBuilder.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/VTKTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Traits.h>
 
 namespace noa::TNL {
 namespace Meshes {

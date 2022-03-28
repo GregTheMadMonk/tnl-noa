@@ -8,8 +8,8 @@
 
 #include <vector>
 
-#include <noa/3rdparty/TNL/String.h>
-#include <noa/3rdparty/TNL/File.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/File.h>
 
 /**
  * \brief The main TNL namespace.
@@ -148,4 +148,4 @@ void saveObjectType( File& file, const String& type );
 
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Object.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Object.hpp>

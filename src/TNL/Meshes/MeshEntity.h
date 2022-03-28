@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Meshes/Mesh.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Mesh.h>
 
 namespace noa::TNL {
 namespace Meshes {
@@ -130,4 +130,4 @@ std::ostream& operator<<( std::ostream& str, const MeshEntity< MeshConfig, Devic
 } // namespace Meshes
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Meshes/MeshEntity.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshEntity.hpp>

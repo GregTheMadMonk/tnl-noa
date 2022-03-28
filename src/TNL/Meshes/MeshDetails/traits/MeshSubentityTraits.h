@@ -12,9 +12,9 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Containers/StaticArray.h>
-#include <noa/3rdparty/TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
-#include <noa/3rdparty/TNL/Meshes/Topologies/SubentityVertexMap.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticArray.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/SubentityVertexMap.h>
 
 namespace noa::TNL {
 namespace Meshes {

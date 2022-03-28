@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Functions/MeshFunction.h>
-#include <noa/3rdparty/TNL/Functions/OperatorFunction.h>
-#include <noa/3rdparty/TNL/Functions/FunctionAdapter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/MeshFunction.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/OperatorFunction.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/FunctionAdapter.h>
 
 namespace noa::TNL {
 namespace Functions {   
@@ -166,4 +166,4 @@ class VectorFieldEvaluatorAdditionEntitiesProcessor
 } // namespace Functions
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Functions/VectorFieldEvaluator_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/VectorFieldEvaluator_impl.h>

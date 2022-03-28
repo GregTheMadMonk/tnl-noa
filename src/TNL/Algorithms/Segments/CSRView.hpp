@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Containers/Vector.h>
-#include <noa/3rdparty/TNL/Algorithms/ParallelFor.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/CSRView.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/detail/CSR.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/detail/LambdaAdapter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/ParallelFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/CSRView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/detail/CSR.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/detail/LambdaAdapter.h>
 
 namespace noa::TNL {
    namespace Algorithms {

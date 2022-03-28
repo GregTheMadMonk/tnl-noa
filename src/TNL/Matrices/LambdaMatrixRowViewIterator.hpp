@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Matrices/LambdaMatrixRowView.h>
-#include <noa/3rdparty/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/LambdaMatrixRowView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
 
 namespace noa::TNL {
 namespace Matrices {

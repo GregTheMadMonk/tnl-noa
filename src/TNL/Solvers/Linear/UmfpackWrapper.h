@@ -13,7 +13,7 @@
 #include <umfpack.h>
 
 #include "LinearSolver.h"
-#include <noa/3rdparty/TNL/Matrices/CSR.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/CSR.h>
 
 namespace noa::TNL {
 namespace Solvers {

@@ -72,4 +72,4 @@ std::ostream& operator <<( std::ostream& str, IndexedMap< Value, Index, Key >& s
 } // namespace Containers
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Containers/IndexedMap_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/IndexedMap_impl.h>

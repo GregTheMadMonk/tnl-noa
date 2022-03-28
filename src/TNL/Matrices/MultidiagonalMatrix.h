@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Matrices/Matrix.h>
-#include <noa/3rdparty/TNL/Containers/Vector.h>
-#include <noa/3rdparty/TNL/Matrices/MultidiagonalMatrixRowView.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/Ellpack.h>
-#include <noa/3rdparty/TNL/Matrices/details/MultidiagonalMatrixIndexer.h>
-#include <noa/3rdparty/TNL/Matrices/MultidiagonalMatrixView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/Matrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MultidiagonalMatrixRowView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/Ellpack.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/details/MultidiagonalMatrixIndexer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MultidiagonalMatrixView.h>
 
 namespace noa::TNL {
 namespace Matrices {
@@ -1144,4 +1144,4 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
 } // namespace Matrices
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Matrices/MultidiagonalMatrix.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MultidiagonalMatrix.hpp>

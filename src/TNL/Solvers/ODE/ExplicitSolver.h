@@ -7,12 +7,12 @@
 #pragma once
 
 #include <iomanip>
-#include <noa/3rdparty/TNL/Solvers/IterativeSolverMonitor.h>
-#include <noa/3rdparty/TNL/Solvers/IterativeSolver.h>
-#include <noa/3rdparty/TNL/Config/ConfigDescription.h>
-#include <noa/3rdparty/TNL/Config/ParameterContainer.h>
-#include <noa/3rdparty/TNL/Pointers/SharedPointer.h>
-#include <noa/3rdparty/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/IterativeSolverMonitor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/IterativeSolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ConfigDescription.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/SharedPointer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
 
 namespace noa::TNL {
 namespace Solvers {
@@ -105,4 +105,4 @@ protected:
 } // namespace Solvers
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Solvers/ODE/ExplicitSolver.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/ODE/ExplicitSolver.hpp>

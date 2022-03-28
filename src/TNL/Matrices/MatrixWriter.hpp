@@ -7,7 +7,7 @@
 #pragma once
 
 #include <iomanip>
-#include <noa/3rdparty/TNL/Matrices/MatrixWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixWriter.h>
 
 namespace noa::TNL {
 namespace Matrices {

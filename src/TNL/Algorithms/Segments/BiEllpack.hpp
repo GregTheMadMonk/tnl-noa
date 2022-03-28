@@ -7,11 +7,11 @@
 #pragma once
 
 #include <math.h>
-#include <noa/3rdparty/TNL/Containers/Vector.h>
-#include <noa/3rdparty/TNL/Algorithms/ParallelFor.h>
-#include <noa/3rdparty/TNL/Algorithms/scan.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/BiEllpack.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/Ellpack.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/ParallelFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/scan.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/BiEllpack.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/Ellpack.h>
 
 namespace noa::TNL {
    namespace Algorithms {

@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Logger.h>
-#include <noa/3rdparty/TNL/Meshes/Grid.h>
-#include <noa/3rdparty/TNL/Meshes/GridDetails/GridEntityTopology.h>
-#include <noa/3rdparty/TNL/Meshes/GridDetails/GridEntityGetter.h>
-#include <noa/3rdparty/TNL/Meshes/GridDetails/NeighborGridEntityGetter.h>
-#include <noa/3rdparty/TNL/Meshes/GridEntity.h>
-#include <noa/3rdparty/TNL/Meshes/GridEntityConfig.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Logger.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/GridEntityTopology.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/GridEntityGetter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/NeighborGridEntityGetter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridEntity.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridEntityConfig.h>
 
 namespace noa::TNL {
 namespace Meshes {
@@ -226,4 +226,4 @@ class Grid< 3, Real, Device, Index >
 } // namespace Meshes
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Meshes/GridDetails/Grid3D_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/Grid3D_impl.h>

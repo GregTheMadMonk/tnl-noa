@@ -9,9 +9,9 @@
 #include <fstream>
 #include <type_traits>
 
-#include <noa/3rdparty/TNL/String.h>
-#include <noa/3rdparty/TNL/Allocators/Host.h>
-#include <noa/3rdparty/TNL/Allocators/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Allocators/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Allocators/Cuda.h>
 
 namespace noa::TNL {
 
@@ -191,4 +191,4 @@ File& operator>>( File& file, std::string& str );
 
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/File.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/File.hpp>

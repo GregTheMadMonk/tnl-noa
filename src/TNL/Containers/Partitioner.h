@@ -13,7 +13,7 @@
 #include "Subrange.h"
 #include "ByteArraySynchronizer.h"
 
-#include <noa/3rdparty/TNL/Math.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Math.h>
 
 namespace noa::TNL {
 namespace Containers {

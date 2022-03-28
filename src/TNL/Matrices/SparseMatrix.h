@@ -7,13 +7,13 @@
 #pragma once
 
 #include <map>
-#include <noa/3rdparty/TNL/Matrices/Matrix.h>
-#include <noa/3rdparty/TNL/Matrices/MatrixType.h>
-#include <noa/3rdparty/TNL/Allocators/Default.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/CSR.h>
-#include <noa/3rdparty/TNL/Matrices/SparseMatrixRowView.h>
-#include <noa/3rdparty/TNL/Matrices/SparseMatrixView.h>
-#include <noa/3rdparty/TNL/Matrices/DenseMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/Matrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixType.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Allocators/Default.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/CSR.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/SparseMatrixRowView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/SparseMatrixView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/DenseMatrix.h>
 
 namespace noa::TNL {
 namespace Matrices {
@@ -1199,4 +1199,4 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
    } // namespace Matrices
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Matrices/SparseMatrix.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/SparseMatrix.hpp>

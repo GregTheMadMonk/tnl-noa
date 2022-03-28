@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Config/ParameterContainer.h>
-#include <noa/3rdparty/TNL/Containers/StaticVector.h>
-#include <noa/3rdparty/TNL/Functions/Domain.h>
-#include <noa/3rdparty/TNL/Devices/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticVector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Domain.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Cuda.h>
 
 namespace noa::TNL {
 namespace Functions {
@@ -119,5 +119,5 @@ std::ostream& operator << ( std::ostream& str, const Blob< Dimension, Real >& f 
 } // namespace Functions
 } // namepsace TNL
 
-#include <noa/3rdparty/TNL/Functions/Analytic/Blob_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/Blob_impl.h>
 

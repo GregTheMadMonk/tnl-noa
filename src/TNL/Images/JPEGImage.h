@@ -10,9 +10,9 @@
 #include <jpeglib.h>
 #endif
 
-#include <noa/3rdparty/TNL/String.h>
-#include <noa/3rdparty/TNL/Images/Image.h>
-#include <noa/3rdparty/TNL/Images/RegionOfInterest.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/Image.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/RegionOfInterest.h>
 
 #ifdef HAVE_JPEG_H
 struct my_error_mgr
@@ -89,5 +89,5 @@ class JPEGImage : public Image< Index >
 } // namespace Images
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Images//JPEGImage_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images//JPEGImage_impl.h>
 

@@ -9,12 +9,12 @@
 #include <ostream>
 #include <utility>
 
-#include <noa/3rdparty/TNL/Functional.h>
-#include <noa/3rdparty/TNL/TypeTraits.h>
-#include <noa/3rdparty/TNL/Containers/Expressions/TypeTraits.h>
-#include <noa/3rdparty/TNL/Containers/Expressions/ExpressionVariableType.h>
-#include <noa/3rdparty/TNL/Containers/Expressions/Comparison.h>
-#include <noa/3rdparty/TNL/Algorithms/reduce.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functional.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/TypeTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/ExpressionVariableType.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/Comparison.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/reduce.h>
 
 namespace noa::TNL {
 namespace Containers {

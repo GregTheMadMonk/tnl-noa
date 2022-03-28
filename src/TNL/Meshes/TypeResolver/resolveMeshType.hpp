@@ -8,10 +8,10 @@
 
 #include <filesystem>
 
-#include <noa/3rdparty/TNL/Meshes/TypeResolver/resolveMeshType.h>
-#include <noa/3rdparty/TNL/Meshes/TypeResolver/GridTypeResolver.h>
-#include <noa/3rdparty/TNL/Meshes/TypeResolver/MeshTypeResolver.h>
-#include <noa/3rdparty/TNL/Meshes/Readers/getMeshReader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/TypeResolver/resolveMeshType.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/TypeResolver/GridTypeResolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/TypeResolver/MeshTypeResolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Readers/getMeshReader.h>
 
 namespace noa::TNL {
 namespace Meshes {

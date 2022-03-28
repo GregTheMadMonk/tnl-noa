@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Matrices/Matrix.h>
-#include <noa/3rdparty/TNL/Assert.h>
-#include <noa/3rdparty/TNL/Cuda/LaunchHelpers.h>
-#include <noa/3rdparty/TNL/Cuda/MemoryHelpers.h>
-#include <noa/3rdparty/TNL/Cuda/SharedMemory.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/Matrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/LaunchHelpers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/MemoryHelpers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/SharedMemory.h>
 
 namespace noa::TNL {
 namespace Matrices {

@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Config/ParameterContainer.h>
-#include <noa/3rdparty/TNL/Containers/StaticVector.h>
-#include <noa/3rdparty/TNL/Functions/Domain.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticVector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Domain.h>
 
 namespace noa::TNL {
    namespace Functions {
@@ -142,5 +142,5 @@ std::ostream& operator << ( std::ostream& str, const Paraboloid< Dimensions, Rea
    } // namespace Functions
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Functions/Analytic/Paraboloid_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/Paraboloid_impl.h>
 

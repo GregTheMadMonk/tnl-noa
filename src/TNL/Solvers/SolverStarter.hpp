@@ -6,18 +6,18 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Logger.h>
-#include <noa/3rdparty/TNL/String.h>
-#include <noa/3rdparty/TNL/Devices/Cuda.h>
-#include <noa/3rdparty/TNL/Devices/Host.h>
-#include <noa/3rdparty/TNL/MPI/Config.h>
-#include <noa/3rdparty/TNL/Solvers/SolverStarter.h>
-#include <noa/3rdparty/TNL/Solvers/BuildConfigTags.h>
-#include <noa/3rdparty/TNL/Solvers/ODE/Merson.h>
-#include <noa/3rdparty/TNL/Solvers/ODE/Euler.h>
-#include <noa/3rdparty/TNL/Solvers/PDE/ExplicitTimeStepper.h>
-#include <noa/3rdparty/TNL/Solvers/PDE/SemiImplicitTimeStepper.h>
-#include <noa/3rdparty/TNL/Solvers/PDE/PDESolverTypeResolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Logger.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Config.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/SolverStarter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/BuildConfigTags.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/ODE/Merson.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/ODE/Euler.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/ExplicitTimeStepper.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/SemiImplicitTimeStepper.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/PDESolverTypeResolver.h>
 
 namespace noa::TNL {
 namespace Solvers {

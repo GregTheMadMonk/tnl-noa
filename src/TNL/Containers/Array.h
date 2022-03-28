@@ -9,10 +9,10 @@
 #include <list>
 #include <vector>
 
-#include <noa/3rdparty/TNL/File.h>
-#include <noa/3rdparty/TNL/TypeTraits.h>
-#include <noa/3rdparty/TNL/Allocators/Default.h>
-#include <noa/3rdparty/TNL/Containers/ArrayView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/File.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Allocators/Default.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ArrayView.h>
 
 namespace noa::TNL {
 /**
@@ -792,4 +792,4 @@ File& operator>>( File&& file, Array< Value, Device, Index, Allocator >& array )
 } // namespace Containers
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Containers/Array.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.hpp>

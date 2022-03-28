@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Containers/Array.h>
-#include <noa/3rdparty/TNL/Algorithms/Sorting/detail/task.h>
-#include <noa/3rdparty/TNL/Algorithms/Sorting/detail/cudaPartition.h>
-#include <noa/3rdparty/TNL/Algorithms/Sorting/detail/quicksort_1Block.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/detail/task.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/detail/cudaPartition.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/detail/quicksort_1Block.h>
 
 
 namespace noa::TNL {

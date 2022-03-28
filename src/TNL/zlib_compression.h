@@ -14,7 +14,7 @@
 #define HAVE_ZLIB
 #endif
 
-#include <noa/3rdparty/TNL/base64.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/base64.h>
 
 namespace noa::TNL {
 

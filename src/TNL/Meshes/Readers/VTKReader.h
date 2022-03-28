@@ -13,9 +13,9 @@
 #include <vector>
 #include <map>
 
-#include <noa/3rdparty/TNL/Meshes/Readers/MeshReader.h>
-#include <noa/3rdparty/TNL/Endianness.h>
-#include <noa/3rdparty/TNL/Meshes/EntityShapeGroupChecker.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Readers/MeshReader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Endianness.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/EntityShapeGroupChecker.h>
 
 namespace noa::TNL {
 namespace Meshes {

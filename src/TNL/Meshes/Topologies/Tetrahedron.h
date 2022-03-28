@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Meshes/Topologies/Triangle.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Triangle.h>
 
 namespace noa::TNL {
 namespace Meshes {

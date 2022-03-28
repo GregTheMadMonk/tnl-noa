@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Debugging/OutputRedirection.h>
-#include <noa/3rdparty/TNL/TypeTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Debugging/OutputRedirection.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeTraits.h>
 
 #include "Wrappers.h"
 

@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Allocators/Default.h>
-#include <noa/3rdparty/TNL/Devices/Host.h>
-#include <noa/3rdparty/TNL/Matrices/DenseMatrixRowView.h>
-#include <noa/3rdparty/TNL/Matrices/MatrixView.h>
-#include <noa/3rdparty/TNL/Matrices/MatrixType.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/Ellpack.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Allocators/Default.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/DenseMatrixRowView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixType.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/Ellpack.h>
 
 namespace noa::TNL {
 namespace Matrices {
@@ -933,4 +933,4 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
 } // namespace Matrices
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Matrices/DenseMatrixView.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/DenseMatrixView.hpp>

@@ -87,5 +87,5 @@ class DicomImageInfo
 } // namespace Images
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Images//DicomImageInfo_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images//DicomImageInfo_impl.h>
 

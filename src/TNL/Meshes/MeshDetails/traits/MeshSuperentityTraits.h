@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
 
 namespace noa::TNL {
 namespace Meshes {

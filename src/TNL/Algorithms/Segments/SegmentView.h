@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Algorithms/Segments/ElementsOrganization.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/SegmentViewIterator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/ElementsOrganization.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/SegmentViewIterator.h>
 
 namespace noa::TNL {
    namespace Algorithms {

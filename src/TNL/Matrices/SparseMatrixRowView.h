@@ -8,9 +8,9 @@
 
 #include <ostream>
 
-#include <noa/3rdparty/TNL/Cuda/CudaCallable.h>
-#include <noa/3rdparty/TNL/Matrices/MatrixRowViewIterator.h>
-#include <noa/3rdparty/TNL/Matrices/details/SparseMatrixRowViewValueGetter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CudaCallable.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixRowViewIterator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/details/SparseMatrixRowViewValueGetter.h>
 
 namespace noa::TNL {
 namespace Matrices {
@@ -277,4 +277,4 @@ std::ostream& operator<<( std::ostream& str, const SparseMatrixRowView< SegmentV
 } // namespace Matrices
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Matrices/SparseMatrixRowView.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/SparseMatrixRowView.hpp>

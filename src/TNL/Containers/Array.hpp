@@ -9,11 +9,11 @@
 #include <iostream>
 #include <stdexcept>
 
-#include <noa/3rdparty/TNL/Assert.h>
-#include <noa/3rdparty/TNL/Math.h>
-#include <noa/3rdparty/TNL/TypeInfo.h>
-#include <noa/3rdparty/TNL/Containers/detail/ArrayIO.h>
-#include <noa/3rdparty/TNL/Containers/detail/ArrayAssignment.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Math.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/detail/ArrayIO.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/detail/ArrayAssignment.h>
 
 #include "Array.h"
 

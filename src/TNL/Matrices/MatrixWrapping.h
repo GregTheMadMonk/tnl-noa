@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Algorithms/Segments/CSR.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/Ellpack.h>
-#include <noa/3rdparty/TNL/Matrices/SparseMatrixView.h>
-#include <noa/3rdparty/TNL/Matrices/DenseMatrixView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/CSR.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/Ellpack.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/SparseMatrixView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/DenseMatrixView.h>
 
 namespace noa::TNL {
 namespace Matrices {

@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/File.h>
-#include <noa/3rdparty/TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <noa/3rdparty/TNL/Containers/VectorView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/File.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/traits/MeshTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/VectorView.h>
 
 #include "Traits.h"
 

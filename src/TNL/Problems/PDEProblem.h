@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Problems/Problem.h>
-#include <noa/3rdparty/TNL/Problems/CommonData.h>
-#include <noa/3rdparty/TNL/Pointers/SharedPointer.h>
-#include <noa/3rdparty/TNL/Matrices/SparseMatrix.h>
-#include <noa/3rdparty/TNL/Algorithms/Segments/SlicedEllpack.h>
-#include <noa/3rdparty/TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Problems/Problem.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Problems/CommonData.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/SharedPointer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/SparseMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/SlicedEllpack.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
 namespace noa::TNL {
 namespace Problems {
@@ -118,4 +118,4 @@ class PDEProblem : public Problem< Real, Device, Index >
 } // namespace Problems
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Problems/PDEProblem_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Problems/PDEProblem_impl.h>

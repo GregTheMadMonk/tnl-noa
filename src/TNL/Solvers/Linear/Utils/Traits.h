@@ -8,12 +8,12 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/MPI/Wrappers.h>
-#include <noa/3rdparty/TNL/Containers/Vector.h>
-#include <noa/3rdparty/TNL/Containers/VectorView.h>
-#include <noa/3rdparty/TNL/Containers/DistributedVector.h>
-#include <noa/3rdparty/TNL/Containers/DistributedVectorView.h>
-#include <noa/3rdparty/TNL/Matrices/DistributedMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Wrappers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/VectorView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/DistributedVector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/DistributedVectorView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/DistributedMatrix.h>
 
 namespace noa::TNL {
 namespace Solvers {

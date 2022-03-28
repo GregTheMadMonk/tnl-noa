@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Functions/Analytic/Flowerpot.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/Flowerpot.h>
 
 namespace noa::TNL {
 namespace Functions {

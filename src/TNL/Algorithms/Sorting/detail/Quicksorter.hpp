@@ -8,13 +8,13 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Functional.h>
-#include <noa/3rdparty/TNL/Algorithms/Sorting/detail/task.h>
-#include <noa/3rdparty/TNL/Algorithms/Sorting/detail/quicksort_kernel.h>
-#include <noa/3rdparty/TNL/Algorithms/Sorting/detail/quicksort_1Block.h>
-#include <noa/3rdparty/TNL/Algorithms/Sorting/detail/Quicksorter.h>
-#include <noa/3rdparty/TNL/Algorithms/reduce.h>
-#include <noa/3rdparty/TNL/Algorithms/scan.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functional.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/detail/task.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/detail/quicksort_kernel.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/detail/quicksort_1Block.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/detail/Quicksorter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/reduce.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/scan.h>
 
 namespace noa::TNL {
     namespace Algorithms {

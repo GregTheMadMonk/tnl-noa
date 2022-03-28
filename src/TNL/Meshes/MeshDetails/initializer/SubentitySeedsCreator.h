@@ -12,10 +12,10 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Algorithms/staticFor.h>
-#include <noa/3rdparty/TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <noa/3rdparty/TNL/Meshes/Topologies/Polygon.h>
-#include <noa/3rdparty/TNL/Meshes/Topologies/SubentityVertexCount.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/staticFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/traits/MeshTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Polygon.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/SubentityVertexCount.h>
 
 namespace noa::TNL {
 namespace Meshes {

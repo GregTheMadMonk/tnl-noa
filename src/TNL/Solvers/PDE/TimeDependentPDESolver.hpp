@@ -7,9 +7,9 @@
 #pragma once
 
 #include "TimeDependentPDESolver.h"
-#include <noa/3rdparty/TNL/Meshes/TypeResolver/resolveMeshType.h>
-#include <noa/3rdparty/TNL/Meshes/TypeResolver/resolveDistributedMeshType.h>
-#include <noa/3rdparty/TNL/MPI/Wrappers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/TypeResolver/resolveMeshType.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/TypeResolver/resolveDistributedMeshType.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Wrappers.h>
 
 namespace noa::TNL {
 namespace Solvers {

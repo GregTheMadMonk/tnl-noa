@@ -8,15 +8,15 @@
 
 #include <filesystem>
 
-#include <noa/3rdparty/TNL/Functions/Domain.h>
-#include <noa/3rdparty/TNL/Devices/Cuda.h>
-#include <noa/3rdparty/TNL/Config/ParameterContainer.h>
-#include <noa/3rdparty/TNL/Functions/MeshFunction.h>
-#include <noa/3rdparty/TNL/Functions/MeshFunctionView.h>
-#include <noa/3rdparty/TNL/Functions/VectorFieldGnuplotWriter.h>
-#include <noa/3rdparty/TNL/Meshes/Writers/VTKWriter.h>
-#include <noa/3rdparty/TNL/Meshes/Writers/VTUWriter.h>
-#include <noa/3rdparty/TNL/Meshes/Writers/VTIWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Domain.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/MeshFunction.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/MeshFunctionView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/VectorFieldGnuplotWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/VTKWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/VTUWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/VTIWriter.h>
 
 namespace noa::TNL {
 namespace Functions {

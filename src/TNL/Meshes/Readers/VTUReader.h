@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Meshes/Readers/XMLVTK.h>
-#include <noa/3rdparty/TNL/Meshes/EntityShapeGroupChecker.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Readers/XMLVTK.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/EntityShapeGroupChecker.h>
 
 namespace noa::TNL {
 namespace Meshes {

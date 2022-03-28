@@ -9,10 +9,10 @@
 #include <limits>
 #include <ostream>
 
-#include <noa/3rdparty/TNL/Endianness.h>
-#include <noa/3rdparty/TNL/Meshes/Grid.h>
-#include <noa/3rdparty/TNL/Meshes/MeshEntity.h>
-#include <noa/3rdparty/TNL/Meshes/VTKTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Endianness.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshEntity.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/VTKTraits.h>
 
 namespace noa::TNL {
 namespace Meshes {

@@ -9,7 +9,7 @@
 #include <cfenv>
 #include <signal.h>
 
-#include <noa/3rdparty/TNL/Debugging/StackBacktrace.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Debugging/StackBacktrace.h>
 
 namespace noa::TNL {
 namespace Debugging {

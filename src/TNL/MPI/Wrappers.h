@@ -14,10 +14,10 @@
 #else
    #include "DummyDefs.h"
    #include <cstring>  // std::memcpy
-   #include <noa/3rdparty/TNL/Exceptions/MPISupportMissing.h>
+   #include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/MPISupportMissing.h>
 #endif
 
-#include <noa/3rdparty/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
 #include "getDataType.h"
 #include "Profiling.h"
 

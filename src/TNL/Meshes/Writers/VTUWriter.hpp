@@ -10,13 +10,13 @@
 
 #include <limits>
 
-#include <noa/3rdparty/TNL/Containers/Array.h>
-#include <noa/3rdparty/TNL/Meshes/Writers/VTUWriter.h>
-#include <noa/3rdparty/TNL/Meshes/Writers/detail/VTUMeshEntitiesCollector.h>
-#include <noa/3rdparty/TNL/Meshes/Writers/detail/VTUPolyhedralFacesWriter.h>
-#include <noa/3rdparty/TNL/Endianness.h>
-#include <noa/3rdparty/TNL/base64.h>
-#include <noa/3rdparty/TNL/zlib_compression.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/VTUWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/detail/VTUMeshEntitiesCollector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/detail/VTUPolyhedralFacesWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Endianness.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/base64.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/zlib_compression.h>
 
 
 namespace noa::TNL {

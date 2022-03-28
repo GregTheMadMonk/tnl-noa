@@ -7,7 +7,7 @@
 #pragma once
 
 #include <cmath>
-#include <noa/3rdparty/TNL/Functions/Analytic/ExpBump.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/ExpBump.h>
 
 namespace noa::TNL {
 namespace Functions {

@@ -7,8 +7,8 @@
 #pragma once
 
 #include <istream>
-#include <noa/3rdparty/TNL/String.h>
-#include <noa/3rdparty/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
 
 namespace noa::TNL {
 namespace Matrices {
@@ -171,4 +171,4 @@ class MatrixReader< Matrix, noa::TNL::Devices::Host >
 } // namespace Matrices
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Matrices/MatrixReader.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixReader.hpp>

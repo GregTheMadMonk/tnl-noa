@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Containers/StaticVector.h>
-#include <noa/3rdparty/TNL/Meshes/GridDetails/NeighborGridEntitiesStorage.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticVector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/NeighborGridEntitiesStorage.h>
 
 namespace noa::TNL {
 namespace Meshes {
@@ -387,5 +387,5 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >
 } // namespace Meshes
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Meshes/GridDetails/GridEntity_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/GridEntity_impl.h>
 

@@ -12,9 +12,9 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Meshes/Topologies/SubentityVertexMap.h>
-#include <noa/3rdparty/TNL/Meshes/DimensionTag.h>
-#include <noa/3rdparty/TNL/Meshes/Topologies/Polyhedron.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/SubentityVertexMap.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DimensionTag.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Polyhedron.h>
 
 namespace noa::TNL {
 namespace Meshes {

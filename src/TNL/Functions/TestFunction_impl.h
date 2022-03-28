@@ -6,37 +6,37 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Devices/Cuda.h>
-#include <noa/3rdparty/TNL/Allocators/Cuda.h>
-#include <noa/3rdparty/TNL/Algorithms/MultiDeviceMemoryOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Allocators/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/MultiDeviceMemoryOperations.h>
 
-#include <noa/3rdparty/TNL/Functions/Analytic/Constant.h>
-#include <noa/3rdparty/TNL/Functions/Analytic/ExpBump.h>
-#include <noa/3rdparty/TNL/Functions/Analytic/SinBumps.h>
-#include <noa/3rdparty/TNL/Functions/Analytic/SinWave.h>
-#include <noa/3rdparty/TNL/Functions/Analytic/Constant.h>
-#include <noa/3rdparty/TNL/Functions/Analytic/ExpBump.h>
-#include <noa/3rdparty/TNL/Functions/Analytic/SinBumps.h>
-#include <noa/3rdparty/TNL/Functions/Analytic/SinWave.h>
-#include <noa/3rdparty/TNL/Functions/Analytic/Cylinder.h>
-#include <noa/3rdparty/TNL/Functions/Analytic/Flowerpot.h>
-#include <noa/3rdparty/TNL/Functions/Analytic/Twins.h>
-#include <noa/3rdparty/TNL/Functions/Analytic/Blob.h>
-#include <noa/3rdparty/TNL/Functions/Analytic/PseudoSquare.h>
-#include <noa/3rdparty/TNL/Functions/Analytic/Paraboloid.h>
-#include <noa/3rdparty/TNL/Functions/Analytic/VectorNorm.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/Constant.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/ExpBump.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/SinBumps.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/SinWave.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/Constant.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/ExpBump.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/SinBumps.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/SinWave.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/Cylinder.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/Flowerpot.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/Twins.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/Blob.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/PseudoSquare.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/Paraboloid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/VectorNorm.h>
 /****
  * The signed distance test functions
  */
-#include <noa/3rdparty/TNL/Functions/Analytic/SinBumpsSDF.h>
-#include <noa/3rdparty/TNL/Functions/Analytic/SinWaveSDF.h>
-#include <noa/3rdparty/TNL/Functions/Analytic/ParaboloidSDF.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/SinBumpsSDF.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/SinWaveSDF.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/ParaboloidSDF.h>
 
-#include <noa/3rdparty/TNL/Operators/Analytic/Identity.h>
-#include <noa/3rdparty/TNL/Operators/Analytic/Heaviside.h>
-#include <noa/3rdparty/TNL/Operators/Analytic/SmoothHeaviside.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/Analytic/Identity.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/Analytic/Heaviside.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/Analytic/SmoothHeaviside.h>
 
-#include <noa/3rdparty/TNL/Exceptions/NotImplementedError.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/NotImplementedError.h>
 
 #include "TestFunction.h"
 

@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Functions/FunctionAdapter.h>
-#include <noa/3rdparty/TNL/Timer.h>
-#include <noa/3rdparty/TNL/Pointers/SharedPointer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/FunctionAdapter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Timer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/SharedPointer.h>
 #include <type_traits>
-#include <noa/3rdparty/TNL/Meshes/GridDetails/Traverser_Grid1D.h>
-#include <noa/3rdparty/TNL/Meshes/GridDetails/Traverser_Grid2D.h>
-#include <noa/3rdparty/TNL/Meshes/GridDetails/Traverser_Grid3D.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/Traverser_Grid1D.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/Traverser_Grid2D.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/Traverser_Grid3D.h>
 
 namespace noa::TNL {
 namespace Solvers {

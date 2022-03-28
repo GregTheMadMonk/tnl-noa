@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <noa/3rdparty/TNL/Solvers/BuildConfigTags.h>
-#include <noa/3rdparty/TNL/Meshes/TypeResolver/BuildConfigTags.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/BuildConfigTags.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/TypeResolver/BuildConfigTags.h>
 
 namespace noa::TNL {
 namespace Solvers {

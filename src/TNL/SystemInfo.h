@@ -8,7 +8,7 @@
 
 #include <fstream>
 
-#include <noa/3rdparty/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
 
 namespace noa::TNL {
 
@@ -65,4 +65,4 @@ protected:
 
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/SystemInfo.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/SystemInfo.hpp>

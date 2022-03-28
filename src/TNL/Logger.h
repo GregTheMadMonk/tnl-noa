@@ -8,8 +8,8 @@
 
 #include <ostream>
 
-#include <noa/3rdparty/TNL/String.h>
-#include <noa/3rdparty/TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
 
 namespace noa::TNL {
 
@@ -84,4 +84,4 @@ protected:
 
 } // namespace noa::TNL
 
-#include <noa/3rdparty/TNL/Logger_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Logger_impl.h>
