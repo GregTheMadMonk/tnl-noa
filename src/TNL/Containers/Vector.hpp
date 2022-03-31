@@ -28,6 +28,12 @@ template< typename Real, typename Device, typename Index, typename Allocator >
 typename Vector< Real, Device, Index, Allocator >::ViewType
 Vector< Real, Device, Index, Allocator >::getView( IndexType begin, IndexType end )
 {
+   TNL_ASSERT_GE( begin, 0, "Parameter 'begin' must be non-negative." );
+   TNL_ASSERT_LE( begin, this->getSize(), "Parameter 'begin' must be lower or equal to size of the vector." );
+   TNL_ASSERT_GE( end, 0, "Parameter 'end' must be non-negative." );
+   TNL_ASSERT_LE( end, this->getSize(), "Parameter 'end' must be lower or equal to size of the vector." );
+   TNL_ASSERT_LE( begin, end, "Parameter 'begin' must be lower or equal to the parameter 'end'." );
+
    if( end == 0 )
       end = this->getSize();
    return ViewType( this->getData() + begin, end - begin );
@@ -37,6 +43,12 @@ template< typename Real, typename Device, typename Index, typename Allocator >
 typename Vector< Real, Device, Index, Allocator >::ConstViewType
 Vector< Real, Device, Index, Allocator >::getConstView( IndexType begin, IndexType end ) const
 {
+   TNL_ASSERT_GE( begin, 0, "Parameter 'begin' must be non-negative." );
+   TNL_ASSERT_LE( begin, this->getSize(), "Parameter 'begin' must be lower or equal to size of the vector." );
+   TNL_ASSERT_GE( end, 0, "Parameter 'end' must be non-negative." );
+   TNL_ASSERT_LE( end, this->getSize(), "Parameter 'end' must be lower or equal to size of the vector." );
+   TNL_ASSERT_LE( begin, end, "Parameter 'begin' must be lower or equal to the parameter 'end'." );
+
    if( end == 0 )
       end = this->getSize();
    return ConstViewType( this->getData() + begin, end - begin );
