@@ -17,6 +17,12 @@ __cuda_callable__
 typename VectorView< Real, Device, Index >::ViewType
 VectorView< Real, Device, Index >::getView( IndexType begin, IndexType end )
 {
+   TNL_ASSERT_GE( begin, ( Index ) 0, "Parameter 'begin' must be non-negative." );
+   TNL_ASSERT_LE( begin, this->getSize(), "Parameter 'begin' must be lower or equal to size of the vector view." );
+   TNL_ASSERT_GE( end, ( Index ) 0, "Parameter 'end' must be non-negative." );
+   TNL_ASSERT_LE( end, this->getSize(), "Parameter 'end' must be lower or equal to size of the vector view." );
+   TNL_ASSERT_LE( begin, end, "Parameter 'begin' must be lower or equal to the parameter 'end'." );
+
    if( end == 0 )
       end = this->getSize();
    return ViewType( this->getData() + begin, end - begin );
@@ -28,6 +34,12 @@ __cuda_callable__
 typename VectorView< Real, Device, Index >::ConstViewType
 VectorView< Real, Device, Index >::getConstView( const IndexType begin, IndexType end ) const
 {
+   TNL_ASSERT_GE( begin, ( Index ) 0, "Parameter 'begin' must be non-negative." );
+   TNL_ASSERT_LE( begin, this->getSize(), "Parameter 'begin' must be lower or equal to size of the vector view." );
+   TNL_ASSERT_GE( end, ( Index ) 0, "Parameter 'end' must be non-negative." );
+   TNL_ASSERT_LE( end, this->getSize(), "Parameter 'end' must be lower or equal to size of the vector view." );
+   TNL_ASSERT_LE( begin, end, "Parameter 'begin' must be lower or equal to the parameter 'end'." );
+
    if( end == 0 )
       end = this->getSize();
    return ConstViewType( this->getData() + begin, end - begin );

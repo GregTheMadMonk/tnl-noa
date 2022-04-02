@@ -258,6 +258,12 @@ template< typename Value, typename Device, typename Index, typename Allocator >
 typename Array< Value, Device, Index, Allocator >::ViewType
 Array< Value, Device, Index, Allocator >::getView( IndexType begin, IndexType end )
 {
+   TNL_ASSERT_GE( begin, ( Index ) 0, "Parameter 'begin' must be non-negative." );
+   TNL_ASSERT_LE( begin, getSize(), "Parameter 'begin' must be lower or equal to size of the array." );
+   TNL_ASSERT_GE( end, ( Index ) 0, "Parameter 'end' must be non-negative." );
+   TNL_ASSERT_LE( end, getSize(), "Parameter 'end' must be lower or equal to size of the array." );
+   TNL_ASSERT_LE( begin, end, "Parameter 'begin' must be lower or equal to the parameter 'end'." );
+
    if( end == 0 )
       end = getSize();
    return ViewType( getData() + begin, end - begin );
@@ -267,6 +273,12 @@ template< typename Value, typename Device, typename Index, typename Allocator >
 typename Array< Value, Device, Index, Allocator >::ConstViewType
 Array< Value, Device, Index, Allocator >::getConstView( IndexType begin, IndexType end ) const
 {
+   TNL_ASSERT_GE( begin, ( Index ) 0, "Parameter 'begin' must be non-negative." );
+   TNL_ASSERT_LE( begin, getSize(), "Parameter 'begin' must be lower or equal to size of the array." );
+   TNL_ASSERT_GE( end, ( Index ) 0, "Parameter 'end' must be non-negative." );
+   TNL_ASSERT_LE( end, getSize(), "Parameter 'end' must be lower or equal to size of the array." );
+   TNL_ASSERT_LE( begin, end, "Parameter 'begin' must be lower or equal to the parameter 'end'." );
+
    if( end == 0 )
       end = getSize();
    return ConstViewType( getData() + begin, end - begin );
