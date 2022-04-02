@@ -59,9 +59,9 @@ __cuda_callable__
 typename ArrayView< Value, Device, Index >::ViewType
 ArrayView< Value, Device, Index >::getView( IndexType begin, IndexType end )
 {
-   TNL_ASSERT_GE( begin, ( Index ) 0, "Parameter 'begin' must be non-negative." );
+   TNL_ASSERT_GE( begin, (Index) 0, "Parameter 'begin' must be non-negative." );
    TNL_ASSERT_LE( begin, getSize(), "Parameter 'begin' must be lower or equal to size of the array view." );
-   TNL_ASSERT_GE( end, ( Index ) 0, "Parameter 'end' must be non-negative." );
+   TNL_ASSERT_GE( end, (Index) 0, "Parameter 'end' must be non-negative." );
    TNL_ASSERT_LE( end, getSize(), "Parameter 'end' must be lower or equal to size of the array view." );
    TNL_ASSERT_LE( begin, end, "Parameter 'begin' must be lower or equal to the parameter 'end'." );
 
@@ -76,9 +76,9 @@ __cuda_callable__
 typename ArrayView< Value, Device, Index >::ConstViewType
 ArrayView< Value, Device, Index >::getConstView( IndexType begin, IndexType end ) const
 {
-   TNL_ASSERT_GE( begin, ( Index ) 0, "Parameter 'begin' must be non-negative." );
+   TNL_ASSERT_GE( begin, (Index) 0, "Parameter 'begin' must be non-negative." );
    TNL_ASSERT_LE( begin, getSize(), "Parameter 'begin' must be lower or equal to size of the array view." );
-   TNL_ASSERT_GE( end, ( Index ) 0, "Parameter 'end' must be non-negative." );
+   TNL_ASSERT_GE( end, (Index) 0, "Parameter 'end' must be non-negative." );
    TNL_ASSERT_LE( end, getSize(), "Parameter 'end' must be lower or equal to size of the array view." );
    TNL_ASSERT_LE( begin, end, "Parameter 'begin' must be lower or equal to the parameter 'end'." );
 

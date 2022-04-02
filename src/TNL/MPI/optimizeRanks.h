@@ -209,8 +209,8 @@ optimizeRanks( const MPI::Comm& communicator, const CommPattern& communicationPa
 
    if( rank == 0 ) {
       const auto rank_costs = getCommunicationCosts( costMatrix, communicationPattern, perm );
-      std::cout << "restored best permutation " << perm << " with cost vector " << rank_costs << " sum " << TNL::sum( rank_costs )
-                << std::endl;
+      std::cout << "restored best permutation " << perm << " with cost vector " << rank_costs << " sum "
+                << TNL::sum( rank_costs ) << std::endl;
    }
 
    // create a communicator comprising all processes, but with permuted ranks

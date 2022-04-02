@@ -247,7 +247,8 @@ public:
     * "simultaneously". It is equivalent to calling \ref MPI_Barrier with the
     * MPI communicator associated with this object.
     */
-   void barrier() const
+   void
+   barrier() const
    {
       Barrier( *this );
    }

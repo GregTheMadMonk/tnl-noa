@@ -46,7 +46,8 @@ public:
                          IndexType globalSize,
                          MPI::Comm communicator,
                          LocalViewType localData )
-   : localRange( localRange ), ghosts( ghosts ), globalSize( globalSize ), communicator( std::move( communicator ) ), localData( localData )
+   : localRange( localRange ), ghosts( ghosts ), globalSize( globalSize ), communicator( std::move( communicator ) ),
+     localData( localData )
    {
       TNL_ASSERT_EQ( localData.getSize(),
                      localRange.getSize() + ghosts,

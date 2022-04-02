@@ -84,7 +84,7 @@ operator|( SyncDirection a, SyncDirection b )
 inline SyncDirection&
 operator-=( SyncDirection& a, SyncDirection b )
 {
-   a = static_cast< SyncDirection >( static_cast< std::uint8_t >( a ) & ~ static_cast< std::uint8_t >( b ) );
+   a = static_cast< SyncDirection >( static_cast< std::uint8_t >( a ) & ~static_cast< std::uint8_t >( b ) );
    return a;
 }
 
