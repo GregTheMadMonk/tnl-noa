@@ -9,14 +9,15 @@
 #include <TNL/Solvers/IterativeSolver.h>
 
 namespace TNL {
-   namespace Solvers {
-      namespace Optimization {
+namespace Solvers {
+namespace Optimization {
 
 /***
  * https://arxiv.org/pdf/1609.04747.pdf
  *
  */
-template< typename Vector, typename SolverMonitor =  IterativeSolverMonitor< typename Vector::RealType, typename Vector::IndexType > >
+template< typename Vector,
+          typename SolverMonitor = IterativeSolverMonitor< typename Vector::RealType, typename Vector::IndexType > >
 class RMSProp : public IterativeSolver< typename Vector::RealType, typename Vector::IndexType, SolverMonitor >
 {
 public:
@@ -45,15 +46,13 @@ public:
    solve( VectorView& w, GradientGetter&& getGradient );
 
 protected:
-
    RealType relaxation = 1.0, epsilon = 1.0e-8, beta = 0.9;
 
    VectorType gradient, a;
-
 };
 
-      } //namespace Optimization
-   } //namespace Solvers
-} //namespace TNL
+}  // namespace Optimization
+}  // namespace Solvers
+}  // namespace TNL
 
 #include <TNL/Solvers/Optimization/RMSProp.hpp>

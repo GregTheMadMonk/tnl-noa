@@ -9,14 +9,12 @@
 #include <TNL/Solvers/Optimization/GradientDescent.h>
 
 namespace TNL {
-   namespace Solvers {
-      namespace Optimization {
-
+namespace Solvers {
+namespace Optimization {
 
 template< typename Vector, typename SolverMonitor >
 void
-GradientDescent< Vector, SolverMonitor >::
-configSetup( Config::ConfigDescription& config, const String& prefix )
+GradientDescent< Vector, SolverMonitor >::configSetup( Config::ConfigDescription& config, const String& prefix )
 {
    IterativeSolver< RealType, IndexType, SolverMonitor >::configSetup( config, prefix );
    config.addEntry< double >( prefix + "relaxation", "Relaxation parameter for the gradient descent.", 1.0 );
@@ -24,8 +22,7 @@ configSetup( Config::ConfigDescription& config, const String& prefix )
 
 template< typename Vector, typename SolverMonitor >
 bool
-GradientDescent< Vector, SolverMonitor >::
-setup( const Config::ParameterContainer& parameters, const String& prefix )
+GradientDescent< Vector, SolverMonitor >::setup( const Config::ParameterContainer& parameters, const String& prefix )
 {
    this->setRelaxation( parameters.getParameter< double >( prefix + "relaxation" ) );
    return IterativeSolver< RealType, IndexType, SolverMonitor >::setup( parameters, prefix );
@@ -33,25 +30,22 @@ setup( const Config::ParameterContainer& parameters, const String& prefix )
 
 template< typename Vector, typename SolverMonitor >
 void
-GradientDescent< Vector, SolverMonitor >::
-setRelaxation( const RealType& lambda )
+GradientDescent< Vector, SolverMonitor >::setRelaxation( const RealType& lambda )
 {
    this->relaxation = lambda;
 }
 
 template< typename Vector, typename SolverMonitor >
 auto
-GradientDescent< Vector, SolverMonitor >::
-getRelaxation() const -> const RealType&
+GradientDescent< Vector, SolverMonitor >::getRelaxation() const -> const RealType&
 {
    return this->relaxation;
 }
 
 template< typename Vector, typename SolverMonitor >
-   template< typename GradientGetter >
+template< typename GradientGetter >
 bool
-GradientDescent< Vector, SolverMonitor >::
-solve( VectorView& w, GradientGetter&& getGradient )
+GradientDescent< Vector, SolverMonitor >::solve( VectorView& w, GradientGetter&& getGradient )
 {
    this->gradient.setLike( w );
    auto gradient_view = gradient.getView();
@@ -65,25 +59,25 @@ solve( VectorView& w, GradientGetter&& getGradient )
 
    /////
    // Start the main loop
-   while( 1 )
-   {
+   while( 1 ) {
       /////
       // Compute the gradient
       getGradient( w_view, gradient_view );
       RealType lastResidue = this->getResidue();
-      this->setResidue( addAndReduceAbs( w_view, -this->relaxation * gradient_view, TNL::Plus(), ( RealType ) 0.0 ) / ( this->relaxation * ( RealType ) w.getSize() ) );
+      this->setResidue( addAndReduceAbs( w_view, -this->relaxation * gradient_view, TNL::Plus(), (RealType) 0.0 )
+                        / ( this->relaxation * (RealType) w.getSize() ) );
 
       if( ! this->nextIteration() )
          return this->checkConvergence();
 
       /////
       // Check the stop condition
-      if( this->getConvergenceResidue() != 0.0 && this->getResidue() < this -> getConvergenceResidue() )
+      if( this->getConvergenceResidue() != 0.0 && this->getResidue() < this->getConvergenceResidue() )
          return true;
    }
-   return false; // just to avoid warnings
+   return false;  // just to avoid warnings
 }
 
-      } //namespace Optimization
-   } //namespace Solvers
-} //namespace TNL
+}  // namespace Optimization
+}  // namespace Solvers
+}  // namespace TNL

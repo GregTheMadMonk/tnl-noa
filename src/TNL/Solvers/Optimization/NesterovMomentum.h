@@ -9,10 +9,11 @@
 #include <TNL/Solvers/IterativeSolver.h>
 
 namespace TNL {
-   namespace Solvers {
-      namespace Optimization {
+namespace Solvers {
+namespace Optimization {
 
-template< typename Vector, typename SolverMonitor =  IterativeSolverMonitor< typename Vector::RealType, typename Vector::IndexType > >
+template< typename Vector,
+          typename SolverMonitor = IterativeSolverMonitor< typename Vector::RealType, typename Vector::IndexType > >
 class NesterovMomentum : public IterativeSolver< typename Vector::RealType, typename Vector::IndexType, SolverMonitor >
 {
 public:
@@ -47,15 +48,13 @@ public:
    solve( VectorView& w, GradientGetter&& getGradient );
 
 protected:
-
    RealType relaxation = 1.0, momentum = 0.9;
 
    VectorType gradient, v, aux;
-
 };
 
-      } //namespace Optimization
-   } //namespace Solvers
-} //namespace TNL
+}  // namespace Optimization
+}  // namespace Solvers
+}  // namespace TNL
 
 #include <TNL/Solvers/Optimization/NesterovMomentum.hpp>
