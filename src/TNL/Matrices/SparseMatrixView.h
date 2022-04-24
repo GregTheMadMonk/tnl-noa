@@ -147,7 +147,6 @@ public:
     */
    using ConstRowView =
       SparseMatrixRowView< typename SegmentsViewType::SegmentViewType, ConstValuesViewType, ConstColumnsIndexesViewType >;
-   ;
 
    /**
     * \brief Helper type for getting self type or its modifications.
