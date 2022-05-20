@@ -11,6 +11,7 @@
 #include <type_traits>
 #include <stdexcept>
 #include <algorithm>
+#include <memory>  // std::unique_ptr
 
 #include <noa/3rdparty/tnl-noa/src/TNL/Pointers/DevicePointer.h>
 #include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/ParallelFor.h>
@@ -20,7 +21,8 @@ namespace Matrices {
 
 #ifdef HAVE_CUDA
 template< typename Vector, typename Matrix >
-__global__ void
+__global__
+void
 SparseMatrixSetRowLengthsVectorKernel( Vector* rowLengths,
                                        const Matrix* matrix,
                                        typename Matrix::IndexType rows,
@@ -45,7 +47,8 @@ SparseMatrixSetRowLengthsVectorKernel( Vector* rowLengths,
 }
 
 template< typename Matrix1, typename Matrix2 >
-__global__ void
+__global__
+void
 SparseMatrixCopyKernel( Matrix1* A,
                         const Matrix2* B,
                         const typename Matrix2::IndexType* rowLengths,
@@ -68,8 +71,7 @@ SparseMatrixCopyKernel( Matrix1* A,
 #endif
 
 // copy on the same device
-template< typename Matrix1,
-          typename Matrix2 >
+template< typename Matrix1, typename Matrix2 >
 typename std::enable_if< std::is_same< typename Matrix1::DeviceType, typename Matrix2::DeviceType >::value >::type
 copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
 {
@@ -135,21 +137,18 @@ copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
 
       // set row lengths
       Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
-      SparseMatrixSetRowLengthsVectorKernel<<< gridSize, blockSize >>>(
-            rowLengths.getData(),
-            &Bpointer.template getData< noa::TNL::Devices::Cuda >(),
-            rows,
-            cols );
+      SparseMatrixSetRowLengthsVectorKernel<<< gridSize,
+         blockSize >>>( rowLengths.getData(), &Bpointer.template getData< TNL::Devices::Cuda >(), rows, cols );
       TNL_CHECK_CUDA_DEVICE;
       Apointer->setRowCapacities( rowLengths );
 
       // copy rows
       Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
-      SparseMatrixCopyKernel<<< gridSize, blockSize >>>(
-            &Apointer.template modifyData< noa::TNL::Devices::Cuda >(),
-            &Bpointer.template getData< noa::TNL::Devices::Cuda >(),
-            rowLengths.getData(),
-            rows );
+      SparseMatrixCopyKernel<<< gridSize,
+         blockSize >>>( &Apointer.template modifyData< TNL::Devices::Cuda >(),
+                                       &Bpointer.template getData< TNL::Devices::Cuda >(),
+                                       rowLengths.getData(),
+                                       rows );
       TNL_CHECK_CUDA_DEVICE;
 #else
       throw Exceptions::CudaSupportMissing();
@@ -158,10 +157,9 @@ copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
 }
 
 // cross-device copy (host -> gpu)
-template< typename Matrix1,
-          typename Matrix2 >
-typename std::enable_if< ! std::is_same< typename Matrix1::DeviceType, typename Matrix2::DeviceType >::value &&
-                           std::is_same< typename Matrix2::DeviceType, Devices::Host >::value >::type
+template< typename Matrix1, typename Matrix2 >
+typename std::enable_if< ! std::is_same< typename Matrix1::DeviceType, typename Matrix2::DeviceType >::value
+                         && std::is_same< typename Matrix2::DeviceType, Devices::Host >::value >::type
 copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
 {
    using CudaMatrix2 = typename Matrix2::template Self< typename Matrix2::RealType, Devices::Cuda >;
@@ -171,10 +169,9 @@ copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
 }
 
 // cross-device copy (gpu -> host)
-template< typename Matrix1,
-          typename Matrix2 >
-typename std::enable_if< ! std::is_same< typename Matrix1::DeviceType, typename Matrix2::DeviceType >::value &&
-                           std::is_same< typename Matrix2::DeviceType, Devices::Cuda >::value >::type
+template< typename Matrix1, typename Matrix2 >
+typename std::enable_if< ! std::is_same< typename Matrix1::DeviceType, typename Matrix2::DeviceType >::value
+                         && std::is_same< typename Matrix2::DeviceType, Devices::Cuda >::value >::type
 copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
 {
    using CudaMatrix1 = typename Matrix1::template Self< typename Matrix1::RealType, Devices::Cuda >;
@@ -190,12 +187,9 @@ copySparseMatrix( Matrix1& A, const Matrix2& B )
    copySparseMatrix_impl( A, B );
 }
 
-
 template< typename Matrix, typename AdjacencyMatrix >
 void
-copyAdjacencyStructure( const Matrix& A, AdjacencyMatrix& B,
-                        bool has_symmetric_pattern,
-                        bool ignore_diagonal )
+copyAdjacencyStructure( const Matrix& A, AdjacencyMatrix& B, bool has_symmetric_pattern, bool ignore_diagonal )
 {
    static_assert( std::is_same< typename Matrix::DeviceType, Devices::Host >::value,
                   "The function is not implemented for CUDA matrices - it would require atomic insertions "
@@ -204,8 +198,8 @@ copyAdjacencyStructure( const Matrix& A, AdjacencyMatrix& B,
                   "The matrices must be allocated on the same device." );
    static_assert( std::is_same< typename Matrix::IndexType, typename AdjacencyMatrix::IndexType >::value,
                   "The matrices must have the same IndexType." );
-//   static_assert( std::is_same< typename AdjacencyMatrix::RealType, bool >::value,
-//                  "The RealType of the adjacency matrix must be bool." );
+   //   static_assert( std::is_same< typename AdjacencyMatrix::RealType, bool >::value,
+   //                  "The RealType of the adjacency matrix must be bool." );
 
    using IndexType = typename Matrix::IndexType;
 
@@ -256,15 +250,17 @@ copyAdjacencyStructure( const Matrix& A, AdjacencyMatrix& B,
    }
 }
 
-
 template< typename Matrix1, typename Matrix2, typename PermutationArray >
 void
 reorderSparseMatrix( const Matrix1& matrix1, Matrix2& matrix2, const PermutationArray& perm, const PermutationArray& iperm )
 {
    // TODO: implement on GPU
-   static_assert( std::is_same< typename Matrix1::DeviceType, Devices::Host >::value, "matrix reordering is implemented only for host" );
-   static_assert( std::is_same< typename Matrix2::DeviceType, Devices::Host >::value, "matrix reordering is implemented only for host" );
-   static_assert( std::is_same< typename PermutationArray::DeviceType, Devices::Host >::value, "matrix reordering is implemented only for host" );
+   static_assert( std::is_same< typename Matrix1::DeviceType, Devices::Host >::value,
+                  "matrix reordering is implemented only for host" );
+   static_assert( std::is_same< typename Matrix2::DeviceType, Devices::Host >::value,
+                  "matrix reordering is implemented only for host" );
+   static_assert( std::is_same< typename PermutationArray::DeviceType, Devices::Host >::value,
+                  "matrix reordering is implemented only for host" );
 
    using IndexType = typename Matrix1::IndexType;
 
@@ -291,24 +287,22 @@ reorderSparseMatrix( const Matrix1& matrix1, Matrix2& matrix2, const Permutation
       const auto row1 = matrix1.getRow( perm[ i ] );
 
       // permute
-      typename Matrix2::IndexType columns[ rowLength ];
-      typename Matrix2::RealType values[ rowLength ];
+      std::unique_ptr< typename Matrix2::IndexType[] > columns{ new typename Matrix2::IndexType[ rowLength ] };
+      std::unique_ptr< typename Matrix2::RealType[] > values{ new typename Matrix2::RealType[ rowLength ] };
       for( IndexType j = 0; j < rowLength; j++ ) {
          columns[ j ] = iperm[ row1.getColumnIndex( j ) ];
          values[ j ] = row1.getValue( j );
       }
 
       // sort
-      IndexType indices[ rowLength ];
+      std::unique_ptr< IndexType[] > indices{ new IndexType[ rowLength ] };
       for( IndexType j = 0; j < rowLength; j++ )
          indices[ j ] = j;
-      // nvcc does not allow lambdas to capture VLAs, even in host code (WTF!?)
-      //    error: a variable captured by a lambda cannot have a type involving a variable-length array
-      IndexType* _columns = columns;
-      auto comparator = [=]( IndexType a, IndexType b ) {
-         return _columns[ a ] < _columns[ b ];
+      auto comparator = [ &columns ]( IndexType a, IndexType b )
+      {
+         return columns[ a ] < columns[ b ];
       };
-      std::sort( indices, indices + rowLength, comparator );
+      std::sort( indices.get(), indices.get() + rowLength, comparator );
 
       // set the row
       auto row2 = matrix2.getRow( i );
@@ -325,29 +319,23 @@ reorderArray( const Array1& src, Array2& dest, const PermutationArray& perm )
                   "Arrays must reside on the same device." );
    static_assert( std::is_same< typename Array1::DeviceType, typename PermutationArray::DeviceType >::value,
                   "Arrays must reside on the same device." );
-   TNL_ASSERT_EQ( src.getSize(), perm.getSize(),
-                  "Source array and permutation must have the same size." );
-   TNL_ASSERT_EQ( dest.getSize(), perm.getSize(),
-                  "Destination array and permutation must have the same size." );
+   TNL_ASSERT_EQ( src.getSize(), perm.getSize(), "Source array and permutation must have the same size." );
+   TNL_ASSERT_EQ( dest.getSize(), perm.getSize(), "Destination array and permutation must have the same size." );
 
    using DeviceType = typename Array1::DeviceType;
    using IndexType = typename Array1::IndexType;
 
-   auto kernel = [] __cuda_callable__
-      ( IndexType i,
-        const typename Array1::ValueType* src,
-        typename Array2::ValueType* dest,
-        const typename PermutationArray::ValueType* perm )
+   auto kernel = [] __cuda_callable__( IndexType i,
+                                       const typename Array1::ValueType* src,
+                                       typename Array2::ValueType* dest,
+                                       const typename PermutationArray::ValueType* perm )
    {
       dest[ i ] = src[ perm[ i ] ];
    };
 
-   Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, src.getSize(),
-                                                kernel,
-                                                src.getData(),
-                                                dest.getData(),
-                                                perm.getData() );
+   Algorithms::ParallelFor< DeviceType >::exec(
+      (IndexType) 0, src.getSize(), kernel, src.getData(), dest.getData(), perm.getData() );
 }
 
-} // namespace Matrices
-} // namespace noa::TNL
+}  // namespace Matrices
+}  // namespace noa::TNL

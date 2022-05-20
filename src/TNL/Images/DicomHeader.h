@@ -4,12 +4,12 @@
 //
 // SPDX-License-Identifier: MIT
 
-#pragma once 
+#pragma once
 
 #ifdef HAVE_DCMTK_H
-#define HAVE_CONFIG_H
-#include <dcmtk/dcmdata/dcfilefo.h>
-#include <dcmtk/dcmdata/dcdeftag.h>
+   #define HAVE_CONFIG_H
+   #include <dcmtk/dcmdata/dcfilefo.h>
+   #include <dcmtk/dcmdata/dcdeftag.h>
 #endif
 
 namespace noa::TNL {
@@ -26,41 +26,43 @@ class DicomImageInfo;
  */
 class DicomHeader
 {
-   public:
- 
-      inline DicomHeader();
- 
-      inline virtual ~DicomHeader();
+public:
+   inline DicomHeader();
+
+   inline virtual ~DicomHeader();
 
 #ifdef HAVE_DCMTK_H
-      inline DcmFileFormat &getFileFormat();
+   inline DcmFileFormat&
+   getFileFormat();
 #endif
- 
-      inline DicomImageInfo &getImageInfo();
- 
-      inline DicomPatientInfo &getPatientInfo();
- 
-      inline DicomSeriesInfo &getSeriesInfo();
 
-      inline bool loadFromFile( const String& fileName );
+   inline DicomImageInfo&
+   getImageInfo();
 
-   protected:
- 
-      DicomImageInfo *imageInfoObj;
- 
-      DicomPatientInfo *patientInfoObj;
- 
-      DicomSeriesInfo *seriesInfoObj;
+   inline DicomPatientInfo&
+   getPatientInfo();
+
+   inline DicomSeriesInfo&
+   getSeriesInfo();
+
+   inline bool
+   loadFromFile( const String& fileName );
+
+protected:
+   DicomImageInfo* imageInfoObj;
+
+   DicomPatientInfo* patientInfoObj;
+
+   DicomSeriesInfo* seriesInfoObj;
 
 #ifdef HAVE_DCMTK_H
-      DcmFileFormat *fileFormat;
+   DcmFileFormat* fileFormat;
 #endif
- 
-      bool isLoaded;
+
+   bool isLoaded;
 };
 
-} // namespace Images
-} // namespace noa::TNL
+}  // namespace Images
+}  // namespace noa::TNL
 
-#include <noa/3rdparty/tnl-noa/src/TNL/Images//DicomHeader_impl.h>
-
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/DicomHeader_impl.h>

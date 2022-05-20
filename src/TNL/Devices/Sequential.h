@@ -13,5 +13,5 @@ namespace Devices {
 struct Sequential
 {};
 
-} // namespace Devices
-} // namespace noa::TNL
+}  // namespace Devices
+}  // namespace noa::TNL

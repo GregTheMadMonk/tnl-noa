@@ -27,5 +27,5 @@ namespace Allocators {
 template< class T >
 using Host = std::allocator< T >;
 
-} // namespace Allocators
-} // namespace noa::TNL
+}  // namespace Allocators
+}  // namespace noa::TNL

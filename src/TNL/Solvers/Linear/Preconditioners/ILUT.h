@@ -28,79 +28,78 @@ class ILUT_impl
  *
  * See [detailed description](https://www-users.cse.umn.edu/~saad/PDF/umsi-92-38.pdf)
  *
- * See \ref noa::TNL::Solvers::Linear::Preconditioners::Preconditioner for example of setup with a linear solver.
+ * See \ref TNL::Solvers::Linear::Preconditioners::Preconditioner for example of setup with a linear solver.
  *
  * \tparam Matrix is type of the matrix describing the linear system.
  */
 template< typename Matrix >
-class ILUT
-: public ILUT_impl< Matrix, typename Matrix::RealType, typename Matrix::DeviceType, typename Matrix::IndexType >
+class ILUT : public ILUT_impl< Matrix, typename Matrix::RealType, typename Matrix::DeviceType, typename Matrix::IndexType >
 {
    using Base = ILUT_impl< Matrix, typename Matrix::RealType, typename Matrix::DeviceType, typename Matrix::IndexType >;
-   public:
 
-      /**
-       * \brief Floating point type used for computations.
-       */
-      using RealType = typename Matrix::RealType;
+public:
+   /**
+    * \brief Floating point type used for computations.
+    */
+   using RealType = typename Matrix::RealType;
 
-      /**
-       * \brief Device where the preconditioner will run on and auxillary data will alloacted on.
-       */
-      using DeviceType = Devices::Host;
+   /**
+    * \brief Device where the preconditioner will run on and auxillary data will alloacted on.
+    */
+   using DeviceType = Devices::Host;
 
-      /**
-       * \brief Type for indexing.
-       */
-      using IndexType = typename Matrix::IndexType;
+   /**
+    * \brief Type for indexing.
+    */
+   using IndexType = typename Matrix::IndexType;
 
-      /**
-       * \brief Type for vector view.
-       */
-      using typename Preconditioner< Matrix >::VectorViewType;
+   /**
+    * \brief Type for vector view.
+    */
+   using typename Preconditioner< Matrix >::VectorViewType;
 
-      /**
-       * \brief Type for constant vector view.
-       */
-      using typename Preconditioner< Matrix >::ConstVectorViewType;
+   /**
+    * \brief Type for constant vector view.
+    */
+   using typename Preconditioner< Matrix >::ConstVectorViewType;
 
-      /**
-       * \brief Type of shared pointer to the matrix.
-       */
-      using typename Preconditioner< Matrix >::MatrixPointer;
+   /**
+    * \brief Type of shared pointer to the matrix.
+    */
+   using typename Preconditioner< Matrix >::MatrixPointer;
 
-      /**
-       * \brief This method defines configuration entries for setup of the preconditioner of linear iterative solver.
-       *
-       * \param config contains description of configuration parameters.
-       * \param prefix is a prefix of particular configuration entries.
-       */
-      static void configSetup( Config::ConfigDescription& config,
-                              const String& prefix = "" )
-      {
-         config.addEntry< int >( prefix + "ilut-p", "Number of additional non-zero entries to allocate on each row of the factors L and U.", 0 );
-         config.addEntry< double >( prefix + "ilut-threshold", "Threshold for droppping small entries.", 1e-4 );
-      }
+   /**
+    * \brief This method defines configuration entries for setup of the preconditioner of linear iterative solver.
+    *
+    * \param config contains description of configuration parameters.
+    * \param prefix is a prefix of particular configuration entries.
+    */
+   static void
+   configSetup( Config::ConfigDescription& config, const String& prefix = "" )
+   {
+      config.addEntry< int >(
+         prefix + "ilut-p", "Number of additional non-zero entries to allocate on each row of the factors L and U.", 0 );
+      config.addEntry< double >( prefix + "ilut-threshold", "Threshold for droppping small entries.", 1e-4 );
+   }
 
-      /**
-       * \brief This method updates the preconditioner with respect to given matrix.
-       *
-       * \param matrixPointer smart pointer (\ref std::shared_ptr) to matrix the preconditioner is related to.
-       */
-      using Base::update;
+   /**
+    * \brief This method updates the preconditioner with respect to given matrix.
+    *
+    * \param matrixPointer smart pointer (\ref std::shared_ptr) to matrix the preconditioner is related to.
+    */
+   using Base::update;
 
-      /**
-       * \brief This method applies the preconditioner.
-       *
-       * \param b is the input vector the preconditioner is applied on.
-       * \param x is the result of the preconditioning.
-       */
-      using Base::solve;
+   /**
+    * \brief This method applies the preconditioner.
+    *
+    * \param b is the input vector the preconditioner is applied on.
+    * \param x is the result of the preconditioning.
+    */
+   using Base::solve;
 };
 
 template< typename Matrix, typename Real, typename Index >
-class ILUT_impl< Matrix, Real, Devices::Host, Index >
-: public Preconditioner< Matrix >
+class ILUT_impl< Matrix, Real, Devices::Host, Index > : public Preconditioner< Matrix >
 {
 public:
    using RealType = Real;
@@ -111,12 +110,14 @@ public:
    using typename Preconditioner< Matrix >::MatrixPointer;
    using VectorType = Containers::Vector< RealType, DeviceType, IndexType >;
 
-   bool setup( const Config::ParameterContainer& parameters,
-               const String& prefix = "" ) override;
+   bool
+   setup( const Config::ParameterContainer& parameters, const String& prefix = "" ) override;
 
-   virtual void update( const MatrixPointer& matrixPointer ) override;
+   virtual void
+   update( const MatrixPointer& matrixPointer ) override;
 
-   virtual void solve( ConstVectorViewType b, VectorViewType x ) const override;
+   virtual void
+   solve( ConstVectorViewType b, VectorViewType x ) const override;
 
 protected:
    Index p = 0;
@@ -128,13 +129,15 @@ protected:
    // Specialized methods to distinguish between normal and distributed matrices
    // in the implementation.
    template< typename M >
-   static IndexType getMinColumn( const M& m )
+   static IndexType
+   getMinColumn( const M& m )
    {
       return 0;
    }
 
    template< typename M >
-   static IndexType getMinColumn( const Matrices::DistributedMatrix< M >& m )
+   static IndexType
+   getMinColumn( const Matrices::DistributedMatrix< M >& m )
    {
       if( m.getRows() == m.getColumns() )
          // square matrix, assume global column indices
@@ -146,14 +149,11 @@ protected:
 };
 
 template< typename Matrix, typename Real, typename Index >
-class ILUT_impl< Matrix, Real, Devices::Sequential, Index >
-: public ILUT_impl< Matrix, Real, Devices::Host, Index >
+class ILUT_impl< Matrix, Real, Devices::Sequential, Index > : public ILUT_impl< Matrix, Real, Devices::Host, Index >
 {};
 
-
 template< typename Matrix, typename Real, typename Index >
-class ILUT_impl< Matrix, Real, Devices::Cuda, Index >
-: public Preconditioner< Matrix >
+class ILUT_impl< Matrix, Real, Devices::Cuda, Index > : public Preconditioner< Matrix >
 {
 public:
    using RealType = Real;
@@ -163,20 +163,22 @@ public:
    using typename Preconditioner< Matrix >::ConstVectorViewType;
    using typename Preconditioner< Matrix >::MatrixPointer;
 
-   virtual void update( const MatrixPointer& matrixPointer ) override
+   virtual void
+   update( const MatrixPointer& matrixPointer ) override
    {
-      throw std::runtime_error("Not Iplemented yet for CUDA");
+      throw std::runtime_error( "Not Iplemented yet for CUDA" );
    }
 
-   virtual void solve( ConstVectorViewType b, VectorViewType x ) const override
+   virtual void
+   solve( ConstVectorViewType b, VectorViewType x ) const override
    {
-      throw std::runtime_error("Not Iplemented yet for CUDA");
+      throw std::runtime_error( "Not Iplemented yet for CUDA" );
    }
 };
 
-} // namespace Preconditioners
-} // namespace Linear
-} // namespace Solvers
-} // namespace noa::TNL
+}  // namespace Preconditioners
+}  // namespace Linear
+}  // namespace Solvers
+}  // namespace noa::TNL
 
 #include "ILUT.hpp"

@@ -14,42 +14,38 @@ namespace noa::TNL {
 namespace Operators {
 
 template< typename OperatorT >
-class FunctionInverseOperator
-: public Operator< typename OperatorT::MeshType,
-                      OperatorT::getDomainType(),
-                      OperatorT::getPreimageEntitiesDimension(),
-                      OperatorT::getImageEntitiesDimension(),
-                      typename OperatorT::RealType,
-                      typename OperatorT::IndexType >
+class FunctionInverseOperator : public Operator< typename OperatorT::MeshType,
+                                                 OperatorT::getDomainType(),
+                                                 OperatorT::getPreimageEntitiesDimension(),
+                                                 OperatorT::getImageEntitiesDimension(),
+                                                 typename OperatorT::RealType,
+                                                 typename OperatorT::IndexType >
 {
-   public:
- 
-      typedef OperatorT OperatorType;
-      typedef typename OperatorType::RealType RealType;
-      typedef typename OperatorType::IndexType IndexType;
-      typedef FunctionInverseOperator ExactOperatorType;
- 
-      FunctionInverseOperator( const OperatorType& operator_ )
-      : operator_( operator_ ) {};
- 
-      const OperatorType& getOperator() const { return this->operator_; }
- 
-      template< typename MeshFunction,
-                typename MeshEntity >
-      __cuda_callable__
-      typename MeshFunction::RealType
-      operator()( const MeshFunction& u,
-                  const MeshEntity& entity,
-                  const typename MeshFunction::RealType& time = 0.0 ) const
-      {
-         return 1.0 / operator_( u, entity, time );
-      }
- 
-   protected:
- 
-      const OperatorType& operator_;
+public:
+   typedef OperatorT OperatorType;
+   typedef typename OperatorType::RealType RealType;
+   typedef typename OperatorType::IndexType IndexType;
+   typedef FunctionInverseOperator ExactOperatorType;
+
+   FunctionInverseOperator( const OperatorType& operator_ ) : operator_( operator_ ){};
+
+   const OperatorType&
+   getOperator() const
+   {
+      return this->operator_;
+   }
+
+   template< typename MeshFunction, typename MeshEntity >
+   __cuda_callable__
+   typename MeshFunction::RealType
+   operator()( const MeshFunction& u, const MeshEntity& entity, const typename MeshFunction::RealType& time = 0.0 ) const
+   {
+      return 1.0 / operator_( u, entity, time );
+   }
+
+protected:
+   const OperatorType& operator_;
 };
 
-} // namespace Operators
-} // namespace noa::TNL
-
+}  // namespace Operators
+}  // namespace noa::TNL

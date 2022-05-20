@@ -12,12 +12,12 @@ class MyArray : public Object
 {
    public:
 
-      static String getSerializationType()
+      static std::string getSerializationType()
       {
          return "MyArray< " + TNL::getType< Value >() + ", " + getType< Devices::Host >() + " >";
       }
 
-      virtual String getSerializationTypeVirtual() const override
+      virtual std::string getSerializationTypeVirtual() const override
       {
          return getSerializationType();
       }

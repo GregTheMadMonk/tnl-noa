@@ -25,14 +25,12 @@ namespace Containers {
  * \tparam Device The device to be used for the execution of vector operations.
  * \tparam Index  The indexing type.
  */
-template< typename Real = double,
-          typename Device = Devices::Host,
-          typename Index = int >
-class VectorView
-: public ArrayView< Real, Device, Index >
+template< typename Real = double, typename Device = Devices::Host, typename Index = int >
+class VectorView : public ArrayView< Real, Device, Index >
 {
    using BaseType = ArrayView< Real, Device, Index >;
    using NonConstReal = typename std::remove_const< Real >::type;
+
 public:
    /**
     * \brief Type of elements stored in this vector.
@@ -64,11 +62,8 @@ public:
    /**
     * \brief A template which allows to quickly obtain a \ref VectorView type with changed template parameters.
     */
-   template< typename _Real,
-             typename _Device = Device,
-             typename _Index = Index >
+   template< typename _Real, typename _Device = Device, typename _Index = Index >
    using Self = VectorView< _Real, _Device, _Index >;
-
 
    // constructors and assignment operators inherited from the class ArrayView
    using ArrayView< Real, Device, Index >::ArrayView;
@@ -87,8 +82,7 @@ public:
    // initialization by base class is not a copy constructor so it has to be explicit
    template< typename Real_ >  // template catches both const and non-const qualified Element
    __cuda_callable__
-   VectorView( const ArrayView< Real_, Device, Index >& view )
-   : BaseType( view ) {}
+   VectorView( const ArrayView< Real_, Device, Index >& view ) : BaseType( view ) {}
 
    /**
     * \brief Returns a modifiable view of the vector view.
@@ -103,7 +97,8 @@ public:
     *            which is, however, replaced with the array size.
     */
    __cuda_callable__
-   ViewType getView( IndexType begin = 0, IndexType end = 0 );
+   ViewType
+   getView( IndexType begin = 0, IndexType end = 0 );
 
    /**
     * \brief Returns a non-modifiable view of the vector view.
@@ -118,7 +113,8 @@ public:
     *            which is, however, replaced with the array size.
     */
    __cuda_callable__
-   ConstViewType getConstView( IndexType begin = 0, IndexType end = 0 ) const;
+   ConstViewType
+   getConstView( IndexType begin = 0, IndexType end = 0 ) const;
 
    /**
     * \brief Assigns a vector expression to this vector view.
@@ -133,8 +129,10 @@ public:
     */
    template< typename VectorExpression,
              typename...,
-             typename = std::enable_if_t< Expressions::HasEnabledExpressionTemplates< VectorExpression >::value && ! IsArrayType< VectorExpression >::value > >
-   VectorView& operator=( const VectorExpression& expression );
+             typename = std::enable_if_t< Expressions::HasEnabledExpressionTemplates< VectorExpression >::value
+                                          && ! IsArrayType< VectorExpression >::value > >
+   VectorView&
+   operator=( const VectorExpression& expression );
 
    /**
     * \brief Assigns a value or an array - same as \ref ArrayView::operator=.
@@ -143,14 +141,14 @@ public:
     */
    // operator= from the base class should be hidden according to the C++14 standard,
    // although GCC does not do that - see https://stackoverflow.com/q/57322624
-#if !defined(__CUDACC_VER_MAJOR__) || __CUDACC_VER_MAJOR__ < 11
+#if ! defined( __CUDACC_VER_MAJOR__ ) || __CUDACC_VER_MAJOR__ < 11
    template< typename T,
              typename...,
              typename = std::enable_if_t< std::is_convertible< T, Real >::value || IsArrayType< T >::value > >
    ArrayView< Real, Device, Index >&
    operator=( const T& data )
    {
-      return ArrayView< Real, Device, Index >::operator=(data);
+      return ArrayView< Real, Device, Index >::operator=( data );
    }
 #endif
 
@@ -166,7 +164,8 @@ public:
     * \return Reference to this vector view.
     */
    template< typename VectorExpression >
-   VectorView& operator+=( const VectorExpression& expression );
+   VectorView&
+   operator+=( const VectorExpression& expression );
 
    /**
     * \brief Subtracts elements of this vector view and a vector expression and
@@ -180,7 +179,8 @@ public:
     * \return Reference to this vector view.
     */
    template< typename VectorExpression >
-   VectorView& operator-=( const VectorExpression& expression );
+   VectorView&
+   operator-=( const VectorExpression& expression );
 
    /**
     * \brief Multiplies elements of this vector view and a vector expression and
@@ -194,7 +194,8 @@ public:
     * \return Reference to this vector view.
     */
    template< typename VectorExpression >
-   VectorView& operator*=( const VectorExpression& expression );
+   VectorView&
+   operator*=( const VectorExpression& expression );
 
    /**
     * \brief Divides elements of this vector view and a vector expression and
@@ -208,7 +209,8 @@ public:
     * \return Reference to this vector view.
     */
    template< typename VectorExpression >
-   VectorView& operator/=( const VectorExpression& expression );
+   VectorView&
+   operator/=( const VectorExpression& expression );
 
    /**
     * \brief Modulo assignment operator for vector view and a vector expression.
@@ -221,18 +223,18 @@ public:
     * \return Reference to this vector.
     */
    template< typename VectorExpression >
-   VectorView& operator%=( const VectorExpression& expression );
+   VectorView&
+   operator%=( const VectorExpression& expression );
 };
 
 // Enable expression templates for VectorView
 namespace Expressions {
-   template< typename Real, typename Device, typename Index >
-   struct HasEnabledExpressionTemplates< VectorView< Real, Device, Index > >
-   : std::true_type
-   {};
-} // namespace Expressions
+template< typename Real, typename Device, typename Index >
+struct HasEnabledExpressionTemplates< VectorView< Real, Device, Index > > : std::true_type
+{};
+}  // namespace Expressions
 
-} // namespace Containers
-} // namespace noa::TNL
+}  // namespace Containers
+}  // namespace noa::TNL
 
 #include <noa/3rdparty/tnl-noa/src/TNL/Containers/VectorView.hpp>

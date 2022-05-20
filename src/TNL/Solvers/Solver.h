@@ -18,23 +18,27 @@
 namespace noa::TNL {
 namespace Solvers {
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
-          template< typename ConfigTag > class ProblemConfig,
-          typename ConfigTag = DefaultBuildConfigTag >
+template<
+   template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter >
+   class ProblemSetter,
+   template< typename ConfigTag >
+   class ProblemConfig,
+   typename ConfigTag = DefaultBuildConfigTag >
 struct Solver
 {
-   static bool run( int argc, char* argv[] )
+   static bool
+   run( int argc, char* argv[] )
    {
       Config::ParameterContainer parameters;
       Config::ConfigDescription configDescription;
       ProblemConfig< ConfigTag >::configSetup( configDescription );
-      SolverConfig< ConfigTag, ProblemConfig< ConfigTag> >::configSetup( configDescription );
+      SolverConfig< ConfigTag, ProblemConfig< ConfigTag > >::configSetup( configDescription );
       configDescription.addDelimiter( "Parallelization setup:" );
       Devices::Host::configSetup( configDescription );
       Devices::Cuda::configSetup( configDescription );
       MPI::configSetup( configDescription );
 
-      noa::TNL::MPI::ScopedInitializer mpi( argc, argv );
+      TNL::MPI::ScopedInitializer mpi( argc, argv );
 
       if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
          return false;
@@ -44,5 +48,5 @@ struct Solver
    }
 };
 
-} // namespace Solvers
-} // namespace noa::TNL
+}  // namespace Solvers
+}  // namespace noa::TNL

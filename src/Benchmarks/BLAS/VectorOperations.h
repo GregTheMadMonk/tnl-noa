@@ -22,7 +22,7 @@ struct VectorOperations< Devices::Host >
                           const Scalar1 alpha,
                           const Scalar2 thisMultiplicator = 1.0 )
    {
-      typedef typename Vector1::IndexType Index;
+      using Index = typename Vector1::IndexType;
 
       TNL_ASSERT_GT( x.getSize(), 0, "Vector size must be positive." );
       TNL_ASSERT_EQ( x.getSize(), y.getSize(), "The vector sizes must be the same." );
@@ -51,7 +51,7 @@ struct VectorOperations< Devices::Host >
                            const Scalar2 multiplicator2,
                            const Scalar3 thisMultiplicator = 1.0 )
    {
-      typedef typename Vector1::IndexType Index;
+      using Index = typename Vector1::IndexType;
 
       TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
       TNL_ASSERT_EQ( v.getSize(), v1.getSize(), "The vector sizes must be the same." );

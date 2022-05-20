@@ -12,77 +12,74 @@ namespace noa::TNL {
 namespace Meshes {
 namespace VTK {
 
-template < EntityShape GeneralShape >
+template< EntityShape GeneralShape >
 struct EntityShapeGroup
-{
-};
+{};
 
-template < EntityShape GeneralShape, int index >
+template< EntityShape GeneralShape, int index >
 struct EntityShapeGroupElement
-{
-};
+{};
 
-template <>
+template<>
 struct EntityShapeGroup< EntityShape::Polygon >
 {
    static constexpr int size = 2;
 };
 
-template <>
+template<>
 struct EntityShapeGroupElement< EntityShape::Polygon, 0 >
 {
    static constexpr EntityShape shape = EntityShape::Triangle;
 };
 
-template <>
+template<>
 struct EntityShapeGroupElement< EntityShape::Polygon, 1 >
 {
    static constexpr EntityShape shape = EntityShape::Quad;
 };
 
-
-template <>
+template<>
 struct EntityShapeGroup< EntityShape::Polyhedron >
 {
    static constexpr int size = 6;
 };
 
-template <>
+template<>
 struct EntityShapeGroupElement< EntityShape::Polyhedron, 0 >
 {
    static constexpr EntityShape shape = EntityShape::Tetra;
 };
 
-template <>
+template<>
 struct EntityShapeGroupElement< EntityShape::Polyhedron, 1 >
 {
    static constexpr EntityShape shape = EntityShape::Hexahedron;
 };
 
-template <>
+template<>
 struct EntityShapeGroupElement< EntityShape::Polyhedron, 2 >
 {
    static constexpr EntityShape shape = EntityShape::Wedge;
 };
 
-template <>
+template<>
 struct EntityShapeGroupElement< EntityShape::Polyhedron, 3 >
 {
    static constexpr EntityShape shape = EntityShape::Pyramid;
 };
 
-template <>
+template<>
 struct EntityShapeGroupElement< EntityShape::Polyhedron, 4 >
 {
    static constexpr EntityShape shape = EntityShape::PentagonalPrism;
 };
 
-template <>
+template<>
 struct EntityShapeGroupElement< EntityShape::Polyhedron, 5 >
 {
    static constexpr EntityShape shape = EntityShape::HexagonalPrism;
 };
 
-} // namespace VTK
-} // namespace Meshes
-} // namespace noa::TNL
+}  // namespace VTK
+}  // namespace Meshes
+}  // namespace noa::TNL

@@ -10,4 +10,4 @@ namespace noa::TNL {
 
 tnlFlopsCounter tnl_flops_counter;
 
-} // namespace noa::TNL
+}  // namespace noa::TNL

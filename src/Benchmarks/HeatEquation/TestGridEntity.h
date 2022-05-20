@@ -41,13 +41,12 @@ template< int Dimension,
 class TestGridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension >
 {
    public:
-      
-      typedef Meshes::Grid< Dimension, Real, Device, Index > GridType;
-      typedef GridType MeshType;
-      typedef typename GridType::RealType RealType;
-      typedef typename GridType::IndexType IndexType;
-      typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef typename GridType::PointType PointType;
+      using GridType = Meshes::Grid< Dimension, Real, Device, Index >;
+      using MeshType = GridType;
+      using RealType = typename GridType::RealType;
+      using IndexType = typename GridType::IndexType;
+      using CoordinatesType = typename GridType::CoordinatesType;
+      using PointType = typename GridType::PointType;
       //typedef Config ConfigType;
       
       static const int meshDimension = GridType::meshDimension;
@@ -57,12 +56,11 @@ class TestGridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension 
       constexpr static int getDimensions() { return entityDimension; };
       
       constexpr static int getDimension() { return meshDimension; };
-      
-      
-      typedef Containers::StaticVector< meshDimension, IndexType > EntityOrientationType;
-      typedef Containers::StaticVector< meshDimension, IndexType > EntityBasisType;
-      typedef TestNeighborGridEntitiesStorage< TestGridEntity > NeighborGridEntitiesStorageType;
-      
+
+      using EntityOrientationType = Containers::StaticVector< meshDimension, IndexType >;
+      using EntityBasisType = Containers::StaticVector< meshDimension, IndexType >;
+      using NeighborGridEntitiesStorageType = TestNeighborGridEntitiesStorage< TestGridEntity >;
+
       __cuda_callable__ inline
       TestGridEntity( const GridType& grid )
       : grid( grid ),

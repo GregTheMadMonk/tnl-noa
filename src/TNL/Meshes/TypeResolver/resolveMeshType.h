@@ -30,9 +30,7 @@ namespace Meshes {
  * auto functor = [] ( auto& reader, auto&& mesh ) -> bool {};
  * \endcode
  */
-template< typename ConfigTag,
-          typename Device,
-          typename Functor >
+template< typename ConfigTag, typename Device, typename Functor >
 bool
 resolveMeshType( Functor&& functor,
                  const std::string& fileName,
@@ -55,9 +53,7 @@ resolveMeshType( Functor&& functor,
  * return functor( reader, mesh );
  * \endcode
  */
-template< typename ConfigTag,
-          typename Device,
-          typename Functor >
+template< typename ConfigTag, typename Device, typename Functor >
 bool
 resolveAndLoadMesh( Functor&& functor,
                     const std::string& fileName,
@@ -75,17 +71,13 @@ resolveAndLoadMesh( Functor&& functor,
  */
 template< typename Mesh >
 bool
-loadMesh( Mesh& mesh,
-          const std::string& fileName,
-          const std::string& fileFormat = "auto" );
+loadMesh( Mesh& mesh, const std::string& fileName, const std::string& fileFormat = "auto" );
 
 template< typename MeshConfig >
 bool
-loadMesh( Mesh< MeshConfig, Devices::Cuda >& mesh,
-          const std::string& fileName,
-          const std::string& fileFormat = "auto" );
+loadMesh( Mesh< MeshConfig, Devices::Cuda >& mesh, const std::string& fileName, const std::string& fileFormat = "auto" );
 
-} // namespace Meshes
-} // namespace noa::TNL
+}  // namespace Meshes
+}  // namespace noa::TNL
 
 #include <noa/3rdparty/tnl-noa/src/TNL/Meshes/TypeResolver/resolveMeshType.hpp>

@@ -6,31 +6,36 @@
 
 #pragma once
 
-
 namespace noa::TNL {
-   namespace Algorithms {
-      namespace Segments {
-         namespace detail {
+namespace Algorithms {
+namespace Segments {
+namespace detail {
 
-template< typename Index,
-          typename Lambda >
+template< typename Index, typename Lambda >
 class CheckFetchLambda
 {
-   private:
-      typedef char YesType[1];
-      typedef char NoType[2];
+private:
+   using YesType = char[ 1 ];
+   using NoType = char[ 2 ];
 
-      template< typename C > static YesType& test( decltype(std::declval< C >()( Index(), Index(), Index(), std::declval< bool& >() ) ) );
-      template< typename C > static NoType& test(...);
+   template< typename C >
+   static YesType&
+   test( decltype( std::declval< C >()( Index(), Index(), Index(), std::declval< bool& >() ) ) );
+   template< typename C >
+   static NoType&
+   test( ... );
 
-      static constexpr bool value = ( sizeof( test< Lambda >(0) ) == sizeof( YesType ) );
+   static constexpr bool value = ( sizeof( test< Lambda >( 0 ) ) == sizeof( YesType ) );
 
-   public:
-
-      static constexpr bool hasAllParameters() { return value; };
+public:
+   static constexpr bool
+   hasAllParameters()
+   {
+      return value;
+   };
 };
 
-         } // namespace detail
-      } // namespace Segments
-   }  // namespace Algorithms
-} // namespace noa::TNL
+}  // namespace detail
+}  // namespace Segments
+}  // namespace Algorithms
+}  // namespace noa::TNL

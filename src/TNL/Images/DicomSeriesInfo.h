@@ -9,15 +9,15 @@
 #include <noa/3rdparty/tnl-noa/src/TNL/String.h>
 
 #ifdef HAVE_DCMTK_H
-#define HAVE_CONFIG_H
-#include <dcmtk/dcmdata/dcfilefo.h>
-#include <dcmtk/dcmdata/dcdeftag.h>
-#define HAVE_STD_STRING
-#include <dcmtk/ofstd/ofstring.h>
+   #define HAVE_CONFIG_H
+   #include <dcmtk/dcmdata/dcfilefo.h>
+   #include <dcmtk/dcmdata/dcdeftag.h>
+   #define HAVE_STD_STRING
+   #include <dcmtk/ofstd/ofstring.h>
 #endif
 
 namespace noa::TNL {
-namespace Images {   
+namespace Images {
 
 class DicomHeader;
 
@@ -27,79 +27,89 @@ class DicomHeader;
  */
 class DicomSeriesInfo
 {
-   public:
- 
-       inline DicomSeriesInfo( DicomHeader &dicomHeader );
- 
-       inline virtual ~DicomSeriesInfo();
+public:
+   inline DicomSeriesInfo( DicomHeader& dicomHeader );
 
-       inline const String& getModality();
- 
-       inline const String& getStudyInstanceUID();
- 
-       inline const String& getSeriesInstanceUID();
- 
-       inline const String& getSeriesDescription();
- 
-       inline const String& getSeriesNumber();
- 
-       inline const String& getSeriesDate();
- 
-       inline const String& getSeriesTime();
- 
-       inline const String& getPerformingPhysiciansName();
- 
-       inline const String& getPerformingPhysicianIdentificationSequence();
- 
-       inline const String& getOperatorsName();
- 
-       inline const String& getOperatorIdentificationSequence();
- 
-       inline const String& getAcquisitionTime();
- 
-   private:
- 
-       DicomHeader &dicomHeader;
- 
-       bool retrieveInfo();
- 
-       bool isObjectRetrieved;
+   inline virtual ~DicomSeriesInfo();
 
-       String modality;
+   inline const String&
+   getModality();
 
-       String studyInstanceUID;
+   inline const String&
+   getStudyInstanceUID();
 
-       String seriesInstanceUID;
+   inline const String&
+   getSeriesInstanceUID();
 
-       String seriesNumber;
+   inline const String&
+   getSeriesDescription();
 
-       String seriesDescription;
+   inline const String&
+   getSeriesNumber();
 
-       String seriesDate;
+   inline const String&
+   getSeriesDate();
 
-       String seriesTime;
+   inline const String&
+   getSeriesTime();
 
-       String performingPhysiciansName;
+   inline const String&
+   getPerformingPhysiciansName();
 
-       String performingPhysicianIdentificationSequence;
+   inline const String&
+   getPerformingPhysicianIdentificationSequence();
 
-       String operatorsName;
+   inline const String&
+   getOperatorsName();
 
-       String operatorIdentificationSequence;
+   inline const String&
+   getOperatorIdentificationSequence();
 
-       String frameTime;
+   inline const String&
+   getAcquisitionTime();
 
-       String faDateTime;
+private:
+   DicomHeader& dicomHeader;
 
-       String faRefTime;
+   bool
+   retrieveInfo();
 
-       String AFD;
+   bool isObjectRetrieved;
 
-       String acquisitionTime;
+   String modality;
+
+   String studyInstanceUID;
+
+   String seriesInstanceUID;
+
+   String seriesNumber;
+
+   String seriesDescription;
+
+   String seriesDate;
+
+   String seriesTime;
+
+   String performingPhysiciansName;
+
+   String performingPhysicianIdentificationSequence;
+
+   String operatorsName;
+
+   String operatorIdentificationSequence;
+
+   String frameTime;
+
+   String faDateTime;
+
+   String faRefTime;
+
+   String AFD;
+
+   String acquisitionTime;
 };
 
-} // namespace Images
-} // namespace noa::TNL
+}  // namespace Images
+}  // namespace noa::TNL
 
-#include <noa/3rdparty/tnl-noa/src/TNL/Images//DicomSeriesInfo_impl.h>
-
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/DicomSeriesInfo_impl.h>

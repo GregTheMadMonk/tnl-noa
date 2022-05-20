@@ -11,11 +11,12 @@
 namespace noa::TNL {
 namespace MPI {
 
-inline Timer& getTimerAllreduce()
+inline Timer&
+getTimerAllreduce()
 {
    static Timer t;
    return t;
 }
 
-} // namespace MPI
-} // namespace noa::TNL
+}  // namespace MPI
+}  // namespace noa::TNL

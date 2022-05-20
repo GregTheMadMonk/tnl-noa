@@ -17,78 +17,83 @@ namespace Matrices {
 template< typename RowView >
 class LambdaMatrixRowViewIterator
 {
+public:
+   /**
+    * \brief Type of LambdaMatrixRowView
+    */
+   using RowViewType = RowView;
 
-   public:
+   /**
+    * \brief The type of matrix elements.
+    */
+   using RealType = typename RowViewType::RealType;
 
-      /**
-       * \brief Type of LambdaMatrixRowView
-       */
-      using RowViewType = RowView;
+   /**
+    * \brief The type used for matrix elements indexing.
+    */
+   using IndexType = typename RowViewType::IndexType;
 
-      /**
-       * \brief The type of matrix elements.
-       */
-      using RealType = typename RowViewType::RealType;
+   /**
+    * \brief The type of related matrix element.
+    */
+   using MatrixElementType = typename RowView::MatrixElementType;
 
-      /**
-       * \brief The type used for matrix elements indexing.
-       */
-      using IndexType = typename RowViewType::IndexType;
+   /**
+    * \brief Tells whether the parent matrix is a binary matrix.
+    * @return `true` if the matrix is binary.
+    */
+   static constexpr bool
+   isBinary()
+   {
+      return RowViewType::isBinary();
+   };
 
-      /**
-       * \brief The type of related matrix element.
-       */
-      using MatrixElementType = typename RowView::MatrixElementType;
+   __cuda_callable__
+   LambdaMatrixRowViewIterator( const RowViewType& rowView, const IndexType& localIdx );
 
-      /**
-       * \brief Tells whether the parent matrix is a binary matrix.
-       * @return `true` if the matrix is binary.
-       */
-      static constexpr bool isBinary() { return RowViewType::isBinary(); };
+   /**
+    * \brief Comparison of two matrix row iterators.
+    *
+    * \param other is another matrix row iterator.
+    * \return \e true if both iterators points at the same point of the same matrix, \e false otherwise.
+    */
+   __cuda_callable__
+   bool
+   operator==( const LambdaMatrixRowViewIterator& other ) const;
 
-      __cuda_callable__
-      LambdaMatrixRowViewIterator( const RowViewType& rowView,
-                                   const IndexType& localIdx );
+   /**
+    * \brief Comparison of two matrix row iterators.
+    *
+    * \param other is another matrix row iterator.
+    * \return \e false if both iterators points at the same point of the same matrix, \e true otherwise.
+    */
+   __cuda_callable__
+   bool
+   operator!=( const LambdaMatrixRowViewIterator& other ) const;
 
-      /**
-       * \brief Comparison of two matrix row iterators.
-       *
-       * \param other is another matrix row iterator.
-       * \return \e true if both iterators points at the same point of the same matrix, \e false otherwise.
-       */
-      __cuda_callable__
-      bool operator==( const LambdaMatrixRowViewIterator& other ) const;
+   __cuda_callable__
+   LambdaMatrixRowViewIterator&
+   operator++();
 
-      /**
-       * \brief Comparison of two matrix row iterators.
-       *
-       * \param other is another matrix row iterator.
-       * \return \e false if both iterators points at the same point of the same matrix, \e true otherwise.
-       */
-      __cuda_callable__
-      bool operator!=( const LambdaMatrixRowViewIterator& other ) const;
+   __cuda_callable__
+   LambdaMatrixRowViewIterator&
+   operator--();
 
-      __cuda_callable__
-      LambdaMatrixRowViewIterator& operator++();
+   __cuda_callable__
+   MatrixElementType
+   operator*();
 
-      __cuda_callable__
-      LambdaMatrixRowViewIterator& operator--();
+   __cuda_callable__
+   const MatrixElementType
+   operator*() const;
 
-      __cuda_callable__
-      MatrixElementType operator*();
+protected:
+   const RowViewType& rowView;
 
-      __cuda_callable__
-      const MatrixElementType operator*() const;
-
-   protected:
-
-      const RowViewType& rowView;
-
-      IndexType localIdx = 0;
+   IndexType localIdx = 0;
 };
 
-
-   } // namespace Matrices
-} // namespace noa::TNL
+}  // namespace Matrices
+}  // namespace noa::TNL
 
 #include <noa/3rdparty/tnl-noa/src/TNL/Matrices/LambdaMatrixRowViewIterator.hpp>

@@ -36,206 +36,215 @@ template< typename Real = double,
           typename RealAllocator = typename Allocators::Default< Device >::template Allocator< std::remove_const_t< Real > > >
 class Matrix : public Object
 {
-   public:
-      using RealAllocatorType = RealAllocator;
-      using RowsCapacitiesType = Containers::Vector< Index, Device, Index >;
-      using RowsCapacitiesView = Containers::VectorView< Index, Device, Index >;
-      using ConstRowsCapacitiesView = typename RowsCapacitiesView::ConstViewType;
+public:
+   using RealAllocatorType = RealAllocator;
+   using RowsCapacitiesType = Containers::Vector< Index, Device, Index >;
+   using RowsCapacitiesView = Containers::VectorView< Index, Device, Index >;
+   using ConstRowsCapacitiesView = typename RowsCapacitiesView::ConstViewType;
 
-      /**
-       * \brief The type of matrix elements.
-       */
-      using RealType = Real;
+   /**
+    * \brief The type of matrix elements.
+    */
+   using RealType = Real;
 
-      /**
-       * \brief The device where the matrix is allocated.
-       */
-      using DeviceType = Device;
+   /**
+    * \brief The device where the matrix is allocated.
+    */
+   using DeviceType = Device;
 
-      /**
-       * \brief The type used for matrix elements indexing.
-       */
-      using IndexType = Index;
+   /**
+    * \brief The type used for matrix elements indexing.
+    */
+   using IndexType = Index;
 
-      /**
-       * \brief Type of base matrix view.
-       *
-       */
-      using ViewType = MatrixView< Real, Device, Index >;
+   /**
+    * \brief Type of base matrix view.
+    *
+    */
+   using ViewType = MatrixView< Real, Device, Index >;
 
-      /**
-       * \brief Type of base matrix view for constant instances.
-       *
-       */
-      using ConstViewType = typename MatrixView< Real, Device, Index >::ConstViewType;
+   /**
+    * \brief Type of base matrix view for constant instances.
+    *
+    */
+   using ConstViewType = typename MatrixView< Real, Device, Index >::ConstViewType;
 
-      /**
-       * \brief Type of vector holding values of matrix elements.
-       */
-      using ValuesType = Containers::Vector< Real, Device, Index, RealAllocator >;
+   /**
+    * \brief Type of vector holding values of matrix elements.
+    */
+   using ValuesType = Containers::Vector< Real, Device, Index, RealAllocator >;
 
-      /**
-       * \brief Type of constant vector holding values of matrix elements.
-       */
-      using ConstValuesType = Containers::Vector< std::add_const_t< Real >, Device, Index, RealAllocator >;
+   /**
+    * \brief Type of constant vector holding values of matrix elements.
+    */
+   using ConstValuesType = Containers::Vector< std::add_const_t< Real >, Device, Index, RealAllocator >;
 
-      /**
-       * \brief Type of vector view holding values of matrix elements.
-       */
-      using ValuesView = typename ViewType::ValuesView;
+   /**
+    * \brief Type of vector view holding values of matrix elements.
+    */
+   using ValuesView = typename ViewType::ValuesView;
 
-      /**
-       * \brief Type of constant vector view holding values of matrix elements.
-       */
-      using ConstValuesView = typename ViewType::ConstValuesView;
+   /**
+    * \brief Type of constant vector view holding values of matrix elements.
+    */
+   using ConstValuesView = typename ViewType::ConstValuesView;
 
-      /**
-       * \brief Construct a new Matrix object possibly with user defined allocator of the matrix values.
-       *
-       * \param allocator is is a user defined allocator of the matrix values.
-       */
-      Matrix( const RealAllocatorType& allocator = RealAllocatorType() );
+   /**
+    * \brief Construct a new Matrix object possibly with user defined allocator of the matrix values.
+    *
+    * \param allocator is is a user defined allocator of the matrix values.
+    */
+   Matrix( const RealAllocatorType& allocator = RealAllocatorType() );
 
-      /**
-       * \brief Construct a new Matrix object with given dimensions and possibly user defined allocator of the matrix values.
-       *
-       * \param rows is a number of matrix rows.
-       * \param columns is a number of matrix columns.
-       * \param allocator is a user defined allocator of the matrix values.
-       */
-      Matrix( const IndexType rows,
-            const IndexType columns,
-            const RealAllocatorType& allocator = RealAllocatorType() );
+   /**
+    * \brief Construct a new Matrix object with given dimensions and possibly user defined allocator of the matrix values.
+    *
+    * \param rows is a number of matrix rows.
+    * \param columns is a number of matrix columns.
+    * \param allocator is a user defined allocator of the matrix values.
+    */
+   Matrix( IndexType rows, IndexType columns, const RealAllocatorType& allocator = RealAllocatorType() );
 
-      /**
-       * \brief Method for setting or changing of the matrix dimensions.
-       *
-       * \param rows is a number of matrix rows.
-       * \param columns is a number of matrix columns.
-       */
-      virtual void setDimensions( const IndexType rows,
-                                  const IndexType columns );
+   /**
+    * \brief Method for setting or changing of the matrix dimensions.
+    *
+    * \param rows is a number of matrix rows.
+    * \param columns is a number of matrix columns.
+    */
+   virtual void
+   setDimensions( IndexType rows, IndexType columns );
 
-      /**
-       * \brief Set the matrix dimensions to be equal to those of the input matrix.
-       *
-       * \tparam Matrix_ is a type if the input matrix.
-       * \param matrix is an instance of the matrix.
-       */
-      template< typename Matrix_ >
-      void setLike( const Matrix_& matrix );
+   /**
+    * \brief Set the matrix dimensions to be equal to those of the input matrix.
+    *
+    * \tparam Matrix_ is a type if the input matrix.
+    * \param matrix is an instance of the matrix.
+    */
+   template< typename Matrix_ >
+   void
+   setLike( const Matrix_& matrix );
 
-      /**
-       * \brief Tells the number of allocated matrix elements.
-       *
-       * In the case of dense matrices, this is just product of the number of rows and the number of columns.
-       * But for other matrix types like sparse matrices, this can be different.
-       *
-       * \return Number of allocated matrix elements.
-       */
-      IndexType getAllocatedElementsCount() const;
+   /**
+    * \brief Tells the number of allocated matrix elements.
+    *
+    * In the case of dense matrices, this is just product of the number of rows and the number of columns.
+    * But for other matrix types like sparse matrices, this can be different.
+    *
+    * \return Number of allocated matrix elements.
+    */
+   IndexType
+   getAllocatedElementsCount() const;
 
-      /**
-       * \brief Computes a current number of nonzero matrix elements.
-       *
-       * \return number of nonzero matrix elements.
-       */
-      IndexType getNonzeroElementsCount() const;
+   /**
+    * \brief Computes a current number of nonzero matrix elements.
+    *
+    * \return number of nonzero matrix elements.
+    */
+   virtual IndexType
+   getNonzeroElementsCount() const;
 
-      /**
-       * \brief Reset the matrix.
-       *
-       * The matrix dimensions are set to zero and all matrix elements are freed from the memrory.
-       */
-      void reset();
+   /**
+    * \brief Reset the matrix.
+    *
+    * The matrix dimensions are set to zero and all matrix elements are freed from the memrory.
+    */
+   void
+   reset();
 
-      /**
-       * \brief Returns number of matrix rows.
-       *
-       * \return number of matrix row.
-       */
-      __cuda_callable__
-      IndexType getRows() const;
+   /**
+    * \brief Returns number of matrix rows.
+    *
+    * \return number of matrix row.
+    */
+   __cuda_callable__
+   IndexType
+   getRows() const;
 
-      /**
-       * \brief Returns number of matrix columns.
-       *
-       * @return number of matrix columns.
-       */
-      __cuda_callable__
-      IndexType getColumns() const;
+   /**
+    * \brief Returns number of matrix columns.
+    *
+    * @return number of matrix columns.
+    */
+   __cuda_callable__
+   IndexType
+   getColumns() const;
 
-      /**
-       * \brief Returns a constant reference to a vector with the matrix elements values.
-       *
-       * \return constant reference to a vector with the matrix elements values.
-       */
-      const ValuesType& getValues() const;
+   /**
+    * \brief Returns a constant reference to a vector with the matrix elements values.
+    *
+    * \return constant reference to a vector with the matrix elements values.
+    */
+   const ValuesType&
+   getValues() const;
 
-      /**
-       * \brief Returns a reference to a vector with the matrix elements values.
-       *
-       * \return constant reference to a vector with the matrix elements values.
-       */
-      ValuesType& getValues();
+   /**
+    * \brief Returns a reference to a vector with the matrix elements values.
+    *
+    * \return constant reference to a vector with the matrix elements values.
+    */
+   ValuesType&
+   getValues();
 
-      /**
-       * \brief Comparison operator with another arbitrary matrix type.
-       *
-       * \param matrix is the right-hand side matrix.
-       * \return \e true if the RHS matrix is equal, \e false otherwise.
-       */
-      template< typename Matrix >
-      bool operator == ( const Matrix& matrix ) const;
+   /**
+    * \brief Comparison operator with another arbitrary matrix type.
+    *
+    * \param matrix is the right-hand side matrix.
+    * \return \e true if the RHS matrix is equal, \e false otherwise.
+    */
+   template< typename Matrix >
+   bool
+   operator==( const Matrix& matrix ) const;
 
-      /**
-       * \brief Comparison operator with another arbitrary matrix type.
-       *
-       * \param matrix is the right-hand side matrix.
-       * \return \e true if the RHS matrix is equal, \e false otherwise.
-       */
-      template< typename Matrix >
-      bool operator != ( const Matrix& matrix ) const;
+   /**
+    * \brief Comparison operator with another arbitrary matrix type.
+    *
+    * \param matrix is the right-hand side matrix.
+    * \return \e true if the RHS matrix is equal, \e false otherwise.
+    */
+   template< typename Matrix >
+   bool
+   operator!=( const Matrix& matrix ) const;
 
-      /**
-       * \brief Method for saving the matrix to a file.
-       *
-       * \param file is the output file.
-       */
-      virtual void save( File& file ) const;
+   /**
+    * \brief Method for saving the matrix to a file.
+    *
+    * \param file is the output file.
+    */
+   void
+   save( File& file ) const override;
 
-      /**
-       * \brief Method for loading the matrix from a file.
-       *
-       * \param file is the input file.
-       */
-      virtual void load( File& file );
+   /**
+    * \brief Method for loading the matrix from a file.
+    *
+    * \param file is the input file.
+    */
+   void
+   load( File& file ) override;
 
-      /**
-       * \brief Method for printing the matrix to output stream.
-       *
-       * \param str is the output stream.
-       */
-      virtual void print( std::ostream& str ) const;
+   /**
+    * \brief Method for printing the matrix to output stream.
+    *
+    * \param str is the output stream.
+    */
+   virtual void
+   print( std::ostream& str ) const;
 
+   // TODO: method for symmetric matrices, should not be in general Matrix interface
+   //[[deprecated]]
+   //__cuda_callable__
+   // const IndexType& getNumberOfColors() const;
 
-      // TODO: method for symmetric matrices, should not be in general Matrix interface
-      //[[deprecated]]
-      //__cuda_callable__
-      //const IndexType& getNumberOfColors() const;
+   // TODO: method for symmetric matrices, should not be in general Matrix interface
+   //[[deprecated]]
+   // void computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector);
 
-      // TODO: method for symmetric matrices, should not be in general Matrix interface
-      //[[deprecated]]
-      //void computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector);
+protected:
+   IndexType rows, columns;
 
-      protected:
+   // TODO: remove
+   // IndexType numberOfColors;
 
-      IndexType rows, columns;
-
-      // TODO: remove
-      //IndexType numberOfColors;
-
-      ValuesType values;
+   ValuesType values;
 };
 
 /**
@@ -251,13 +260,14 @@ class Matrix : public Object
  * \return a reference on the output stream \ref std::ostream&.
  */
 template< typename Real, typename Device, typename Index >
-std::ostream& operator << ( std::ostream& str, const Matrix< Real, Device, Index >& matrix )
+std::ostream&
+operator<<( std::ostream& str, const Matrix< Real, Device, Index >& matrix )
 {
    matrix.print( str );
    return str;
 }
 
-} // namespace Matrices
-} // namespace noa::TNL
+}  // namespace Matrices
+}  // namespace noa::TNL
 
 #include <noa/3rdparty/tnl-noa/src/TNL/Matrices/Matrix.hpp>

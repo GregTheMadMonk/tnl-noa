@@ -11,7 +11,7 @@
 #include <string>
 
 #if defined( __has_include )
-   #if __has_include(<cxxabi.h>)
+   #if __has_include( <cxxabi.h>)
       #define TNL_HAS_CXXABI_H
    #endif
 #elif defined( __GLIBCXX__ ) || defined( __GLIBCPP__ )
@@ -20,11 +20,9 @@
 
 #if defined( TNL_HAS_CXXABI_H )
    #include <cxxabi.h>  // abi::__cxa_demangle
-   #include <memory>  // std::unique_ptr
-   #include <cstdlib>  // std::free
+   #include <memory>    // std::unique_ptr
+   #include <cstdlib>   // std::free
 #endif
-
-#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
 
 namespace noa::TNL {
 namespace detail {
@@ -35,11 +33,8 @@ demangle( const char* name )
 #if defined( TNL_HAS_CXXABI_H )
    int status = 0;
    std::size_t size = 0;
-   std::unique_ptr<char[], void (*)(void*)> result(
-      abi::__cxa_demangle( name, NULL, &size, &status ),
-      std::free
-   );
-   if( result.get() )
+   std::unique_ptr< char[], void ( * )( void* ) > result( abi::__cxa_demangle( name, nullptr, &size, &status ), std::free );
+   if( result != nullptr )
       return result.get();
 #endif
    return name;
@@ -53,26 +48,21 @@ class HasStaticGetSerializationType
 {
 private:
    template< typename U >
-   static constexpr auto check(U*)
-   -> typename
-      std::enable_if_t<
-         ! std::is_same<
-               decltype( U::getSerializationType() ),
-               void
-            >::value,
-         std::true_type
-      >;
+   static constexpr auto
+   check( U* ) ->
+      typename std::enable_if_t< ! std::is_same< decltype( U::getSerializationType() ), void >::value, std::true_type >;
 
    template< typename >
-   static constexpr std::false_type check(...);
+   static constexpr std::false_type
+   check( ... );
 
-   using type = decltype(check<std::decay_t<T>>(0));
+   using type = decltype( check< std::decay_t< T > >( nullptr ) );
 
 public:
-    static constexpr bool value = type::value;
+   static constexpr bool value = type::value;
 };
 
-} // namespace detail
+}  // namespace detail
 
 /**
  * \brief Returns a human-readable string representation of given type.
@@ -82,9 +72,10 @@ public:
  * for details.
  */
 template< typename T >
-String getType()
+std::string
+getType()
 {
-   return detail::demangle( typeid(T).name() );
+   return detail::demangle( typeid( T ).name() );
 }
 
 /**
@@ -95,9 +86,10 @@ String getType()
  * for details.
  */
 template< typename T >
-String getType( T&& obj )
+std::string
+getType( T&& obj )
 {
-   return detail::demangle( typeid(obj).name() );
+   return detail::demangle( typeid( obj ).name() );
 }
 
 /**
@@ -109,9 +101,9 @@ String getType( T&& obj )
  * which may be necessary e.g. for class templates which should have the same
  * serialization type for multiple devices.
  */
-template< typename T,
-          std::enable_if_t< ! detail::HasStaticGetSerializationType< T >::value, bool > = true >
-String getSerializationType()
+template< typename T, std::enable_if_t< ! detail::HasStaticGetSerializationType< T >::value, bool > = true >
+std::string
+getSerializationType()
 {
    return getType< T >();
 }
@@ -120,11 +112,11 @@ String getSerializationType()
  * \brief Specialization of \ref getSerializationType for types which provide a
  *        static \e getSerializationType method to override the default behaviour.
  */
-template< typename T,
-          std::enable_if_t< detail::HasStaticGetSerializationType< T >::value, bool > = true >
-String getSerializationType()
+template< typename T, std::enable_if_t< detail::HasStaticGetSerializationType< T >::value, bool > = true >
+std::string
+getSerializationType()
 {
    return T::getSerializationType();
 }
 
-} // namespace noa::TNL
+}  // namespace noa::TNL

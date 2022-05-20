@@ -28,15 +28,15 @@ class NetgenWriter
    static constexpr int meshDimension = Mesh::getMeshDimension();
 
 public:
-   static void writeMesh( const Mesh& mesh, std::ostream& str )
+   static void
+   writeMesh( const Mesh& mesh, std::ostream& str )
    {
       str << std::setprecision( 6 );
       str << std::fixed;
 
       const GlobalIndexType numberOfVertices = mesh.template getEntitiesCount< typename Mesh::Vertex >();
       str << numberOfVertices << std::endl;
-      for( GlobalIndexType i = 0; i < numberOfVertices; i++ )
-      {
+      for( GlobalIndexType i = 0; i < numberOfVertices; i++ ) {
          const PointType& point = mesh.template getEntity< typename Mesh::Vertex >( i ).getPoint();
          str << " ";
          for( int d = 0; d < meshDimension; d++ )
@@ -46,13 +46,10 @@ public:
 
       const GlobalIndexType numberOfCells = mesh.template getEntitiesCount< typename Mesh::Cell >();
       str << numberOfCells << std::endl;
-      for( GlobalIndexType cellIdx = 0; cellIdx < numberOfCells; cellIdx++ )
-      {
+      for( GlobalIndexType cellIdx = 0; cellIdx < numberOfCells; cellIdx++ ) {
          const Cell& cell = mesh.template getEntity< typename Mesh::Cell >( cellIdx );
          str << "   1";
-         for( int cellVertexIdx = 0;
-              cellVertexIdx < meshDimension + 1;
-              cellVertexIdx++ )
+         for( int cellVertexIdx = 0; cellVertexIdx < meshDimension + 1; cellVertexIdx++ )
             // note: Netgen has 1-based indices
             str << " " << cell.template getSubentityIndex< 0 >( cellVertexIdx ) + 1;
          str << "\n";
@@ -60,6 +57,6 @@ public:
    }
 };
 
-} // namespace Writers
-} // namespace Meshes
-} // namespace noa::TNL
+}  // namespace Writers
+}  // namespace Meshes
+}  // namespace noa::TNL

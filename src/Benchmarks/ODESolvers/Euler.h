@@ -16,13 +16,12 @@ template< typename Problem,
 class Euler : public Solvers::ODE::ExplicitSolver< Problem, SolverMonitor >
 {
    public:
-
-   typedef Problem  ProblemType;
-   typedef typename Problem::DofVectorType DofVectorType;
-   typedef typename Problem::RealType RealType;
-   typedef typename Problem::DeviceType DeviceType;
-   typedef typename Problem::IndexType IndexType;
-   typedef Pointers::SharedPointer<  DofVectorType, DeviceType > DofVectorPointer;
+   using ProblemType = Problem;
+   using DofVectorType = typename Problem::DofVectorType;
+   using RealType = typename Problem::RealType;
+   using DeviceType = typename Problem::DeviceType;
+   using IndexType = typename Problem::IndexType;
+   using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
    using VectorOperations = CommonVectorOperations< DeviceType >;
 
 

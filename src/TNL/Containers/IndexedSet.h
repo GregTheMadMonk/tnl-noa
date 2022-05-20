@@ -28,26 +28,33 @@ public:
    using value_type = typename map_type::value_type;
    using size_type = typename map_type::size_type;
 
-   void clear();
+   void
+   clear();
 
-   size_type size() const;
+   size_type
+   size() const;
 
-   Index insert( const Key& key );
+   Index
+   insert( const Key& key );
 
-   bool find( const Key& key, Index& index ) const;
+   bool
+   find( const Key& key, Index& index ) const;
 
-   size_type count( const Key& key ) const;
+   size_type
+   count( const Key& key ) const;
 
-   size_type erase( const Key& key );
+   size_type
+   erase( const Key& key );
 
-   void print( std::ostream& str ) const;
+   void
+   print( std::ostream& str ) const;
 };
 
-template< typename Element,
-          typename Index >
-std::ostream& operator <<( std::ostream& str, IndexedSet< Element, Index >& set );
+template< typename Element, typename Index >
+std::ostream&
+operator<<( std::ostream& str, IndexedSet< Element, Index >& set );
 
-} // namespace Containers
-} // namespace noa::TNL
+}  // namespace Containers
+}  // namespace noa::TNL
 
 #include <noa/3rdparty/tnl-noa/src/TNL/Containers/IndexedSet_impl.h>

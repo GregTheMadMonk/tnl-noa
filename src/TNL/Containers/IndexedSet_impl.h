@@ -11,30 +11,21 @@
 namespace noa::TNL {
 namespace Containers {
 
-template< class Key,
-          class Index,
-          class Compare,
-          class Allocator >
+template< class Key, class Index, class Compare, class Allocator >
 void
 IndexedSet< Key, Index, Compare, Allocator >::clear()
 {
    map.clear();
 }
 
-template< class Key,
-          class Index,
-          class Compare,
-          class Allocator >
+template< class Key, class Index, class Compare, class Allocator >
 typename IndexedSet< Key, Index, Compare, Allocator >::size_type
 IndexedSet< Key, Index, Compare, Allocator >::size() const
 {
    return map.size();
 }
 
-template< class Key,
-          class Index,
-          class Compare,
-          class Allocator >
+template< class Key, class Index, class Compare, class Allocator >
 Index
 IndexedSet< Key, Index, Compare, Allocator >::insert( const Key& key )
 {
@@ -42,10 +33,7 @@ IndexedSet< Key, Index, Compare, Allocator >::insert( const Key& key )
    return iter->second;
 }
 
-template< class Key,
-          class Index,
-          class Compare,
-          class Allocator >
+template< class Key, class Index, class Compare, class Allocator >
 bool
 IndexedSet< Key, Index, Compare, Allocator >::find( const Key& key, Index& index ) const
 {
@@ -56,51 +44,40 @@ IndexedSet< Key, Index, Compare, Allocator >::find( const Key& key, Index& index
    return true;
 }
 
-template< class Key,
-          class Index,
-          class Compare,
-          class Allocator >
+template< class Key, class Index, class Compare, class Allocator >
 typename IndexedSet< Key, Index, Compare, Allocator >::size_type
 IndexedSet< Key, Index, Compare, Allocator >::count( const Key& key ) const
 {
    return map.count( key );
 }
 
-template< class Key,
-          class Index,
-          class Compare,
-          class Allocator >
+template< class Key, class Index, class Compare, class Allocator >
 typename IndexedSet< Key, Index, Compare, Allocator >::size_type
 IndexedSet< Key, Index, Compare, Allocator >::erase( const Key& key )
 {
    return map.erase( key );
 }
 
-template< class Key,
-          class Index,
-          class Compare,
-          class Allocator >
-void IndexedSet< Key, Index, Compare, Allocator >::print( std::ostream& str ) const
+template< class Key, class Index, class Compare, class Allocator >
+void
+IndexedSet< Key, Index, Compare, Allocator >::print( std::ostream& str ) const
 {
    auto iter = map.begin();
    str << iter->second.data;
    iter++;
-   while( iter != map.end() )
-   {
+   while( iter != map.end() ) {
       str << ", " << iter->second.data;
       iter++;
    }
 }
 
-template< class Key,
-          class Index,
-          class Compare,
-          class Allocator >
-std::ostream& operator<<( std::ostream& str, IndexedSet< Key, Index, Compare, Allocator >& set )
+template< class Key, class Index, class Compare, class Allocator >
+std::ostream&
+operator<<( std::ostream& str, IndexedSet< Key, Index, Compare, Allocator >& set )
 {
    set.print( str );
    return str;
 }
 
-} // namespace Containers
-} // namespace noa::TNL
+}  // namespace Containers
+}  // namespace noa::TNL

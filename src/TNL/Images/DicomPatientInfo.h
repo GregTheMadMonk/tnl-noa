@@ -9,15 +9,15 @@
 #include <noa/3rdparty/tnl-noa/src/TNL/String.h>
 
 #ifdef HAVE_DCMTK_H
-#define HAVE_CONFIG_H
-#define HAVE_STD_STRING
-#include <dcmtk/dcmdata/dcfilefo.h>
-#include <dcmtk/dcmdata/dcdeftag.h>
-#include <dcmtk/ofstd/ofstring.h>
+   #define HAVE_CONFIG_H
+   #define HAVE_STD_STRING
+   #include <dcmtk/dcmdata/dcfilefo.h>
+   #include <dcmtk/dcmdata/dcdeftag.h>
+   #include <dcmtk/ofstd/ofstring.h>
 #endif
 
 namespace noa::TNL {
-namespace Images {   
+namespace Images {
 
 class DicomHeader;
 
@@ -27,45 +27,49 @@ class DicomHeader;
  */
 class DicomPatientInfo
 {
-   public:
- 
-      inline DicomPatientInfo(DicomHeader &aDicomHeader);
- 
-      inline virtual ~DicomPatientInfo();
+public:
+   inline DicomPatientInfo( DicomHeader& aDicomHeader );
 
-      inline const String& getName();
- 
-      inline const String& getSex();
- 
-      inline const String& getID();
- 
-      inline const String& getWeight();
- 
-      inline const String& getPosition();
- 
-      inline const String& getOrientation();
+   inline virtual ~DicomPatientInfo();
 
-   private:
+   inline const String&
+   getName();
 
-       DicomHeader &dicomHeader;
-       bool retrieveInfo();
-       bool isObjectRetrieved;
+   inline const String&
+   getSex();
 
-       String name;
+   inline const String&
+   getID();
 
-       String sex;
+   inline const String&
+   getWeight();
 
-       String ID;
+   inline const String&
+   getPosition();
 
-       String weight;
+   inline const String&
+   getOrientation();
 
-       String patientPosition;
+private:
+   DicomHeader& dicomHeader;
+   bool
+   retrieveInfo();
+   bool isObjectRetrieved;
 
-       String patientOrientation;
+   String name;
+
+   String sex;
+
+   String ID;
+
+   String weight;
+
+   String patientPosition;
+
+   String patientOrientation;
 };
 
-} // namespace Images
-} // namespace noa::TNL
+}  // namespace Images
+}  // namespace noa::TNL
 
-#include <noa/3rdparty/tnl-noa/src/TNL/Images//DicomPatientInfo_impl.h>
-
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/DicomPatientInfo_impl.h>

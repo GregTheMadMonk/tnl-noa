@@ -14,39 +14,39 @@ namespace Algorithms {
 namespace detail {
 
 // special dispatch for empty loop
-template< typename Index, Index begin, Index end, Index unrollFactor,  typename Func >
-constexpr std::enable_if_t< (begin >= end) >
+template< typename Index, Index begin, Index end, Index unrollFactor, typename Func >
+constexpr std::enable_if_t< ( begin >= end ) >
 unrolled_for_dispatch( Func&& f )
 {}
 
 // special dispatch for 1 iteration
-template< typename Index, Index begin, Index end, Index unrollFactor,  typename Func >
-constexpr std::enable_if_t< (begin < end && end - begin == 1) >
+template< typename Index, Index begin, Index end, Index unrollFactor, typename Func >
+constexpr std::enable_if_t< ( begin < end && end - begin == 1 ) >
 unrolled_for_dispatch( Func&& f )
 {
    f( begin );
 }
 
 // specialization for unrolling short loops (at least 2, but at most unrollFactor iterations)
-template< typename Index, Index begin, Index end, Index unrollFactor,  typename Func >
-constexpr std::enable_if_t< (begin < end && end - begin >= 2 && end - begin <= unrollFactor) >
+template< typename Index, Index begin, Index end, Index unrollFactor, typename Func >
+constexpr std::enable_if_t< ( begin < end && end - begin >= 2 && end - begin <= unrollFactor ) >
 unrolled_for_dispatch( Func&& f )
 {
-   constexpr Index mid = begin + (end - begin) / 2;
+   constexpr Index mid = begin + ( end - begin ) / 2;
    unrolled_for_dispatch< Index, begin, mid, unrollFactor >( std::forward< Func >( f ) );
    unrolled_for_dispatch< Index, mid, end, unrollFactor >( std::forward< Func >( f ) );
 }
 
 // specialization for long loops - normal for-loop
-template< typename Index, Index begin, Index end, Index unrollFactor,  typename Func >
-constexpr std::enable_if_t< (begin < end && end - begin > 1 && end - begin > unrollFactor) >
+template< typename Index, Index begin, Index end, Index unrollFactor, typename Func >
+constexpr std::enable_if_t< ( begin< end && end - begin > 1 && end - begin > unrollFactor ) >
 unrolled_for_dispatch( Func&& f )
 {
    for( Index i = begin; i < end; i++ )
       f( i );
 }
 
-} // namespace detail
+}  // namespace detail
 
 /**
  * \brief Generic for-loop with explicit unrolling.
@@ -76,11 +76,12 @@ unrolled_for_dispatch( Func&& f )
  * \par Output
  * \include unrolledForExample.out
  */
-template< typename Index, Index begin, Index end, Index unrollFactor = 8,  typename Func >
-constexpr void unrolledFor( Func&& f )
+template< typename Index, Index begin, Index end, Index unrollFactor = 8, typename Func >
+constexpr void
+unrolledFor( Func&& f )
 {
    detail::unrolled_for_dispatch< Index, begin, end, unrollFactor >( std::forward< Func >( f ) );
 }
 
-} // namespace Algorithms
-} // namespace noa::TNL
+}  // namespace Algorithms
+}  // namespace noa::TNL

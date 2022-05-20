@@ -25,7 +25,7 @@ writeValue( VTK::FileFormat format, std::ostream& str, T value )
 {
    if( format == VTK::FileFormat::binary ) {
       value = forceBigEndian( value );
-      str.write( reinterpret_cast<const char*>(&value), sizeof(T) );
+      str.write( reinterpret_cast< const char* >( &value ), sizeof( T ) );
    }
    else {
       // precision affects only floating-point types, not integers
@@ -34,16 +34,14 @@ writeValue( VTK::FileFormat format, std::ostream& str, T value )
    }
 }
 
-
 // TODO: specialization for disabled entities
 // Unstructured meshes, entities
-template< typename Mesh,
-          int EntityDimension,
-          typename EntityType = typename Mesh::template EntityType< EntityDimension > >
+template< typename Mesh, int EntityDimension, typename EntityType = typename Mesh::template EntityType< EntityDimension > >
 struct VTKMeshEntitiesWriter
 {
    template< typename Index >
-   static void writeOffsets( const Mesh& mesh, std::ostream& str, VTK::FileFormat format )
+   static void
+   writeOffsets( const Mesh& mesh, std::ostream& str, VTK::FileFormat format )
    {
       Index offset = 0;
       writeValue< Index >( format, str, offset );
@@ -60,7 +58,8 @@ struct VTKMeshEntitiesWriter
    }
 
    template< typename Index >
-   static void writeConnectivity( const Mesh& mesh, std::ostream& str, VTK::FileFormat format )
+   static void
+   writeConnectivity( const Mesh& mesh, std::ostream& str, VTK::FileFormat format )
    {
       const Index entitiesCount = mesh.template getEntitiesCount< EntityType >();
       for( Index i = 0; i < entitiesCount; i++ ) {
@@ -79,7 +78,8 @@ template< typename Mesh >
 struct VTKMeshEntitiesWriter< Mesh, 3, MeshEntity< typename Mesh::Config, typename Mesh::DeviceType, Topologies::Polyhedron > >
 {
    template< typename Index >
-   static void writeOffsets( const Mesh& mesh, std::ostream& str, VTK::FileFormat format )
+   static void
+   writeOffsets( const Mesh& mesh, std::ostream& str, VTK::FileFormat format )
    {
       Index offset = 0;
       writeValue< Index >( format, str, offset );
@@ -104,7 +104,8 @@ struct VTKMeshEntitiesWriter< Mesh, 3, MeshEntity< typename Mesh::Config, typena
    }
 
    template< typename Index >
-   static void writeConnectivity( const Mesh& mesh, std::ostream& str, VTK::FileFormat format )
+   static void
+   writeConnectivity( const Mesh& mesh, std::ostream& str, VTK::FileFormat format )
    {
       const Index entitiesCount = mesh.template getEntitiesCount< 3 >();
       for( Index i = 0; i < entitiesCount; i++ ) {
@@ -132,7 +133,8 @@ template< typename Mesh >
 struct VTKMeshEntitiesWriter< Mesh, 0, MeshEntity< typename Mesh::Config, typename Mesh::DeviceType, Topologies::Vertex > >
 {
    template< typename Index >
-   static void writeOffsets( const Mesh& mesh, std::ostream& str, VTK::FileFormat format )
+   static void
+   writeOffsets( const Mesh& mesh, std::ostream& str, VTK::FileFormat format )
    {
       using EntityType = typename Mesh::template EntityType< 0 >;
 
@@ -148,7 +150,8 @@ struct VTKMeshEntitiesWriter< Mesh, 0, MeshEntity< typename Mesh::Config, typena
    }
 
    template< typename Index >
-   static void writeConnectivity( const Mesh& mesh, std::ostream& str, VTK::FileFormat format )
+   static void
+   writeConnectivity( const Mesh& mesh, std::ostream& str, VTK::FileFormat format )
    {
       using EntityType = typename Mesh::template EntityType< 0 >;
 
@@ -162,15 +165,14 @@ struct VTKMeshEntitiesWriter< Mesh, 0, MeshEntity< typename Mesh::Config, typena
 };
 
 // 1D grids, cells
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex >
+template< typename MeshReal, typename Device, typename MeshIndex >
 struct VTKMeshEntitiesWriter< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 1 >
 {
    using MeshType = Meshes::Grid< 1, MeshReal, Device, MeshIndex >;
 
    template< typename Index >
-   static void writeOffsets( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
+   static void
+   writeOffsets( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
    {
       Index offset = 0;
       writeValue< Index >( format, str, offset );
@@ -185,11 +187,12 @@ struct VTKMeshEntitiesWriter< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 1 
    }
 
    template< typename Index >
-   static void writeConnectivity( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
+   static void
+   writeConnectivity( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
    {
       for( MeshIndex i = 0; i < mesh.getDimensions().x(); i++ ) {
          writeValue< Index >( format, str, i );
-         writeValue< Index >( format, str, i+1 );
+         writeValue< Index >( format, str, i + 1 );
          if( format == VTK::FileFormat::ascii )
             str << "\n";
       }
@@ -197,15 +200,14 @@ struct VTKMeshEntitiesWriter< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 1 
 };
 
 // 1D grids, vertices
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex >
+template< typename MeshReal, typename Device, typename MeshIndex >
 struct VTKMeshEntitiesWriter< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 0 >
 {
    using MeshType = Meshes::Grid< 1, MeshReal, Device, MeshIndex >;
 
    template< typename Index >
-   static void writeOffsets( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
+   static void
+   writeOffsets( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
    {
       Index offset = 0;
       writeValue< Index >( format, str, offset );
@@ -218,7 +220,8 @@ struct VTKMeshEntitiesWriter< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 0 
    }
 
    template< typename Index >
-   static void writeConnectivity( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
+   static void
+   writeConnectivity( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
    {
       for( MeshIndex i = 0; i < mesh.getDimensions().x() + 1; i++ ) {
          writeValue< Index >( format, str, i );
@@ -229,15 +232,14 @@ struct VTKMeshEntitiesWriter< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 0 
 };
 
 // 2D grids, cells
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex >
+template< typename MeshReal, typename Device, typename MeshIndex >
 struct VTKMeshEntitiesWriter< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 2 >
 {
    using MeshType = Meshes::Grid< 2, MeshReal, Device, MeshIndex >;
 
    template< typename Index >
-   static void writeOffsets( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
+   static void
+   writeOffsets( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
    {
       Index offset = 0;
       writeValue< Index >( format, str, offset );
@@ -253,31 +255,30 @@ struct VTKMeshEntitiesWriter< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 2 
    }
 
    template< typename Index >
-   static void writeConnectivity( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
+   static void
+   writeConnectivity( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
    {
       for( MeshIndex j = 0; j < mesh.getDimensions().y(); j++ )
-      for( MeshIndex i = 0; i < mesh.getDimensions().x(); i++ )
-      {
-         writeValue< Index >( format, str, j * ( mesh.getDimensions().x() + 1 ) + i );
-         writeValue< Index >( format, str, j * ( mesh.getDimensions().x() + 1 ) + i + 1 );
-         writeValue< Index >( format, str, (j+1) * ( mesh.getDimensions().x() + 1 ) + i );
-         writeValue< Index >( format, str, (j+1) * ( mesh.getDimensions().x() + 1 ) + i + 1 );
-         if( format == VTK::FileFormat::ascii )
-            str << "\n";
-      }
+         for( MeshIndex i = 0; i < mesh.getDimensions().x(); i++ ) {
+            writeValue< Index >( format, str, j * ( mesh.getDimensions().x() + 1 ) + i );
+            writeValue< Index >( format, str, j * ( mesh.getDimensions().x() + 1 ) + i + 1 );
+            writeValue< Index >( format, str, ( j + 1 ) * ( mesh.getDimensions().x() + 1 ) + i );
+            writeValue< Index >( format, str, ( j + 1 ) * ( mesh.getDimensions().x() + 1 ) + i + 1 );
+            if( format == VTK::FileFormat::ascii )
+               str << "\n";
+         }
    }
 };
 
 // 2D grids, faces
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex >
+template< typename MeshReal, typename Device, typename MeshIndex >
 struct VTKMeshEntitiesWriter< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1 >
 {
    using MeshType = Meshes::Grid< 2, MeshReal, Device, MeshIndex >;
 
    template< typename Index >
-   static void writeOffsets( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
+   static void
+   writeOffsets( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
    {
       Index offset = 0;
       writeValue< Index >( format, str, offset );
@@ -288,7 +289,7 @@ struct VTKMeshEntitiesWriter< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1 
             writeValue< Index >( format, str, offset );
          }
 
-      for( MeshIndex j = 0; j < (mesh.getDimensions().y()+1); j++ )
+      for( MeshIndex j = 0; j < ( mesh.getDimensions().y() + 1 ); j++ )
          for( MeshIndex i = 0; i < mesh.getDimensions().x(); i++ ) {
             offset += 2;
             writeValue< Index >( format, str, offset );
@@ -299,38 +300,36 @@ struct VTKMeshEntitiesWriter< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1 
    }
 
    template< typename Index >
-   static void writeConnectivity( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
+   static void
+   writeConnectivity( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
    {
       for( MeshIndex j = 0; j < mesh.getDimensions().y(); j++ )
-      for( MeshIndex i = 0; i < ( mesh.getDimensions().x() + 1 ); i++ )
-      {
-         writeValue< Index >( format, str, j * ( mesh.getDimensions().x() + 1 ) + i );
-         writeValue< Index >( format, str, (j+1) * ( mesh.getDimensions().x() + 1 ) + i );
-         if( format == VTK::FileFormat::ascii )
-            str << "\n";
-      }
+         for( MeshIndex i = 0; i < ( mesh.getDimensions().x() + 1 ); i++ ) {
+            writeValue< Index >( format, str, j * ( mesh.getDimensions().x() + 1 ) + i );
+            writeValue< Index >( format, str, ( j + 1 ) * ( mesh.getDimensions().x() + 1 ) + i );
+            if( format == VTK::FileFormat::ascii )
+               str << "\n";
+         }
 
-      for( MeshIndex j = 0; j < (mesh.getDimensions().y()+1); j++ )
-      for( MeshIndex i = 0; i < mesh.getDimensions().x(); i++ )
-      {
-         writeValue< Index >( format, str, j * ( mesh.getDimensions().x() + 1 ) + i );
-         writeValue< Index >( format, str, j * ( mesh.getDimensions().x() + 1 ) + i + 1 );
-         if( format == VTK::FileFormat::ascii )
-            str << "\n";
-      }
+      for( MeshIndex j = 0; j < ( mesh.getDimensions().y() + 1 ); j++ )
+         for( MeshIndex i = 0; i < mesh.getDimensions().x(); i++ ) {
+            writeValue< Index >( format, str, j * ( mesh.getDimensions().x() + 1 ) + i );
+            writeValue< Index >( format, str, j * ( mesh.getDimensions().x() + 1 ) + i + 1 );
+            if( format == VTK::FileFormat::ascii )
+               str << "\n";
+         }
    }
 };
 
 // 2D grids, vertices
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex >
+template< typename MeshReal, typename Device, typename MeshIndex >
 struct VTKMeshEntitiesWriter< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 0 >
 {
    using MeshType = Meshes::Grid< 2, MeshReal, Device, MeshIndex >;
 
    template< typename Index >
-   static void writeOffsets( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
+   static void
+   writeOffsets( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
    {
       Index offset = 0;
       writeValue< Index >( format, str, offset );
@@ -344,28 +343,27 @@ struct VTKMeshEntitiesWriter< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 0 
    }
 
    template< typename Index >
-   static void writeConnectivity( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
+   static void
+   writeConnectivity( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
    {
       for( MeshIndex j = 0; j < ( mesh.getDimensions().y() + 1 ); j++ )
-      for( MeshIndex i = 0; i < ( mesh.getDimensions().x() + 1 ); i++ )
-      {
-         writeValue< Index >( format, str, j * mesh.getDimensions().x() + i );
-         if( format == VTK::FileFormat::ascii )
-            str << "\n";
-      }
+         for( MeshIndex i = 0; i < ( mesh.getDimensions().x() + 1 ); i++ ) {
+            writeValue< Index >( format, str, j * mesh.getDimensions().x() + i );
+            if( format == VTK::FileFormat::ascii )
+               str << "\n";
+         }
    }
 };
 
 // 3D grids, cells
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex >
+template< typename MeshReal, typename Device, typename MeshIndex >
 struct VTKMeshEntitiesWriter< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 3 >
 {
    using MeshType = Meshes::Grid< 3, MeshReal, Device, MeshIndex >;
 
    template< typename Index >
-   static void writeOffsets( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
+   static void
+   writeOffsets( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
    {
       Index offset = 0;
       writeValue< Index >( format, str, offset );
@@ -382,36 +380,59 @@ struct VTKMeshEntitiesWriter< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 3 
    }
 
    template< typename Index >
-   static void writeConnectivity( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
+   static void
+   writeConnectivity( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
    {
       for( MeshIndex k = 0; k < mesh.getDimensions().z(); k++ )
-      for( MeshIndex j = 0; j < mesh.getDimensions().y(); j++ )
-      for( MeshIndex i = 0; i < mesh.getDimensions().x(); i++ )
-      {
-         writeValue< Index >( format, str, k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + j * ( mesh.getDimensions().x() + 1 ) + i );
-         writeValue< Index >( format, str, k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + j * ( mesh.getDimensions().x() + 1 ) + i + 1 );
-         writeValue< Index >( format, str, k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + (j+1) * ( mesh.getDimensions().x() + 1 ) + i );
-         writeValue< Index >( format, str, k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + (j+1) * ( mesh.getDimensions().x() + 1 ) + i + 1 );
-         writeValue< Index >( format, str, (k+1) * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + j * ( mesh.getDimensions().x() + 1 ) + i );
-         writeValue< Index >( format, str, (k+1) * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + j * ( mesh.getDimensions().x() + 1 ) + i + 1 );
-         writeValue< Index >( format, str, (k+1) * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + (j+1) * ( mesh.getDimensions().x() + 1 ) + i );
-         writeValue< Index >( format, str, (k+1) * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + (j+1) * ( mesh.getDimensions().x() + 1 ) + i + 1 );
-         if( format == VTK::FileFormat::ascii )
-            str << "\n";
-      }
+         for( MeshIndex j = 0; j < mesh.getDimensions().y(); j++ )
+            for( MeshIndex i = 0; i < mesh.getDimensions().x(); i++ ) {
+               writeValue< Index >( format,
+                                    str,
+                                    k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + j * ( mesh.getDimensions().x() + 1 ) + i );
+               writeValue< Index >( format,
+                                    str,
+                                    k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + j * ( mesh.getDimensions().x() + 1 ) + i + 1 );
+               writeValue< Index >( format,
+                                    str,
+                                    k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + ( j + 1 ) * ( mesh.getDimensions().x() + 1 ) + i );
+               writeValue< Index >( format,
+                                    str,
+                                    k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + ( j + 1 ) * ( mesh.getDimensions().x() + 1 ) + i + 1 );
+               writeValue< Index >( format,
+                                    str,
+                                    ( k + 1 ) * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + j * ( mesh.getDimensions().x() + 1 ) + i );
+               writeValue< Index >( format,
+                                    str,
+                                    ( k + 1 ) * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + j * ( mesh.getDimensions().x() + 1 ) + i + 1 );
+               writeValue< Index >( format,
+                                    str,
+                                    ( k + 1 ) * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + ( j + 1 ) * ( mesh.getDimensions().x() + 1 ) + i );
+               writeValue< Index >( format,
+                                    str,
+                                    ( k + 1 ) * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + ( j + 1 ) * ( mesh.getDimensions().x() + 1 ) + i + 1 );
+               if( format == VTK::FileFormat::ascii )
+                  str << "\n";
+            }
    }
 };
 
 // 3D grids, faces
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex >
+template< typename MeshReal, typename Device, typename MeshIndex >
 struct VTKMeshEntitiesWriter< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2 >
 {
    using MeshType = Meshes::Grid< 3, MeshReal, Device, MeshIndex >;
 
    template< typename Index >
-   static void writeOffsets( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
+   static void
+   writeOffsets( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
    {
       Index offset = 0;
       writeValue< Index >( format, str, offset );
@@ -442,56 +463,89 @@ struct VTKMeshEntitiesWriter< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2 
    }
 
    template< typename Index >
-   static void writeConnectivity( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
+   static void
+   writeConnectivity( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
    {
       for( MeshIndex k = 0; k < mesh.getDimensions().z(); k++ )
-      for( MeshIndex j = 0; j < mesh.getDimensions().y(); j++ )
-      for( MeshIndex i = 0; i <= mesh.getDimensions().x(); i++ )
-      {
-         writeValue< Index >( format, str, k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + j * ( mesh.getDimensions().x() + 1 ) + i );
-         writeValue< Index >( format, str, k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + (j+1) * ( mesh.getDimensions().x() + 1 ) + i );
-         writeValue< Index >( format, str, (k+1) * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + j * ( mesh.getDimensions().x() + 1 ) + i );
-         writeValue< Index >( format, str, (k+1) * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + (j+1) * ( mesh.getDimensions().x() + 1 ) + i );
-         if( format == VTK::FileFormat::ascii )
-            str << "\n";
-      }
+         for( MeshIndex j = 0; j < mesh.getDimensions().y(); j++ )
+            for( MeshIndex i = 0; i <= mesh.getDimensions().x(); i++ ) {
+               writeValue< Index >( format,
+                                    str,
+                                    k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + j * ( mesh.getDimensions().x() + 1 ) + i );
+               writeValue< Index >( format,
+                                    str,
+                                    k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + ( j + 1 ) * ( mesh.getDimensions().x() + 1 ) + i );
+               writeValue< Index >( format,
+                                    str,
+                                    ( k + 1 ) * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + j * ( mesh.getDimensions().x() + 1 ) + i );
+               writeValue< Index >( format,
+                                    str,
+                                    ( k + 1 ) * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + ( j + 1 ) * ( mesh.getDimensions().x() + 1 ) + i );
+               if( format == VTK::FileFormat::ascii )
+                  str << "\n";
+            }
 
       for( MeshIndex k = 0; k < mesh.getDimensions().z(); k++ )
-      for( MeshIndex j = 0; j <= mesh.getDimensions().y(); j++ )
-      for( MeshIndex i = 0; i < mesh.getDimensions().x(); i++ )
-      {
-         writeValue< Index >( format, str, k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + j * ( mesh.getDimensions().x() + 1 ) + i );
-         writeValue< Index >( format, str, k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + j * ( mesh.getDimensions().x() + 1 ) + i + 1 );
-         writeValue< Index >( format, str, (k+1) * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + j * ( mesh.getDimensions().x() + 1 ) + i );
-         writeValue< Index >( format, str, (k+1) * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + j * ( mesh.getDimensions().x() + 1 ) + i + 1 );
-         if( format == VTK::FileFormat::ascii )
-            str << "\n";
-      }
+         for( MeshIndex j = 0; j <= mesh.getDimensions().y(); j++ )
+            for( MeshIndex i = 0; i < mesh.getDimensions().x(); i++ ) {
+               writeValue< Index >( format,
+                                    str,
+                                    k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + j * ( mesh.getDimensions().x() + 1 ) + i );
+               writeValue< Index >( format,
+                                    str,
+                                    k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + j * ( mesh.getDimensions().x() + 1 ) + i + 1 );
+               writeValue< Index >( format,
+                                    str,
+                                    ( k + 1 ) * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + j * ( mesh.getDimensions().x() + 1 ) + i );
+               writeValue< Index >( format,
+                                    str,
+                                    ( k + 1 ) * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + j * ( mesh.getDimensions().x() + 1 ) + i + 1 );
+               if( format == VTK::FileFormat::ascii )
+                  str << "\n";
+            }
 
       for( MeshIndex k = 0; k <= mesh.getDimensions().z(); k++ )
-      for( MeshIndex j = 0; j < mesh.getDimensions().y(); j++ )
-      for( MeshIndex i = 0; i < mesh.getDimensions().x(); i++ )
-      {
-         writeValue< Index >( format, str, k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + j * ( mesh.getDimensions().x() + 1 ) + i );
-         writeValue< Index >( format, str, k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + j * ( mesh.getDimensions().x() + 1 ) + i + 1 );
-         writeValue< Index >( format, str, k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + (j+1) * ( mesh.getDimensions().x() + 1 ) + i );
-         writeValue< Index >( format, str, k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + (j+1) * ( mesh.getDimensions().x() + 1 ) + i + 1 );
-         if( format == VTK::FileFormat::ascii )
-            str << "\n";
-      }
+         for( MeshIndex j = 0; j < mesh.getDimensions().y(); j++ )
+            for( MeshIndex i = 0; i < mesh.getDimensions().x(); i++ ) {
+               writeValue< Index >( format,
+                                    str,
+                                    k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + j * ( mesh.getDimensions().x() + 1 ) + i );
+               writeValue< Index >( format,
+                                    str,
+                                    k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + j * ( mesh.getDimensions().x() + 1 ) + i + 1 );
+               writeValue< Index >( format,
+                                    str,
+                                    k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + ( j + 1 ) * ( mesh.getDimensions().x() + 1 ) + i );
+               writeValue< Index >( format,
+                                    str,
+                                    k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + ( j + 1 ) * ( mesh.getDimensions().x() + 1 ) + i + 1 );
+               if( format == VTK::FileFormat::ascii )
+                  str << "\n";
+            }
    }
 };
 
 // 3D grids, edges
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex >
+template< typename MeshReal, typename Device, typename MeshIndex >
 struct VTKMeshEntitiesWriter< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 1 >
 {
    using MeshType = Meshes::Grid< 3, MeshReal, Device, MeshIndex >;
 
    template< typename Index >
-   static void writeOffsets( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
+   static void
+   writeOffsets( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
    {
       Index offset = 0;
       writeValue< Index >( format, str, offset );
@@ -522,50 +576,65 @@ struct VTKMeshEntitiesWriter< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 1 
    }
 
    template< typename Index >
-   static void writeConnectivity( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
+   static void
+   writeConnectivity( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
    {
       for( MeshIndex k = 0; k <= mesh.getDimensions().z(); k++ )
-      for( MeshIndex j = 0; j <= mesh.getDimensions().y(); j++ )
-      for( MeshIndex i = 0; i < mesh.getDimensions().x(); i++ )
-      {
-         writeValue< Index >( format, str, k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + j * ( mesh.getDimensions().x() + 1 ) + i );
-         writeValue< Index >( format, str, k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + j * ( mesh.getDimensions().x() + 1 ) + i + 1 );
-         if( format == VTK::FileFormat::ascii )
-            str << "\n";
-      }
+         for( MeshIndex j = 0; j <= mesh.getDimensions().y(); j++ )
+            for( MeshIndex i = 0; i < mesh.getDimensions().x(); i++ ) {
+               writeValue< Index >( format,
+                                    str,
+                                    k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + j * ( mesh.getDimensions().x() + 1 ) + i );
+               writeValue< Index >( format,
+                                    str,
+                                    k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + j * ( mesh.getDimensions().x() + 1 ) + i + 1 );
+               if( format == VTK::FileFormat::ascii )
+                  str << "\n";
+            }
 
       for( MeshIndex k = 0; k <= mesh.getDimensions().z(); k++ )
-      for( MeshIndex j = 0; j < mesh.getDimensions().y(); j++ )
-      for( MeshIndex i = 0; i <= mesh.getDimensions().x(); i++ )
-      {
-         writeValue< Index >( format, str, k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + j * ( mesh.getDimensions().x() + 1 ) + i );
-         writeValue< Index >( format, str, k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + (j+1) * ( mesh.getDimensions().x() + 1 ) + i );
-         if( format == VTK::FileFormat::ascii )
-            str << "\n";
-      }
+         for( MeshIndex j = 0; j < mesh.getDimensions().y(); j++ )
+            for( MeshIndex i = 0; i <= mesh.getDimensions().x(); i++ ) {
+               writeValue< Index >( format,
+                                    str,
+                                    k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + j * ( mesh.getDimensions().x() + 1 ) + i );
+               writeValue< Index >( format,
+                                    str,
+                                    k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + ( j + 1 ) * ( mesh.getDimensions().x() + 1 ) + i );
+               if( format == VTK::FileFormat::ascii )
+                  str << "\n";
+            }
 
       for( MeshIndex k = 0; k < mesh.getDimensions().z(); k++ )
-      for( MeshIndex j = 0; j <= mesh.getDimensions().y(); j++ )
-      for( MeshIndex i = 0; i <= mesh.getDimensions().x(); i++ )
-      {
-         writeValue< Index >( format, str, k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + j * ( mesh.getDimensions().x() + 1 ) + i );
-         writeValue< Index >( format, str, (k+1) * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + j * ( mesh.getDimensions().x() + 1 ) + i );
-         if( format == VTK::FileFormat::ascii )
-            str << "\n";
-      }
+         for( MeshIndex j = 0; j <= mesh.getDimensions().y(); j++ )
+            for( MeshIndex i = 0; i <= mesh.getDimensions().x(); i++ ) {
+               writeValue< Index >( format,
+                                    str,
+                                    k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + j * ( mesh.getDimensions().x() + 1 ) + i );
+               writeValue< Index >( format,
+                                    str,
+                                    ( k + 1 ) * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + j * ( mesh.getDimensions().x() + 1 ) + i );
+               if( format == VTK::FileFormat::ascii )
+                  str << "\n";
+            }
    }
 };
 
 // 3D grids, vertices
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex >
+template< typename MeshReal, typename Device, typename MeshIndex >
 struct VTKMeshEntitiesWriter< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 0 >
 {
    using MeshType = Meshes::Grid< 3, MeshReal, Device, MeshIndex >;
 
    template< typename Index >
-   static void writeOffsets( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
+   static void
+   writeOffsets( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
    {
       Index offset = 0;
       writeValue< Index >( format, str, offset );
@@ -580,25 +649,28 @@ struct VTKMeshEntitiesWriter< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 0 
    }
 
    template< typename Index >
-   static void writeConnectivity( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
+   static void
+   writeConnectivity( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
    {
       for( MeshIndex k = 0; k < ( mesh.getDimensions().z() + 1 ); k++ )
-      for( MeshIndex j = 0; j < ( mesh.getDimensions().y() + 1 ); j++ )
-      for( MeshIndex i = 0; i < ( mesh.getDimensions().x() + 1 ); i++ )
-      {
-         writeValue< Index >( format, str, k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 ) + j * ( mesh.getDimensions().x() + 1 ) + i );
-         if( format == VTK::FileFormat::ascii )
-            str << "\n";
-      }
+         for( MeshIndex j = 0; j < ( mesh.getDimensions().y() + 1 ); j++ )
+            for( MeshIndex i = 0; i < ( mesh.getDimensions().x() + 1 ); i++ ) {
+               writeValue< Index >( format,
+                                    str,
+                                    k * ( mesh.getDimensions().y() + 1 ) * ( mesh.getDimensions().x() + 1 )
+                                       + j * ( mesh.getDimensions().x() + 1 ) + i );
+               if( format == VTK::FileFormat::ascii )
+                  str << "\n";
+            }
    }
 };
-
 
 // TODO: specialization for disabled entities
 template< typename Mesh, int EntityDimension >
 struct VTKMeshEntityTypesWriter
 {
-   static void exec( const Mesh& mesh, std::ostream& str, VTK::FileFormat format )
+   static void
+   exec( const Mesh& mesh, std::ostream& str, VTK::FileFormat format )
    {
       using EntityType = typename Mesh::template EntityType< EntityDimension >;
       using Index = typename Mesh::GlobalIndexType;
@@ -613,16 +685,13 @@ struct VTKMeshEntityTypesWriter
    }
 };
 
-template< int Dimension,
-          typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          int EntityDimension >
+template< int Dimension, typename MeshReal, typename Device, typename MeshIndex, int EntityDimension >
 struct VTKMeshEntityTypesWriter< Grid< Dimension, MeshReal, Device, MeshIndex >, EntityDimension >
 {
    using MeshType = Grid< Dimension, MeshReal, Device, MeshIndex >;
 
-   static void exec( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
+   static void
+   exec( const MeshType& mesh, std::ostream& str, VTK::FileFormat format )
    {
       using EntityType = typename MeshType::template EntityType< EntityDimension >;
 
@@ -636,7 +705,7 @@ struct VTKMeshEntityTypesWriter< Grid< Dimension, MeshReal, Device, MeshIndex >,
    }
 };
 
-} // namespace detail
-} // namespace Writers
-} // namespace Meshes
-} // namespace noa::TNL
+}  // namespace detail
+}  // namespace Writers
+}  // namespace Meshes
+}  // namespace noa::TNL

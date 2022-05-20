@@ -17,8 +17,8 @@
 #include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/STLSort.h>
 
 namespace noa::TNL {
-   namespace Algorithms {
-      namespace Sorting {
+namespace Algorithms {
+namespace Sorting {
 
 template< typename Device >
 struct DefaultSorter;
@@ -62,6 +62,6 @@ struct DefaultInplaceSorter< Devices::Cuda >
    using SorterType = Algorithms::Sorting::BitonicSort;
 };
 
-      } // namespace Sorting
-   } // namespace Algorithms
-} // namespace noa::TNL
+}  // namespace Sorting
+}  // namespace Algorithms
+}  // namespace noa::TNL

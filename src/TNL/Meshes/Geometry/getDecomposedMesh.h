@@ -22,7 +22,7 @@ namespace Meshes {
 
 // Polygon Mesh
 template< typename ParentConfig >
-struct TriangleConfig: public ParentConfig
+struct TriangleConfig : public ParentConfig
 {
    using CellTopology = Topologies::Triangle;
 };
@@ -31,7 +31,7 @@ template< EntityDecomposerVersion DecomposerVersion,
           EntityDecomposerVersion SubdecomposerVersion = EntityDecomposerVersion::ConnectEdgesToPoint,
           typename MeshConfig,
           std::enable_if_t< std::is_same< typename MeshConfig::CellTopology, Topologies::Polygon >::value, bool > = true >
-auto // returns MeshBuilder
+auto  // returns MeshBuilder
 decomposeMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
 {
    using namespace noa::TNL;
@@ -55,13 +55,16 @@ decomposeMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
    // starting indices at which every cell will start writing new decomposed points and cells
    using IndexPair = std::pair< GlobalIndexType, GlobalIndexType >;
    Array< IndexPair, Devices::Host > indices( inCellsCount + 1 );
-   auto setCounts = [&] ( GlobalIndexType i ) {
+   auto setCounts = [ & ]( GlobalIndexType i )
+   {
       const auto cell = inMesh.template getEntity< CellDimension >( i );
       indices[ i ] = EntityDecomposer::getExtraPointsAndEntitiesCount( cell );
    };
    ParallelFor< Devices::Host >::exec( GlobalIndexType{ 0 }, inCellsCount, setCounts );
-   indices[ inCellsCount ] = { 0, 0 }; // extend exclusive prefix sum by one element to also get result of reduce at the same time
-   auto reduction = [] ( const IndexPair& a, const IndexPair& b ) -> IndexPair {
+   indices[ inCellsCount ] = { 0,
+                               0 };  // extend exclusive prefix sum by one element to also get result of reduce at the same time
+   auto reduction = []( const IndexPair& a, const IndexPair& b ) -> IndexPair
+   {
       return { a.first + b.first, a.second + b.second };
    };
    inplaceExclusiveScan( indices, 0, indices.getSize(), reduction, std::make_pair( 0, 0 ) );
@@ -71,19 +74,22 @@ decomposeMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
    meshBuilder.setEntitiesCount( outPointsCount, outCellsCount );
 
    // Copy the points from inMesh to outMesh
-   auto copyPoint = [&] ( GlobalIndexType i ) mutable {
+   auto copyPoint = [ & ]( GlobalIndexType i ) mutable
+   {
       meshBuilder.setPoint( i, inMesh.getPoint( i ) );
    };
    ParallelFor< Devices::Host >::exec( GlobalIndexType{ 0 }, inPointsCount, copyPoint );
 
    // Decompose each cell
-   auto decomposeCell = [&] ( GlobalIndexType i ) mutable {
+   auto decomposeCell = [ & ]( GlobalIndexType i ) mutable
+   {
       const auto cell = inMesh.template getEntity< CellDimension >( i );
       const auto& indexPair = indices[ i ];
 
       // Lambda for adding new points
       GlobalIndexType setPointIndex = inPointsCount + indexPair.first;
-      auto addPoint = [&] ( const PointType& point ) {
+      auto addPoint = [ & ]( const PointType& point )
+      {
          const auto pointIdx = setPointIndex++;
          meshBuilder.setPoint( pointIdx, point );
          return pointIdx;
@@ -91,7 +97,8 @@ decomposeMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
 
       // Lambda for adding new cells
       GlobalIndexType setCellIndex = indexPair.second;
-      auto addCell = [&] ( GlobalIndexType v0, GlobalIndexType v1, GlobalIndexType v2 ) {
+      auto addCell = [ & ]( GlobalIndexType v0, GlobalIndexType v1, GlobalIndexType v2 )
+      {
          auto entitySeed = meshBuilder.getCellSeed( setCellIndex++ );
          entitySeed.setCornerId( 0, v0 );
          entitySeed.setCornerId( 1, v1 );
@@ -109,7 +116,7 @@ template< EntityDecomposerVersion DecomposerVersion,
           EntityDecomposerVersion SubdecomposerVersion = EntityDecomposerVersion::ConnectEdgesToPoint,
           typename MeshConfig,
           std::enable_if_t< std::is_same< typename MeshConfig::CellTopology, Topologies::Polygon >::value, bool > = true >
-auto // returns Mesh
+auto  // returns Mesh
 getDecomposedMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
 {
    using TriangleMeshConfig = TriangleConfig< MeshConfig >;
@@ -123,7 +130,7 @@ getDecomposedMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
 
 // Polyhedral Mesh
 template< typename ParentConfig >
-struct TetrahedronConfig: public ParentConfig
+struct TetrahedronConfig : public ParentConfig
 {
    using CellTopology = Topologies::Tetrahedron;
 };
@@ -132,7 +139,7 @@ template< EntityDecomposerVersion DecomposerVersion,
           EntityDecomposerVersion SubdecomposerVersion,
           typename MeshConfig,
           std::enable_if_t< std::is_same< typename MeshConfig::CellTopology, Topologies::Polyhedron >::value, bool > = true >
-auto // returns MeshBuilder
+auto  // returns MeshBuilder
 decomposeMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
 {
    using namespace noa::TNL;
@@ -156,13 +163,16 @@ decomposeMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
    // starting indices at which every cell will start writing new decomposed points and cells
    using IndexPair = std::pair< GlobalIndexType, GlobalIndexType >;
    Array< IndexPair, Devices::Host > indices( inCellsCount + 1 );
-   auto setCounts = [&] ( GlobalIndexType i ) {
+   auto setCounts = [ & ]( GlobalIndexType i )
+   {
       const auto cell = inMesh.template getEntity< CellDimension >( i );
       indices[ i ] = EntityDecomposer::getExtraPointsAndEntitiesCount( cell );
    };
    ParallelFor< Devices::Host >::exec( GlobalIndexType{ 0 }, inCellsCount, setCounts );
-   indices[ inCellsCount ] = { 0, 0 }; // extend exclusive prefix sum by one element to also get result of reduce at the same time
-   auto reduction = [] ( const IndexPair& a, const IndexPair& b ) -> IndexPair {
+   indices[ inCellsCount ] = { 0,
+                               0 };  // extend exclusive prefix sum by one element to also get result of reduce at the same time
+   auto reduction = []( const IndexPair& a, const IndexPair& b ) -> IndexPair
+   {
       return { a.first + b.first, a.second + b.second };
    };
    inplaceExclusiveScan( indices, 0, indices.getSize(), reduction, std::make_pair( 0, 0 ) );
@@ -172,19 +182,22 @@ decomposeMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
    meshBuilder.setEntitiesCount( outPointsCount, outCellsCount );
 
    // Copy the points from inMesh to outMesh
-   auto copyPoint = [&] ( GlobalIndexType i ) mutable {
+   auto copyPoint = [ & ]( GlobalIndexType i ) mutable
+   {
       meshBuilder.setPoint( i, inMesh.getPoint( i ) );
    };
    ParallelFor< Devices::Host >::exec( GlobalIndexType{ 0 }, inPointsCount, copyPoint );
 
    // Decompose each cell
-   auto decomposeCell = [&] ( GlobalIndexType i ) mutable {
+   auto decomposeCell = [ & ]( GlobalIndexType i ) mutable
+   {
       const auto cell = inMesh.template getEntity< CellDimension >( i );
       const auto& indexPair = indices[ i ];
 
       // Lambda for adding new points
       GlobalIndexType setPointIndex = inPointsCount + indexPair.first;
-      auto addPoint = [&] ( const PointType& point ) {
+      auto addPoint = [ & ]( const PointType& point )
+      {
          const auto pointIdx = setPointIndex++;
          meshBuilder.setPoint( pointIdx, point );
          return pointIdx;
@@ -192,7 +205,8 @@ decomposeMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
 
       // Lambda for adding new cells
       GlobalIndexType setCellIndex = indexPair.second;
-      auto addCell = [&] ( GlobalIndexType v0, GlobalIndexType v1, GlobalIndexType v2, GlobalIndexType v3 ) {
+      auto addCell = [ & ]( GlobalIndexType v0, GlobalIndexType v1, GlobalIndexType v2, GlobalIndexType v3 )
+      {
          auto entitySeed = meshBuilder.getCellSeed( setCellIndex++ );
          entitySeed.setCornerId( 0, v0 );
          entitySeed.setCornerId( 1, v1 );
@@ -211,8 +225,8 @@ template< EntityDecomposerVersion DecomposerVersion,
           EntityDecomposerVersion SubDecomposerVersion,
           typename MeshConfig,
           std::enable_if_t< std::is_same< typename MeshConfig::CellTopology, Topologies::Polyhedron >::value, bool > = true >
-auto // returns Mesh
-getDecomposedMesh( const Mesh< MeshConfig, Devices::Host > & inMesh )
+auto  // returns Mesh
+getDecomposedMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
 {
    using TetrahedronMeshConfig = TetrahedronConfig< MeshConfig >;
    using TetrahedronMesh = Mesh< TetrahedronMeshConfig, Devices::Host >;
@@ -223,5 +237,5 @@ getDecomposedMesh( const Mesh< MeshConfig, Devices::Host > & inMesh )
    return outMesh;
 }
 
-} // namespace Meshes
-} // namespace noa::TNL
+}  // namespace Meshes
+}  // namespace noa::TNL

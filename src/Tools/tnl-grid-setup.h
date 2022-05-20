@@ -21,9 +21,9 @@ bool setupGrid( const Config::ParameterContainer& parameters )
       }
       IndexType sizeX = parameters.getParameter< int >( "size-x" );
 
-      typedef Meshes::Grid< 1, RealType, Devices::Host, IndexType > GridType;
-      typedef typename GridType::PointType PointType;
-      typedef typename GridType::CoordinatesType CoordinatesType;
+      using GridType = Meshes::Grid< 1, RealType, Devices::Host, IndexType >;
+      using PointType = typename GridType::PointType;
+      using CoordinatesType = typename GridType::CoordinatesType;
       GridType grid;
       grid.setDomain( PointType( originX ), PointType( proportionsX ) );
       grid.setDimensions( CoordinatesType( sizeX ) );
@@ -46,9 +46,9 @@ bool setupGrid( const Config::ParameterContainer& parameters )
       }
       IndexType sizeX = parameters.getParameter< int >( "size-x" );
       IndexType sizeY = parameters.getParameter< int >( "size-y" );
-      typedef Meshes::Grid< 2, RealType, Devices::Host, IndexType > GridType;
-      typedef typename GridType::PointType PointType;
-      typedef typename GridType::CoordinatesType CoordinatesType;
+      using GridType = Meshes::Grid< 2, RealType, Devices::Host, IndexType >;
+      using PointType = typename GridType::PointType;
+      using CoordinatesType = typename GridType::CoordinatesType;
       GridType grid;
       grid.setDomain( PointType( originX, originY ), PointType( proportionsX, proportionsY ) );
       grid.setDimensions( CoordinatesType( sizeX, sizeY ) );
@@ -86,9 +86,9 @@ bool setupGrid( const Config::ParameterContainer& parameters )
       IndexType sizeY = parameters.getParameter< int >( "size-y" );
       IndexType sizeZ = parameters.getParameter< int >( "size-z" );
 
-      typedef Meshes::Grid< 3, RealType, Devices::Host, IndexType > GridType;
-      typedef typename GridType::PointType PointType;
-      typedef typename GridType::CoordinatesType CoordinatesType;
+      using GridType = Meshes::Grid< 3, RealType, Devices::Host, IndexType >;
+      using PointType = typename GridType::PointType;
+      using CoordinatesType = typename GridType::CoordinatesType;
       GridType grid;
       grid.setDomain( PointType( originX, originY, originZ ), PointType( proportionsX, proportionsY, proportionsZ ) );
       grid.setDimensions( CoordinatesType( sizeX, sizeY, sizeZ ) );

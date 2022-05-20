@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <filesystem>
+#include <experimental/filesystem>
 
 #include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/PVTUWriter.h>
 
@@ -21,19 +21,18 @@ void
 PVTUWriter< Mesh >::writeMetadata( int cycle, double time )
 {
    if( ! vtkfileOpen )
-      throw std::logic_error("writeMetadata has to be called after writeEntities in case of the PVTU format, otherwise header attributes would be left unset." );
+      throw std::logic_error( "writeMetadata has to be called after writeEntities in case of the PVTU format, otherwise header "
+                              "attributes would be left unset." );
 
    if( cycle >= 0 || time >= 0 )
       str << "<FieldData>\n";
 
    if( cycle >= 0 ) {
-      str << "<DataArray type=\"Int32\" Name=\"CYCLE\" NumberOfTuples=\"1\" format=\"ascii\">"
-          << cycle << "</DataArray>\n";
+      str << "<DataArray type=\"Int32\" Name=\"CYCLE\" NumberOfTuples=\"1\" format=\"ascii\">" << cycle << "</DataArray>\n";
    }
    if( time >= 0 ) {
       str.precision( std::numeric_limits< double >::digits10 );
-      str << "<DataArray type=\"Float64\" Name=\"TIME\" NumberOfTuples=\"1\" format=\"ascii\">"
-          << time << "</DataArray>\n";
+      str << "<DataArray type=\"Float64\" Name=\"TIME\" NumberOfTuples=\"1\" format=\"ascii\">" << time << "</DataArray>\n";
    }
 
    if( cycle >= 0 || time >= 0 )
@@ -41,19 +40,18 @@ PVTUWriter< Mesh >::writeMetadata( int cycle, double time )
 }
 
 template< typename Mesh >
-   template< int EntityDimension >
+template< int EntityDimension >
 void
 PVTUWriter< Mesh >::writeEntities( const DistributedMeshes::DistributedMesh< Mesh >& distributedMesh )
 {
-   writeEntities< EntityDimension >( distributedMesh.getLocalMesh(), distributedMesh.getGhostLevels(), Mesh::Config::dualGraphMinCommonVertices );
+   writeEntities< EntityDimension >(
+      distributedMesh.getLocalMesh(), distributedMesh.getGhostLevels(), Mesh::Config::dualGraphMinCommonVertices );
 }
 
 template< typename Mesh >
-   template< int EntityDimension >
+template< int EntityDimension >
 void
-PVTUWriter< Mesh >::writeEntities( const Mesh& mesh,
-                                   const unsigned GhostLevel,
-                                   const unsigned MinCommonVertices )
+PVTUWriter< Mesh >::writeEntities( const Mesh& mesh, const unsigned GhostLevel, const unsigned MinCommonVertices )
 {
    if( ! vtkfileOpen )
       writeHeader( GhostLevel, MinCommonVertices );
@@ -63,37 +61,34 @@ PVTUWriter< Mesh >::writeEntities( const Mesh& mesh,
 }
 
 template< typename Mesh >
-   template< typename ValueType >
+template< typename ValueType >
 void
-PVTUWriter< Mesh >::writePPointData( const std::string& name,
-                                     const int numberOfComponents )
+PVTUWriter< Mesh >::writePPointData( const std::string& name, const int numberOfComponents )
 {
    if( ! vtkfileOpen )
-      throw std::logic_error("The VTKFile has not been opened yet - call writeEntities first.");
+      throw std::logic_error( "The VTKFile has not been opened yet - call writeEntities first." );
    openPPointData();
    writePDataArray< ValueType >( name, numberOfComponents );
 }
 
 template< typename Mesh >
-   template< typename ValueType >
+template< typename ValueType >
 void
-PVTUWriter< Mesh >::writePCellData( const std::string& name,
-                                    const int numberOfComponents )
+PVTUWriter< Mesh >::writePCellData( const std::string& name, const int numberOfComponents )
 {
    if( ! vtkfileOpen )
-      throw std::logic_error("The VTKFile has not been opened yet - call writeEntities first.");
+      throw std::logic_error( "The VTKFile has not been opened yet - call writeEntities first." );
    openPCellData();
    writePDataArray< ValueType >( name, numberOfComponents );
 }
 
 template< typename Mesh >
-   template< typename ValueType >
+template< typename ValueType >
 void
-PVTUWriter< Mesh >::writePDataArray( const std::string& name,
-                                     const int numberOfComponents )
+PVTUWriter< Mesh >::writePDataArray( const std::string& name, const int numberOfComponents )
 {
    if( numberOfComponents != 0 && numberOfComponents != 1 && numberOfComponents != 3 )
-      throw std::logic_error("Unsupported numberOfComponents parameter: " + std::to_string(numberOfComponents));
+      throw std::logic_error( "Unsupported numberOfComponents parameter: " + std::to_string( numberOfComponents ) );
 
    str << "<PDataArray type=\"" << VTK::getTypeName( ValueType{} ) << "\" ";
    str << "Name=\"" << name << "\" ";
@@ -102,17 +97,16 @@ PVTUWriter< Mesh >::writePDataArray( const std::string& name,
 
 template< typename Mesh >
 std::string
-PVTUWriter< Mesh >::addPiece( const std::string& mainFileName,
-                              const unsigned subdomainIndex )
+PVTUWriter< Mesh >::addPiece( const std::string& mainFileName, const unsigned subdomainIndex )
 {
-   namespace fs = std::filesystem;
+   namespace fs = std::experimental::filesystem;
 
    // get the basename of the main file (filename without extension)
    const fs::path mainPath = mainFileName;
    const fs::path basename = mainPath.stem();
    if( mainPath.extension() != ".pvtu" )
-      throw std::logic_error("The mainFileName parameter must be the name of the "
-                             ".pvtu file (i.e., it must have the .pvtu suffix).");
+      throw std::logic_error( "The mainFileName parameter must be the name of the "
+                              ".pvtu file (i.e., it must have the .pvtu suffix)." );
 
    // close PCellData and PPointData sections
    closePCellData();
@@ -123,7 +117,7 @@ PVTUWriter< Mesh >::addPiece( const std::string& mainFileName,
    fs::create_directory( subdirectory );
 
    // write <Piece> tag
-   const std::string subfile = "subdomain." + std::to_string(subdomainIndex) + ".vtu";
+   const std::string subfile = "subdomain." + std::to_string( subdomainIndex ) + ".vtu";
    const std::string source = basename / subfile;
    str << "<Piece Source=\"" << source << "\"/>\n";
 
@@ -133,8 +127,7 @@ PVTUWriter< Mesh >::addPiece( const std::string& mainFileName,
 
 template< typename Mesh >
 std::string
-PVTUWriter< Mesh >::addPiece( const std::string& mainFileName,
-                              const MPI_Comm communicator )
+PVTUWriter< Mesh >::addPiece( const std::string& mainFileName, const MPI_Comm communicator )
 {
    std::string source;
    for( int i = 0; i < MPI::GetSize( communicator ); i++ ) {
@@ -147,8 +140,7 @@ PVTUWriter< Mesh >::addPiece( const std::string& mainFileName,
 
 template< typename Mesh >
 void
-PVTUWriter< Mesh >::writeHeader( const unsigned GhostLevel,
-                                 const unsigned MinCommonVertices )
+PVTUWriter< Mesh >::writeHeader( const unsigned GhostLevel, const unsigned MinCommonVertices )
 {
    str << "<?xml version=\"1.0\"?>\n";
    str << "<VTKFile type=\"PUnstructuredGrid\" version=\"1.0\"";
@@ -201,7 +193,7 @@ void
 PVTUWriter< Mesh >::openPCellData()
 {
    if( pCellDataClosed )
-      throw std::logic_error("The <PCellData> tag has already been closed.");
+      throw std::logic_error( "The <PCellData> tag has already been closed." );
    closePPointData();
    if( ! pCellDataOpen ) {
       str << "<PCellData>\n";
@@ -225,7 +217,7 @@ void
 PVTUWriter< Mesh >::openPPointData()
 {
    if( pPointDataClosed )
-      throw std::logic_error("The <PPointData> tag has already been closed.");
+      throw std::logic_error( "The <PPointData> tag has already been closed." );
    closePCellData();
    if( ! pPointDataOpen ) {
       str << "<PPointData>\n";
@@ -244,6 +236,6 @@ PVTUWriter< Mesh >::closePPointData()
    }
 }
 
-} // namespace Writers
-} // namespace Meshes
-} // namespace noa::TNL
+}  // namespace Writers
+}  // namespace Meshes
+}  // namespace noa::TNL

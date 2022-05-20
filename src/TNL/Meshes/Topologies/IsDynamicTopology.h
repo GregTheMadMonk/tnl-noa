@@ -15,13 +15,14 @@ namespace Meshes {
 namespace Topologies {
 
 /**
- * \brief Type trait for checking if Topology has at least one missing Subtopology< Topology, D > >::count for all D from Topology::dimension - 1 to 0
+ * \brief Type trait for checking if Topology has at least one missing Subtopology< Topology, D > >::count for all D from
+ * Topology::dimension - 1 to 0
  */
 template< typename Topology, int D = Topology::dimension >
 struct IsDynamicTopology
 {
-   static constexpr bool value = ! HasCountMember< Subtopology< Topology, D - 1 > >::value ||
-                                   IsDynamicTopology< Topology, D - 1 >::value;
+   static constexpr bool value =
+      ! HasCountMember< Subtopology< Topology, D - 1 > >::value || IsDynamicTopology< Topology, D - 1 >::value;
 };
 
 /**
@@ -40,6 +41,6 @@ struct IsDynamicTopology< Topology, 1 >
    static constexpr bool value = ! HasCountMember< Subtopology< Topology, 0 > >::value;
 };
 
-} // namespace Topologies
-} // namespace Meshes
-} // namespace noa::TNL
+}  // namespace Topologies
+}  // namespace Meshes
+}  // namespace noa::TNL

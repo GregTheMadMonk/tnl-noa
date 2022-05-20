@@ -157,7 +157,7 @@ namespace INI
         ss << v;
         ss >> out;
         if (ss.fail())
-            throw std::runtime_error("Value '" + v + "' could not be converted to type " + TNL::getType<T>().getString() + ".");
+            throw std::runtime_error("Value '" + v + "' could not be converted to type " + TNL::getType<T>() + ".");
         return out;
     }
     /// Special case for string

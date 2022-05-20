@@ -1,4 +1,4 @@
-set( CPP_TESTS MPIUtilsTest )
+set( CPP_TESTS MPICommTest MPIUtilsTest )
 
 if( ${BUILD_MPI} )
 foreach( target IN ITEMS ${CPP_TESTS} )

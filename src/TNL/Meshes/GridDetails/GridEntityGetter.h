@@ -9,18 +9,15 @@
 namespace noa::TNL {
 namespace Meshes {
 
-template< typename Grid,
-          typename GridEntity,
-          int EntityDimension = GridEntity::getEntityDimension() >
+template< typename Grid, typename GridEntity, int EntityDimension = GridEntity::getEntityDimension() >
 class GridEntityGetter
 {
-   //static_assert( false, "Wrong mesh type or entity topology." );
+   // static_assert( false, "Wrong mesh type or entity topology." );
 };
 
 /***
  * The main code is in template specializations in GridEntityIndexer.h
  */
 
-} // namespace Meshes
-} // namespace noa::TNL
-
+}  // namespace Meshes
+}  // namespace noa::TNL

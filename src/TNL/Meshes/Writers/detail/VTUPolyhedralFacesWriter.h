@@ -39,7 +39,8 @@ struct VTUPolyhedralFacesWriter
          const IndexType num_faces = mesh.template getSubentitiesCount< M::getMeshDimension(), M::getMeshDimension() - 1 >( c );
          faces.push_back( num_faces );
          for( IndexType f = 0; f < num_faces; f++ ) {
-            const auto& face = mesh.template getEntity< M::getMeshDimension() - 1 >( mesh.template getSubentityIndex< M::getMeshDimension(), M::getMeshDimension() - 1 >( c, f ) );
+            const auto& face = mesh.template getEntity< M::getMeshDimension() - 1 >(
+               mesh.template getSubentityIndex< M::getMeshDimension(), M::getMeshDimension() - 1 >( c, f ) );
             const IndexType num_vertices = face.template getSubentitiesCount< 0 >();
             faces.push_back( num_vertices );
             for( IndexType v = 0; v < num_vertices; v++ ) {
@@ -61,18 +62,16 @@ struct VTUPolyhedralFacesWriter
 };
 
 // specialization for grids
-template< int Dimension,
-          typename MeshReal,
-          typename Device,
-          typename MeshIndex >
+template< int Dimension, typename MeshReal, typename Device, typename MeshIndex >
 struct VTUPolyhedralFacesWriter< Meshes::Grid< Dimension, MeshReal, Device, MeshIndex > >
 {
    template< typename W, typename M >
-   static void exec( W& writer, const M& mesh )
+   static void
+   exec( W& writer, const M& mesh )
    {}
 };
 
-} // namespace detail
-} // namespace Writers
-} // namespace Meshes
-} // namespace noa::TNL
+}  // namespace detail
+}  // namespace Writers
+}  // namespace Meshes
+}  // namespace noa::TNL

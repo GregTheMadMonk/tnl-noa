@@ -13,9 +13,9 @@
 namespace noa::TNL {
 namespace Matrices {
 
-template< typename Matrix,
-          typename PermutationArray >
-void permuteMatrixRows( Matrix& matrix, const PermutationArray& perm )
+template< typename Matrix, typename PermutationArray >
+void
+permuteMatrixRows( Matrix& matrix, const PermutationArray& perm )
 {
    static_assert( std::is_same< typename Matrix::DeviceType, typename PermutationArray::DeviceType >::value,
                   "The matrix and permutation vector must be stored on the same device." );
@@ -24,7 +24,7 @@ void permuteMatrixRows( Matrix& matrix, const PermutationArray& perm )
    TNL_ASSERT_EQ( matrix.getRows(), perm.getSize(), "permutation size does not match the matrix size" );
 
    // FIXME: getConstView does not work
-//   const auto matrix_view = matrix.getConstView();
+   //   const auto matrix_view = matrix.getConstView();
    const auto matrix_view = matrix.getView();
    const auto perm_view = perm.getConstView();
 
@@ -36,7 +36,7 @@ void permuteMatrixRows( Matrix& matrix, const PermutationArray& perm )
    typename Matrix::RowsCapacitiesType capacities( matrix.getRows() );
    auto capacities_view = capacities.getView();
 
-   auto kernel_capacities = [=] __cuda_callable__ ( IndexType i ) mutable
+   auto kernel_capacities = [ = ] __cuda_callable__( IndexType i ) mutable
    {
       capacities_view[ i ] = matrix_view.getRowCapacity( perm_view[ i ] );
    };
@@ -45,7 +45,7 @@ void permuteMatrixRows( Matrix& matrix, const PermutationArray& perm )
    matrixCopy.setRowCapacities( capacities );
    auto copy_view = matrixCopy.getView();
 
-   auto kernel = [=] __cuda_callable__ ( IndexType i ) mutable
+   auto kernel = [ = ] __cuda_callable__( IndexType i ) mutable
    {
       const auto srcRow = matrix_view.getRow( perm_view[ i ] );
       auto destRow = copy_view.getRow( i );
@@ -61,9 +61,9 @@ void permuteMatrixRows( Matrix& matrix, const PermutationArray& perm )
    matrix = matrixCopy;
 }
 
-template< typename Matrix,
-          typename PermutationArray >
-void permuteMatrixColumns( Matrix& matrix, const PermutationArray& iperm )
+template< typename Matrix, typename PermutationArray >
+void
+permuteMatrixColumns( Matrix& matrix, const PermutationArray& iperm )
 {
    static_assert( std::is_same< typename Matrix::DeviceType, typename PermutationArray::DeviceType >::value,
                   "The matrix and permutation vector must be stored on the same device." );
@@ -73,7 +73,7 @@ void permuteMatrixColumns( Matrix& matrix, const PermutationArray& iperm )
    auto matrix_view = matrix.getView();
    const auto iperm_view = iperm.getConstView();
 
-   auto kernel = [=] __cuda_callable__ ( IndexType i ) mutable
+   auto kernel = [ = ] __cuda_callable__( IndexType i ) mutable
    {
       auto row = matrix_view.getRow( i );
       for( IndexType c = 0; c < row.getSize(); c++ ) {
@@ -89,5 +89,5 @@ void permuteMatrixColumns( Matrix& matrix, const PermutationArray& iperm )
    Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, matrix.getRows(), kernel );
 }
 
-} // namespace Matrices
-} // namespace noa::TNL
+}  // namespace Matrices
+}  // namespace noa::TNL

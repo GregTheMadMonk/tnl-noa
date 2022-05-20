@@ -21,16 +21,15 @@ namespace PDE {
 template< typename Problem >
 class SemiImplicitTimeStepper
 {
-   public:
-
-   typedef Problem ProblemType;
-   typedef typename Problem::RealType RealType;
-   typedef typename Problem::DeviceType DeviceType;
-   typedef typename Problem::IndexType IndexType;
-   typedef typename Problem::MeshType MeshType;
-   typedef typename ProblemType::DofVectorType DofVectorType;
-   typedef Pointers::SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
-   typedef IterativeSolverMonitor< RealType, IndexType > SolverMonitorType;
+public:
+   using ProblemType = Problem;
+   using RealType = typename Problem::RealType;
+   using DeviceType = typename Problem::DeviceType;
+   using IndexType = typename Problem::IndexType;
+   using MeshType = typename Problem::MeshType;
+   using DofVectorType = typename ProblemType::DofVectorType;
+   using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
+   using SolverMonitorType = IterativeSolverMonitor< RealType, IndexType >;
 
    using MatrixType = typename ProblemType::MatrixType;
    using MatrixPointer = std::shared_ptr< MatrixType >;
@@ -39,32 +38,37 @@ class SemiImplicitTimeStepper
    using PreconditionerType = typename LinearSolverType::PreconditionerType;
    using PreconditionerPointer = std::shared_ptr< PreconditionerType >;
 
-   static void configSetup( Config::ConfigDescription& config,
-                            const String& prefix = "" );
+   static void
+   configSetup( Config::ConfigDescription& config, const String& prefix = "" );
 
-   bool setup( const Config::ParameterContainer& parameters,
-              const String& prefix = "" );
+   bool
+   init();  // const MeshType& mesh );
 
-   bool init( const MeshType& mesh );
+   bool
+   init( const MeshType& mesh );
 
-   void setProblem( ProblemType& problem );
+   void
+   setProblem( ProblemType& problem );
 
-   ProblemType* getProblem() const;
+   ProblemType*
+   getProblem() const;
 
-   void setSolverMonitor( SolverMonitorType& solverMonitor );
+   void
+   setSolverMonitor( SolverMonitorType& solverMonitor );
 
-   bool setTimeStep( const RealType& timeStep );
+   bool
+   setTimeStep( const RealType& timeStep );
 
-   const RealType& getTimeStep() const;
+   const RealType&
+   getTimeStep() const;
 
-   bool solve( const RealType& time,
-               const RealType& stopTime,
-               DofVectorPointer& dofVectorPointer );
+   bool
+   solve( const RealType& time, const RealType& stopTime, DofVectorPointer& dofVectorPointer );
 
-   bool writeEpilog( Logger& logger ) const;
+   bool
+   writeEpilog( Logger& logger ) const;
 
-   protected:
-
+protected:
    // raw pointers with setters
    Problem* problem = nullptr;
    SolverMonitorType* solverMonitor = nullptr;
@@ -84,8 +88,8 @@ class SemiImplicitTimeStepper
    long long int allIterations = 0;
 };
 
-} // namespace PDE
-} // namespace Solvers
-} // namespace noa::TNL
+}  // namespace PDE
+}  // namespace Solvers
+}  // namespace noa::TNL
 
 #include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/SemiImplicitTimeStepper.hpp>

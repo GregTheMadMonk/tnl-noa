@@ -9,30 +9,24 @@
 namespace noa::TNL {
 namespace Meshes {
 
-
-template< typename Grid,
-          int EntityDimension,
-          typename EntityOrientation_,
-          typename EntityProportions_ >
+template< typename Grid, int EntityDimension, typename EntityOrientation_, typename EntityProportions_ >
 class GridEntityTopology
 {
-   public:
- 
-      typedef Grid GridType;
- 
-      static constexpr int meshDimension = GridType::getMeshDimension();
- 
-      static constexpr int entityDimension = EntityDimension;
- 
-      typedef EntityOrientation_ EntityOrientation;
- 
-      typedef EntityProportions_ EntityProportions;
- 
-      // TODO: restore when CUDA allows it
-   //static_assert( meshDimension == EntityOrientation_::size,
-   //               "Entity orientation is not a proper static multiindex." );
+public:
+   using GridType = Grid;
+
+   static constexpr int meshDimension = GridType::getMeshDimension();
+
+   static constexpr int entityDimension = EntityDimension;
+
+   using EntityOrientation = EntityOrientation_;
+
+   using EntityProportions = EntityProportions_;
+
+   // TODO: restore when CUDA allows it
+   // static_assert( meshDimension == EntityOrientation_::size,
+   //                "Entity orientation is not a proper static multiindex." );
 };
 
-} // namespace Meshes
-} // namespace noa::TNL
-
+}  // namespace Meshes
+}  // namespace noa::TNL

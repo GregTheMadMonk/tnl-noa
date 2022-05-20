@@ -14,8 +14,7 @@
 namespace noa::TNL {
 namespace Exceptions {
 
-class FileSerializationError
-   : public std::runtime_error
+class FileSerializationError : public std::runtime_error
 {
 public:
    FileSerializationError( const std::string& fileName, const std::string& details )
@@ -23,5 +22,5 @@ public:
    {}
 };
 
-} // namespace Exceptions
-} // namespace noa::TNL
+}  // namespace Exceptions
+}  // namespace noa::TNL

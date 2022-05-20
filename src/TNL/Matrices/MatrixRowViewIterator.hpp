@@ -14,28 +14,22 @@ namespace Matrices {
 
 template< typename RowView >
 __cuda_callable__
-MatrixRowViewIterator< RowView >::
-MatrixRowViewIterator( RowViewType& rowView,
-                             const IndexType& localIdx )
+MatrixRowViewIterator< RowView >::MatrixRowViewIterator( RowViewType& rowView, const IndexType& localIdx )
 : rowView( rowView ), localIdx( localIdx )
+{}
+
+template< typename RowView >
+__cuda_callable__
+bool
+MatrixRowViewIterator< RowView >::operator==( const MatrixRowViewIterator& other ) const
 {
+   return &this->rowView == &other.rowView && localIdx == other.localIdx;
 }
 
 template< typename RowView >
-__cuda_callable__ bool
-MatrixRowViewIterator< RowView >::
-operator==( const MatrixRowViewIterator& other ) const
-{
-   if( &this->rowView == &other.rowView &&
-       localIdx == other.localIdx )
-      return true;
-   return false;
-}
-
-template< typename RowView >
-__cuda_callable__ bool
-MatrixRowViewIterator< RowView >::
-operator!=( const MatrixRowViewIterator& other ) const
+__cuda_callable__
+bool
+MatrixRowViewIterator< RowView >::operator!=( const MatrixRowViewIterator& other ) const
 {
    return ! ( other == *this );
 }
@@ -43,49 +37,44 @@ operator!=( const MatrixRowViewIterator& other ) const
 template< typename RowView >
 __cuda_callable__
 MatrixRowViewIterator< RowView >&
-MatrixRowViewIterator< RowView >::
-operator++()
+MatrixRowViewIterator< RowView >::operator++()
 {
    if( localIdx < rowView.getSize() )
-      localIdx ++;
+      localIdx++;
    return *this;
 }
 
 template< typename RowView >
 __cuda_callable__
 MatrixRowViewIterator< RowView >&
-MatrixRowViewIterator< RowView >::
-operator--()
+MatrixRowViewIterator< RowView >::operator--()
 {
    if( localIdx > 0 )
-      localIdx --;
+      localIdx--;
    return *this;
 }
 
 template< typename RowView >
-__cuda_callable__ auto
-MatrixRowViewIterator< RowView >::
-operator*() -> MatrixElementType
+__cuda_callable__
+auto
+MatrixRowViewIterator< RowView >::operator*() -> MatrixElementType
 {
-   return MatrixElementType(
-      this->rowView.getValue( this->localIdx ),
-      this->rowView.getRowIndex(),
-      this->rowView.getColumnIndex( this->localIdx ),
-      this->localIdx );
+   return MatrixElementType( this->rowView.getValue( this->localIdx ),
+                             this->rowView.getRowIndex(),
+                             this->rowView.getColumnIndex( this->localIdx ),
+                             this->localIdx );
 }
 
 template< typename RowView >
-__cuda_callable__ auto
-MatrixRowViewIterator< RowView >::
-operator*() const -> const MatrixElementType
+__cuda_callable__
+auto
+MatrixRowViewIterator< RowView >::operator*() const -> const MatrixElementType
 {
-   return MatrixElementType(
-      this->rowView.getValue( this->localIdx ),
-      this->rowView.getRowIndex(),
-      this->rowView.getColumnIndex( this->localIdx ),
-      this->localIdx );
+   return MatrixElementType( this->rowView.getValue( this->localIdx ),
+                             this->rowView.getRowIndex(),
+                             this->rowView.getColumnIndex( this->localIdx ),
+                             this->localIdx );
 }
 
-
-   } // namespace Matrices
-} // namespace noa::TNL
+}  // namespace Matrices
+}  // namespace noa::TNL

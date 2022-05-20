@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include <filesystem>
+#include <experimental/filesystem>
 
-#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Wrappers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Comm.h>
 #include <noa/3rdparty/tnl-noa/src/TNL/MPI/Utils.h>
 #include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Readers/VTIReader.h>
 #include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/layers/EntityTags/Traits.h>
@@ -19,20 +19,20 @@ namespace noa::TNL {
 namespace Meshes {
 namespace Readers {
 
-class PVTIReader
-: public XMLVTK
+class PVTIReader : public XMLVTK
 {
    std::string
-   getSourcePath( std::string source )
+   getSourcePath( const std::string& source )
    {
-      namespace fs = std::filesystem;
-      return fs::path(fileName).parent_path() / source;
+      namespace fs = std::experimental::filesystem;
+      return fs::path( fileName ).parent_path() / source;
    }
 
 #ifdef HAVE_TINYXML2
-   void readParallelImageData()
+   void
+   readParallelImageData()
    {
-      using namespace noa::tinyxml2;
+      using namespace tinyxml2;
 
       // read the required attributes
       const std::string extent = getAttributeString( datasetElement, "WholeExtent" );
@@ -44,7 +44,7 @@ class PVTIReader
          std::stringstream ss( extent );
          gridExtent.resize( 6, 0 );
          for( int i = 0; i < 6; i++ ) {
-            ss >> gridExtent[i];
+            ss >> gridExtent[ i ];
             // check conversion error
             if( ! ss.good() )
                throw MeshReaderError( "VTIReader", "invalid extent: not a number: " + extent );
@@ -61,7 +61,7 @@ class PVTIReader
          std::stringstream ss( origin );
          gridOrigin.resize( 3 );
          for( int i = 0; i < 3; i++ ) {
-            ss >> gridOrigin[i];
+            ss >> gridOrigin[ i ];
             // check conversion error
             if( ! ss.good() )
                throw MeshReaderError( "VTIReader", "invalid origin: not a number: " + origin );
@@ -78,12 +78,12 @@ class PVTIReader
          std::stringstream ss( spacing );
          gridSpacing.resize( 3 );
          for( int i = 0; i < 3; i++ ) {
-            ss >> gridSpacing[i];
+            ss >> gridSpacing[ i ];
             // check conversion error
             if( ! ss.good() )
                throw MeshReaderError( "VTIReader", "invalid spacing: not a number: " + spacing );
             // check negative numbers
-            if( gridSpacing[i] < 0 )
+            if( gridSpacing[ i ] < 0 )
                throw MeshReaderError( "VTIReader", "invalid spacing: negative number: " + spacing );
          }
          // check remaining characters
@@ -96,7 +96,7 @@ class PVTIReader
       // determine the grid dimension
       int dim = 0;
       for( int i = 0; i < 3; i++ )
-         if( gridSpacing[i] > 0 )
+         if( gridSpacing[ i ] > 0 )
             dim++;
          else
             break;
@@ -116,7 +116,6 @@ class PVTIReader
       // set the index type
       connectivityType = headerType;
 
-
       // read GhostLevel attribute
       ghostLevels = getAttributeInteger( datasetElement, "GhostLevel" );
       // read MinCommonVertices attribute (TNL-specific, optional)
@@ -124,9 +123,9 @@ class PVTIReader
 
       // read pieces info
       const XMLElement* piece = getChildSafe( datasetElement, "Piece" );
-      while( piece ) {
+      while( piece != nullptr ) {
          const std::string source = getAttributeString( piece, "Source" );
-         if( source != "" ) {
+         if( ! source.empty() ) {
             pieceSources.push_back( getSourcePath( source ) );
          }
          else
@@ -134,17 +133,18 @@ class PVTIReader
          // find next
          piece = piece->NextSiblingElement( "Piece" );
       }
-      if( pieceSources.size() == 0 )
+      if( pieceSources.empty() )
          throw MeshReaderError( "PVTIReader", "the file does not contain any <Piece> element." );
 
       // check that the number of pieces matches the number of MPI ranks
-      const int nproc = MPI::GetSize( communicator );
+      const int nproc = communicator.size();
       if( (int) pieceSources.size() != nproc )
-         throw MeshReaderError( "PVTIReader", "the number of subdomains does not match the number of MPI ranks ("
-                                              + std::to_string(pieceSources.size()) + " vs " + std::to_string(nproc) + ")." );
+         throw MeshReaderError( "PVTIReader",
+                                "the number of subdomains does not match the number of MPI ranks ("
+                                   + std::to_string( pieceSources.size() ) + " vs " + std::to_string( nproc ) + ")." );
 
       // read the local piece source
-      const int rank = MPI::GetRank( communicator );
+      const int rank = communicator.rank();
       localReader.setFileName( pieceSources[ rank ] );
       localReader.detectMesh();
 
@@ -163,22 +163,29 @@ class PVTIReader
       // TODO: assert that all MPI ranks have the same attributes
 
       // TODO
-//      if( ghostLevels > 0 ) {
-//         // load the vtkGhostType arrays from PointData and CellData
-//         pointTags = localReader.readPointData( VTK::ghostArrayName() );
-//         cellTags = localReader.readCellData( VTK::ghostArrayName() );
-//      }
+      // if( ghostLevels > 0 ) {
+      //    // load the vtkGhostType arrays from PointData and CellData
+      //    pointTags = localReader.readPointData( VTK::ghostArrayName() );
+      //    cellTags = localReader.readCellData( VTK::ghostArrayName() );
+      // }
    }
 #endif
 
 public:
    PVTIReader() = default;
 
-   PVTIReader( const std::string& fileName, MPI_Comm communicator = MPI_COMM_WORLD )
-   : XMLVTK( fileName ), communicator( communicator )
+   PVTIReader( const std::string& fileName, MPI::Comm communicator = MPI_COMM_WORLD )
+   : XMLVTK( fileName ), communicator( std::move( communicator ) )
    {}
 
-   virtual void detectMesh() override
+   void
+   setCommunicator( const MPI::Comm& communicator )
+   {
+      this->communicator = communicator;
+   }
+
+   void
+   detectMesh() override
    {
 #ifdef HAVE_TINYXML2
       reset();
@@ -194,7 +201,8 @@ public:
       if( fileType == "PImageData" )
          readParallelImageData();
       else
-         throw MeshReaderError( "PVTIReader", "the reader cannot read data of the type " + fileType + ". Use a different reader if possible." );
+         throw MeshReaderError(
+            "PVTIReader", "the reader cannot read data of the type " + fileType + ". Use a different reader if possible." );
 
       // indicate success by setting the mesh type
       meshType = "Meshes::DistributedGrid";
@@ -208,7 +216,7 @@ public:
    loadMesh( MeshType& mesh )
    {
       // check that detectMesh has been called
-      if( meshType == "" )
+      if( meshType.empty() )
          detectMesh();
 
       // check if we have a distributed grid
@@ -219,7 +227,7 @@ public:
       mesh.setCommunicator( communicator );
 
       // TODO: set the domain decomposition
-//      mesh.setDomainDecomposition( decomposition );
+      // mesh.setDomainDecomposition( decomposition );
 
       // load the global grid (meshType must be faked before calling loadMesh)
       typename MeshType::GridType globalGrid;
@@ -237,42 +245,48 @@ public:
       mesh.setGhostLevels( ghostLevels );
       // check MinCommonVertices
       // TODO
-//      if( minCommonVertices > 0 && minCommonVertices != MeshType::Config::dualGraphMinCommonVertices )
-//         std::cerr << "WARNING: the mesh was decomposed with different MinCommonVertices value than the value set in the mesh configuration "
-//                      "(" << minCommonVertices << " vs " << MeshType::Config::dualGraphMinCommonVertices << ")." << std::endl;
+      // if( minCommonVertices > 0 && minCommonVertices != MeshType::Config::dualGraphMinCommonVertices )
+      //    std::cerr << "WARNING: the mesh was decomposed with different MinCommonVertices value than the value set in the "
+      //              << "mesh configuration (" << minCommonVertices << " vs " << MeshType::Config::dualGraphMinCommonVertices
+      //              << ")." << std::endl;
 
       // load the local mesh and check with the subdomain
       typename MeshType::GridType localMesh;
       localReader.loadMesh( localMesh );
       if( localMesh != mesh.getLocalMesh() ) {
          std::stringstream msg;
-         msg << "The grid from the " << MPI::GetRank( communicator ) << "-th subdomain .vti file does not match the local grid of the DistributedGrid."
-             << "\n- Grid from the .vti file:\n" << localMesh
-             << "\n- Local grid from the DistributedGrid:\n" << mesh.getLocalMesh();
+         msg << "The grid from the " << communicator.rank()
+             << "-th subdomain .vti file does not match the local grid of the DistributedGrid."
+             << "\n- Grid from the .vti file:\n"
+             << localMesh << "\n- Local grid from the DistributedGrid:\n"
+             << mesh.getLocalMesh();
          throw MeshReaderError( "PVTIReader", msg.str() );
       }
 
-//      using Index = typename MeshType::IndexType;
-//      const Index pointsCount = mesh.getLocalMesh().template getEntitiesCount< 0 >();
-//      const Index cellsCount = mesh.getLocalMesh().template getEntitiesCount< MeshType::getMeshDimension() >();
+      // using Index = typename MeshType::IndexType;
+      // const Index pointsCount = mesh.getLocalMesh().template getEntitiesCount< 0 >();
+      // const Index cellsCount = mesh.getLocalMesh().template getEntitiesCount< MeshType::getMeshDimension() >();
 
-/*    // TODO
+      // TODO
+      /*
       if( ghostLevels > 0 ) {
          // assign point ghost tags
-         using std::get;
-         const std::vector<std::uint8_t> pointTags = get< std::vector<std::uint8_t> >( this->pointTags );
+         using mpark::get;
+         const std::vector< std::uint8_t > pointTags = get< std::vector< std::uint8_t > >( this->pointTags );
          if( (Index) pointTags.size() != pointsCount )
-            throw MeshReaderError( "PVTIReader", "the vtkGhostType array in PointData has wrong size: " + std::to_string(pointTags.size()) );
+            throw MeshReaderError(
+               "PVTIReader", "the vtkGhostType array in PointData has wrong size: " + std::to_string( pointTags.size() ) );
          mesh.vtkPointGhostTypes() = pointTags;
          for( Index i = 0; i < pointsCount; i++ )
             if( pointTags[ i ] & (std::uint8_t) VTK::PointGhostTypes::DUPLICATEPOINT )
                localMesh.template addEntityTag< 0 >( i, EntityTags::GhostEntity );
 
          // assign cell ghost tags
-         using std::get;
-         const std::vector<std::uint8_t> cellTags = get< std::vector<std::uint8_t> >( this->cellTags );
+         using mpark::get;
+         const std::vector< std::uint8_t > cellTags = get< std::vector< std::uint8_t > >( this->cellTags );
          if( (Index) cellTags.size() != cellsCount )
-            throw MeshReaderError( "PVTIReader", "the vtkGhostType array in CellData has wrong size: " + std::to_string(cellTags.size()) );
+            throw MeshReaderError( "PVTIReader",
+                                   "the vtkGhostType array in CellData has wrong size: " + std::to_string( cellTags.size() ) );
          mesh.vtkCellGhostTypes() = cellTags;
          for( Index i = 0; i < cellsCount; i++ ) {
             if( cellTags[ i ] & (std::uint8_t) VTK::CellGhostTypes::DUPLICATECELL )
@@ -282,7 +296,7 @@ public:
          // reset arrays since they are not needed anymore
          this->pointTags = this->cellTags = {};
       }
-*/
+      */
    }
 
    template< typename MeshType >
@@ -292,19 +306,20 @@ public:
       throw MeshReaderError( "MeshReader", "the PVTI reader cannot be used to load a distributed unstructured mesh." );
    }
 
-   virtual VariantVector
+   VariantVector
    readPointData( std::string arrayName ) override
    {
       return localReader.readPointData( arrayName );
    }
 
-   virtual VariantVector
+   VariantVector
    readCellData( std::string arrayName ) override
    {
       return localReader.readCellData( arrayName );
    }
 
-   virtual void reset() override
+   void
+   reset() override
    {
       resetBase();
       ghostLevels = 0;
@@ -314,11 +329,11 @@ public:
    }
 
 protected:
-   MPI_Comm communicator;
+   MPI::Comm communicator;
 
    int ghostLevels = 0;
    int minCommonVertices = 0;
-   std::vector<std::string> pieceSources;
+   std::vector< std::string > pieceSources;
 
    VTIReader localReader;
 
@@ -326,6 +341,6 @@ protected:
    VariantVector pointTags, cellTags;
 };
 
-} // namespace Readers
-} // namespace Meshes
-} // namespace noa::TNL
+}  // namespace Readers
+}  // namespace Meshes
+}  // namespace noa::TNL

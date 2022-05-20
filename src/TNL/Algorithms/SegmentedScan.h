@@ -58,8 +58,7 @@ namespace Algorithms {
  *
  * **Note: Segmented scan is not implemented for CUDA yet.**
  */
-template< typename Device,
-          detail::ScanType Type = detail::ScanType::Inclusive >
+template< typename Device, detail::ScanType Type = detail::ScanType::Inclusive >
 struct SegmentedScan;
 
 template< detail::ScanType Type >
@@ -95,9 +94,7 @@ struct SegmentedScan< Devices::Sequential, Type >
     *
     * \include SegmentedScanExample.out
     */
-   template< typename Vector,
-             typename Reduction,
-             typename Flags >
+   template< typename Vector, typename Reduction, typename Flags >
    static void
    perform( Vector& v,
             Flags& flags,
@@ -140,9 +137,7 @@ struct SegmentedScan< Devices::Host, Type >
     *
     * \include SegmentedScanExample.out
     */
-   template< typename Vector,
-             typename Reduction,
-             typename Flags >
+   template< typename Vector, typename Reduction, typename Flags >
    static void
    perform( Vector& v,
             Flags& flags,
@@ -187,9 +182,7 @@ struct SegmentedScan< Devices::Cuda, Type >
     *
     * **Note: Segmented scan is not implemented for CUDA yet.**
     */
-   template< typename Vector,
-             typename Reduction,
-             typename Flags >
+   template< typename Vector, typename Reduction, typename Flags >
    static void
    perform( Vector& v,
             Flags& flags,
@@ -199,7 +192,7 @@ struct SegmentedScan< Devices::Cuda, Type >
             const typename Vector::ValueType identity );
 };
 
-} // namespace Algorithms
-} // namespace noa::TNL
+}  // namespace Algorithms
+}  // namespace noa::TNL
 
 #include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/SegmentedScan.hpp>

@@ -10,16 +10,18 @@
 
 #include <future>
 // 3rd-party async library providing a thread-pool
-#include <noa/3rdparty/async/threadpool.h>
+#include <async/threadpool.h>
 
 #include <noa/3rdparty/tnl-noa/src/TNL/Containers/ndarray/SynchronizerBuffers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Comm.h>
 #include <noa/3rdparty/tnl-noa/src/TNL/MPI/Wrappers.h>
 #include <noa/3rdparty/tnl-noa/src/TNL/Timer.h>
 
 namespace noa::TNL {
 namespace Containers {
 
-enum class SyncDirection : std::uint8_t {
+enum class SyncDirection : std::uint8_t
+{
    // special - sync in all directions
    All = 0xff,
    // sync directions like in LBM
@@ -66,18 +68,30 @@ enum class SyncDirection : std::uint8_t {
    // FrontBottomLeft = Front | Bottom | Left,
 };
 
-inline bool
+inline SyncDirection
 operator&( SyncDirection a, SyncDirection b )
 {
-   return std::uint8_t(a) & std::uint8_t(b);
+   return static_cast< SyncDirection >( static_cast< std::uint8_t >( a ) & static_cast< std::uint8_t >( b ) );
+}
+
+inline SyncDirection
+operator|( SyncDirection a, SyncDirection b )
+{
+   return static_cast< SyncDirection >( static_cast< std::uint8_t >( a ) | static_cast< std::uint8_t >( b ) );
+}
+
+// this operator makes `a -= b` equivalent to `a &= ~b`, i.e. it clears all bits from b in a
+inline SyncDirection&
+operator-=( SyncDirection& a, SyncDirection b )
+{
+   a = static_cast< SyncDirection >( static_cast< std::uint8_t >( a ) & ~static_cast< std::uint8_t >( b ) );
+   return a;
 }
 
 template< typename DistributedNDArray,
           // This can be set to false to optimize out buffering when it is not needed
           // (e.g. for LBM with 1D distribution and specific orientation of the ndarray)
-          bool buffered = true,
-          // switch for the LBM hack: only 9 of 27 distribution functions will be sent
-          bool LBM_HACK = false >
+          bool buffered = true >
 class DistributedNDArraySynchronizer
 {
 private:
@@ -96,7 +110,13 @@ private:
 
    int tag_offset = 0;
 
-   static int reserve_tags(int count)
+   int tag_from_left = -1;
+   int tag_from_right = -1;
+   int tag_to_left = -1;
+   int tag_to_right = -1;
+
+   static int
+   reserve_tags( int count )
    {
       static int offset = 0;
       // we could use a post-increment, but we don't have to start from 0 either...
@@ -106,20 +126,86 @@ private:
 public:
    using RequestsVector = std::vector< MPI_Request >;
 
-   enum class AsyncPolicy {
+   enum class AsyncPolicy
+   {
       synchronous,
       deferred,
       threadpool,
       async,
    };
 
-//   DistributedNDArraySynchronizer(int max_threads = std::thread::hardware_concurrency())
-   DistributedNDArraySynchronizer(int max_threads = 1)
-   : tp(max_threads),
-     tag_offset(reserve_tags(2))  // reserve 2 communication tags (for left and right)
+   //   DistributedNDArraySynchronizer(int max_threads = std::thread::hardware_concurrency())
+   DistributedNDArraySynchronizer( int max_threads = 1 )
+   : tp( max_threads ), tag_offset( reserve_tags( 2 ) )  // reserve 2 communication tags (for left and right)
    {}
 
-   void synchronize( DistributedNDArray& array )
+   // async::threadpool is not move-constructible (due to std::atomic), so we need
+   // custom move-constructor that skips moving tp
+   DistributedNDArraySynchronizer( DistributedNDArraySynchronizer&& other )
+   : tp( other.tp.size() ), gpu_id( std::move( other.gpu_id ) ), tag_offset( std::move( other.tag_offset ) )
+   {}
+
+   void
+   setTagOffset( int offset )
+   {
+      tag_offset = offset;
+   }
+
+   void
+   setTags( int from_left_id, int to_left_id, int from_right_id, int to_right_id )
+   {
+      tag_from_left = from_left_id;
+      tag_to_left = to_left_id;
+      tag_from_right = from_right_id;
+      tag_to_right = to_right_id;
+   }
+
+   // special thing for the A-A pattern in LBM
+   template< std::size_t dim >
+   void
+   setBuffersShift( int shift )
+   {
+      auto& dim_buffers = buffers.template getDimBuffers< dim >();
+
+      constexpr std::size_t overlap = DistributedNDArrayView::LocalViewType::IndexerType::template getOverlap< dim >();
+      if( overlap == 0 ) {
+         dim_buffers.reset();
+         return;
+      }
+
+      using LocalBegins = typename DistributedNDArray::LocalBeginsType;
+      using SizesHolder = typename DistributedNDArray::SizesHolderType;
+      const LocalBegins& localBegins = array_view.getLocalBegins();
+      const SizesHolder& localEnds = array_view.getLocalEnds();
+
+      // offsets for left-send
+      dim_buffers.left_send_offsets = localBegins;
+      dim_buffers.left_send_offsets.template setSize< dim >( localBegins.template getSize< dim >() - shift );
+
+      // offsets for left-receive
+      dim_buffers.left_recv_offsets = localBegins;
+      dim_buffers.left_recv_offsets.template setSize< dim >( localBegins.template getSize< dim >() - overlap + shift );
+
+      // offsets for right-send
+      dim_buffers.right_send_offsets = localBegins;
+      dim_buffers.right_send_offsets.template setSize< dim >( localEnds.template getSize< dim >() - overlap + shift );
+
+      // offsets for right-receive
+      dim_buffers.right_recv_offsets = localBegins;
+      dim_buffers.right_recv_offsets.template setSize< dim >( localEnds.template getSize< dim >() - shift );
+   }
+
+   template< std::size_t dim >
+   void
+   setNeighbors( int left, int right )
+   {
+      auto& dim_buffers = buffers.template getDimBuffers< dim >();
+      dim_buffers.left_neighbor = left;
+      dim_buffers.right_neighbor = right;
+   }
+
+   void
+   synchronize( DistributedNDArray& array )
    {
       synchronizeAsync( array, AsyncPolicy::synchronous );
    }
@@ -128,7 +214,10 @@ public:
    // instance of this object can call this method.
    // Also note that if (buffered == true), this method must not be called again until
    // the previous asynchronous operation has finished.
-   void synchronizeAsync( DistributedNDArray& array, AsyncPolicy policy = AsyncPolicy::synchronous, SyncDirection mask = SyncDirection::All )
+   void
+   synchronizeAsync( DistributedNDArray& array,
+                     AsyncPolicy policy = AsyncPolicy::synchronous,
+                     SyncDirection mask = SyncDirection::All )
    {
       // wait for any previous synchronization (multiple objects can share the
       // same synchronizer)
@@ -136,27 +225,25 @@ public:
 
       async_start_timer.start();
 
-      // GOTCHA: https://devblogs.nvidia.com/cuda-pro-tip-always-set-current-device-avoid-multithreading-bugs/
-      #ifdef HAVE_CUDA
+// GOTCHA: https://devblogs.nvidia.com/cuda-pro-tip-always-set-current-device-avoid-multithreading-bugs/
+#ifdef HAVE_CUDA
       if( std::is_same< typename DistributedNDArray::DeviceType, Devices::Cuda >::value )
-         cudaGetDevice(&this->gpu_id);
-      #endif
+         cudaGetDevice( &this->gpu_id );
+#endif
 
       // skip allocation on repeated calls - compare only sizes, not the actual data
-      if( array_view.getCommunicator() != array.getCommunicator() ||
-          array_view.getSizes() != array.getSizes() ||
-          array_view.getLocalBegins() != array.getLocalBegins() ||
-          array_view.getLocalEnds() != array.getLocalEnds() )
+      if( array_view.getCommunicator() != array.getCommunicator() || array_view.getSizes() != array.getSizes()
+          || array_view.getLocalBegins() != array.getLocalBegins() || array_view.getLocalEnds() != array.getLocalEnds() )
       {
          array_view.bind( array.getView() );
          this->mask = mask;
 
          // allocate buffers
          Algorithms::staticFor< std::size_t, 0, DistributedNDArray::getDimension() >(
-            [&] ( auto dim ) {
+            [ & ]( auto dim )
+            {
                allocateHelper< dim >( buffers, array_view );
-            }
-         );
+            } );
       }
       else {
          // only bind to the actual data
@@ -166,12 +253,13 @@ public:
 
       if( policy == AsyncPolicy::threadpool || policy == AsyncPolicy::async ) {
          // everything offloaded to a separate thread
-         auto worker = [this] () {
-            // GOTCHA: https://devblogs.nvidia.com/cuda-pro-tip-always-set-current-device-avoid-multithreading-bugs/
-            #ifdef HAVE_CUDA
+         auto worker = [ this ]()
+         {
+// GOTCHA: https://devblogs.nvidia.com/cuda-pro-tip-always-set-current-device-avoid-multithreading-bugs/
+#ifdef HAVE_CUDA
             if( std::is_same< typename DistributedNDArray::DeviceType, Devices::Cuda >::value )
-               cudaSetDevice(this->gpu_id);
-            #endif
+               cudaSetDevice( this->gpu_id );
+#endif
 
             auto requests = this->worker_init();
             MPI::Waitall( requests.data(), requests.size() );
@@ -186,7 +274,8 @@ public:
       else if( policy == AsyncPolicy::deferred ) {
          // immediate start, deferred synchronization (but still in the same thread)
          auto requests = worker_init();
-         auto worker = [this, requests] () mutable {
+         auto worker = [ this, requests ]() mutable
+         {
             MPI::Waitall( requests.data(), requests.size() );
             this->worker_finish();
          };
@@ -203,7 +292,8 @@ public:
       async_start_timer.stop();
    }
 
-   void wait()
+   void
+   wait()
    {
       if( async_op.valid() ) {
          async_wait_timer.start();
@@ -236,39 +326,51 @@ protected:
    SyncDirection mask = SyncDirection::All;
    Buffers buffers;
 
-   RequestsVector worker_init()
+   RequestsVector
+   worker_init()
    {
       // fill send buffers
       Algorithms::staticFor< std::size_t, 0, DistributedNDArray::getDimension() >(
-         [&] ( auto dim ) {
+         [ & ]( auto dim )
+         {
             copyHelper< dim >( buffers, array_view, true, mask );
-         }
-      );
+         } );
+
+      // set default tags from tag_offset
+      if( tag_from_left < 0 && tag_to_left < 0 && tag_from_right < 0 && tag_to_right < 0 ) {
+         tag_from_left = tag_offset + 1;
+         tag_to_left = tag_offset;
+         tag_from_right = tag_offset;
+         tag_to_right = tag_offset + 1;
+      }
 
       // issue all send and receive async operations
       RequestsVector requests;
-      const MPI_Comm communicator = array_view.getCommunicator();
+      const MPI::Comm& communicator = array_view.getCommunicator();
       Algorithms::staticFor< std::size_t, 0, DistributedNDArray::getDimension() >(
-         [&] ( auto dim ) {
-            sendHelper< dim >( buffers, requests, communicator, tag_offset, mask );
-         }
-      );
+         [ & ]( auto dim )
+         {
+            sendHelper< dim >(
+               buffers, requests, communicator, tag_from_left, tag_to_left, tag_from_right, tag_to_right, mask );
+         } );
 
       return requests;
    }
 
-   void worker_finish()
+   void
+   worker_finish()
    {
       // copy data from receive buffers
       Algorithms::staticFor< std::size_t, 0, DistributedNDArray::getDimension() >(
-         [&] ( auto dim ) {
+         [ & ]( auto dim )
+         {
             copyHelper< dim >( buffers, array_view, false, mask );
-         }
-      );
+         } );
    }
 
    template< std::size_t dim >
-   static void allocateHelper( Buffers& buffers, const DistributedNDArrayView& array_view )
+   static void
+   allocateHelper( Buffers& buffers, const DistributedNDArrayView& array_view )
    {
       auto& dim_buffers = buffers.template getDimBuffers< dim >();
 
@@ -298,10 +400,12 @@ protected:
       dim_buffers.right_send_view.bind( dim_buffers.right_send_buffer.getView() );
       dim_buffers.right_recv_view.bind( dim_buffers.right_recv_buffer.getView() );
 
-      // TODO: check overlap offsets for 2D and 3D distributions (watch out for the corners - maybe use SetSizesSubtractOverlapsHelper?)
+      // TODO: check overlap offsets for 2D and 3D distributions (watch out for the corners - maybe use
+      // SetSizesSubtractOverlapsHelper?)
 
       // offsets for left-send
       dim_buffers.left_send_offsets = localBegins;
+      dim_buffers.left_send_offsets.template setSize< dim >( localBegins.template getSize< dim >() );
 
       // offsets for left-receive
       dim_buffers.left_recv_offsets = localBegins;
@@ -315,16 +419,19 @@ protected:
       dim_buffers.right_recv_offsets = localBegins;
       dim_buffers.right_recv_offsets.template setSize< dim >( localEnds.template getSize< dim >() );
 
-      // FIXME: set proper neighbor IDs !!!
-      const MPI_Comm communicator = array_view.getCommunicator();
-      const int rank = MPI::GetRank(communicator);
-      const int nproc = MPI::GetSize(communicator);
-      dim_buffers.left_neighbor = (rank + nproc - 1) % nproc;
-      dim_buffers.right_neighbor = (rank + 1) % nproc;
+      // set default neighbor IDs
+      const MPI::Comm& communicator = array_view.getCommunicator();
+      const int rank = communicator.rank();
+      const int nproc = communicator.size();
+      if( dim_buffers.left_neighbor < 0 )
+         dim_buffers.left_neighbor = ( rank + nproc - 1 ) % nproc;
+      if( dim_buffers.right_neighbor < 0 )
+         dim_buffers.right_neighbor = ( rank + 1 ) % nproc;
    }
 
    template< std::size_t dim >
-   static void copyHelper( Buffers& buffers, DistributedNDArrayView& array_view, bool to_buffer, SyncDirection mask )
+   static void
+   copyHelper( Buffers& buffers, DistributedNDArrayView& array_view, bool to_buffer, SyncDirection mask )
    {
       // skip if there are no overlaps
       constexpr std::size_t overlap = DistributedNDArrayView::LocalViewType::IndexerType::template getOverlap< dim >();
@@ -335,31 +442,31 @@ protected:
 
       if( buffered ) {
          // TODO: specify CUDA stream for the copy, otherwise async won't work !!!
-         CopyKernel< decltype(dim_buffers.left_send_view) > copy_kernel;
+         CopyKernel< decltype( dim_buffers.left_send_view ) > copy_kernel;
          copy_kernel.array_view.bind( array_view );
          copy_kernel.to_buffer = to_buffer;
 
          if( to_buffer ) {
-            if( mask & SyncDirection::Left ) {
+            if( ( mask & SyncDirection::Left ) != SyncDirection::None ) {
                copy_kernel.buffer_view.bind( dim_buffers.left_send_view );
                copy_kernel.array_offsets = dim_buffers.left_send_offsets;
                dim_buffers.left_send_view.forAll( copy_kernel );
             }
 
-            if( mask & SyncDirection::Right ) {
+            if( ( mask & SyncDirection::Right ) != SyncDirection::None ) {
                copy_kernel.buffer_view.bind( dim_buffers.right_send_view );
                copy_kernel.array_offsets = dim_buffers.right_send_offsets;
                dim_buffers.right_send_view.forAll( copy_kernel );
             }
          }
          else {
-            if( mask & SyncDirection::Right ) {
+            if( ( mask & SyncDirection::Right ) != SyncDirection::None ) {
                copy_kernel.buffer_view.bind( dim_buffers.left_recv_view );
                copy_kernel.array_offsets = dim_buffers.left_recv_offsets;
                dim_buffers.left_recv_view.forAll( copy_kernel );
             }
 
-            if( mask & SyncDirection::Left ) {
+            if( ( mask & SyncDirection::Left ) != SyncDirection::None ) {
                copy_kernel.buffer_view.bind( dim_buffers.right_recv_view );
                copy_kernel.array_offsets = dim_buffers.right_recv_offsets;
                dim_buffers.right_recv_view.forAll( copy_kernel );
@@ -373,11 +480,18 @@ protected:
          dim_buffers.right_send_view.bind( &call_with_offsets( dim_buffers.right_send_offsets, array_view ) );
          dim_buffers.right_recv_view.bind( &call_with_offsets( dim_buffers.right_recv_offsets, array_view ) );
       }
-
    }
 
    template< std::size_t dim >
-   static void sendHelper( Buffers& buffers, RequestsVector& requests, MPI_Comm communicator, int tag_offset, SyncDirection mask )
+   static void
+   sendHelper( Buffers& buffers,
+               RequestsVector& requests,
+               const MPI::Comm& communicator,
+               int tag_from_left,
+               int tag_to_left,
+               int tag_from_right,
+               int tag_to_right,
+               SyncDirection mask )
    {
       constexpr std::size_t overlap = DistributedNDArrayView::LocalViewType::IndexerType::template getOverlap< dim >();
       if( overlap == 0 )
@@ -385,37 +499,41 @@ protected:
 
       auto& dim_buffers = buffers.template getDimBuffers< dim >();
 
-      if( LBM_HACK == false ) {
-         if( mask & SyncDirection::Left ) {
+      if( ( mask & SyncDirection::Left ) != SyncDirection::None ) {
+         // negative tags are not valid according to the MPI standard and may be used by
+         // applications to skip communication, e.g. over the periodic boundary
+         if( tag_to_left >= 0 ) {
             requests.push_back( MPI::Isend( dim_buffers.left_send_view.getData(),
                                             dim_buffers.left_send_view.getStorageSize(),
-                                            dim_buffers.left_neighbor, tag_offset + 0, communicator ) );
+                                            dim_buffers.left_neighbor,
+                                            tag_to_left,
+                                            communicator ) );
+         }
+         if( tag_from_right >= 0 ) {
             requests.push_back( MPI::Irecv( dim_buffers.right_recv_view.getData(),
                                             dim_buffers.right_recv_view.getStorageSize(),
-                                            dim_buffers.right_neighbor, tag_offset + 0, communicator ) );
-         }
-         if( mask & SyncDirection::Right ) {
-            requests.push_back( MPI::Isend( dim_buffers.right_send_view.getData(),
-                                            dim_buffers.right_send_view.getStorageSize(),
-                                            dim_buffers.right_neighbor, tag_offset + 1, communicator ) );
-            requests.push_back( MPI::Irecv( dim_buffers.left_recv_view.getData(),
-                                            dim_buffers.left_recv_view.getStorageSize(),
-                                            dim_buffers.left_neighbor, tag_offset + 1, communicator ) );
+                                            dim_buffers.right_neighbor,
+                                            tag_from_right,
+                                            communicator ) );
          }
       }
-      else {
-         requests.push_back( MPI::Isend( dim_buffers.left_send_view.getData() + 0,
-                                         dim_buffers.left_send_view.getStorageSize() / 27 * 9,
-                                         dim_buffers.left_neighbor, tag_offset + 0, communicator ) );
-         requests.push_back( MPI::Irecv( dim_buffers.left_recv_view.getData() + dim_buffers.left_recv_view.getStorageSize() / 27 * 18,
-                                         dim_buffers.left_recv_view.getStorageSize() / 27 * 9,
-                                         dim_buffers.left_neighbor, tag_offset + 1, communicator ) );
-         requests.push_back( MPI::Isend( dim_buffers.right_send_view.getData() + dim_buffers.left_recv_view.getStorageSize() / 27 * 18,
-                                         dim_buffers.right_send_view.getStorageSize() / 27 * 9,
-                                         dim_buffers.right_neighbor, tag_offset + 1, communicator ) );
-         requests.push_back( MPI::Irecv( dim_buffers.right_recv_view.getData() + 0,
-                                         dim_buffers.right_recv_view.getStorageSize() / 27 * 9,
-                                         dim_buffers.right_neighbor, tag_offset + 0, communicator ) );
+      if( ( mask & SyncDirection::Right ) != SyncDirection::None ) {
+         // negative tags are not valid according to the MPI standard and may be used by
+         // applications to skip communication, e.g. over the periodic boundary
+         if( tag_to_right >= 0 ) {
+            requests.push_back( MPI::Isend( dim_buffers.right_send_view.getData(),
+                                            dim_buffers.right_send_view.getStorageSize(),
+                                            dim_buffers.right_neighbor,
+                                            tag_to_right,
+                                            communicator ) );
+         }
+         if( tag_from_left >= 0 ) {
+            requests.push_back( MPI::Irecv( dim_buffers.left_recv_view.getData(),
+                                            dim_buffers.left_recv_view.getStorageSize(),
+                                            dim_buffers.left_neighbor,
+                                            tag_from_left,
+                                            communicator ) );
+         }
       }
    }
 
@@ -435,7 +553,8 @@ public:
 
       template< typename... Indices >
       __cuda_callable__
-      void operator()( Indices... indices )
+      void
+      operator()( Indices... indices )
       {
          if( to_buffer )
             buffer_view( indices... ) = call_with_shifted_indices( array_offsets, array_view, indices... );
@@ -445,5 +564,5 @@ public:
    };
 };
 
-} // namespace Containers
-} // namespace noa::TNL
+}  // namespace Containers
+}  // namespace noa::TNL

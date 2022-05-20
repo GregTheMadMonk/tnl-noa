@@ -9,17 +9,14 @@
 namespace noa::TNL {
 namespace Problems {
 
-template< typename Real,
-          typename Device,
-          typename Index >
+template< typename Real, typename Device, typename Index >
 class Problem
 {
-   public:
-
-      typedef Real RealType;
-      typedef Device DeviceType;
-      typedef Index IndexType;
+public:
+   using RealType = Real;
+   using DeviceType = Device;
+   using IndexType = Index;
 };
 
-} // namespace Problems
-} // namespace noa::TNL
+}  // namespace Problems
+}  // namespace noa::TNL

@@ -48,5 +48,5 @@ public:
    using Increment = DimensionTag< 1 >;
 };
 
-} // namespace Meshes
-} // namespace noa::TNL
+}  // namespace Meshes
+}  // namespace noa::TNL

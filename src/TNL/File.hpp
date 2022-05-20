@@ -27,7 +27,8 @@ inline File::File( const String& fileName, std::ios_base::openmode mode )
    open( fileName, mode );
 }
 
-inline void File::open( const String& fileName, std::ios_base::openmode mode )
+inline void
+File::open( const String& fileName, std::ios_base::openmode mode )
 {
    // enable exceptions
    file.exceptions( std::fstream::failbit | std::fstream::badbit | std::fstream::eofbit );
@@ -35,17 +36,15 @@ inline void File::open( const String& fileName, std::ios_base::openmode mode )
    close();
 
    mode |= std::ios::binary;
-   try
-   {
+   try {
       file.open( fileName.getString(), mode );
    }
-   catch( std::ios_base::failure& )
-   {
+   catch( std::ios_base::failure& ) {
       std::stringstream msg;
-      msg <<  "Unable to open file " << fileName << " ";
-      if( mode & std::ios_base::in )
+      msg << "Unable to open file " << fileName << " ";
+      if( ( mode & std::ios_base::in ) != 0 )
          msg << " for reading.";
-      if( mode & std::ios_base::out )
+      if( ( mode & std::ios_base::out ) != 0 )
          msg << " for writing.";
 
       throw std::ios_base::failure( msg.str() );
@@ -54,18 +53,16 @@ inline void File::open( const String& fileName, std::ios_base::openmode mode )
    this->fileName = fileName;
 }
 
-inline void File::close()
+inline void
+File::close()
 {
-   if( file.is_open() )
-   {
-      try
-      {
+   if( file.is_open() ) {
+      try {
          file.close();
       }
-      catch( std::ios_base::failure& )
-      {
+      catch( std::ios_base::failure& ) {
          std::stringstream msg;
-         msg <<  "Unable to close file " << fileName << ".";
+         msg << "Unable to close file " << fileName << ".";
 
          throw std::ios_base::failure( msg.str() );
       }
@@ -74,10 +71,9 @@ inline void File::close()
    fileName = "";
 }
 
-template< typename Type,
-          typename SourceType,
-          typename Allocator >
-void File::load( Type* buffer, std::streamsize elements )
+template< typename Type, typename SourceType, typename Allocator >
+void
+File::load( Type* buffer, std::streamsize elements )
 {
    static_assert( std::is_same< Type, typename Allocator::value_type >::value,
                   "Allocator::value_type must be the same as Type." );
@@ -90,74 +86,63 @@ void File::load( Type* buffer, std::streamsize elements )
 }
 
 // Host allocators
-template< typename Type,
-          typename SourceType,
-          typename Allocator,
-          typename >
-void File::load_impl( Type* buffer, std::streamsize elements )
+template< typename Type, typename SourceType, typename Allocator, typename >
+void
+File::load_impl( Type* buffer, std::streamsize elements )
 {
    if( std::is_same< Type, SourceType >::value )
-      file.read( reinterpret_cast<char*>(buffer), sizeof(Type) * elements );
-   else
-   {
-      const std::streamsize cast_buffer_size = std::min( Cuda::getTransferBufferSize() / (std::streamsize) sizeof(SourceType), elements );
+      file.read( reinterpret_cast< char* >( buffer ), sizeof( Type ) * elements );
+   else {
+      const std::streamsize cast_buffer_size =
+         std::min( Cuda::getTransferBufferSize() / (std::streamsize) sizeof( SourceType ), elements );
       using BaseType = typename std::remove_cv< SourceType >::type;
       std::unique_ptr< BaseType[] > cast_buffer{ new BaseType[ cast_buffer_size ] };
       std::streamsize readElements = 0;
-      while( readElements < elements )
-      {
+      while( readElements < elements ) {
          const std::streamsize transfer = std::min( elements - readElements, cast_buffer_size );
-         file.read( reinterpret_cast<char*>(cast_buffer.get()), sizeof(SourceType) * transfer );
+         file.read( reinterpret_cast< char* >( cast_buffer.get() ), sizeof( SourceType ) * transfer );
          for( std::streamsize i = 0; i < transfer; i++ )
-            buffer[ readElements ++ ] = static_cast< Type >( cast_buffer[ i ] );
+            buffer[ readElements++ ] = static_cast< Type >( cast_buffer[ i ] );
          readElements += transfer;
       }
    }
 }
 
 // Allocators::Cuda
-template< typename Type,
-          typename SourceType,
-          typename Allocator,
-          typename, typename >
-void File::load_impl( Type* buffer, std::streamsize elements )
+template< typename Type, typename SourceType, typename Allocator, typename, typename >
+void
+File::load_impl( Type* buffer, std::streamsize elements )
 {
 #ifdef HAVE_CUDA
-   const std::streamsize host_buffer_size = std::min( Cuda::getTransferBufferSize() / (std::streamsize) sizeof(Type), elements );
+   const std::streamsize host_buffer_size =
+      std::min( Cuda::getTransferBufferSize() / (std::streamsize) sizeof( Type ), elements );
    using BaseType = typename std::remove_cv< Type >::type;
    std::unique_ptr< BaseType[] > host_buffer{ new BaseType[ host_buffer_size ] };
 
    std::streamsize readElements = 0;
-   if( std::is_same< Type, SourceType >::value )
-   {
-      while( readElements < elements )
-      {
+   if( std::is_same< Type, SourceType >::value ) {
+      while( readElements < elements ) {
          const std::streamsize transfer = std::min( elements - readElements, host_buffer_size );
-         file.read( reinterpret_cast<char*>(host_buffer.get()), sizeof(Type) * transfer );
-         cudaMemcpy( (void*) &buffer[ readElements ],
-                     (void*) host_buffer.get(),
-                     transfer * sizeof( Type ),
-                     cudaMemcpyHostToDevice );
+         file.read( reinterpret_cast< char* >( host_buffer.get() ), sizeof( Type ) * transfer );
+         cudaMemcpy(
+            (void*) &buffer[ readElements ], (void*) host_buffer.get(), transfer * sizeof( Type ), cudaMemcpyHostToDevice );
          TNL_CHECK_CUDA_DEVICE;
          readElements += transfer;
       }
    }
-   else
-   {
-      const std::streamsize cast_buffer_size = std::min( Cuda::getTransferBufferSize() / (std::streamsize) sizeof(SourceType), elements );
+   else {
+      const std::streamsize cast_buffer_size =
+         std::min( Cuda::getTransferBufferSize() / (std::streamsize) sizeof( SourceType ), elements );
       using BaseType = typename std::remove_cv< SourceType >::type;
       std::unique_ptr< BaseType[] > cast_buffer{ new BaseType[ cast_buffer_size ] };
 
-      while( readElements < elements )
-      {
+      while( readElements < elements ) {
          const std::streamsize transfer = std::min( elements - readElements, cast_buffer_size );
-         file.read( reinterpret_cast<char*>(cast_buffer.get()), sizeof(SourceType) * transfer );
+         file.read( reinterpret_cast< char* >( cast_buffer.get() ), sizeof( SourceType ) * transfer );
          for( std::streamsize i = 0; i < transfer; i++ )
             host_buffer[ i ] = static_cast< Type >( cast_buffer[ i ] );
-         cudaMemcpy( (void*) &buffer[ readElements ],
-                     (void*) host_buffer.get(),
-                     transfer * sizeof( Type ),
-                     cudaMemcpyHostToDevice );
+         cudaMemcpy(
+            (void*) &buffer[ readElements ], (void*) host_buffer.get(), transfer * sizeof( Type ), cudaMemcpyHostToDevice );
          TNL_CHECK_CUDA_DEVICE;
          readElements += transfer;
       }
@@ -167,10 +152,9 @@ void File::load_impl( Type* buffer, std::streamsize elements )
 #endif
 }
 
-template< typename Type,
-          typename TargetType,
-          typename Allocator >
-void File::save( const Type* buffer, std::streamsize elements )
+template< typename Type, typename TargetType, typename Allocator >
+void
+File::save( const Type* buffer, std::streamsize elements )
 {
    static_assert( std::is_same< std::remove_cv_t< Type >, std::remove_cv_t< typename Allocator::value_type > >::value,
                   "Allocator::value_type must be the same as Type." );
@@ -183,77 +167,65 @@ void File::save( const Type* buffer, std::streamsize elements )
 }
 
 // Host allocators
-template< typename Type,
-          typename TargetType,
-          typename Allocator,
-          typename >
-void File::save_impl( const Type* buffer, std::streamsize elements )
+template< typename Type, typename TargetType, typename Allocator, typename >
+void
+File::save_impl( const Type* buffer, std::streamsize elements )
 {
    if( std::is_same< Type, TargetType >::value )
-      file.write( reinterpret_cast<const char*>(buffer), sizeof(Type) * elements );
-   else
-   {
-      const std::streamsize cast_buffer_size = std::min( Cuda::getTransferBufferSize() / (std::streamsize) sizeof(TargetType), elements );
+      file.write( reinterpret_cast< const char* >( buffer ), sizeof( Type ) * elements );
+   else {
+      const std::streamsize cast_buffer_size =
+         std::min( Cuda::getTransferBufferSize() / (std::streamsize) sizeof( TargetType ), elements );
       using BaseType = typename std::remove_cv< TargetType >::type;
       std::unique_ptr< BaseType[] > cast_buffer{ new BaseType[ cast_buffer_size ] };
       std::streamsize writtenElements = 0;
-      while( writtenElements < elements )
-      {
+      while( writtenElements < elements ) {
          const std::streamsize transfer = std::min( elements - writtenElements, cast_buffer_size );
          for( std::streamsize i = 0; i < transfer; i++ )
-            cast_buffer[ i ] = static_cast< TargetType >( buffer[ writtenElements ++ ] );
-         file.write( reinterpret_cast<char*>(cast_buffer.get()), sizeof(TargetType) * transfer );
+            cast_buffer[ i ] = static_cast< TargetType >( buffer[ writtenElements++ ] );
+         file.write( reinterpret_cast< char* >( cast_buffer.get() ), sizeof( TargetType ) * transfer );
          writtenElements += transfer;
       }
-
    }
 }
 
 // Allocators::Cuda
-template< typename Type,
-          typename TargetType,
-          typename Allocator,
-          typename, typename >
-void File::save_impl( const Type* buffer, std::streamsize elements )
+template< typename Type, typename TargetType, typename Allocator, typename, typename >
+void
+File::save_impl( const Type* buffer, std::streamsize elements )
 {
 #ifdef HAVE_CUDA
-   const std::streamsize host_buffer_size = std::min( Cuda::getTransferBufferSize() / (std::streamsize) sizeof(Type), elements );
+   const std::streamsize host_buffer_size =
+      std::min( Cuda::getTransferBufferSize() / (std::streamsize) sizeof( Type ), elements );
    using BaseType = typename std::remove_cv< Type >::type;
    std::unique_ptr< BaseType[] > host_buffer{ new BaseType[ host_buffer_size ] };
 
    std::streamsize writtenElements = 0;
-   if( std::is_same< Type, TargetType >::value )
-   {
-      while( writtenElements < elements )
-      {
+   if( std::is_same< Type, TargetType >::value ) {
+      while( writtenElements < elements ) {
          const std::streamsize transfer = std::min( elements - writtenElements, host_buffer_size );
-         cudaMemcpy( (void*) host_buffer.get(),
-                     (void*) &buffer[ writtenElements ],
-                     transfer * sizeof(Type),
-                     cudaMemcpyDeviceToHost );
+         cudaMemcpy(
+            (void*) host_buffer.get(), (void*) &buffer[ writtenElements ], transfer * sizeof( Type ), cudaMemcpyDeviceToHost );
          TNL_CHECK_CUDA_DEVICE;
-         file.write( reinterpret_cast<const char*>(host_buffer.get()), sizeof(Type) * transfer );
+         file.write( reinterpret_cast< const char* >( host_buffer.get() ), sizeof( Type ) * transfer );
          writtenElements += transfer;
       }
    }
-   else
-   {
-      const std::streamsize cast_buffer_size = std::min( Cuda::getTransferBufferSize() / (std::streamsize) sizeof(TargetType), elements );
+   else {
+      const std::streamsize cast_buffer_size =
+         std::min( Cuda::getTransferBufferSize() / (std::streamsize) sizeof( TargetType ), elements );
       using BaseType = typename std::remove_cv< TargetType >::type;
       std::unique_ptr< BaseType[] > cast_buffer{ new BaseType[ cast_buffer_size ] };
 
-      while( writtenElements < elements )
-      {
+      while( writtenElements < elements ) {
          const std::streamsize transfer = std::min( elements - writtenElements, host_buffer_size );
-         cudaMemcpy( (void*) host_buffer.get(),
-                     (void*) &buffer[ writtenElements ],
-                     transfer * sizeof(Type),
-                     cudaMemcpyDeviceToHost );
+         cudaMemcpy(
+            (void*) host_buffer.get(), (void*) &buffer[ writtenElements ], transfer * sizeof( Type ), cudaMemcpyDeviceToHost );
          TNL_CHECK_CUDA_DEVICE;
          for( std::streamsize i = 0; i < transfer; i++ )
             cast_buffer[ i ] = static_cast< TargetType >( host_buffer[ i ] );
 
-         file.write( reinterpret_cast<const char*>(cast_buffer.get()), sizeof(TargetType) * transfer );
+         file.write( reinterpret_cast< const char* >( cast_buffer.get() ), sizeof( TargetType ) * transfer );
          writtenElements += transfer;
       }
    }
@@ -262,63 +234,56 @@ void File::save_impl( const Type* buffer, std::streamsize elements )
 #endif
 }
 
-inline bool fileExists( const String& fileName )
+inline bool
+fileExists( const String& fileName )
 {
    std::fstream file;
    file.open( fileName.getString(), std::ios::in );
    return ! file.fail();
 }
 
-
 // serialization of strings
-inline File& operator<<( File& file, const std::string& str )
+inline File&
+operator<<( File& file, const std::string& str )
 {
    const int len = str.size();
-   try
-   {
-       file.save( &len );
+   try {
+      file.save( &len );
    }
-   catch(...)
-   {
+   catch( ... ) {
       throw Exceptions::FileSerializationError( file.getFileName(), "unable to write string length." );
    }
-   try
-   {
+   try {
       file.save( str.c_str(), len );
    }
-   catch(...)
-   {
+   catch( ... ) {
       throw Exceptions::FileSerializationError( file.getFileName(), "unable to write a C-string." );
    }
    return file;
 }
 
 // deserialization of strings
-inline File& operator>>( File& file, std::string& str )
+inline File&
+operator>>( File& file, std::string& str )
 {
    int length;
-   try
-   {
+   try {
       file.load( &length );
    }
-   catch(...)
-   {
+   catch( ... ) {
       throw Exceptions::FileDeserializationError( file.getFileName(), "unable to read string length." );
    }
-   char buffer[ length ];
-   if( length )
-   {
-      try
-      {
-         file.load( buffer, length );
+   if( length > 0 ) {
+      std::unique_ptr< char[] > buffer{ new char[ length ] };
+      try {
+         file.load( buffer.get(), length );
       }
-      catch(...)
-      {
+      catch( ... ) {
          throw Exceptions::FileDeserializationError( file.getFileName(), "unable to read a C-string." );
       }
+      str.assign( buffer.get(), length );
    }
-   str.assign( buffer, length );
    return file;
 }
 
-} // namespace noa::TNL
+}  // namespace noa::TNL

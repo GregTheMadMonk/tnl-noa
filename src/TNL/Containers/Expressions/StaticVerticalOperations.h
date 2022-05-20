@@ -19,10 +19,11 @@ namespace Expressions {
 
 template< typename Expression >
 __cuda_callable__
-auto StaticExpressionMin( const Expression& expression )
+auto
+StaticExpressionMin( const Expression& expression )
 {
-   // use argument-dependent lookup and make noa::TNL::min available for unqualified calls
-   using noa::TNL::min;
+   // use argument-dependent lookup and make TNL::min available for unqualified calls
+   using TNL::min;
    using ResultType = RemoveET< typename Expression::RealType >;
    ResultType aux = expression[ 0 ];
    for( int i = 1; i < expression.getSize(); i++ )
@@ -32,15 +33,14 @@ auto StaticExpressionMin( const Expression& expression )
 
 template< typename Expression >
 __cuda_callable__
-auto StaticExpressionArgMin( const Expression& expression )
+auto
+StaticExpressionArgMin( const Expression& expression )
 {
    using ResultType = RemoveET< typename Expression::RealType >;
    int arg = 0;
    ResultType value = expression[ 0 ];
-   for( int i = 1; i < expression.getSize(); i++ )
-   {
-      if( expression[ i ] < value )
-      {
+   for( int i = 1; i < expression.getSize(); i++ ) {
+      if( expression[ i ] < value ) {
          value = expression[ i ];
          arg = i;
       }
@@ -50,10 +50,11 @@ auto StaticExpressionArgMin( const Expression& expression )
 
 template< typename Expression >
 __cuda_callable__
-auto StaticExpressionMax( const Expression& expression )
+auto
+StaticExpressionMax( const Expression& expression )
 {
-   // use argument-dependent lookup and make noa::TNL::max available for unqualified calls
-   using noa::TNL::max;
+   // use argument-dependent lookup and make TNL::max available for unqualified calls
+   using TNL::max;
    using ResultType = RemoveET< typename Expression::RealType >;
    ResultType aux = expression[ 0 ];
    for( int i = 1; i < expression.getSize(); i++ )
@@ -63,15 +64,14 @@ auto StaticExpressionMax( const Expression& expression )
 
 template< typename Expression >
 __cuda_callable__
-auto StaticExpressionArgMax( const Expression& expression )
+auto
+StaticExpressionArgMax( const Expression& expression )
 {
    using ResultType = RemoveET< typename Expression::RealType >;
    int arg = 0;
    ResultType value = expression[ 0 ];
-   for( int i = 1; i < expression.getSize(); i++ )
-   {
-      if( expression[ i ] > value )
-      {
+   for( int i = 1; i < expression.getSize(); i++ ) {
+      if( expression[ i ] > value ) {
          value = expression[ i ];
          arg = i;
       }
@@ -81,7 +81,8 @@ auto StaticExpressionArgMax( const Expression& expression )
 
 template< typename Expression >
 __cuda_callable__
-auto StaticExpressionSum( const Expression& expression )
+auto
+StaticExpressionSum( const Expression& expression )
 {
    using ResultType = RemoveET< typename Expression::RealType >;
    ResultType aux = expression[ 0 ];
@@ -92,7 +93,8 @@ auto StaticExpressionSum( const Expression& expression )
 
 template< typename Expression >
 __cuda_callable__
-auto StaticExpressionProduct( const Expression& expression )
+auto
+StaticExpressionProduct( const Expression& expression )
 {
    using ResultType = RemoveET< typename Expression::RealType >;
    ResultType aux = expression[ 0 ];
@@ -103,7 +105,8 @@ auto StaticExpressionProduct( const Expression& expression )
 
 template< typename Expression >
 __cuda_callable__
-bool StaticExpressionLogicalAnd( const Expression& expression )
+bool
+StaticExpressionLogicalAnd( const Expression& expression )
 {
    auto aux = expression[ 0 ];
    for( int i = 1; i < expression.getSize(); i++ )
@@ -113,7 +116,8 @@ bool StaticExpressionLogicalAnd( const Expression& expression )
 
 template< typename Expression >
 __cuda_callable__
-bool StaticExpressionLogicalOr( const Expression& expression )
+bool
+StaticExpressionLogicalOr( const Expression& expression )
 {
    auto aux = expression[ 0 ];
    for( int i = 1; i < expression.getSize(); i++ )
@@ -123,7 +127,8 @@ bool StaticExpressionLogicalOr( const Expression& expression )
 
 template< typename Expression >
 __cuda_callable__
-auto StaticExpressionBinaryAnd( const Expression& expression )
+auto
+StaticExpressionBinaryAnd( const Expression& expression )
 {
    auto aux = expression[ 0 ];
    for( int i = 1; i < expression.getSize(); i++ )
@@ -133,7 +138,8 @@ auto StaticExpressionBinaryAnd( const Expression& expression )
 
 template< typename Expression >
 __cuda_callable__
-auto StaticExpressionBinaryOr( const Expression& expression )
+auto
+StaticExpressionBinaryOr( const Expression& expression )
 {
    auto aux = expression[ 0 ];
    for( int i = 1; i < expression.getSize(); i++ )
@@ -143,7 +149,8 @@ auto StaticExpressionBinaryOr( const Expression& expression )
 
 template< typename Expression >
 __cuda_callable__
-auto StaticExpressionBinaryXor( const Expression& expression )
+auto
+StaticExpressionBinaryXor( const Expression& expression )
 {
    auto aux = expression[ 0 ];
    for( int i = 1; i < expression.getSize(); i++ )
@@ -151,6 +158,6 @@ auto StaticExpressionBinaryXor( const Expression& expression )
    return aux;
 }
 
-} // namespace Expressions
-} // namespace Containers
-} // namespace noa::TNL
+}  // namespace Expressions
+}  // namespace Containers
+}  // namespace noa::TNL

@@ -17,11 +17,11 @@
 namespace noa::TNL {
 namespace Solvers {
 
-template< typename ConfigTag,
-          typename ProblemConfig >
+template< typename ConfigTag, typename ProblemConfig >
 struct SolverConfig
 {
-   static bool configSetup( Config::ConfigDescription& config )
+   static bool
+   configSetup( Config::ConfigDescription& config )
    {
       config.addDelimiter( " === General parameters ==== " );
       config.addEntry< bool >( "catch-exceptions",
@@ -31,9 +31,7 @@ struct SolverConfig
       /****
        * Setup real type
        */
-      config.addEntry< String >( "real-type",
-                                    "Precision of the floating point arithmetics.",
-                                    "double" );
+      config.addEntry< String >( "real-type", "Precision of the floating point arithmetics.", "double" );
       if( ConfigTagReal< ConfigTag, float >::enabled )
          config.addEntryEnum( "float" );
       if( ConfigTagReal< ConfigTag, double >::enabled )
@@ -44,9 +42,7 @@ struct SolverConfig
       /****
        * Setup device.
        */
-      config.addEntry< String >( "device",
-                                    "Device to use for the computations.",
-                                    "host" );
+      config.addEntry< String >( "device", "Device to use for the computations.", "host" );
       if( ConfigTagDevice< ConfigTag, Devices::Host >::enabled )
          config.addEntryEnum( "host" );
 #ifdef HAVE_CUDA
@@ -57,9 +53,7 @@ struct SolverConfig
       /****
        * Setup index type.
        */
-      config.addEntry< String >( "index-type",
-                                    "Indexing type for arrays, vectors, matrices etc.",
-                                    "int" );
+      config.addEntry< String >( "index-type", "Indexing type for arrays, vectors, matrices etc.", "int" );
       if( ConfigTagIndex< ConfigTag, short int >::enabled )
          config.addEntryEnum( "short-int" );
 
@@ -73,22 +67,25 @@ struct SolverConfig
        * Mesh file parameter
        */
       config.addDelimiter( " === Space discretisation parameters ==== " );
-      config.addEntry< String >( "mesh", "A file which contains the numerical mesh. You may create it with tools like tnl-grid-setup or tnl-mesh-convert.", "mesh.vti" );
+      config.addEntry< String >(
+         "mesh",
+         "A file which contains the numerical mesh. You may create it with tools like tnl-grid-setup or tnl-mesh-convert.",
+         "mesh.vti" );
       config.addEntry< String >( "mesh-format", "Mesh file format.", "auto" );
 
       /****
        * Time discretisation
        */
       config.addDelimiter( " === Time discretisation parameters ==== " );
-      using PDEProblem = Problems::PDEProblem< Meshes::Grid<1, double, Devices::Host, int> >;
+      using PDEProblem = Problems::PDEProblem< Meshes::Grid< 1, double, Devices::Host, int > >;
       using ExplicitTimeStepper = PDE::ExplicitTimeStepper< PDEProblem, ODE::Euler >;
       PDE::TimeDependentPDESolver< PDEProblem, ExplicitTimeStepper >::configSetup( config );
       ExplicitTimeStepper::configSetup( config );
-      if( ConfigTagTimeDiscretisation< ConfigTag, ExplicitTimeDiscretisationTag >::enabled ||
-          ConfigTagTimeDiscretisation< ConfigTag, SemiImplicitTimeDiscretisationTag >::enabled ||
-          ConfigTagTimeDiscretisation< ConfigTag, ImplicitTimeDiscretisationTag >::enabled )
+      if( ConfigTagTimeDiscretisation< ConfigTag, ExplicitTimeDiscretisationTag >::enabled
+          || ConfigTagTimeDiscretisation< ConfigTag, SemiImplicitTimeDiscretisationTag >::enabled
+          || ConfigTagTimeDiscretisation< ConfigTag, ImplicitTimeDiscretisationTag >::enabled )
       {
-         config.addRequiredEntry< String >( "time-discretisation", "Discratisation in time.");
+         config.addRequiredEntry< String >( "time-discretisation", "Discratisation in time." );
          if( ConfigTagTimeDiscretisation< ConfigTag, ExplicitTimeDiscretisationTag >::enabled )
             config.addEntryEnum( "explicit" );
          if( ConfigTagTimeDiscretisation< ConfigTag, SemiImplicitTimeDiscretisationTag >::enabled )
@@ -97,29 +94,26 @@ struct SolverConfig
             config.addEntryEnum( "implicit" );
       }
       config.addRequiredEntry< String >( "discrete-solver", "The solver of the discretised problem:" );
-      if( ConfigTagTimeDiscretisation< ConfigTag, ExplicitTimeDiscretisationTag >::enabled )
-      {
+      if( ConfigTagTimeDiscretisation< ConfigTag, ExplicitTimeDiscretisationTag >::enabled ) {
          if( ConfigTagExplicitSolver< ConfigTag, ExplicitEulerSolverTag >::enabled )
             config.addEntryEnum( "euler" );
          if( ConfigTagExplicitSolver< ConfigTag, ExplicitMersonSolverTag >::enabled )
             config.addEntryEnum( "merson" );
       }
-      if( ConfigTagTimeDiscretisation< ConfigTag, SemiImplicitTimeDiscretisationTag >::enabled )
-      {
+      if( ConfigTagTimeDiscretisation< ConfigTag, SemiImplicitTimeDiscretisationTag >::enabled ) {
          for( auto o : getLinearSolverOptions() )
             config.addEntryEnum( String( o ) );
          config.addEntry< String >( "preconditioner", "The preconditioner for the discrete solver:", "none" );
          for( auto o : getPreconditionerOptions() )
             config.addEntryEnum( String( o ) );
       }
-      if( ConfigTagTimeDiscretisation< ConfigTag, ExplicitTimeDiscretisationTag >::enabled ||
-          ConfigTagTimeDiscretisation< ConfigTag, SemiImplicitTimeDiscretisationTag >::enabled )
+      if( ConfigTagTimeDiscretisation< ConfigTag, ExplicitTimeDiscretisationTag >::enabled
+          || ConfigTagTimeDiscretisation< ConfigTag, SemiImplicitTimeDiscretisationTag >::enabled )
       {
          config.addDelimiter( " === Iterative solvers parameters === " );
          IterativeSolver< double, int >::configSetup( config );
       }
-      if( ConfigTagTimeDiscretisation< ConfigTag, ExplicitTimeDiscretisationTag >::enabled )
-      {
+      if( ConfigTagTimeDiscretisation< ConfigTag, ExplicitTimeDiscretisationTag >::enabled ) {
          config.addDelimiter( " === Explicit solvers parameters === " );
          ODE::ExplicitSolver< PDEProblem >::configSetup( config );
          if( ConfigTagExplicitSolver< ConfigTag, ExplicitEulerSolverTag >::enabled )
@@ -128,8 +122,7 @@ struct SolverConfig
          if( ConfigTagExplicitSolver< ConfigTag, ExplicitMersonSolverTag >::enabled )
             ODE::Merson< PDEProblem >::configSetup( config );
       }
-      if( ConfigTagTimeDiscretisation< ConfigTag, SemiImplicitTimeDiscretisationTag >::enabled )
-      {
+      if( ConfigTagTimeDiscretisation< ConfigTag, SemiImplicitTimeDiscretisationTag >::enabled ) {
          config.addDelimiter( " === Semi-implicit solvers parameters === " );
          using MatrixType = Matrices::SparseMatrix< double >;
          Linear::CG< MatrixType >::configSetup( config );
@@ -152,5 +145,5 @@ struct SolverConfig
    }
 };
 
-} // namespace Solvers
-} // namespace noa::TNL
+}  // namespace Solvers
+}  // namespace noa::TNL

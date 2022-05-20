@@ -20,12 +20,18 @@ namespace Matrices {
  * The following kernel is an attempt to map more CUDA threads to one matrix row.
  */
 template< int BlockSize, int ThreadsPerRow, typename Matrix, typename InVector, typename OutVector >
-__global__ void
-VectorColumnMajorDenseMatrixViewVectorMultiplicationKernel( const Matrix matrix, const InVector inVector, OutVector outVector, const int begin, const int end, int gridIdx )
+__global__
+void
+VectorColumnMajorDenseMatrixViewVectorMultiplicationKernel( const Matrix matrix,
+                                                            const InVector inVector,
+                                                            OutVector outVector,
+                                                            const int begin,
+                                                            const int end,
+                                                            int gridIdx )
 {
    using Real = typename Matrix::RealType;
    using Index = typename Matrix::IndexType;
-   constexpr int  inVectorCacheSize = 20480 / sizeof( Real );
+   constexpr int inVectorCacheSize = 20480 / sizeof( Real );
    __shared__ Real inVectorCache[ inVectorCacheSize ];
    __shared__ Real result_[ BlockSize ];
 
@@ -40,13 +46,11 @@ VectorColumnMajorDenseMatrixViewVectorMultiplicationKernel( const Matrix matrix,
    const auto& rowsCount = matrix.getRows();
    Index valuesPtr = rowIdx + localColIdx * rowsCount;
 
-   while( columnIdx < matrix.getColumns() )
-   {
+   while( columnIdx < matrix.getColumns() ) {
       const Index lastIdx = min( matrix.getColumns(), columnIdx + inVectorCacheSize );
       Index matrixColIdx = columnIdx + threadIdx.x;
       Index cacheColIdx = threadIdx.x;
-      while( matrixColIdx < lastIdx )
-      {
+      while( matrixColIdx < lastIdx ) {
          inVectorCache[ cacheColIdx ] = inVector[ matrixColIdx ];
          cacheColIdx += 256;
          matrixColIdx += 256;
@@ -56,8 +60,7 @@ VectorColumnMajorDenseMatrixViewVectorMultiplicationKernel( const Matrix matrix,
       matrixColIdx = columnIdx + localColIdx;
       cacheColIdx = localColIdx;
       if( rowIdx < end )
-         while( matrixColIdx < lastIdx )
-         {
+         while( matrixColIdx < lastIdx ) {
             result += values[ valuesPtr ] * inVectorCache[ cacheColIdx ];
             cacheColIdx += ThreadsPerRow;
             matrixColIdx += ThreadsPerRow;
@@ -85,12 +88,18 @@ VectorColumnMajorDenseMatrixViewVectorMultiplicationKernel( const Matrix matrix,
 }
 
 template< typename Matrix, typename InVector, typename OutVector >
-__global__ void
-ColumnMajorDenseMatrixViewVectorMultiplicationKernel( const Matrix matrix, const InVector inVector, OutVector outVector, const int begin, const int end, int gridIdx )
+__global__
+void
+ColumnMajorDenseMatrixViewVectorMultiplicationKernel( const Matrix matrix,
+                                                      const InVector inVector,
+                                                      OutVector outVector,
+                                                      const int begin,
+                                                      const int end,
+                                                      int gridIdx )
 {
    using Real = typename Matrix::RealType;
    using Index = typename Matrix::IndexType;
-   constexpr int  inVectorCacheSize = 20480 / sizeof( Real );
+   constexpr int inVectorCacheSize = 20480 / sizeof( Real );
    __shared__ Real inVectorCache[ inVectorCacheSize ];
 
    const int rowIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * 256 + threadIdx.x + begin;
@@ -101,13 +110,11 @@ ColumnMajorDenseMatrixViewVectorMultiplicationKernel( const Matrix matrix, const
    const auto& rowsCount = matrix.getRows();
    Index valuesPtr = rowIdx;
 
-   while( columnIdx < matrix.getColumns() )
-   {
+   while( columnIdx < matrix.getColumns() ) {
       const Index lastIdx = min( matrix.getColumns(), columnIdx + inVectorCacheSize );
       Index matrixColIdx = columnIdx + threadIdx.x;
       Index cacheColIdx = threadIdx.x;
-      while( matrixColIdx < lastIdx )
-      {
+      while( matrixColIdx < lastIdx ) {
          inVectorCache[ cacheColIdx ] = inVector[ matrixColIdx ];
          cacheColIdx += 256;
          matrixColIdx += 256;
@@ -117,8 +124,7 @@ ColumnMajorDenseMatrixViewVectorMultiplicationKernel( const Matrix matrix, const
       matrixColIdx = columnIdx;
       cacheColIdx = 0;
       if( rowIdx < end )
-         while( matrixColIdx < lastIdx )
-         {
+         while( matrixColIdx < lastIdx ) {
             result += values[ valuesPtr ] * inVectorCache[ cacheColIdx ];
             cacheColIdx++;
             matrixColIdx++;
@@ -131,20 +137,27 @@ ColumnMajorDenseMatrixViewVectorMultiplicationKernel( const Matrix matrix, const
 }
 
 template< typename Matrix, typename InVector, typename OutVector >
-__global__ void
-RowMajorDenseMatrixViewVectorMultiplicationKernel( const Matrix matrix, const InVector inVector, OutVector outVector, const int first, const int last, int gridIdx )
+__global__
+void
+RowMajorDenseMatrixViewVectorMultiplicationKernel( const Matrix matrix,
+                                                   const InVector inVector,
+                                                   OutVector outVector,
+                                                   const int first,
+                                                   const int last,
+                                                   int gridIdx )
 {
    using Real = typename Matrix::RealType;
    using Index = typename Matrix::IndexType;
-   constexpr int  inVectorCacheSize = 20480 / sizeof( Real );
+   constexpr int inVectorCacheSize = 20480 / sizeof( Real );
    __shared__ Real inVectorCache[ inVectorCacheSize ];
 
    constexpr int threadsPerRow = 32;
-   //const Index rowIdx = begin + ((gridIdx * noa::TNL::Cuda::getMaxGridXSize() ) + (blockIdx.x * blockDim.x) + threadIdx.x) / threadsPerRow;
-   const Index rowIdx = first + ( ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * 256 + threadIdx.x ) /  threadsPerRow;
+   // const Index rowIdx = begin + ((gridIdx * TNL::Cuda::getMaxGridXSize() ) + (blockIdx.x * blockDim.x) + threadIdx.x) /
+   // threadsPerRow;
+   const Index rowIdx = first + ( ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * 256 + threadIdx.x ) / threadsPerRow;
 
    Real result = 0.0;
-   const Index laneID = threadIdx.x & 31; // & is cheaper than %
+   const Index laneID = threadIdx.x & 31;  // & is cheaper than %
    const Real* values = matrix.getValues().getData();
 
    Index columnIdx( 0 );
@@ -174,8 +187,7 @@ RowMajorDenseMatrixViewVectorMultiplicationKernel( const Matrix matrix, const In
       columnIdx = lastIdx;
    }*/
 
-   if( rowIdx < last )
-   {
+   if( rowIdx < last ) {
       const Index begin = rowIdx * matrix.getColumns();
       const Index end = begin + matrix.getColumns();
 
@@ -183,19 +195,18 @@ RowMajorDenseMatrixViewVectorMultiplicationKernel( const Matrix matrix, const In
          result += values[ i ] * inVector[ columnIdx ];
    }
 
-   if( rowIdx < last )
-   {
+   if( rowIdx < last ) {
       // Reduction
       if( threadsPerRow > 16 )
-         result += __shfl_down_sync(0xFFFFFFFF, result, 16 );
+         result += __shfl_down_sync( 0xFFFFFFFF, result, 16 );
       if( threadsPerRow > 8 )
-         result += __shfl_down_sync(0xFFFFFFFF, result,  8 );
+         result += __shfl_down_sync( 0xFFFFFFFF, result, 8 );
       if( threadsPerRow > 4 )
-         result += __shfl_down_sync(0xFFFFFFFF, result,  4 );
+         result += __shfl_down_sync( 0xFFFFFFFF, result, 4 );
       if( threadsPerRow > 2 )
-         result += __shfl_down_sync(0xFFFFFFFF, result,  2 );
+         result += __shfl_down_sync( 0xFFFFFFFF, result, 2 );
       if( threadsPerRow > 1 )
-         result += __shfl_down_sync(0xFFFFFFFF, result,  1 );
+         result += __shfl_down_sync( 0xFFFFFFFF, result, 1 );
       // Write result
       if( laneID == 0 )
          outVector[ rowIdx ] = result;
@@ -203,200 +214,136 @@ RowMajorDenseMatrixViewVectorMultiplicationKernel( const Matrix matrix, const In
 }
 #endif
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
 __cuda_callable__
-DenseMatrixView< Real, Device, Index, Organization >::
-DenseMatrixView()
-{
-}
+DenseMatrixView< Real, Device, Index, Organization >::DenseMatrixView() = default;
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
 __cuda_callable__
-DenseMatrixView< Real, Device, Index, Organization >::
-DenseMatrixView( const IndexType rows,
-                 const IndexType columns,
-                 const ValuesViewType& values )
- : MatrixView< Real, Device, Index >( rows, columns, values ), segments( rows, columns )
-{
-}
+DenseMatrixView< Real, Device, Index, Organization >::DenseMatrixView( const IndexType rows,
+                                                                       const IndexType columns,
+                                                                       const ValuesViewType& values )
+: MatrixView< Real, Device, Index >( rows, columns, values ), segments( rows, columns )
+{}
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename Value_ >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename Value_ >
 __cuda_callable__
-DenseMatrixView< Real, Device, Index, Organization >::
-DenseMatrixView( const IndexType rows,
-                 const IndexType columns,
-                 const Containers::VectorView< Value_, Device, Index >& values )
- : MatrixView< Real, Device, Index >( rows, columns, values ), segments( rows, columns, true )
-{
-}
+DenseMatrixView< Real, Device, Index, Organization >::DenseMatrixView(
+   const IndexType rows,
+   const IndexType columns,
+   const Containers::VectorView< Value_, Device, Index >& values )
+: MatrixView< Real, Device, Index >( rows, columns, values ), segments( rows, columns, true )
+{}
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
 __cuda_callable__
 auto
-DenseMatrixView< Real, Device, Index, Organization >::
-getView() -> ViewType
+DenseMatrixView< Real, Device, Index, Organization >::getView() -> ViewType
 {
-   return ViewType( this->getRows(),
-                    this->getColumns(),
-                    this->getValues().getView() );
+   return ViewType( this->getRows(), this->getColumns(), this->getValues().getView() );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
 __cuda_callable__
 auto
-DenseMatrixView< Real, Device, Index, Organization >::
-getConstView() const -> ConstViewType
+DenseMatrixView< Real, Device, Index, Organization >::getConstView() const -> ConstViewType
 {
-   return ConstViewType( this->getRows(),
-                         this->getColumns(),
-                         this->getValues().getConstView(),
-                         this->getColumnsIndexes().getConstView() );
+   return ConstViewType(
+      this->getRows(), this->getColumns(), this->getValues().getConstView(), this->getColumnsIndexes().getConstView() );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-String
-DenseMatrixView< Real, Device, Index, Organization >::
-getSerializationType()
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+std::string
+DenseMatrixView< Real, Device, Index, Organization >::getSerializationType()
 {
-   return String( "Matrices::DenseMatrix< " ) +
-      noa::TNL::getSerializationType< RealType >() + ", [any_device], " +
-      noa::TNL::getSerializationType< IndexType >() + ", " +
-      noa::TNL::getSerializationType( Organization ) + " >";
+   return "Matrices::DenseMatrix< " + TNL::getSerializationType< RealType >() + ", [any_device], "
+        + TNL::getSerializationType< IndexType >() + ", " + TNL::getSerializationType( Organization ) + " >";
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-String
-DenseMatrixView< Real, Device, Index, Organization >::
-getSerializationTypeVirtual() const
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+std::string
+DenseMatrixView< Real, Device, Index, Organization >::getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename Vector >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename Vector >
 void
-DenseMatrixView< Real, Device, Index, Organization >::
-getRowCapacities( Vector& rowCapacities ) const
+DenseMatrixView< Real, Device, Index, Organization >::getRowCapacities( Vector& rowCapacities ) const
 {
    rowCapacities.setSize( this->getRows() );
    rowCapacities = this->getColumns();
 }
 
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename Vector >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename Vector >
 void
-DenseMatrixView< Real, Device, Index, Organization >::
-getCompressedRowLengths( Vector& rowLengths ) const
+DenseMatrixView< Real, Device, Index, Organization >::getCompressedRowLengths( Vector& rowLengths ) const
 {
    rowLengths.setSize( this->getRows() );
    rowLengths = 0;
    auto rowLengths_view = rowLengths.getView();
-   auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, const RealType& value ) -> IndexType {
+   auto fetch = [] __cuda_callable__( IndexType row, IndexType column, const RealType& value ) -> IndexType
+   {
       return ( value != 0.0 );
    };
-   auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
+   auto keep = [ = ] __cuda_callable__( const IndexType rowIdx, const IndexType value ) mutable
+   {
       rowLengths_view[ rowIdx ] = value;
    };
    this->reduceAllRows( fetch, std::plus<>{}, keep, 0 );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
 Index
-DenseMatrixView< Real, Device, Index, Organization >::
-getAllocatedElementsCount() const
+DenseMatrixView< Real, Device, Index, Organization >::getAllocatedElementsCount() const
 {
    return this->getRows() * this->getColumns();
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
 Index
-DenseMatrixView< Real, Device, Index, Organization >::
-getNonzeroElementsCount() const
+DenseMatrixView< Real, Device, Index, Organization >::getNonzeroElementsCount() const
 {
    const auto values_view = this->values.getConstView();
-   auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> IndexType {
+   auto fetch = [ = ] __cuda_callable__( const IndexType i ) -> IndexType
+   {
       return ( values_view[ i ] != 0.0 );
    };
    return Algorithms::reduce< DeviceType >( (IndexType) 0, this->values.getSize(), fetch, std::plus<>{}, 0 );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
 void
-DenseMatrixView< Real, Device, Index, Organization >::
-setValue( const Real& value )
+DenseMatrixView< Real, Device, Index, Organization >::setValue( const Real& value )
 {
    this->values = value;
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-__cuda_callable__ auto
-DenseMatrixView< Real, Device, Index, Organization >::
-getRow( const IndexType& rowIdx ) const -> const RowView
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+__cuda_callable__
+auto
+DenseMatrixView< Real, Device, Index, Organization >::getRow( const IndexType& rowIdx ) const -> const RowView
 {
    TNL_ASSERT_LT( rowIdx, this->getRows(), "Row index is larger than number of matrix rows." );
    return RowView( this->segments.getSegmentView( rowIdx ), this->values.getConstView() );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-__cuda_callable__ auto
-DenseMatrixView< Real, Device, Index, Organization >::
-getRow( const IndexType& rowIdx ) -> RowView
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+__cuda_callable__
+auto
+DenseMatrixView< Real, Device, Index, Organization >::getRow( const IndexType& rowIdx ) -> RowView
 {
    TNL_ASSERT_LT( rowIdx, this->getRows(), "Row index is larger than number of matrix rows." );
    return RowView( this->segments.getSegmentView( rowIdx ), this->values.getView() );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
 __cuda_callable__
-Real& DenseMatrixView< Real, Device, Index, Organization >::operator()( const IndexType row,
-                                                const IndexType column )
+Real&
+DenseMatrixView< Real, Device, Index, Organization >::operator()( const IndexType row, const IndexType column )
 {
    TNL_ASSERT_GE( row, 0, "Row index must be non-negative." );
    TNL_ASSERT_LT( row, this->getRows(), "Row index is out of bounds." );
@@ -406,13 +353,10 @@ Real& DenseMatrixView< Real, Device, Index, Organization >::operator()( const In
    return this->values.operator[]( this->getElementIndex( row, column ) );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
 __cuda_callable__
-const Real& DenseMatrixView< Real, Device, Index, Organization >::operator()( const IndexType row,
-                                                      const IndexType column ) const
+const Real&
+DenseMatrixView< Real, Device, Index, Organization >::operator()( const IndexType row, const IndexType column ) const
 {
    TNL_ASSERT_GE( row, 0, "Row index must be non-negative." );
    TNL_ASSERT_LT( row, this->getRows(), "Row index is out of bounds." );
@@ -422,290 +366,234 @@ const Real& DenseMatrixView< Real, Device, Index, Organization >::operator()( co
    return this->values.operator[]( this->getElementIndex( row, column ) );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-__cuda_callable__ void
-DenseMatrixView< Real, Device, Index, Organization >::
-setElement( const IndexType row,
-            const IndexType column,
-            const RealType& value )
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+__cuda_callable__
+void
+DenseMatrixView< Real, Device, Index, Organization >::setElement( const IndexType row,
+                                                                  const IndexType column,
+                                                                  const RealType& value )
 {
    this->values.setElement( this->getElementIndex( row, column ), value );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-__cuda_callable__ void
-DenseMatrixView< Real, Device, Index, Organization >::
-addElement( const IndexType row,
-            const IndexType column,
-            const RealType& value,
-            const RealType& thisElementMultiplicator )
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+__cuda_callable__
+void
+DenseMatrixView< Real, Device, Index, Organization >::addElement( const IndexType row,
+                                                                  const IndexType column,
+                                                                  const RealType& value,
+                                                                  const RealType& thisElementMultiplicator )
 {
    const IndexType elementIndex = this->getElementIndex( row, column );
    if( thisElementMultiplicator == 1.0 )
-      this->values.setElement( elementIndex,
-                               this->values.getElement( elementIndex ) + value );
+      this->values.setElement( elementIndex, this->values.getElement( elementIndex ) + value );
    else
-      this->values.setElement( elementIndex,
-                               thisElementMultiplicator * this->values.getElement( elementIndex ) + value );
+      this->values.setElement( elementIndex, thisElementMultiplicator * this->values.getElement( elementIndex ) + value );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-__cuda_callable__ Real
-DenseMatrixView< Real, Device, Index, Organization >::
-getElement( const IndexType row,
-            const IndexType column ) const
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+__cuda_callable__
+Real
+DenseMatrixView< Real, Device, Index, Organization >::getElement( const IndexType row, const IndexType column ) const
 {
    return this->values.getElement( this->getElementIndex( row, column ) );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
 void
-DenseMatrixView< Real, Device, Index, Organization >::
-reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& identity )
+DenseMatrixView< Real, Device, Index, Organization >::reduceRows( IndexType begin,
+                                                                  IndexType end,
+                                                                  Fetch& fetch,
+                                                                  const Reduce& reduce,
+                                                                  Keep& keep,
+                                                                  const FetchValue& identity )
 {
    auto values_view = this->values.getView();
-   auto fetch_ = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, bool& compute ) mutable -> decltype( fetch( IndexType(), IndexType(), RealType() ) ) {
-         return fetch( rowIdx, columnIdx, values_view[ globalIdx ] );
+   auto fetch_ = [ = ] __cuda_callable__( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, bool& compute ) mutable
+      -> decltype( fetch( IndexType(), IndexType(), RealType() ) )
+   {
+      return fetch( rowIdx, columnIdx, values_view[ globalIdx ] );
       return identity;
    };
    this->segments.reduceSegments( begin, end, fetch_, reduce, keep, identity );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
 void
-DenseMatrixView< Real, Device, Index, Organization >::
-reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& identity ) const
+DenseMatrixView< Real, Device, Index, Organization >::reduceRows( IndexType begin,
+                                                                  IndexType end,
+                                                                  Fetch& fetch,
+                                                                  const Reduce& reduce,
+                                                                  Keep& keep,
+                                                                  const FetchValue& identity ) const
 {
    const auto values_view = this->values.getConstView();
-   auto fetch_ = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, bool& compute ) mutable -> decltype( fetch( IndexType(), IndexType(), RealType() ) ) {
-         return fetch( rowIdx, columnIdx, values_view[ globalIdx ] );
+   auto fetch_ = [ = ] __cuda_callable__( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, bool& compute ) mutable
+      -> decltype( fetch( IndexType(), IndexType(), RealType() ) )
+   {
+      return fetch( rowIdx, columnIdx, values_view[ globalIdx ] );
       return identity;
    };
    this->segments.reduceSegments( begin, end, fetch_, reduce, keep, identity );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
-DenseMatrixView< Real, Device, Index, Organization >::
-reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& identity )
+DenseMatrixView< Real, Device, Index, Organization >::reduceAllRows( Fetch& fetch,
+                                                                     const Reduce& reduce,
+                                                                     Keep& keep,
+                                                                     const FetchReal& identity )
 {
    this->reduceRows( (IndexType) 0, this->getRows(), fetch, reduce, keep, identity );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
-DenseMatrixView< Real, Device, Index, Organization >::
-reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& identity ) const
+DenseMatrixView< Real, Device, Index, Organization >::reduceAllRows( Fetch& fetch,
+                                                                     const Reduce& reduce,
+                                                                     Keep& keep,
+                                                                     const FetchReal& identity ) const
 {
    this->reduceRows( (IndexType) 0, this->getRows(), fetch, reduce, keep, identity );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename Function >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename Function >
 void
-DenseMatrixView< Real, Device, Index, Organization >::
-forElements( IndexType begin, IndexType end, Function&& function ) const
+DenseMatrixView< Real, Device, Index, Organization >::forElements( IndexType begin, IndexType end, Function&& function ) const
 {
    const auto values_view = this->values.getConstView();
-   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx ) mutable {
+   auto f = [ = ] __cuda_callable__( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx ) mutable
+   {
       function( rowIdx, columnIdx, columnIdx, values_view[ globalIdx ] );
    };
    this->segments.forElements( begin, end, f );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename Function >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename Function >
 void
-DenseMatrixView< Real, Device, Index, Organization >::
-forElements( IndexType begin, IndexType end, Function&& function )
+DenseMatrixView< Real, Device, Index, Organization >::forElements( IndexType begin, IndexType end, Function&& function )
 {
    auto values_view = this->values.getView();
-   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx ) mutable {
+   auto f = [ = ] __cuda_callable__( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx ) mutable
+   {
       function( rowIdx, columnIdx, globalIdx, values_view[ globalIdx ] );
    };
    this->segments.forElements( begin, end, f );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename Function >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename Function >
 void
-DenseMatrixView< Real, Device, Index, Organization >::
-forAllElements( Function&& function ) const
+DenseMatrixView< Real, Device, Index, Organization >::forAllElements( Function&& function ) const
 {
    this->forElements( (IndexType) 0, this->getRows(), function );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename Function >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename Function >
 void
-DenseMatrixView< Real, Device, Index, Organization >::
-forAllElements( Function&& function )
+DenseMatrixView< Real, Device, Index, Organization >::forAllElements( Function&& function )
 {
    this->forElements( (IndexType) 0, this->getRows(), function );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename Function >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename Function >
 void
-DenseMatrixView< Real, Device, Index, Organization >::
-forRows( IndexType begin, IndexType end, Function&& function )
+DenseMatrixView< Real, Device, Index, Organization >::forRows( IndexType begin, IndexType end, Function&& function )
 {
    auto values_view = this->values.getView();
    using SegmentViewType = typename SegmentsViewType::SegmentViewType;
-   auto f = [=] __cuda_callable__ ( SegmentViewType& segmentView ) mutable {
+   auto f = [ = ] __cuda_callable__( SegmentViewType & segmentView ) mutable
+   {
       auto rowView = RowView( segmentView, values_view );
       function( rowView );
    };
    this->segments.forSegments( begin, end, f );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename Function >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename Function >
 void
-DenseMatrixView< Real, Device, Index, Organization >::
-forRows( IndexType begin, IndexType end, Function&& function ) const
+DenseMatrixView< Real, Device, Index, Organization >::forRows( IndexType begin, IndexType end, Function&& function ) const
 {
    const auto values_view = this->values.getConstView();
    using SegmentViewType = typename SegmentsViewType::SegmentViewType;
-   auto f = [=] __cuda_callable__ ( SegmentViewType&& segmentView ) mutable {
+   auto f = [ = ] __cuda_callable__( SegmentViewType && segmentView ) mutable
+   {
       const auto rowView = RowViewType( segmentView, values_view );
       function( rowView );
    };
    this->segments.forSegments( begin, end, f );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename Function >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename Function >
 void
-DenseMatrixView< Real, Device, Index, Organization >::
-forAllRows( Function&& function )
+DenseMatrixView< Real, Device, Index, Organization >::forAllRows( Function&& function )
 {
    this->forRows( (IndexType) 0, this->getRows(), function );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename Function >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename Function >
 void
-DenseMatrixView< Real, Device, Index, Organization >::
-forAllRows( Function&& function ) const
+DenseMatrixView< Real, Device, Index, Organization >::forAllRows( Function&& function ) const
 {
    this->forRows( (IndexType) 0, this->getRows(), function );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename Function >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename Function >
 void
-DenseMatrixView< Real, Device, Index, Organization >::
-sequentialForRows( IndexType begin, IndexType end, Function&& function ) const
+DenseMatrixView< Real, Device, Index, Organization >::sequentialForRows( IndexType begin,
+                                                                         IndexType end,
+                                                                         Function&& function ) const
 {
-   for( IndexType row = begin; row < end; row ++ )
+   for( IndexType row = begin; row < end; row++ )
       this->forRows( row, row + 1, function );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename Function >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename Function >
 void
-DenseMatrixView< Real, Device, Index, Organization >::
-sequentialForRows( IndexType begin, IndexType end, Function&& function )
+DenseMatrixView< Real, Device, Index, Organization >::sequentialForRows( IndexType begin, IndexType end, Function&& function )
 {
-   for( IndexType row = begin; row < end; row ++ )
+   for( IndexType row = begin; row < end; row++ )
       this->forRows( row, row + 1, function );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename Function >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename Function >
 void
-DenseMatrixView< Real, Device, Index, Organization >::
-sequentialForAllRows( Function&& function ) const
+DenseMatrixView< Real, Device, Index, Organization >::sequentialForAllRows( Function&& function ) const
 {
    this->sequentialForRows( (IndexType) 0, this->getRows(), function );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename Function >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename Function >
 void
-DenseMatrixView< Real, Device, Index, Organization >::
-sequentialForAllRows( Function&& function )
+DenseMatrixView< Real, Device, Index, Organization >::sequentialForAllRows( Function&& function )
 {
    this->sequentialForRows( (IndexType) 0, this->getRows(), function );
 }
 
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename InVector,
-             typename OutVector >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename InVector, typename OutVector >
 void
-DenseMatrixView< Real, Device, Index, Organization >::
-vectorProduct( const InVector& inVector,
-               OutVector& outVector,
-               const RealType& matrixMultiplicator,
-               const RealType& outVectorMultiplicator,
-               const IndexType begin,
-               IndexType end ) const
+DenseMatrixView< Real, Device, Index, Organization >::vectorProduct( const InVector& inVector,
+                                                                     OutVector& outVector,
+                                                                     const RealType& matrixMultiplicator,
+                                                                     const RealType& outVectorMultiplicator,
+                                                                     const IndexType begin,
+                                                                     IndexType end ) const
 {
    TNL_ASSERT_EQ( this->getColumns(), inVector.getSize(), "Matrix columns count differs with input vector size." );
    TNL_ASSERT_EQ( this->getRows(), outVector.getSize(), "Matrix rows count differs with output vector size." );
@@ -716,42 +604,38 @@ vectorProduct( const InVector& inVector,
    if( end == 0 )
       end = this->getRows();
 
-   if( std::is_same< DeviceType, Devices::Cuda >::value &&
-      matrixMultiplicator == 1.0 && outVectorMultiplicator == 0.0 )
-   {
+   if( std::is_same< DeviceType, Devices::Cuda >::value && matrixMultiplicator == 1.0 && outVectorMultiplicator == 0.0 ) {
 #ifdef HAVE_CUDA
-      if( Organization == Algorithms::Segments::ColumnMajorOrder )
-      {
+      if( Organization == Algorithms::Segments::ColumnMajorOrder ) {
          constexpr int BlockSize = 256;
          constexpr int ThreadsPerRow = 1;
          const size_t threadsCount = ( end - begin ) * ThreadsPerRow;
          const size_t blocksCount = roundUpDivision( threadsCount, BlockSize );
          const size_t gridsCount = roundUpDivision( blocksCount, Cuda::getMaxGridSize() );
          const size_t sharedMemSize = 20480;
-         for( size_t gridIdx = 0; gridIdx < gridsCount; gridIdx++ )
-         {
+         for( size_t gridIdx = 0; gridIdx < gridsCount; gridIdx++ ) {
             dim3 blocks( Cuda::getMaxGridSize() );
             if( gridIdx == gridsCount - 1 )
                blocks = blocksCount % Cuda::getMaxGridSize();
-            ColumnMajorDenseMatrixViewVectorMultiplicationKernel<<< blocks, BlockSize, sharedMemSize >>>( *this, inVectorView, outVectorView, begin, end, gridIdx );
+            ColumnMajorDenseMatrixViewVectorMultiplicationKernel<<< blocks, BlockSize,
+               sharedMemSize >>>( *this, inVectorView, outVectorView, begin, end, gridIdx );
          }
          TNL_CHECK_CUDA_DEVICE;
          return;
       }
-      if( Organization == Algorithms::Segments::RowMajorOrder )
-      {
+      if( Organization == Algorithms::Segments::RowMajorOrder ) {
          constexpr int BlockSize = 256;
          constexpr int ThreadsPerRow = 32;
          const size_t threadsCount = ( end - begin ) * ThreadsPerRow;
          const size_t blocksCount = roundUpDivision( threadsCount, BlockSize );
          const size_t gridsCount = roundUpDivision( blocksCount, Cuda::getMaxGridSize() );
          const size_t sharedMemSize = 20480;
-         for( size_t gridIdx = 0; gridIdx < gridsCount; gridIdx++ )
-         {
+         for( size_t gridIdx = 0; gridIdx < gridsCount; gridIdx++ ) {
             dim3 blocks( Cuda::getMaxGridSize() );
             if( gridIdx == gridsCount - 1 )
                blocks = blocksCount % Cuda::getMaxGridSize();
-            RowMajorDenseMatrixViewVectorMultiplicationKernel<<< blocks, BlockSize, sharedMemSize >>>( *this, inVectorView, outVectorView, begin, end, gridIdx );
+            RowMajorDenseMatrixViewVectorMultiplicationKernel<<< blocks, BlockSize,
+               sharedMemSize >>>( *this, inVectorView, outVectorView, begin, end, gridIdx );
          }
          TNL_CHECK_CUDA_DEVICE;
          return;
@@ -764,55 +648,53 @@ vectorProduct( const InVector& inVector,
     * The rest is general implementation based on segments
     */
 
-   auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType column, IndexType offset, bool& compute ) -> RealType {
+   auto fetch = [ = ] __cuda_callable__( IndexType row, IndexType column, IndexType offset, bool& compute ) -> RealType
+   {
       return valuesView[ offset ] * inVectorView[ column ];
    };
-   auto keeperGeneral = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
+   auto keeperGeneral = [ = ] __cuda_callable__( IndexType row, const RealType& value ) mutable
+   {
       outVectorView[ row ] = matrixMultiplicator * value + outVectorMultiplicator * outVectorView[ row ];
    };
-   auto keeperDirect = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
+   auto keeperDirect = [ = ] __cuda_callable__( IndexType row, const RealType& value ) mutable
+   {
       outVectorView[ row ] = value;
    };
-   auto keeperMatrixMult = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
+   auto keeperMatrixMult = [ = ] __cuda_callable__( IndexType row, const RealType& value ) mutable
+   {
       outVectorView[ row ] = matrixMultiplicator * value;
    };
-   auto keeperVectorMult = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
+   auto keeperVectorMult = [ = ] __cuda_callable__( IndexType row, const RealType& value ) mutable
+   {
       outVectorView[ row ] = outVectorMultiplicator * outVectorView[ row ] + value;
    };
 
-   if( outVectorMultiplicator == 0.0 )
-   {
+   if( outVectorMultiplicator == 0.0 ) {
       if( matrixMultiplicator == 1.0 )
-         this->segments.reduceSegments( begin, end, fetch, std::plus<>{}, keeperDirect, ( RealType ) 0.0 );
+         this->segments.reduceSegments( begin, end, fetch, std::plus<>{}, keeperDirect, (RealType) 0.0 );
       else
-         this->segments.reduceSegments( begin, end, fetch, std::plus<>{}, keeperMatrixMult, ( RealType ) 0.0 );
+         this->segments.reduceSegments( begin, end, fetch, std::plus<>{}, keeperMatrixMult, (RealType) 0.0 );
    }
-   else
-   {
+   else {
       if( matrixMultiplicator == 1.0 )
-         this->segments.reduceSegments( begin, end, fetch, std::plus<>{}, keeperVectorMult, ( RealType ) 0.0 );
+         this->segments.reduceSegments( begin, end, fetch, std::plus<>{}, keeperVectorMult, (RealType) 0.0 );
       else
-         this->segments.reduceSegments( begin, end, fetch, std::plus<>{}, keeperGeneral, ( RealType ) 0.0 );
+         this->segments.reduceSegments( begin, end, fetch, std::plus<>{}, keeperGeneral, (RealType) 0.0 );
    }
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename Matrix >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename Matrix >
 void
-DenseMatrixView< Real, Device, Index, Organization >::
-addMatrix( const Matrix& matrix,
-           const RealType& matrixMultiplicator,
-           const RealType& thisMatrixMultiplicator )
+DenseMatrixView< Real, Device, Index, Organization >::addMatrix( const Matrix& matrix,
+                                                                 const RealType& matrixMultiplicator,
+                                                                 const RealType& thisMatrixMultiplicator )
 {
-   TNL_ASSERT( this->getColumns() == matrix.getColumns() &&
-              this->getRows() == matrix.getRows(),
-            std::cerr << "This matrix columns: " << this->getColumns() << std::endl
-                 << "This matrix rows: " << this->getRows() << std::endl
-                 << "That matrix columns: " << matrix.getColumns() << std::endl
-                 << "That matrix rows: " << matrix.getRows() << std::endl );
+   TNL_ASSERT( this->getColumns() == matrix.getColumns() && this->getRows() == matrix.getRows(),
+               std::cerr << "This matrix columns: " << this->getColumns() << std::endl
+                         << "This matrix rows: " << this->getRows() << std::endl
+                         << "That matrix columns: " << matrix.getColumns() << std::endl
+                         << "That matrix rows: " << matrix.getRows() << std::endl );
 
    if( thisMatrixMultiplicator == 1.0 )
       this->values += matrixMultiplicator * matrix.values;
@@ -820,48 +702,42 @@ addMatrix( const Matrix& matrix,
       this->values = thisMatrixMultiplicator * this->values + matrixMultiplicator * matrix.values;
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename Matrix1, typename Matrix2, int tileDim >
-void DenseMatrixView< Real, Device, Index, Organization >::getMatrixProduct( const Matrix1& matrix1,
-                                                              const Matrix2& matrix2,
-                                                              const RealType& matrix1Multiplicator,
-                                                              const RealType& matrix2Multiplicator )
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename Matrix1, typename Matrix2, int tileDim >
+void
+DenseMatrixView< Real, Device, Index, Organization >::getMatrixProduct( const Matrix1& matrix1,
+                                                                        const Matrix2& matrix2,
+                                                                        const RealType& matrix1Multiplicator,
+                                                                        const RealType& matrix2Multiplicator )
 {
-   TNL_ASSERT( matrix1.getColumns() == matrix2.getRows() &&
-              this->getRows() == matrix1.getRows() &&
-              this->getColumns() == matrix2.getColumns(),
-            std::cerr << "This matrix columns: " << this->getColumns() << std::endl
-                 << "This matrix rows: " << this->getRows() << std::endl
-                 << "Matrix1 columns: " << matrix1.getColumns() << std::endl
-                 << "Matrix1 rows: " << matrix1.getRows() << std::endl
-                 << "Matrix2 columns: " << matrix2.getColumns() << std::endl
-                 << "Matrix2 rows: " << matrix2.getRows() << std::endl );
+   TNL_ASSERT( matrix1.getColumns() == matrix2.getRows() && this->getRows() == matrix1.getRows()
+                  && this->getColumns() == matrix2.getColumns(),
+               std::cerr << "This matrix columns: " << this->getColumns() << std::endl
+                         << "This matrix rows: " << this->getRows() << std::endl
+                         << "Matrix1 columns: " << matrix1.getColumns() << std::endl
+                         << "Matrix1 rows: " << matrix1.getRows() << std::endl
+                         << "Matrix2 columns: " << matrix2.getColumns() << std::endl
+                         << "Matrix2 rows: " << matrix2.getRows() << std::endl );
 
    if( std::is_same< Device, Devices::Host >::value )
       for( IndexType i = 0; i < this->getRows(); i += tileDim )
-         for( IndexType j = 0; j < this->getColumns(); j += tileDim )
-         {
+         for( IndexType j = 0; j < this->getColumns(); j += tileDim ) {
             const IndexType tileRows = min( tileDim, this->getRows() - i );
             const IndexType tileColumns = min( tileDim, this->getColumns() - j );
             for( IndexType i1 = i; i1 < i + tileRows; i1++ )
                for( IndexType j1 = j; j1 < j + tileColumns; j1++ )
                   this->setElementFast( i1, j1, 0.0 );
 
-            for( IndexType k = 0; k < matrix1.getColumns(); k += tileDim )
-            {
+            for( IndexType k = 0; k < matrix1.getColumns(); k += tileDim ) {
                const IndexType lastK = min( k + tileDim, matrix1.getColumns() );
                for( IndexType i1 = 0; i1 < tileRows; i1++ )
                   for( IndexType j1 = 0; j1 < tileColumns; j1++ )
                      for( IndexType k1 = k; k1 < lastK; k1++ )
-                        this->addElementFast( i + i1, j + j1,
-                            matrix1.getElementFast( i + i1, k1 ) * matrix2.getElementFast( k1, j + j1 ) );
+                        this->addElementFast(
+                           i + i1, j + j1, matrix1.getElementFast( i + i1, k1 ) * matrix2.getElementFast( k1, j + j1 ) );
             }
          }
-   if( std::is_same< Device, Devices::Cuda >::value )
-   {
+   if( std::is_same< Device, Devices::Cuda >::value ) {
 #ifdef HAVE_CUDA
       /*dim3 cudaBlockSize( 0 ), cudaGridSize( 0 );
       const IndexType matrixProductCudaBlockSize( 256 );
@@ -909,34 +785,28 @@ void DenseMatrixView< Real, Device, Index, Organization >::getMatrixProduct( con
    }
 }
 
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename Matrix, int tileDim >
-void DenseMatrixView< Real, Device, Index, Organization >::getTransposition( const Matrix& matrix,
-                                                              const RealType& matrixMultiplicator )
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename Matrix, int tileDim >
+void
+DenseMatrixView< Real, Device, Index, Organization >::getTransposition( const Matrix& matrix,
+                                                                        const RealType& matrixMultiplicator )
 {
-   TNL_ASSERT( this->getColumns() == matrix.getRows() &&
-              this->getRows() == matrix.getColumns(),
+   TNL_ASSERT( this->getColumns() == matrix.getRows() && this->getRows() == matrix.getColumns(),
                std::cerr << "This matrix columns: " << this->getColumns() << std::endl
-                    << "This matrix rows: " << this->getRows() << std::endl
-                    << "That matrix columns: " << matrix.getColumns() << std::endl
-                    << "That matrix rows: " << matrix.getRows() << std::endl );
+                         << "This matrix rows: " << this->getRows() << std::endl
+                         << "That matrix columns: " << matrix.getColumns() << std::endl
+                         << "That matrix rows: " << matrix.getRows() << std::endl );
 
-   if( std::is_same< Device, Devices::Host >::value )
-   {
+   if( std::is_same< Device, Devices::Host >::value ) {
       const IndexType& rows = matrix.getRows();
       const IndexType& columns = matrix.getColumns();
       for( IndexType i = 0; i < rows; i += tileDim )
          for( IndexType j = 0; j < columns; j += tileDim )
             for( IndexType k = i; k < i + tileDim && k < rows; k++ )
                for( IndexType l = j; l < j + tileDim && l < columns; l++ )
-                  this->setElement( l, k, matrixMultiplicator * matrix. getElement( k, l ) );
+                  this->setElement( l, k, matrixMultiplicator * matrix.getElement( k, l ) );
    }
-   if( std::is_same< Device, Devices::Cuda >::value )
-   {
+   if( std::is_same< Device, Devices::Cuda >::value ) {
 #ifdef HAVE_CUDA
       /*dim3 cudaBlockSize( 0 ), cudaGridSize( 0 );
       const IndexType matrixProductCudaBlockSize( 256 );
@@ -1002,108 +872,81 @@ void DenseMatrixView< Real, Device, Index, Organization >::getTransposition( con
    }
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
 DenseMatrixView< Real, Device, Index, Organization >&
-DenseMatrixView< Real, Device, Index, Organization >::
-operator=( const DenseMatrixView& matrix )
+DenseMatrixView< Real, Device, Index, Organization >::operator=( const DenseMatrixView& matrix )
 {
    MatrixView< Real, Device, Index >::operator=( matrix );
    this->segments = matrix.segments;
    return *this;
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename Real_, typename Device_, typename Index_ >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename Real_, typename Device_, typename Index_ >
 bool
-DenseMatrixView< Real, Device, Index, Organization >::
-operator==( const DenseMatrixView< Real_, Device_, Index_, Organization >& matrix ) const
+DenseMatrixView< Real, Device, Index, Organization >::operator==(
+   const DenseMatrixView< Real_, Device_, Index_, Organization >& matrix ) const
 {
-   return( this->getRows() == matrix.getRows() &&
-           this->getColumns() == matrix.getColumns() &&
-           this->getValues() == matrix.getValues() );
+   return ( this->getRows() == matrix.getRows() && this->getColumns() == matrix.getColumns()
+            && this->getValues() == matrix.getValues() );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename Real_, typename Device_, typename Index_ >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename Real_, typename Device_, typename Index_ >
 bool
-DenseMatrixView< Real, Device, Index, Organization >::
-operator!=( const DenseMatrixView< Real_, Device_, Index_, Organization >& matrix ) const
+DenseMatrixView< Real, Device, Index, Organization >::operator!=(
+   const DenseMatrixView< Real_, Device_, Index_, Organization >& matrix ) const
 {
    return ! ( *this == matrix );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename Matrix >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename Matrix >
 bool
-DenseMatrixView< Real, Device, Index, Organization >::
-operator==( const Matrix& m ) const
+DenseMatrixView< Real, Device, Index, Organization >::operator==( const Matrix& m ) const
 {
    const auto& view1 = *this;
    const auto view2 = m.getConstView();
-   auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> bool
+   auto fetch = [ = ] __cuda_callable__( const IndexType i ) -> bool
    {
       return view1.getRow( i ) == view2.getRow( i );
    };
-   return Algorithms::reduce< DeviceType >( ( IndexType ) 0, this->getRows(), fetch, std::logical_and<>{}, true );
+   return Algorithms::reduce< DeviceType >( (IndexType) 0, this->getRows(), fetch, std::logical_and<>{}, true );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-   template< typename Matrix >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+template< typename Matrix >
 bool
-DenseMatrixView< Real, Device, Index, Organization >::
-operator!=( const Matrix& m ) const
+DenseMatrixView< Real, Device, Index, Organization >::operator!=( const Matrix& m ) const
 {
    return ! ( *this == m );
 }
 
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-void DenseMatrixView< Real, Device, Index, Organization >::save( const String& fileName ) const
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+void
+DenseMatrixView< Real, Device, Index, Organization >::save( const String& fileName ) const
 {
    Object::save( fileName );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-void DenseMatrixView< Real, Device, Index, Organization >::save( File& file ) const
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+void
+DenseMatrixView< Real, Device, Index, Organization >::save( File& file ) const
 {
    MatrixView< Real, Device, Index >::save( file );
    this->segments.save( file );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-void DenseMatrixView< Real, Device, Index, Organization >::print( std::ostream& str ) const
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
+void
+DenseMatrixView< Real, Device, Index, Organization >::print( std::ostream& str ) const
 {
-   for( IndexType row = 0; row < this->getRows(); row++ )
-   {
-      str <<"Row: " << row << " -> ";
-      for( IndexType column = 0; column < this->getColumns(); column++ )
-      {
+   for( IndexType row = 0; row < this->getRows(); row++ ) {
+      str << "Row: " << row << " -> ";
+      for( IndexType column = 0; column < this->getColumns(); column++ ) {
          std::stringstream str_;
-         str_ << std::setw( 4 ) << std::right << column << ":" << std::setw( 4 ) << std::left << this->getElement( row, column );
+         str_ << std::setw( 4 ) << std::right << column << ":" << std::setw( 4 ) << std::left
+              << this->getElement( row, column );
          str << std::setw( 10 ) << str_.str();
       }
       if( row < this->getRows() - 1 )
@@ -1111,16 +954,13 @@ void DenseMatrixView< Real, Device, Index, Organization >::print( std::ostream& 
    }
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
+template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
 __cuda_callable__
-Index DenseMatrixView< Real, Device, Index, Organization >::getElementIndex( const IndexType row,
-                                                              const IndexType column ) const
+Index
+DenseMatrixView< Real, Device, Index, Organization >::getElementIndex( const IndexType row, const IndexType column ) const
 {
    return this->segments.getGlobalIndex( row, column );
 }
 
-} // namespace Matrices
-} // namespace noa::TNL
+}  // namespace Matrices
+}  // namespace noa::TNL

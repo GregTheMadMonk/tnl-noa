@@ -22,40 +22,35 @@ template< typename MeshConfig,
           typename Device,
           typename EntityTopology,
           typename SubdimensionTag,
-          bool sensible = (SubdimensionTag::value < EntityTopology::dimension) >
+          bool sensible = ( SubdimensionTag::value < EntityTopology::dimension ) >
 struct WeakSubentityStorageTrait
 {
-   static constexpr bool storageEnabled = MeshTraits< MeshConfig, Device >::template SubentityTraits< EntityTopology, SubdimensionTag::value >::storageEnabled;
+   static constexpr bool storageEnabled =
+      MeshTraits< MeshConfig, Device >::template SubentityTraits< EntityTopology, SubdimensionTag::value >::storageEnabled;
 };
 
-template< typename MeshConfig,
-          typename Device,
-          typename EntityTopology,
-          typename SubdimensionTag >
+template< typename MeshConfig, typename Device, typename EntityTopology, typename SubdimensionTag >
 struct WeakSubentityStorageTrait< MeshConfig, Device, EntityTopology, SubdimensionTag, false >
 {
    static constexpr bool storageEnabled = false;
 };
 
-
 template< typename MeshConfig,
           typename Device,
           typename EntityTopology,
           typename SuperdimensionTag,
-          bool sensible = (SuperdimensionTag::value > EntityTopology::dimension) >
+          bool sensible = ( SuperdimensionTag::value > EntityTopology::dimension ) >
 struct WeakSuperentityStorageTrait
 {
-   static constexpr bool storageEnabled = MeshTraits< MeshConfig, Device >::template SuperentityTraits< EntityTopology, SuperdimensionTag::value >::storageEnabled;
+   static constexpr bool storageEnabled =
+      MeshTraits< MeshConfig, Device >::template SuperentityTraits< EntityTopology, SuperdimensionTag::value >::storageEnabled;
 };
 
-template< typename MeshConfig,
-          typename Device,
-          typename EntityTopology,
-          typename SuperdimensionTag >
+template< typename MeshConfig, typename Device, typename EntityTopology, typename SuperdimensionTag >
 struct WeakSuperentityStorageTrait< MeshConfig, Device, EntityTopology, SuperdimensionTag, false >
 {
    static constexpr bool storageEnabled = false;
 };
 
-} // namespace Meshes
-} // namespace noa::TNL
+}  // namespace Meshes
+}  // namespace noa::TNL

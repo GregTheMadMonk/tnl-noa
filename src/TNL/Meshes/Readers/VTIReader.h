@@ -15,11 +15,11 @@ namespace noa::TNL {
 namespace Meshes {
 namespace Readers {
 
-class VTIReader
-: public XMLVTK
+class VTIReader : public XMLVTK
 {
 #ifdef HAVE_TINYXML2
-   void readImageData()
+   void
+   readImageData()
    {
       // read the required attributes
       const std::string extent = getAttributeString( datasetElement, "WholeExtent" );
@@ -27,22 +27,22 @@ class VTIReader
       const std::string spacing = getAttributeString( datasetElement, "Spacing" );
 
       // check the <Piece> tag
-      using namespace noa::tinyxml2;
+      using namespace tinyxml2;
       const XMLElement* piece = getChildSafe( datasetElement, "Piece" );
-      if( piece->NextSiblingElement( "Piece" ) )
+      if( piece->NextSiblingElement( "Piece" ) != nullptr )
          // ambiguity - throw error, we don't know which piece to parse (or all of them?)
          throw MeshReaderError( "VTIReader", "the serial ImageData file contains more than one <Piece> element" );
       const std::string pieceExtent = getAttributeString( piece, "Extent" );
       if( pieceExtent != extent )
-         throw MeshReaderError( "VTIReader", "the <Piece> element has different extent than <ImageData> ("
-                                             + pieceExtent + " vs " + extent + ")" );
+         throw MeshReaderError(
+            "VTIReader", "the <Piece> element has different extent than <ImageData> (" + pieceExtent + " vs " + extent + ")" );
 
       // parse the extent
       {
          std::stringstream ss( extent );
          gridExtent.resize( 6, 0 );
          for( int i = 0; i < 6; i++ ) {
-            ss >> gridExtent[i];
+            ss >> gridExtent[ i ];
             // check conversion error
             if( ! ss.good() )
                throw MeshReaderError( "VTIReader", "invalid extent: not a number: " + extent );
@@ -59,7 +59,7 @@ class VTIReader
          std::stringstream ss( origin );
          gridOrigin.resize( 3 );
          for( int i = 0; i < 3; i++ ) {
-            ss >> gridOrigin[i];
+            ss >> gridOrigin[ i ];
             // check conversion error
             if( ! ss.good() )
                throw MeshReaderError( "VTIReader", "invalid origin: not a number: " + origin );
@@ -76,12 +76,12 @@ class VTIReader
          std::stringstream ss( spacing );
          gridSpacing.resize( 3 );
          for( int i = 0; i < 3; i++ ) {
-            ss >> gridSpacing[i];
+            ss >> gridSpacing[ i ];
             // check conversion error
             if( ! ss.good() )
                throw MeshReaderError( "VTIReader", "invalid spacing: not a number: " + spacing );
             // check negative numbers
-            if( gridSpacing[i] < 0 )
+            if( gridSpacing[ i ] < 0 )
                throw MeshReaderError( "VTIReader", "invalid spacing: negative number: " + spacing );
          }
          // check remaining characters
@@ -94,7 +94,7 @@ class VTIReader
       // determine the grid dimension
       int dim = 0;
       for( int i = 0; i < 3; i++ )
-         if( gridSpacing[i] > 0 )
+         if( gridSpacing[ i ] > 0 )
             dim++;
          else
             break;
@@ -119,11 +119,10 @@ class VTIReader
 public:
    VTIReader() = default;
 
-   VTIReader( const std::string& fileName )
-   : XMLVTK( fileName )
-   {}
+   VTIReader( const std::string& fileName ) : XMLVTK( fileName ) {}
 
-   virtual void detectMesh() override
+   void
+   detectMesh() override
    {
 #ifdef HAVE_TINYXML2
       reset();
@@ -139,7 +138,8 @@ public:
       if( fileType == "ImageData" )
          readImageData();
       else
-         throw MeshReaderError( "VTIReader", "the reader cannot read data of the type " + fileType + ". Use a different reader if possible." );
+         throw MeshReaderError(
+            "VTIReader", "the reader cannot read data of the type " + fileType + ". Use a different reader if possible." );
 
       // indicate success by setting the mesh type
       meshType = "Meshes::Grid";
@@ -149,6 +149,6 @@ public:
    }
 };
 
-} // namespace Readers
-} // namespace Meshes
-} // namespace noa::TNL
+}  // namespace Readers
+}  // namespace Meshes
+}  // namespace noa::TNL

@@ -12,8 +12,7 @@ namespace noa::TNL {
 namespace Devices {
 
 class AnyDevice
-{
-};
+{};
 
 template< typename Device >
 struct PickDevice
@@ -27,5 +26,5 @@ struct PickDevice< Devices::AnyDevice >
    using DeviceType = Devices::Host;
 };
 
-} // namespace Devices
-} // namespace noa::TNL
+}  // namespace Devices
+}  // namespace noa::TNL

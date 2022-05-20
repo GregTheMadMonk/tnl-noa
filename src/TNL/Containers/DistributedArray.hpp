@@ -13,69 +13,51 @@
 namespace noa::TNL {
 namespace Containers {
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-DistributedArray< Value, Device, Index, Allocator >::
-~DistributedArray()
+template< typename Value, typename Device, typename Index, typename Allocator >
+DistributedArray< Value, Device, Index, Allocator >::~DistributedArray()
 {
    // Wait for pending async operation, otherwise the synchronizer would crash
    // if the array goes out of scope.
    waitForSynchronization();
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-DistributedArray< Value, Device, Index, Allocator >::
-DistributedArray( const Allocator& allocator )
-: localData( allocator )
-{
-}
+template< typename Value, typename Device, typename Index, typename Allocator >
+DistributedArray< Value, Device, Index, Allocator >::DistributedArray( const Allocator& allocator ) : localData( allocator )
+{}
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-DistributedArray< Value, Device, Index, Allocator >::
-DistributedArray( const DistributedArray& array )
+template< typename Value, typename Device, typename Index, typename Allocator >
+DistributedArray< Value, Device, Index, Allocator >::DistributedArray( const DistributedArray& array )
 {
    setLike( array );
    view = array;
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-DistributedArray< Value, Device, Index, Allocator >::
-DistributedArray( const DistributedArray& array, const Allocator& allocator )
+template< typename Value, typename Device, typename Index, typename Allocator >
+DistributedArray< Value, Device, Index, Allocator >::DistributedArray( const DistributedArray& array,
+                                                                       const Allocator& allocator )
 : localData( allocator )
 {
    setLike( array );
    view = array;
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-DistributedArray< Value, Device, Index, Allocator >::
-DistributedArray( LocalRangeType localRange, IndexType ghosts, IndexType globalSize, MPI_Comm communicator, const Allocator& allocator )
+template< typename Value, typename Device, typename Index, typename Allocator >
+DistributedArray< Value, Device, Index, Allocator >::DistributedArray( LocalRangeType localRange,
+                                                                       IndexType ghosts,
+                                                                       IndexType globalSize,
+                                                                       const MPI::Comm& communicator,
+                                                                       const Allocator& allocator )
 : localData( allocator )
 {
    setDistribution( localRange, ghosts, globalSize, communicator );
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
+template< typename Value, typename Device, typename Index, typename Allocator >
 void
-DistributedArray< Value, Device, Index, Allocator >::
-setDistribution( LocalRangeType localRange, IndexType ghosts, IndexType globalSize, MPI_Comm communicator )
+DistributedArray< Value, Device, Index, Allocator >::setDistribution( LocalRangeType localRange,
+                                                                      IndexType ghosts,
+                                                                      IndexType globalSize,
+                                                                      const MPI::Comm& communicator )
 {
    TNL_ASSERT_LE( localRange.getEnd(), globalSize, "end of the local range is outside of the global range" );
    if( communicator != MPI_COMM_NULL )
@@ -83,216 +65,139 @@ setDistribution( LocalRangeType localRange, IndexType ghosts, IndexType globalSi
    view.bind( localRange, ghosts, globalSize, communicator, localData.getView() );
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
+template< typename Value, typename Device, typename Index, typename Allocator >
 const Subrange< Index >&
-DistributedArray< Value, Device, Index, Allocator >::
-getLocalRange() const
+DistributedArray< Value, Device, Index, Allocator >::getLocalRange() const
 {
    return view.getLocalRange();
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
+template< typename Value, typename Device, typename Index, typename Allocator >
 Index
-DistributedArray< Value, Device, Index, Allocator >::
-getGhosts() const
+DistributedArray< Value, Device, Index, Allocator >::getGhosts() const
 {
    return view.getGhosts();
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-MPI_Comm
-DistributedArray< Value, Device, Index, Allocator >::
-getCommunicator() const
+template< typename Value, typename Device, typename Index, typename Allocator >
+const MPI::Comm&
+DistributedArray< Value, Device, Index, Allocator >::getCommunicator() const
 {
    return view.getCommunicator();
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
+template< typename Value, typename Device, typename Index, typename Allocator >
 Allocator
-DistributedArray< Value, Device, Index, Allocator >::
-getAllocator() const
+DistributedArray< Value, Device, Index, Allocator >::getAllocator() const
 {
    return localData.getAllocator();
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
+template< typename Value, typename Device, typename Index, typename Allocator >
 typename DistributedArray< Value, Device, Index, Allocator >::LocalViewType
-DistributedArray< Value, Device, Index, Allocator >::
-getLocalView()
+DistributedArray< Value, Device, Index, Allocator >::getLocalView()
 {
    return view.getLocalView();
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
+template< typename Value, typename Device, typename Index, typename Allocator >
 typename DistributedArray< Value, Device, Index, Allocator >::ConstLocalViewType
-DistributedArray< Value, Device, Index, Allocator >::
-getConstLocalView() const
+DistributedArray< Value, Device, Index, Allocator >::getConstLocalView() const
 {
    return view.getConstLocalView();
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
+template< typename Value, typename Device, typename Index, typename Allocator >
 typename DistributedArray< Value, Device, Index, Allocator >::LocalViewType
-DistributedArray< Value, Device, Index, Allocator >::
-getLocalViewWithGhosts()
+DistributedArray< Value, Device, Index, Allocator >::getLocalViewWithGhosts()
 {
    return view.getLocalViewWithGhosts();
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
+template< typename Value, typename Device, typename Index, typename Allocator >
 typename DistributedArray< Value, Device, Index, Allocator >::ConstLocalViewType
-DistributedArray< Value, Device, Index, Allocator >::
-getConstLocalViewWithGhosts() const
+DistributedArray< Value, Device, Index, Allocator >::getConstLocalViewWithGhosts() const
 {
    return view.getConstLocalViewWithGhosts();
 }
 
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
+template< typename Value, typename Device, typename Index, typename Allocator >
 void
-DistributedArray< Value, Device, Index, Allocator >::
-copyFromGlobal( ConstLocalViewType globalArray )
+DistributedArray< Value, Device, Index, Allocator >::copyFromGlobal( ConstLocalViewType globalArray )
 {
    view.copyFromGlobal( globalArray );
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
+template< typename Value, typename Device, typename Index, typename Allocator >
 void
-DistributedArray< Value, Device, Index, Allocator >::
-setSynchronizer( std::shared_ptr< SynchronizerType > synchronizer, int valuesPerElement )
+DistributedArray< Value, Device, Index, Allocator >::setSynchronizer( std::shared_ptr< SynchronizerType > synchronizer,
+                                                                      int valuesPerElement )
 {
    view.setSynchronizer( synchronizer, valuesPerElement );
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
+template< typename Value, typename Device, typename Index, typename Allocator >
 std::shared_ptr< typename DistributedArrayView< Value, Device, Index >::SynchronizerType >
-DistributedArray< Value, Device, Index, Allocator >::
-getSynchronizer() const
+DistributedArray< Value, Device, Index, Allocator >::getSynchronizer() const
 {
    return view.getSynchronizer();
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
+template< typename Value, typename Device, typename Index, typename Allocator >
 int
-DistributedArray< Value, Device, Index, Allocator >::
-getValuesPerElement() const
+DistributedArray< Value, Device, Index, Allocator >::getValuesPerElement() const
 {
    return view.getValuesPerElement();
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
+template< typename Value, typename Device, typename Index, typename Allocator >
 void
-DistributedArray< Value, Device, Index, Allocator >::
-startSynchronization()
+DistributedArray< Value, Device, Index, Allocator >::startSynchronization()
 {
    view.startSynchronization();
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
+template< typename Value, typename Device, typename Index, typename Allocator >
 void
-DistributedArray< Value, Device, Index, Allocator >::
-waitForSynchronization() const
+DistributedArray< Value, Device, Index, Allocator >::waitForSynchronization() const
 {
    view.waitForSynchronization();
 }
-
 
 /*
  * Usual Array methods follow below.
  */
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
+template< typename Value, typename Device, typename Index, typename Allocator >
 typename DistributedArray< Value, Device, Index, Allocator >::ViewType
-DistributedArray< Value, Device, Index, Allocator >::
-getView()
+DistributedArray< Value, Device, Index, Allocator >::getView()
 {
    return view;
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
+template< typename Value, typename Device, typename Index, typename Allocator >
 typename DistributedArray< Value, Device, Index, Allocator >::ConstViewType
-DistributedArray< Value, Device, Index, Allocator >::
-getConstView() const
+DistributedArray< Value, Device, Index, Allocator >::getConstView() const
 {
    return view.getConstView();
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-DistributedArray< Value, Device, Index, Allocator >::
-operator ViewType()
+template< typename Value, typename Device, typename Index, typename Allocator >
+DistributedArray< Value, Device, Index, Allocator >::operator ViewType()
 {
    return getView();
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-DistributedArray< Value, Device, Index, Allocator >::
-operator ConstViewType() const
+template< typename Value, typename Device, typename Index, typename Allocator >
+DistributedArray< Value, Device, Index, Allocator >::operator ConstViewType() const
 {
    return getConstView();
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< typename Array >
+template< typename Value, typename Device, typename Index, typename Allocator >
+template< typename Array >
 void
-DistributedArray< Value, Device, Index, Allocator >::
-setLike( const Array& array )
+DistributedArray< Value, Device, Index, Allocator >::setLike( const Array& array )
 {
    localData.setLike( array.getConstLocalViewWithGhosts() );
    view.bind( array.getLocalRange(), array.getGhosts(), array.getSize(), array.getCommunicator(), localData.getView() );
@@ -301,171 +206,115 @@ setLike( const Array& array )
       setSynchronizerHelper( view, array );
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
+template< typename Value, typename Device, typename Index, typename Allocator >
 void
-DistributedArray< Value, Device, Index, Allocator >::
-reset()
+DistributedArray< Value, Device, Index, Allocator >::reset()
 {
    view.reset();
    localData.reset();
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
+template< typename Value, typename Device, typename Index, typename Allocator >
 bool
-DistributedArray< Value, Device, Index, Allocator >::
-empty() const
+DistributedArray< Value, Device, Index, Allocator >::empty() const
 {
    return view.empty();
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
+template< typename Value, typename Device, typename Index, typename Allocator >
 Index
-DistributedArray< Value, Device, Index, Allocator >::
-getSize() const
+DistributedArray< Value, Device, Index, Allocator >::getSize() const
 {
    return view.getSize();
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
+template< typename Value, typename Device, typename Index, typename Allocator >
 void
-DistributedArray< Value, Device, Index, Allocator >::
-setValue( ValueType value )
+DistributedArray< Value, Device, Index, Allocator >::setValue( ValueType value )
 {
    view.setValue( value );
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
+template< typename Value, typename Device, typename Index, typename Allocator >
 void
-DistributedArray< Value, Device, Index, Allocator >::
-setElement( IndexType i, ValueType value )
+DistributedArray< Value, Device, Index, Allocator >::setElement( IndexType i, ValueType value )
 {
    view.setElement( i, value );
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
+template< typename Value, typename Device, typename Index, typename Allocator >
 Value
-DistributedArray< Value, Device, Index, Allocator >::
-getElement( IndexType i ) const
+DistributedArray< Value, Device, Index, Allocator >::getElement( IndexType i ) const
 {
    return view.getElement( i );
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
+template< typename Value, typename Device, typename Index, typename Allocator >
 __cuda_callable__
 Value&
-DistributedArray< Value, Device, Index, Allocator >::
-operator[]( IndexType i )
+DistributedArray< Value, Device, Index, Allocator >::operator[]( IndexType i )
 {
    return view[ i ];
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
+template< typename Value, typename Device, typename Index, typename Allocator >
 __cuda_callable__
 const Value&
-DistributedArray< Value, Device, Index, Allocator >::
-operator[]( IndexType i ) const
+DistributedArray< Value, Device, Index, Allocator >::operator[]( IndexType i ) const
 {
    return view[ i ];
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
+template< typename Value, typename Device, typename Index, typename Allocator >
 DistributedArray< Value, Device, Index, Allocator >&
-DistributedArray< Value, Device, Index, Allocator >::
-operator=( const DistributedArray& array )
+DistributedArray< Value, Device, Index, Allocator >::operator=( const DistributedArray& array )
 {
    setLike( array );
    view = array;
    return *this;
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< typename Array, typename..., typename >
+template< typename Value, typename Device, typename Index, typename Allocator >
+template< typename Array, typename..., typename >
 DistributedArray< Value, Device, Index, Allocator >&
-DistributedArray< Value, Device, Index, Allocator >::
-operator=( const Array& array )
+DistributedArray< Value, Device, Index, Allocator >::operator=( const Array& array )
 {
    setLike( array );
    view = array;
    return *this;
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< typename Array >
+template< typename Value, typename Device, typename Index, typename Allocator >
+template< typename Array >
 bool
-DistributedArray< Value, Device, Index, Allocator >::
-operator==( const Array& array ) const
+DistributedArray< Value, Device, Index, Allocator >::operator==( const Array& array ) const
 {
    return view == array;
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< typename Array >
+template< typename Value, typename Device, typename Index, typename Allocator >
+template< typename Array >
 bool
-DistributedArray< Value, Device, Index, Allocator >::
-operator!=( const Array& array ) const
+DistributedArray< Value, Device, Index, Allocator >::operator!=( const Array& array ) const
 {
    return view != array;
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< typename Function >
+template< typename Value, typename Device, typename Index, typename Allocator >
+template< typename Function >
 void
-DistributedArray< Value, Device, Index, Allocator >::
-forElements( IndexType begin, IndexType end, Function&& f )
+DistributedArray< Value, Device, Index, Allocator >::forElements( IndexType begin, IndexType end, Function&& f )
 {
    view.forElements( begin, end, f );
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< typename Function >
+template< typename Value, typename Device, typename Index, typename Allocator >
+template< typename Function >
 void
-DistributedArray< Value, Device, Index, Allocator >::
-forElements( IndexType begin, IndexType end, Function&& f ) const
+DistributedArray< Value, Device, Index, Allocator >::forElements( IndexType begin, IndexType end, Function&& f ) const
 {
    view.forElements( begin, end, f );
 }
 
-} // namespace Containers
-} // namespace noa::TNL
+}  // namespace Containers
+}  // namespace noa::TNL

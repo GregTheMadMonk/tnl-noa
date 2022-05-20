@@ -19,33 +19,33 @@ class EntityShapeGroupChecker
 public:
    static constexpr EntityShape GeneralShape = GeneralShape_;
 
-   static bool belong( EntityShape shape )
+   static bool
+   belong( EntityShape shape )
    {
-      if( GeneralShape == shape )
-      {
+      if( GeneralShape == shape ) {
          return true;
       }
-      else
-      {
+      else {
          bool result = false;
 
          Algorithms::staticFor< int, 0, EntityShapeGroup< GeneralShape >::size >(
-            [&] ( auto index ) {
+            [ & ]( auto index )
+            {
                EntityShape groupShape = EntityShapeGroupElement< GeneralShape, index >::shape;
                result = result || ( shape == groupShape );
-            }
-         );
+            } );
 
          return result;
       }
    }
 
-   static bool bothBelong( EntityShape shape1, EntityShape shape2 )
+   static bool
+   bothBelong( EntityShape shape1, EntityShape shape2 )
    {
       return belong( shape1 ) && belong( shape2 );
    }
 };
 
-} // namespace VTK
-} // namespace Meshes
-} // namespace noa::TNL
+}  // namespace VTK
+}  // namespace Meshes
+}  // namespace noa::TNL

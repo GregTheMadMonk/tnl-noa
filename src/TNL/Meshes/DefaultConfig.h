@@ -38,18 +38,20 @@ struct DefaultConfig
    /****
     * Storage of subentities of mesh entities.
     */
-   static constexpr bool subentityStorage( int entityDimension, int subentityDimension )
+   static constexpr bool
+   subentityStorage( int entityDimension, int subentityDimension )
    {
       return true;
       // Subvertices must be stored for all entities which appear in other
       // subentity or superentity mappings.
-      //return SubentityDimension == 0;
+      // return SubentityDimension == 0;
    }
 
    /****
     * Storage of superentities of mesh entities.
     */
-   static constexpr bool superentityStorage( int entityDimension, int superentityDimension )
+   static constexpr bool
+   superentityStorage( int entityDimension, int superentityDimension )
    {
       return true;
    }
@@ -63,11 +65,12 @@ struct DefaultConfig
     *    - if dim(entity) < dim(face), the entities on which the tags are stored
     *      must be stored as subentities of faces
     */
-   static constexpr bool entityTagsStorage( int entityDimension )
+   static constexpr bool
+   entityTagsStorage( int entityDimension )
    {
-      return superentityStorage( meshDimension - 1, meshDimension ) &&
-             ( entityDimension >= meshDimension - 1 || subentityStorage( meshDimension - 1, entityDimension ) );
-      //return false;
+      return superentityStorage( meshDimension - 1, meshDimension )
+          && ( entityDimension >= meshDimension - 1 || subentityStorage( meshDimension - 1, entityDimension ) );
+      // return false;
    }
 
    /****
@@ -75,7 +78,8 @@ struct DefaultConfig
     *
     * If enabled, links from vertices to cells must be stored.
     */
-   static constexpr bool dualGraphStorage()
+   static constexpr bool
+   dualGraphStorage()
    {
       return true;
    }
@@ -87,5 +91,5 @@ struct DefaultConfig
    static constexpr int dualGraphMinCommonVertices = meshDimension;
 };
 
-} // namespace Meshes
-} // namespace noa::TNL
+}  // namespace Meshes
+}  // namespace noa::TNL

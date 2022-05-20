@@ -22,246 +22,223 @@
 namespace noa::TNL {
 namespace Solvers {
 
-template< typename Problem,
-          typename ConfigTag,
-          bool TimeDependent = Problem::isTimeDependent() >
+template< typename Problem, typename ConfigTag, bool TimeDependent = Problem::isTimeDependent() >
 class TimeDependencyResolver
 {};
 
-template< typename Problem,
-          typename ConfigTag,
-          typename TimeStepper = typename Problem::TimeStepper >
+template< typename Problem, typename ConfigTag, typename TimeStepper = typename Problem::TimeStepper >
 class UserDefinedTimeDiscretisationSetter;
 
 template< typename Problem,
           typename TimeDiscretisation,
           typename ConfigTag,
           bool enabled = ConfigTagTimeDiscretisation< ConfigTag, TimeDiscretisation >::enabled >
-class SolverStarterTimeDiscretisationSetter{};
+class SolverStarterTimeDiscretisationSetter
+{};
 
 template< typename Problem,
           typename ExplicitSolver,
           typename ConfigTag,
           bool enabled = ConfigTagExplicitSolver< ConfigTag, ExplicitSolver >::enabled >
-class SolverStarterExplicitSolverSetter{};
-
-
-template< typename ConfigTag >
-SolverStarter< ConfigTag > :: SolverStarter()
-: logWidth( 80 )
-{
-}
+class SolverStarterExplicitSolverSetter
+{};
 
 template< typename ConfigTag >
-   template< typename Problem >
-bool SolverStarter< ConfigTag > :: run( const Config::ParameterContainer& parameters )
+SolverStarter< ConfigTag >::SolverStarter() : logWidth( 80 )
+{}
+
+template< typename ConfigTag >
+template< typename Problem >
+bool
+SolverStarter< ConfigTag >::run( const Config::ParameterContainer& parameters )
 {
    /****
     * Create and set-up the problem
     */
-   if( ! Devices::Host::setup( parameters ) ||
-       ! Devices::Cuda::setup( parameters ) ||
-       ! MPI::setup( parameters )
-    )
+   if( ! Devices::Host::setup( parameters ) || ! Devices::Cuda::setup( parameters ) || ! MPI::setup( parameters ) )
       return false;
    Problem problem;
    return TimeDependencyResolver< Problem, ConfigTag >::run( problem, parameters );
 }
 
-template< typename Problem,
-          typename ConfigTag>
+template< typename Problem, typename ConfigTag >
 class TimeDependencyResolver< Problem, ConfigTag, true >
 {
-   public:
-      static bool run( Problem& problem,
-                       const Config::ParameterContainer& parameters )
-      {
-         return UserDefinedTimeDiscretisationSetter< Problem, ConfigTag >::run( problem, parameters );
-      }
+public:
+   static bool
+   run( Problem& problem, const Config::ParameterContainer& parameters )
+   {
+      return UserDefinedTimeDiscretisationSetter< Problem, ConfigTag >::run( problem, parameters );
+   }
 };
 
-template< typename Problem,
-          typename ConfigTag>
+template< typename Problem, typename ConfigTag >
 class TimeDependencyResolver< Problem, ConfigTag, false >
 {
-   public:
-      static bool run( Problem& problem,
-                       const Config::ParameterContainer& parameters )
-      {
-         // TODO: This should be improved - at least rename to LinearSolverSetter
-         return SolverStarterTimeDiscretisationSetter< Problem, SemiImplicitTimeDiscretisationTag, ConfigTag, true >::run( problem, parameters );
-      }
+public:
+   static bool
+   run( Problem& problem, const Config::ParameterContainer& parameters )
+   {
+      // TODO: This should be improved - at least rename to LinearSolverSetter
+      return SolverStarterTimeDiscretisationSetter< Problem, SemiImplicitTimeDiscretisationTag, ConfigTag, true >::run(
+         problem, parameters );
+   }
 };
 
-template< typename Problem,
-          typename ConfigTag,
-          typename TimeStepper >
+template< typename Problem, typename ConfigTag, typename TimeStepper >
 class UserDefinedTimeDiscretisationSetter
 {
-   public:
-      static bool run( Problem& problem,
-                       const Config::ParameterContainer& parameters )
-      {
-         TimeStepper timeStepper;
-         if( ! timeStepper.setup( parameters ) )
-         {
-            std::cerr << "The time stepper initiation failed!" << std::endl;
-            return false;
-         }
-         SolverStarter< ConfigTag > solverStarter;
-         return solverStarter.template runPDESolver< Problem, TimeStepper >( problem, parameters );
-      }
-};
-
-template< typename Problem,
-          typename ConfigTag >
-class UserDefinedTimeDiscretisationSetter< Problem, ConfigTag, void >
-{
-   public:
-      static bool run( Problem& problem,
-                       const Config::ParameterContainer& parameters )
-      {
-         /****
-          * Set-up the time discretisation
-          */
-         const String& timeDiscretisation = parameters.getParameter< String>( "time-discretisation" );
-         if( timeDiscretisation == "explicit" )
-            return SolverStarterTimeDiscretisationSetter< Problem, ExplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
-         if( timeDiscretisation == "semi-implicit" )
-         {
-            if( MPI::GetSize() > 1 )
-            {
-               std::cerr << "TNL currently does not support semi-implicit solvers with MPI." << std::endl;
-               return false;
-            }
-            return SolverStarterTimeDiscretisationSetter< Problem, SemiImplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
-         }
-         if( timeDiscretisation == "implicit" )
-         {
-            if( MPI::GetSize() > 1 )
-            {
-               std::cerr << "TNL currently does not support implicit solvers with MPI." << std::endl;
-               return false;
-            }
-            return SolverStarterTimeDiscretisationSetter< Problem, ImplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
-         }
-         std::cerr << "Uknown time discretisation: " << timeDiscretisation << "." << std::endl;
+public:
+   static bool
+   run( Problem& problem, const Config::ParameterContainer& parameters )
+   {
+      TimeStepper timeStepper;
+      if( ! timeStepper.setup( parameters ) ) {
+         std::cerr << "The time stepper initiation failed!" << std::endl;
          return false;
       }
+      SolverStarter< ConfigTag > solverStarter;
+      return solverStarter.template runPDESolver< Problem, TimeStepper >( problem, parameters );
+   }
+};
+
+template< typename Problem, typename ConfigTag >
+class UserDefinedTimeDiscretisationSetter< Problem, ConfigTag, void >
+{
+public:
+   static bool
+   run( Problem& problem, const Config::ParameterContainer& parameters )
+   {
+      /****
+       * Set-up the time discretisation
+       */
+      const String& timeDiscretisation = parameters.getParameter< String >( "time-discretisation" );
+      if( timeDiscretisation == "explicit" )
+         return SolverStarterTimeDiscretisationSetter< Problem, ExplicitTimeDiscretisationTag, ConfigTag >::run( problem,
+                                                                                                                 parameters );
+      if( timeDiscretisation == "semi-implicit" ) {
+         if( MPI::GetSize() > 1 ) {
+            std::cerr << "TNL currently does not support semi-implicit solvers with MPI." << std::endl;
+            return false;
+         }
+         return SolverStarterTimeDiscretisationSetter< Problem, SemiImplicitTimeDiscretisationTag, ConfigTag >::run(
+            problem, parameters );
+      }
+      if( timeDiscretisation == "implicit" ) {
+         if( MPI::GetSize() > 1 ) {
+            std::cerr << "TNL currently does not support implicit solvers with MPI." << std::endl;
+            return false;
+         }
+         return SolverStarterTimeDiscretisationSetter< Problem, ImplicitTimeDiscretisationTag, ConfigTag >::run( problem,
+                                                                                                                 parameters );
+      }
+      std::cerr << "Uknown time discretisation: " << timeDiscretisation << "." << std::endl;
+      return false;
+   }
 };
 
 /****
  * Setting the time discretisation
  */
 
-template< typename Problem,
-          typename TimeDiscretisationTag,
-          typename ConfigTag >
+template< typename Problem, typename TimeDiscretisationTag, typename ConfigTag >
 class SolverStarterTimeDiscretisationSetter< Problem, TimeDiscretisationTag, ConfigTag, false >
 {
-   public:
-      static bool run( Problem& problem,
-                       const Config::ParameterContainer& parameters )
-      {
-         std::cerr << "The time discretisation " << parameters.getParameter< String >( "time-discretisation" ) << " is not supported." << std::endl;
-         return false;
-      }
+public:
+   static bool
+   run( Problem& problem, const Config::ParameterContainer& parameters )
+   {
+      std::cerr << "The time discretisation " << parameters.getParameter< String >( "time-discretisation" )
+                << " is not supported." << std::endl;
+      return false;
+   }
 };
 
-template< typename Problem,
-          typename ConfigTag >
+template< typename Problem, typename ConfigTag >
 class SolverStarterTimeDiscretisationSetter< Problem, ExplicitTimeDiscretisationTag, ConfigTag, true >
 {
-   public:
-      static bool run( Problem& problem,
-                       const Config::ParameterContainer& parameters )
-      {
-         const String& discreteSolver = parameters.getParameter< String>( "discrete-solver" );
-         if( discreteSolver != "euler" &&
-             discreteSolver != "merson" )
-         {
-            std::cerr << "Unknown explicit discrete solver " << discreteSolver << ". It can be only: euler or merson." << std::endl;
-            return false;
-         }
-         if( discreteSolver == "euler" )
-            return SolverStarterExplicitSolverSetter< Problem, ExplicitEulerSolverTag, ConfigTag >::run( problem, parameters );
-         if( discreteSolver == "merson" )
-            return SolverStarterExplicitSolverSetter< Problem, ExplicitMersonSolverTag, ConfigTag >::run( problem, parameters );
+public:
+   static bool
+   run( Problem& problem, const Config::ParameterContainer& parameters )
+   {
+      const String& discreteSolver = parameters.getParameter< String >( "discrete-solver" );
+      if( discreteSolver != "euler" && discreteSolver != "merson" ) {
+         std::cerr << "Unknown explicit discrete solver " << discreteSolver << ". It can be only: euler or merson."
+                   << std::endl;
          return false;
       }
+      if( discreteSolver == "euler" )
+         return SolverStarterExplicitSolverSetter< Problem, ExplicitEulerSolverTag, ConfigTag >::run( problem, parameters );
+      if( discreteSolver == "merson" )
+         return SolverStarterExplicitSolverSetter< Problem, ExplicitMersonSolverTag, ConfigTag >::run( problem, parameters );
+      return false;
+   }
 };
 
-template< typename Problem,
-          typename ConfigTag >
+template< typename Problem, typename ConfigTag >
 class SolverStarterTimeDiscretisationSetter< Problem, SemiImplicitTimeDiscretisationTag, ConfigTag, true >
 {
-   public:
-      static bool run( Problem& problem,
-                       const Config::ParameterContainer& parameters )
-      {
-         typedef PDE::SemiImplicitTimeStepper< Problem > TimeStepper;
-         SolverStarter< ConfigTag > solverStarter;
-         return solverStarter.template runPDESolver< Problem, TimeStepper >( problem, parameters );
-      }
+public:
+   static bool
+   run( Problem& problem, const Config::ParameterContainer& parameters )
+   {
+      using TimeStepper = PDE::SemiImplicitTimeStepper< Problem >;
+      SolverStarter< ConfigTag > solverStarter;
+      return solverStarter.template runPDESolver< Problem, TimeStepper >( problem, parameters );
+   }
 };
 
-template< typename Problem,
-          typename ConfigTag >
+template< typename Problem, typename ConfigTag >
 class SolverStarterTimeDiscretisationSetter< Problem, ImplicitTimeDiscretisationTag, ConfigTag, true >
 {
-   public:
-      static bool run( Problem& problem,
-                       const Config::ParameterContainer& parameters )
-      {
-//         const String& discreteSolver = parameters.getParameter< String>( "discrete-solver" );
-         return false;
-      }
+public:
+   static bool
+   run( Problem& problem, const Config::ParameterContainer& parameters )
+   {
+      //         const String& discreteSolver = parameters.getParameter< String>( "discrete-solver" );
+      return false;
+   }
 };
 
 /****
  * Setting the explicit solver
  */
 
-template< typename Problem,
-          typename ExplicitSolverTag,
-          typename ConfigTag >
+template< typename Problem, typename ExplicitSolverTag, typename ConfigTag >
 class SolverStarterExplicitSolverSetter< Problem, ExplicitSolverTag, ConfigTag, false >
 {
-   public:
-      static bool run( Problem& problem,
-                       const Config::ParameterContainer& parameters )
-      {
-         std::cerr << "The explicit solver " << parameters.getParameter< String >( "discrete-solver" ) << " is not supported." << std::endl;
-         return false;
-      }
+public:
+   static bool
+   run( Problem& problem, const Config::ParameterContainer& parameters )
+   {
+      std::cerr << "The explicit solver " << parameters.getParameter< String >( "discrete-solver" ) << " is not supported."
+                << std::endl;
+      return false;
+   }
 };
 
-template< typename Problem,
-          typename ExplicitSolverTag,
-          typename ConfigTag >
+template< typename Problem, typename ExplicitSolverTag, typename ConfigTag >
 class SolverStarterExplicitSolverSetter< Problem, ExplicitSolverTag, ConfigTag, true >
 {
-   public:
-      static bool run( Problem& problem,
-                       const Config::ParameterContainer& parameters )
-      {
-         typedef PDE::ExplicitTimeStepper< Problem, ExplicitSolverTag::template Template > TimeStepper;
-         SolverStarter< ConfigTag > solverStarter;
-         return solverStarter.template runPDESolver< Problem, TimeStepper >( problem, parameters );
-      }
+public:
+   static bool
+   run( Problem& problem, const Config::ParameterContainer& parameters )
+   {
+      using TimeStepper = PDE::ExplicitTimeStepper< Problem, ExplicitSolverTag::template Template >;
+      SolverStarter< ConfigTag > solverStarter;
+      return solverStarter.template runPDESolver< Problem, TimeStepper >( problem, parameters );
+   }
 };
 
 template< typename ConfigTag >
-   template< typename Problem,
-             typename TimeStepper >
-bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
-                                                 const Config::ParameterContainer& parameters )
+template< typename Problem, typename TimeStepper >
+bool
+SolverStarter< ConfigTag >::runPDESolver( Problem& problem, const Config::ParameterContainer& parameters )
 {
    this->totalTimer.reset();
    this->totalTimer.start();
 
-   using SolverMonitorType = IterativeSolverMonitor< typename Problem::RealType,
-                                                     typename Problem::IndexType >;
+   using SolverMonitorType = IterativeSolverMonitor< typename Problem::RealType, typename Problem::IndexType >;
    SolverMonitorType solverMonitor, *solverMonitorPointer( &solverMonitor );
 
    /****
@@ -283,7 +260,7 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    solver.setTotalTimer( this->totalTimer );
 
    if( problem.getSolverMonitor() )
-      solverMonitorPointer = ( SolverMonitorType* ) problem.getSolverMonitor();
+      solverMonitorPointer = (SolverMonitorType*) problem.getSolverMonitor();
    solverMonitorPointer->setVerbose( parameters.getParameter< int >( "verbose" ) );
    solverMonitorPointer->setTimer( this->totalTimer );
    solver.setSolverMonitor( *solverMonitorPointer );
@@ -297,20 +274,20 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
          if( ! solver.setup( parameters ) )
             return false;
       }
-      catch ( const std::exception& e ) {
+      catch( const std::exception& e ) {
          std::cerr << "Setting up the solver failed due to a C++ exception with description: " << e.what() << std::endl;
-         logFile   << "Setting up the solver failed due to a C++ exception with description: " << e.what() << std::endl;
+         logFile << "Setting up the solver failed due to a C++ exception with description: " << e.what() << std::endl;
          return false;
       }
-      catch (...) {
+      catch( ... ) {
          std::cerr << "Setting up the solver failed due to an unknown C++ exception." << std::endl;
-         logFile   << "Setting up the solver failed due to an unknown C++ exception." << std::endl;
+         logFile << "Setting up the solver failed due to an unknown C++ exception." << std::endl;
          throw;
       }
    }
    else {
       solver.setProblem( problem );
-      //solver.setTimeStepper( timeStepper );
+      // solver.setTimeStepper( timeStepper );
       if( ! solver.setup( parameters ) )
          return false;
    }
@@ -325,7 +302,7 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
       solver.writeProlog( logger, parameters );
    }
    Logger logger( logWidth, logFile );
-   solver.writeProlog( logger, parameters  );
+   solver.writeProlog( logger, parameters );
 
    /****
     * Set-up timers
@@ -348,14 +325,14 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
       try {
          returnCode = solver.solve();
       }
-      catch ( const std::exception& e ) {
+      catch( const std::exception& e ) {
          std::cerr << "The solver failed due to a C++ exception with description: " << e.what() << std::endl;
-         logFile   << "The solver failed due to a C++ exception with description: " << e.what() << std::endl;
+         logFile << "The solver failed due to a C++ exception with description: " << e.what() << std::endl;
          return false;
       }
-      catch (...) {
+      catch( ... ) {
          std::cerr << "The solver failed due to an unknown C++ exception." << std::endl;
-         logFile   << "The solver failed due to an unknown C++ exception." << std::endl;
+         logFile << "The solver failed due to an unknown C++ exception." << std::endl;
          throw;
       }
    }
@@ -387,8 +364,9 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
 }
 
 template< typename ConfigTag >
-   template< typename Solver >
-bool SolverStarter< ConfigTag > :: writeEpilog( std::ostream& str, const Solver& solver  )
+template< typename Solver >
+bool
+SolverStarter< ConfigTag >::writeEpilog( std::ostream& str, const Solver& solver )
 {
    Logger logger( logWidth, str );
    logger.writeSeparator();
@@ -397,8 +375,7 @@ bool SolverStarter< ConfigTag > :: writeEpilog( std::ostream& str, const Solver&
       return false;
    logger.writeParameter< const char* >( "Compute time:", "" );
    this->computeTimer.writeLog( logger, 1 );
-   if( std::is_same< typename Solver::DeviceType, noa::TNL::Devices::Cuda >::value )
-   {
+   if( std::is_same< typename Solver::DeviceType, TNL::Devices::Cuda >::value ) {
       logger.writeParameter< const char* >( "GPU synchronization time:", "" );
       Pointers::getSmartPointersSynchronizationTimer< Devices::Cuda >().writeLog( logger, 1 );
    }
@@ -407,11 +384,11 @@ bool SolverStarter< ConfigTag > :: writeEpilog( std::ostream& str, const Solver&
    logger.writeParameter< const char* >( "Total time:", "" );
    this->totalTimer.writeLog( logger, 1 );
    char buf[ 256 ];
-   sprintf( buf, "%f %%", 100 * ( ( double ) this->totalTimer.getCPUTime() ) / this->totalTimer.getRealTime() );
+   sprintf( buf, "%f %%", 100 * ( (double) this->totalTimer.getCPUTime() ) / this->totalTimer.getRealTime() );
    logger.writeParameter< char* >( "CPU usage:", buf );
    logger.writeSeparator();
    return true;
 }
 
-} // namespace Solvers
-} // namespace noa::TNL
+}  // namespace Solvers
+}  // namespace noa::TNL

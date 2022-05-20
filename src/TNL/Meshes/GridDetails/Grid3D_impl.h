@@ -17,174 +17,124 @@
 namespace noa::TNL {
 namespace Meshes {
 
-template< typename Real,
-          typename Device,
-          typename Index >
-Grid< 3, Real, Device, Index > :: Grid()
-: numberOfCells( 0 ),
-  numberOfNxFaces( 0 ),
-  numberOfNyFaces( 0 ),
-  numberOfNzFaces( 0 ),
-  numberOfNxAndNyFaces( 0 ),
-  numberOfFaces( 0 ),
-  numberOfDxEdges( 0 ),
-  numberOfDyEdges( 0 ),
-  numberOfDzEdges( 0 ),
-  numberOfDxAndDyEdges( 0 ),
-  numberOfEdges( 0 ),
-  numberOfVertices( 0 )
-{
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Grid< 3, Real, Device, Index >::Grid( const Index xSize, const Index ySize, const Index zSize )
-: numberOfCells( 0 ),
-  numberOfNxFaces( 0 ),
-  numberOfNyFaces( 0 ),
-  numberOfNzFaces( 0 ),
-  numberOfNxAndNyFaces( 0 ),
-  numberOfFaces( 0 ),
-  numberOfDxEdges( 0 ),
-  numberOfDyEdges( 0 ),
-  numberOfDzEdges( 0 ),
-  numberOfDxAndDyEdges( 0 ),
-  numberOfEdges( 0 ),
-  numberOfVertices( 0 )
+template< typename Real, typename Device, typename Index >
+Grid< 3, Real, Device, Index >::Grid( Index xSize, Index ySize, Index zSize )
 {
    this->setDimensions( xSize, ySize, zSize );
 }
 
-
-template< typename Real,
-          typename Device,
-          typename Index >
-void Grid< 3, Real, Device, Index > :: computeSpaceSteps()
+template< typename Real, typename Device, typename Index >
+void
+Grid< 3, Real, Device, Index >::computeSpaceSteps()
 {
-   if( this->getDimensions().x() > 0 &&
-       this->getDimensions().y() > 0 &&
-       this->getDimensions().z() > 0 )
-   {
-      this->spaceSteps.x() = this->proportions.x() / ( Real ) this->getDimensions().x();
-      this->spaceSteps.y() = this->proportions.y() / ( Real ) this->getDimensions().y();
-      this->spaceSteps.z() = this->proportions.z() / ( Real ) this->getDimensions().z();
+   if( this->getDimensions().x() > 0 && this->getDimensions().y() > 0 && this->getDimensions().z() > 0 ) {
+      this->spaceSteps.x() = this->proportions.x() / (Real) this->getDimensions().x();
+      this->spaceSteps.y() = this->proportions.y() / (Real) this->getDimensions().y();
+      this->spaceSteps.z() = this->proportions.z() / (Real) this->getDimensions().z();
 
       this->computeSpaceStepPowers();
-
    }
 };
 
-template< typename Real,
-          typename Device,
-          typename Index >
-void Grid< 3, Real, Device, Index > :: computeSpaceStepPowers()
+template< typename Real, typename Device, typename Index >
+void
+Grid< 3, Real, Device, Index >::computeSpaceStepPowers()
 {
-      const RealType& hx = this->spaceSteps.x();
-      const RealType& hy = this->spaceSteps.y();
-      const RealType& hz = this->spaceSteps.z();
+   const RealType& hx = this->spaceSteps.x();
+   const RealType& hy = this->spaceSteps.y();
+   const RealType& hz = this->spaceSteps.z();
 
-      Real auxX, auxY, auxZ;
-      for( int i = 0; i < 5; i++ )
-      {
-         switch( i )
-         {
+   Real auxX;
+   Real auxY;
+   Real auxZ;
+   for( int i = 0; i < 5; i++ ) {
+      switch( i ) {
+         case 0:
+            auxX = 1.0 / ( hx * hx );
+            break;
+         case 1:
+            auxX = 1.0 / hx;
+            break;
+         case 2:
+            auxX = 1.0;
+            break;
+         case 3:
+            auxX = hx;
+            break;
+         case 4:
+            auxX = hx * hx;
+            break;
+      }
+      for( int j = 0; j < 5; j++ ) {
+         switch( j ) {
             case 0:
-               auxX = 1.0 / ( hx * hx );
+               auxY = 1.0 / ( hy * hy );
                break;
             case 1:
-               auxX = 1.0 / hx;
+               auxY = 1.0 / hy;
                break;
             case 2:
-               auxX = 1.0;
+               auxY = 1.0;
                break;
             case 3:
-               auxX = hx;
+               auxY = hy;
                break;
             case 4:
-               auxX = hx * hx;
+               auxY = hy * hy;
                break;
          }
-         for( int j = 0; j < 5; j++ )
-         {
-            switch( j )
-            {
+         for( int k = 0; k < 5; k++ ) {
+            switch( k ) {
                case 0:
-                  auxY = 1.0 / ( hy * hy );
+                  auxZ = 1.0 / ( hz * hz );
                   break;
                case 1:
-                  auxY = 1.0 / hy;
+                  auxZ = 1.0 / hz;
                   break;
                case 2:
-                  auxY = 1.0;
+                  auxZ = 1.0;
                   break;
                case 3:
-                  auxY = hy;
+                  auxZ = hz;
                   break;
                case 4:
-                  auxY = hy * hy;
+                  auxZ = hz * hz;
                   break;
             }
-            for( int k = 0; k < 5; k++ )
-            {
-               switch( k )
-               {
-                  case 0:
-                     auxZ = 1.0 / ( hz * hz );
-                     break;
-                  case 1:
-                     auxZ = 1.0 / hz;
-                     break;
-                  case 2:
-                     auxZ = 1.0;
-                     break;
-                  case 3:
-                     auxZ = hz;
-                     break;
-                  case 4:
-                     auxZ = hz * hz;
-                     break;
-               }
-               this->spaceStepsProducts[ i ][ j ][ k ] = auxX * auxY * auxZ;
-            }
+            this->spaceStepsProducts[ i ][ j ][ k ] = auxX * auxY * auxZ;
          }
       }
+   }
 }
 
-
-template< typename Real,
-          typename Device,
-          typename Index >
-void Grid< 3, Real, Device, Index > :: computeProportions()
+template< typename Real, typename Device, typename Index >
+void
+Grid< 3, Real, Device, Index >::computeProportions()
 {
-    this->proportions.x()=this->dimensions.x()*this->spaceSteps.x();
-    this->proportions.y()=this->dimensions.y()*this->spaceSteps.y();
-    this->proportions.z()=this->dimensions.z()*this->spaceSteps.z();
+   this->proportions.x() = this->dimensions.x() * this->spaceSteps.x();
+   this->proportions.y() = this->dimensions.y() * this->spaceSteps.y();
+   this->proportions.z() = this->dimensions.z() * this->spaceSteps.z();
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
-void Grid< 3, Real, Device, Index > :: setOrigin( const PointType& origin)
+template< typename Real, typename Device, typename Index >
+void
+Grid< 3, Real, Device, Index >::setOrigin( const PointType& origin )
 {
-    this->origin=origin;
+   this->origin = origin;
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
-void Grid< 3, Real, Device, Index > :: setSpaceSteps(const PointType& steps)
+template< typename Real, typename Device, typename Index >
+void
+Grid< 3, Real, Device, Index >::setSpaceSteps( const PointType& steps )
 {
-     this->spaceSteps=steps;
-     computeSpaceStepPowers();
-     computeProportions();
+   this->spaceSteps = steps;
+   computeSpaceStepPowers();
+   computeProportions();
 }
 
-
-template< typename Real,
-          typename Device,
-          typename Index >
-void Grid< 3, Real, Device, Index > :: setDimensions( const Index xSize, const Index ySize, const Index zSize )
+template< typename Real, typename Device, typename Index >
+void
+Grid< 3, Real, Device, Index >::setDimensions( Index xSize, Index ySize, Index zSize )
 {
    TNL_ASSERT_GE( xSize, 0, "Grid size must be non-negative." );
    TNL_ASSERT_GE( ySize, 0, "Grid size must be non-negative." );
@@ -198,16 +148,12 @@ void Grid< 3, Real, Device, Index > :: setDimensions( const Index xSize, const I
    this->numberOfNyFaces = xSize * ( ySize + 1 ) * zSize;
    this->numberOfNzFaces = xSize * ySize * ( zSize + 1 );
    this->numberOfNxAndNyFaces = this->numberOfNxFaces + this->numberOfNyFaces;
-   this->numberOfFaces = this->numberOfNxFaces +
-                         this->numberOfNyFaces +
-                         this->numberOfNzFaces;
+   this->numberOfFaces = this->numberOfNxFaces + this->numberOfNyFaces + this->numberOfNzFaces;
    this->numberOfDxEdges = xSize * ( ySize + 1 ) * ( zSize + 1 );
    this->numberOfDyEdges = ( xSize + 1 ) * ySize * ( zSize + 1 );
    this->numberOfDzEdges = ( xSize + 1 ) * ( ySize + 1 ) * zSize;
    this->numberOfDxAndDyEdges = this->numberOfDxEdges + this->numberOfDyEdges;
-   this->numberOfEdges = this->numberOfDxEdges +
-                         this->numberOfDyEdges +
-                         this->numberOfDzEdges;
+   this->numberOfEdges = this->numberOfDxEdges + this->numberOfDyEdges + this->numberOfDzEdges;
    this->numberOfVertices = ( xSize + 1 ) * ( ySize + 1 ) * ( zSize + 1 );
 
    this->cellZNeighborsStep = xSize * ySize;
@@ -221,143 +167,115 @@ void Grid< 3, Real, Device, Index > :: setDimensions( const Index xSize, const I
    interiorEnd = dimensions - 1;
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
-void Grid< 3, Real, Device, Index > :: setDimensions( const CoordinatesType& dimensions )
+template< typename Real, typename Device, typename Index >
+void
+Grid< 3, Real, Device, Index >::setDimensions( const CoordinatesType& dimensions )
 {
-   return this->setDimensions( dimensions. x(), dimensions. y(), dimensions. z() );
+   return this->setDimensions( dimensions.x(), dimensions.y(), dimensions.z() );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__ inline
-const typename Grid< 3, Real, Device, Index > :: CoordinatesType&
-   Grid< 3, Real, Device, Index > :: getDimensions() const
+template< typename Real, typename Device, typename Index >
+__cuda_callable__
+inline const typename Grid< 3, Real, Device, Index >::CoordinatesType&
+Grid< 3, Real, Device, Index >::getDimensions() const
 {
    return this->dimensions;
 }
 
-template< typename Real,
-          typename Device,
-          typename Index  >
-void Grid< 3, Real, Device, Index >::setLocalBegin( const CoordinatesType& begin )
+template< typename Real, typename Device, typename Index >
+void
+Grid< 3, Real, Device, Index >::setLocalBegin( const CoordinatesType& begin )
 {
    localBegin = begin;
 }
 
-template< typename Real,
-          typename Device,
-          typename Index  >
+template< typename Real, typename Device, typename Index >
 __cuda_callable__
 const typename Grid< 3, Real, Device, Index >::CoordinatesType&
-   Grid< 3, Real, Device, Index >::getLocalBegin() const
+Grid< 3, Real, Device, Index >::getLocalBegin() const
 {
    return localBegin;
 }
 
-template< typename Real,
-          typename Device,
-          typename Index  >
-void Grid< 3, Real, Device, Index >::setLocalEnd( const CoordinatesType& end )
+template< typename Real, typename Device, typename Index >
+void
+Grid< 3, Real, Device, Index >::setLocalEnd( const CoordinatesType& end )
 {
    localEnd = end;
 }
 
-template< typename Real,
-          typename Device,
-          typename Index  >
+template< typename Real, typename Device, typename Index >
 __cuda_callable__
 const typename Grid< 3, Real, Device, Index >::CoordinatesType&
-   Grid< 3, Real, Device, Index >::
-   getLocalEnd() const
+Grid< 3, Real, Device, Index >::getLocalEnd() const
 {
    return localEnd;
 }
 
-template< typename Real,
-          typename Device,
-          typename Index  >
-void Grid< 3, Real, Device, Index >::setInteriorBegin( const CoordinatesType& begin )
+template< typename Real, typename Device, typename Index >
+void
+Grid< 3, Real, Device, Index >::setInteriorBegin( const CoordinatesType& begin )
 {
    interiorBegin = begin;
 }
 
-template< typename Real,
-          typename Device,
-          typename Index  >
+template< typename Real, typename Device, typename Index >
 __cuda_callable__
 const typename Grid< 3, Real, Device, Index >::CoordinatesType&
-   Grid< 3, Real, Device, Index >::getInteriorBegin() const
+Grid< 3, Real, Device, Index >::getInteriorBegin() const
 {
    return interiorBegin;
 }
 
-template< typename Real,
-          typename Device,
-          typename Index  >
-void Grid< 3, Real, Device, Index >::setInteriorEnd( const CoordinatesType& end )
+template< typename Real, typename Device, typename Index >
+void
+Grid< 3, Real, Device, Index >::setInteriorEnd( const CoordinatesType& end )
 {
    interiorEnd = end;
 }
 
-template< typename Real,
-          typename Device,
-          typename Index  >
+template< typename Real, typename Device, typename Index >
 __cuda_callable__
 const typename Grid< 3, Real, Device, Index >::CoordinatesType&
-   Grid< 3, Real, Device, Index >::getInteriorEnd() const
+Grid< 3, Real, Device, Index >::getInteriorEnd() const
 {
    return interiorEnd;
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
-void Grid< 3, Real, Device, Index > :: setDomain( const PointType& origin,
-                                                     const PointType& proportions )
+template< typename Real, typename Device, typename Index >
+void
+Grid< 3, Real, Device, Index >::setDomain( const PointType& origin, const PointType& proportions )
 {
    this->origin = origin;
    this->proportions = proportions;
    computeSpaceSteps();
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__ inline
-const typename Grid< 3, Real, Device, Index >::PointType&
+template< typename Real, typename Device, typename Index >
+__cuda_callable__
+inline const typename Grid< 3, Real, Device, Index >::PointType&
 Grid< 3, Real, Device, Index >::getOrigin() const
 {
    return this->origin;
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__ inline
-const typename Grid< 3, Real, Device, Index > :: PointType&
-   Grid< 3, Real, Device, Index > :: getProportions() const
+template< typename Real, typename Device, typename Index >
+__cuda_callable__
+inline const typename Grid< 3, Real, Device, Index >::PointType&
+Grid< 3, Real, Device, Index >::getProportions() const
 {
-	return this->proportions;
+   return this->proportions;
 }
 
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< int EntityDimension >
-__cuda_callable__  inline
-Index
-Grid< 3, Real, Device, Index >::
-getEntitiesCount() const
+template< typename Real, typename Device, typename Index >
+template< int EntityDimension >
+__cuda_callable__
+inline Index
+Grid< 3, Real, Device, Index >::getEntitiesCount() const
 {
-   static_assert( EntityDimension <= 3 &&
-                  EntityDimension >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityDimension <= 3 && EntityDimension >= 0, "Wrong grid entity dimensions." );
 
-   switch( EntityDimension )
-   {
+   switch( EntityDimension ) {
       case 3:
          return this->numberOfCells;
       case 2:
@@ -370,67 +288,50 @@ getEntitiesCount() const
    return -1;
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename Entity >
-__cuda_callable__  inline
-Index
-Grid< 3, Real, Device, Index >::
-getEntitiesCount() const
+template< typename Real, typename Device, typename Index >
+template< typename Entity >
+__cuda_callable__
+inline Index
+Grid< 3, Real, Device, Index >::getEntitiesCount() const
 {
    return getEntitiesCount< Entity::getEntityDimension() >();
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename Entity >
- __cuda_callable__ inline
-Entity
-Grid< 3, Real, Device, Index >::
-getEntity( const IndexType& entityIndex ) const
+template< typename Real, typename Device, typename Index >
+template< typename Entity >
+__cuda_callable__
+inline Entity
+Grid< 3, Real, Device, Index >::getEntity( const IndexType& entityIndex ) const
 {
-   static_assert( Entity::getEntityDimension() <= 3 &&
-                  Entity::getEntityDimension() >= 0, "Wrong grid entity dimensions." );
+   static_assert( Entity::getEntityDimension() <= 3 && Entity::getEntityDimension() >= 0, "Wrong grid entity dimensions." );
 
    return GridEntityGetter< Grid, Entity >::getEntity( *this, entityIndex );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename Entity >
-__cuda_callable__ inline
-Index
-Grid< 3, Real, Device, Index >::
-getEntityIndex( const Entity& entity ) const
+template< typename Real, typename Device, typename Index >
+template< typename Entity >
+__cuda_callable__
+inline Index
+Grid< 3, Real, Device, Index >::getEntityIndex( const Entity& entity ) const
 {
-   static_assert( Entity::getEntityDimension() <= 3 &&
-                  Entity::getEntityDimension() >= 0, "Wrong grid entity dimensions." );
+   static_assert( Entity::getEntityDimension() <= 3 && Entity::getEntityDimension() >= 0, "Wrong grid entity dimensions." );
 
    return GridEntityGetter< Grid, Entity >::getEntityIndex( *this, entity );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__ inline
-const typename Grid< 3, Real, Device, Index >::PointType&
-Grid< 3, Real, Device, Index >::
-getSpaceSteps() const
+template< typename Real, typename Device, typename Index >
+__cuda_callable__
+inline const typename Grid< 3, Real, Device, Index >::PointType&
+Grid< 3, Real, Device, Index >::getSpaceSteps() const
 {
    return this->spaceSteps;
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< int xPow, int yPow, int zPow >
-__cuda_callable__ inline
-const Real&
-Grid< 3, Real, Device, Index >::
-getSpaceStepsProducts() const
+template< typename Real, typename Device, typename Index >
+template< int xPow, int yPow, int zPow >
+__cuda_callable__
+inline const Real&
+Grid< 3, Real, Device, Index >::getSpaceStepsProducts() const
 {
    static_assert( xPow >= -2 && xPow <= 2, "unsupported value of xPow" );
    static_assert( yPow >= -2 && yPow <= 2, "unsupported value of yPow" );
@@ -438,54 +339,41 @@ getSpaceStepsProducts() const
    return this->spaceStepsProducts[ xPow + 2 ][ yPow + 2 ][ zPow + 2 ];
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
+template< typename Real, typename Device, typename Index >
 __cuda_callable__
 Index
-Grid< 3, Real, Device, Index >::
-getNumberOfNxFaces() const
+Grid< 3, Real, Device, Index >::getNumberOfNxFaces() const
 {
    return numberOfNxFaces;
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
+template< typename Real, typename Device, typename Index >
 __cuda_callable__
 Index
-Grid< 3, Real, Device, Index >::
-getNumberOfNxAndNyFaces() const
+Grid< 3, Real, Device, Index >::getNumberOfNxAndNyFaces() const
 {
    return numberOfNxAndNyFaces;
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
+template< typename Real, typename Device, typename Index >
 __cuda_callable__
 const Real&
-Grid< 3, Real, Device, Index >::
-getCellMeasure() const
+Grid< 3, Real, Device, Index >::getCellMeasure() const
 {
    return this->template getSpaceStepsProducts< 1, 1, 1 >();
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__ inline
-Real Grid< 3, Real, Device, Index > :: getSmallestSpaceStep() const
+template< typename Real, typename Device, typename Index >
+__cuda_callable__
+inline Real
+Grid< 3, Real, Device, Index >::getSmallestSpaceStep() const
 {
    return min( this->spaceSteps.x(), min( this->spaceSteps.y(), this->spaceSteps.z() ) );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
+template< typename Real, typename Device, typename Index >
 void
-Grid< 3, Real, Device, Index >::
-writeProlog( Logger& logger ) const
+Grid< 3, Real, Device, Index >::writeProlog( Logger& logger ) const
 {
    logger.writeParameter( "Dimension:", getMeshDimension() );
    logger.writeParameter( "Domain origin:", this->origin );
@@ -497,5 +385,5 @@ writeProlog( Logger& logger ) const
    logger.writeParameter( "Number of vertices:", getEntitiesCount< Vertex >() );
 }
 
-} // namespace Meshes
-} // namespace noa::TNL
+}  // namespace Meshes
+}  // namespace noa::TNL

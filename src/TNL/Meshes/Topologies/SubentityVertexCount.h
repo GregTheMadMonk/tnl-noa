@@ -9,17 +9,15 @@
 #include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/SubentityVertexMap.h>
 
 namespace noa::TNL {
-namespace Meshes{
+namespace Meshes {
 namespace Topologies {
 
-template< typename EntityTopology,
-          typename SubentityTopology,
-          int SubentityIndex >
+template< typename EntityTopology, typename SubentityTopology, int SubentityIndex >
 struct SubentityVertexCount
 {
    static constexpr int count = Subtopology< SubentityTopology, 0 >::count;
 };
 
-} // namespace Topologies
-} // namespace Meshes
-} // namespace noa::TNL
+}  // namespace Topologies
+}  // namespace Meshes
+}  // namespace noa::TNL

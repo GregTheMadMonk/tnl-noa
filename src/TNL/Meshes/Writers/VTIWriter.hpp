@@ -10,13 +10,15 @@
 
 #include <limits>
 
-#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticVector.h>  // noa::TNL::product
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticVector.h>  // TNL::product
 #include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/VTIWriter.h>
 #include <noa/3rdparty/tnl-noa/src/TNL/Endianness.h>
 #include <noa/3rdparty/tnl-noa/src/TNL/base64.h>
 #include <stdexcept>
-#include <noa/3rdparty/tnl-noa/src/TNL/zlib_compression.h>
-
+#ifdef HAVE_ZLIB
+   #include <noa/3rdparty/tnl-noa/src/TNL/zlib_compression.h>
+#endif
 
 namespace noa::TNL {
 namespace Meshes {
@@ -29,19 +31,20 @@ VTIWriter< Mesh >::writeMetadata( int cycle, double time )
    if( ! vtkfileOpen )
       writeHeader();
    if( imageDataOpen )
-      throw std::logic_error("The <ImageData> tag is already open, but writeMetadata should be called before writeImageData.");
+      throw std::logic_error(
+         "The <ImageData> tag is already open, but writeMetadata should be called before writeImageData." );
 
    if( cycle >= 0 || time >= 0 )
       metadata << "<FieldData>\n";
 
    if( cycle >= 0 ) {
-      metadata << "<DataArray type=\"Int32\" Name=\"CYCLE\" NumberOfTuples=\"1\" format=\"ascii\">"
-               << cycle << "</DataArray>\n";
+      metadata << "<DataArray type=\"Int32\" Name=\"CYCLE\" NumberOfTuples=\"1\" format=\"ascii\">" << cycle
+               << "</DataArray>\n";
    }
    if( time >= 0 ) {
       metadata.precision( std::numeric_limits< double >::digits10 );
-      metadata << "<DataArray type=\"Float64\" Name=\"TIME\" NumberOfTuples=\"1\" format=\"ascii\">"
-               << time << "</DataArray>\n";
+      metadata << "<DataArray type=\"Float64\" Name=\"TIME\" NumberOfTuples=\"1\" format=\"ascii\">" << time
+               << "</DataArray>\n";
    }
 
    if( cycle >= 0 || time >= 0 )
@@ -58,12 +61,14 @@ VTIWriter< Mesh >::writeImageData( const typename Mesh::PointType& gridOrigin,
    if( ! vtkfileOpen )
       writeHeader();
    if( imageDataOpen )
-      throw std::logic_error("The <ImageData> tag is already open.");
+      throw std::logic_error( "The <ImageData> tag is already open." );
 
-   std::stringstream extent, origin, spacing;
+   std::stringstream extent;
+   std::stringstream origin;
+   std::stringstream spacing;
 
    for( int j = 0; j < Mesh::getMeshDimension(); j++ )
-      extent << begin[ j ] <<  " " << end[ j ] << " ";
+      extent << begin[ j ] << " " << end[ j ] << " ";
    // VTK knows only 3D grids
    for( int j = Mesh::getMeshDimension(); j < 3; j++ )
       extent << "0 0 ";
@@ -80,7 +85,8 @@ VTIWriter< Mesh >::writeImageData( const typename Mesh::PointType& gridOrigin,
    for( int j = Mesh::getMeshDimension(); j < 3; j++ )
       spacing << 0 << " ";
 
-   str << "<ImageData WholeExtent=\"" << extent.str() << "\" Origin=\"" << origin.str() << "\" Spacing=\"" << spacing.str() << "\">\n";
+   str << "<ImageData WholeExtent=\"" << extent.str() << "\" Origin=\"" << origin.str() << "\" Spacing=\"" << spacing.str()
+       << "\">\n";
    imageDataOpen = true;
 
    str << "<Piece Extent=\"" << extent.str() << "\">\n";
@@ -93,8 +99,8 @@ VTIWriter< Mesh >::writeImageData( const typename Mesh::PointType& gridOrigin,
    }
 
    // sets points and cells counts
-   pointsCount = noa::TNL::product( end - begin + 1 );
-   cellsCount = noa::TNL::product( end - begin );
+   pointsCount = TNL::product( end - begin + 1 );
+   cellsCount = TNL::product( end - begin );
 }
 
 template< typename Mesh >
@@ -105,7 +111,7 @@ VTIWriter< Mesh >::writeImageData( const Mesh& mesh )
 }
 
 template< typename Mesh >
-   template< int EntityDimension >
+template< int EntityDimension >
 void
 VTIWriter< Mesh >::writeEntities( const Mesh& mesh )
 {
@@ -113,48 +119,42 @@ VTIWriter< Mesh >::writeEntities( const Mesh& mesh )
 }
 
 template< typename Mesh >
-   template< typename Array >
+template< typename Array >
 void
-VTIWriter< Mesh >::writePointData( const Array& array,
-                                   const std::string& name,
-                                   const int numberOfComponents )
+VTIWriter< Mesh >::writePointData( const Array& array, const std::string& name, const int numberOfComponents )
 {
    if( ! pieceOpen )
-      throw std::logic_error("The <Piece> tag has not been opened yet - call writeEntities first.");
-   if( array.getSize() / numberOfComponents != typename Array::IndexType(pointsCount) )
-      throw std::length_error("Mismatched array size for <PointData> section: " + std::to_string(array.getSize())
-                              + " (there are " + std::to_string(pointsCount) + " points in the file)");
+      throw std::logic_error( "The <Piece> tag has not been opened yet - call writeEntities first." );
+   if( array.getSize() / numberOfComponents != typename Array::IndexType( pointsCount ) )
+      throw std::length_error( "Mismatched array size for <PointData> section: " + std::to_string( array.getSize() )
+                               + " (there are " + std::to_string( pointsCount ) + " points in the file)" );
    openPointData();
    writeDataArray( array, name, numberOfComponents );
 }
 
 template< typename Mesh >
-   template< typename Array >
+template< typename Array >
 void
-VTIWriter< Mesh >::writeCellData( const Array& array,
-                                  const std::string& name,
-                                  const int numberOfComponents )
+VTIWriter< Mesh >::writeCellData( const Array& array, const std::string& name, const int numberOfComponents )
 {
    if( ! pieceOpen )
-      throw std::logic_error("The <Piece> tag has not been opened yet - call writeEntities first.");
-   if( array.getSize() / numberOfComponents != typename Array::IndexType(cellsCount) )
-      throw std::length_error("Mismatched array size for <CellData> section: " + std::to_string(array.getSize())
-                              + " (there are " + std::to_string(cellsCount) + " cells in the file)");
+      throw std::logic_error( "The <Piece> tag has not been opened yet - call writeEntities first." );
+   if( array.getSize() / numberOfComponents != typename Array::IndexType( cellsCount ) )
+      throw std::length_error( "Mismatched array size for <CellData> section: " + std::to_string( array.getSize() )
+                               + " (there are " + std::to_string( cellsCount ) + " cells in the file)" );
    openCellData();
    writeDataArray( array, name, numberOfComponents );
 }
 
 template< typename Mesh >
-   template< typename Array >
+template< typename Array >
 void
-VTIWriter< Mesh >::writeDataArray( const Array& array,
-                                   const std::string& name,
-                                   const int numberOfComponents )
+VTIWriter< Mesh >::writeDataArray( const Array& array, const std::string& name, const int numberOfComponents )
 {
    // use a host buffer if direct access to the array elements is not possible
-   if( std::is_same< typename Array::DeviceType, Devices::Cuda >::value )
-   {
-      using HostArray = typename Array::template Self< std::remove_const_t< typename Array::ValueType >, Devices::Host, typename Array::IndexType >;
+   if( std::is_same< typename Array::DeviceType, Devices::Cuda >::value ) {
+      using HostArray =
+         TNL::Containers::Array< std::remove_const_t< typename Array::ValueType >, Devices::Host, typename Array::IndexType >;
       HostArray hostBuffer;
       hostBuffer = array;
       writeDataArray( hostBuffer, name, numberOfComponents );
@@ -162,24 +162,23 @@ VTIWriter< Mesh >::writeDataArray( const Array& array,
    }
 
    if( numberOfComponents != 0 && numberOfComponents != 1 && numberOfComponents != 3 )
-      throw std::logic_error("Unsupported numberOfComponents parameter: " + std::to_string(numberOfComponents));
+      throw std::logic_error( "Unsupported numberOfComponents parameter: " + std::to_string( numberOfComponents ) );
 
    // write DataArray header
-   str << "<DataArray type=\"" << VTK::getTypeName( array[0] ) << "\"";
+   str << "<DataArray type=\"" << VTK::getTypeName( array[ 0 ] ) << "\"";
    str << " Name=\"" << name << "\"";
    if( numberOfComponents > 0 )
       str << " NumberOfComponents=\"" << numberOfComponents << "\"";
-   str << " format=\"" << ((format == VTK::FileFormat::ascii) ? "ascii" : "binary") << "\">\n";
+   str << " format=\"" << ( ( format == VTK::FileFormat::ascii ) ? "ascii" : "binary" ) << "\">\n";
 
-   switch( format )
-   {
+   switch( format ) {
       case VTK::FileFormat::ascii:
          str.precision( std::numeric_limits< typename Array::ValueType >::digits10 );
          for( typename Array::IndexType i = 0; i < array.getSize(); i++ )
             // If Array::ValueType is uint8_t, it might be a typedef for unsigned char, which
             // would be normally printed as char rather than a number. Hence, we use the trick
             // with unary operator+, see https://stackoverflow.com/a/28414758
-            str << +array[i] << " ";
+            str << +array[ i ] << " ";
          str << "\n";
          break;
       case VTK::FileFormat::zlib_compressed:
@@ -240,7 +239,7 @@ void
 VTIWriter< Mesh >::openCellData()
 {
    if( cellDataClosed )
-      throw std::logic_error("The <CellData> tag has already been closed in the current <Piece> section.");
+      throw std::logic_error( "The <CellData> tag has already been closed in the current <Piece> section." );
    closePointData();
    if( ! cellDataOpen ) {
       str << "<CellData>\n";
@@ -264,7 +263,7 @@ void
 VTIWriter< Mesh >::openPointData()
 {
    if( pointDataClosed )
-      throw std::logic_error("The <PointData> tag has already been closed in the current <Piece> section.");
+      throw std::logic_error( "The <PointData> tag has already been closed in the current <Piece> section." );
    closeCellData();
    if( ! pointDataOpen ) {
       str << "<PointData>\n";
@@ -299,6 +298,6 @@ VTIWriter< Mesh >::closePiece()
    }
 }
 
-} // namespace Writers
-} // namespace Meshes
-} // namespace noa::TNL
+}  // namespace Writers
+}  // namespace Meshes
+}  // namespace noa::TNL

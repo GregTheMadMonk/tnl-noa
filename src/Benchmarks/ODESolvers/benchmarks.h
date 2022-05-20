@@ -33,16 +33,16 @@ benchmarkSolver( Benchmark<>& benchmark,
    using RealType = typename VectorType::RealType;
    using DeviceType = typename VectorType::DeviceType;
    using IndexType = typename VectorType::IndexType;
-   using ProblemType = typename Solver::ProblemType;
+   //using ProblemType = typename Solver::ProblemType;
 
    // setup
-   ProblemType problem;
+   //ProblemType problem;
    Solver solver;
    solver.setup( parameters );
-   solver.setProblem( problem );
-   solver.setSolverMonitor( benchmark.getMonitor() );
-   solver.setStopTime( parameters.getParameter< double >( "final-time" ) );
-   solver.setTau( parameters.getParameter< double >( "time-step" ) );
+   //solver.setProblem( problem );
+   //solver.setSolverMonitor( benchmark.getMonitor() );
+   //solver.setStopTime( parameters.getParameter< double >( "final-time" ) );
+   //solver.setTau( parameters.getParameter< double >( "time-step" ) );
 
    // reset function
    auto reset = [&]() {
@@ -51,7 +51,7 @@ benchmarkSolver( Benchmark<>& benchmark,
 
    // benchmark function
    auto compute = [&]() {
-      solver.solve( u );
+      //solver.solve( u );
    };
 
    // subclass BenchmarkResult to add extra columns to the benchmark

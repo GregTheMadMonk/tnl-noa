@@ -36,8 +36,7 @@ template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int,
           typename Allocator = typename Allocators::Default< Device >::template Allocator< Real > >
-class Vector
-: public Array< Real, Device, Index, Allocator >
+class Vector : public Array< Real, Device, Index, Allocator >
 {
 public:
    /**
@@ -60,7 +59,8 @@ public:
    /**
     * \brief Allocator type used for allocating this vector.
     *
-    * See \ref Allocators::Cuda, \ref Allocators::CudaHost, \ref Allocators::CudaManaged, \ref Allocators::Host or \ref Allocators:Default.
+    * See \ref Allocators::Cuda, \ref Allocators::CudaHost, \ref Allocators::CudaManaged, \ref Allocators::Host or \ref
+    * Allocators:Default.
     */
    using AllocatorType = Allocator;
 
@@ -83,10 +83,17 @@ public:
              typename _Allocator = typename Allocators::Default< _Device >::template Allocator< _Real > >
    using Self = Vector< _Real, _Device, _Index, _Allocator >;
 
-
    // constructors and assignment operators inherited from the class Array
    using Array< Real, Device, Index, Allocator >::Array;
    using Array< Real, Device, Index, Allocator >::operator=;
+
+#ifdef __NVCC__
+   // workaround for nvcc 11.6 - the constructor from Array is not inherited "properly" because of the optional argument
+   template< typename InValue >
+   Vector( const std::initializer_list< InValue >& list, const AllocatorType& allocator = AllocatorType() )
+   : Array< Real, Device, Index, Allocator >( list, allocator )
+   {}
+#endif
 
    /**
     * \brief Constructs an empty array with zero size.
@@ -106,7 +113,7 @@ public:
    /**
     * \brief Default move constructor.
     */
-   Vector( Vector&& ) = default;
+   Vector( Vector&& ) noexcept = default;
 
    /**
     * \brief Constructor from expression template
@@ -115,18 +122,21 @@ public:
     */
    template< typename VectorExpression,
              typename...,
-             typename = std::enable_if_t< Expressions::HasEnabledExpressionTemplates< VectorExpression >::value && ! IsArrayType< VectorExpression >::value > >
+             typename = std::enable_if_t< Expressions::HasEnabledExpressionTemplates< VectorExpression >::value
+                                          && ! IsArrayType< VectorExpression >::value > >
    explicit Vector( const VectorExpression& expression );
 
    /**
     * \brief Copy-assignment operator for copying data from another vector.
     */
-   Vector& operator=( const Vector& ) = default;
+   Vector&
+   operator=( const Vector& ) = default;
 
    /**
     * \brief Move-assignment operator for acquiring data from \e rvalues.
     */
-   Vector& operator=( Vector&& ) = default;
+   Vector&
+   operator=( Vector&& ) noexcept = default;
 
    /**
     * \brief Returns a modifiable view of the vector.
@@ -140,7 +150,8 @@ public:
     * \param end The end of the vector sub-interval. The default value is 0
     *            which is, however, replaced with the array size.
     */
-   ViewType getView( IndexType begin = 0, IndexType end = 0 );
+   ViewType
+   getView( IndexType begin = 0, IndexType end = 0 );
 
    /**
     * \brief Returns a non-modifiable view of the vector.
@@ -154,7 +165,8 @@ public:
     * \param end The end of the vector sub-interval. The default value is 0
     *            which is, however, replaced with the array size.
     */
-   ConstViewType getConstView( IndexType begin = 0, IndexType end = 0 ) const;
+   ConstViewType
+   getConstView( IndexType begin = 0, IndexType end = 0 ) const;
 
    /**
     * \brief Conversion operator to a modifiable view of the vector.
@@ -180,8 +192,10 @@ public:
     */
    template< typename VectorExpression,
              typename...,
-             typename = std::enable_if_t< Expressions::HasEnabledExpressionTemplates< VectorExpression >::value && ! IsArrayType< VectorExpression >::value > >
-   Vector& operator=( const VectorExpression& expression );
+             typename = std::enable_if_t< Expressions::HasEnabledExpressionTemplates< VectorExpression >::value
+                                          && ! IsArrayType< VectorExpression >::value > >
+   Vector&
+   operator=( const VectorExpression& expression );
 
    /**
     * \brief Assigns a value or an array - same as \ref Array::operator=.
@@ -190,14 +204,14 @@ public:
     */
    // operator= from the base class should be hidden according to the C++14 standard,
    // although GCC does not do that - see https://stackoverflow.com/q/57322624
-#if !defined(__CUDACC_VER_MAJOR__) || __CUDACC_VER_MAJOR__ < 11
+#if ! defined( __CUDACC_VER_MAJOR__ ) || __CUDACC_VER_MAJOR__ < 11
    template< typename T,
              typename...,
              typename = std::enable_if_t< std::is_convertible< T, Real >::value || IsArrayType< T >::value > >
    Array< Real, Device, Index, Allocator >&
    operator=( const T& data )
    {
-      return Array< Real, Device, Index, Allocator >::operator=(data);
+      return Array< Real, Device, Index, Allocator >::operator=( data );
    }
 #endif
 
@@ -212,7 +226,8 @@ public:
     * \return Reference to this vector.
     */
    template< typename VectorExpression >
-   Vector& operator+=( const VectorExpression& expression );
+   Vector&
+   operator+=( const VectorExpression& expression );
 
    /**
     * \brief Subtracts elements of this vector and a vector expression and
@@ -225,7 +240,8 @@ public:
     * \return Reference to this vector.
     */
    template< typename VectorExpression >
-   Vector& operator-=( const VectorExpression& expression );
+   Vector&
+   operator-=( const VectorExpression& expression );
 
    /**
     * \brief Multiplies elements of this vector and a vector expression and
@@ -238,7 +254,8 @@ public:
     * \return Reference to this vector.
     */
    template< typename VectorExpression >
-   Vector& operator*=( const VectorExpression& expression );
+   Vector&
+   operator*=( const VectorExpression& expression );
 
    /**
     * \brief Divides elements of this vector and a vector expression and
@@ -251,7 +268,8 @@ public:
     * \return Reference to this vector.
     */
    template< typename VectorExpression >
-   Vector& operator/=( const VectorExpression& expression );
+   Vector&
+   operator/=( const VectorExpression& expression );
 
    /**
     * \brief Modulo assignment operator for vector and a vector expression.
@@ -263,18 +281,18 @@ public:
     * \return Reference to this vector.
     */
    template< typename VectorExpression >
-   Vector& operator%=( const VectorExpression& expression );
+   Vector&
+   operator%=( const VectorExpression& expression );
 };
 
 // Enable expression templates for Vector
 namespace Expressions {
-   template< typename Real, typename Device, typename Index, typename Allocator >
-   struct HasEnabledExpressionTemplates< Vector< Real, Device, Index, Allocator > >
-   : std::true_type
-   {};
-} // namespace Expressions
+template< typename Real, typename Device, typename Index, typename Allocator >
+struct HasEnabledExpressionTemplates< Vector< Real, Device, Index, Allocator > > : std::true_type
+{};
+}  // namespace Expressions
 
-} // namespace Containers
-} // namespace noa::TNL
+}  // namespace Containers
+}  // namespace noa::TNL
 
 #include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.hpp>

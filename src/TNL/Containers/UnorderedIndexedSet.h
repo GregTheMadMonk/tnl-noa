@@ -16,7 +16,7 @@ template< class Key,
           class Index,
           class Hash = std::hash< Key >,
           class KeyEqual = std::equal_to< Key >,
-          class Allocator = std::allocator< std::pair<const Key, Index> > >
+          class Allocator = std::allocator< std::pair< const Key, Index > > >
 class UnorderedIndexedSet
 {
 protected:
@@ -32,41 +32,55 @@ public:
    using const_iterator = typename map_type::const_iterator;
    using hasher = Hash;
    using key_equal = KeyEqual;
-   
-   void clear();
 
-   size_type size() const;
+   void
+   clear();
 
-   Index insert( const Key& key );
+   size_type
+   size() const;
 
-   Index insert( Key&& key );
+   Index
+   insert( const Key& key );
 
-   std::pair< Index, bool > try_insert( const Key& key );
+   Index
+   insert( Key&& key );
 
-   bool find( const Key& key, Index& index ) const;
+   std::pair< Index, bool >
+   try_insert( const Key& key );
 
-   void reserve( size_type count );
+   bool
+   find( const Key& key, Index& index ) const;
 
-   size_type count( const Key& key ) const;
+   void
+   reserve( size_type count );
 
-   size_type erase( const Key& key );
+   size_type
+   count( const Key& key ) const;
 
-   void print( std::ostream& str ) const;
+   size_type
+   erase( const Key& key );
 
-   iterator begin();
+   void
+   print( std::ostream& str ) const;
 
-   const_iterator begin() const;
+   iterator
+   begin();
 
-   iterator end();
+   const_iterator
+   begin() const;
 
-   const_iterator end() const;
+   iterator
+   end();
+
+   const_iterator
+   end() const;
 };
 
-template< typename Element,
-          typename Index >
-std::ostream& operator <<( std::ostream& str, UnorderedIndexedSet< Element, Index >& set );
+template< typename Element, typename Index >
+std::ostream&
+operator<<( std::ostream& str, UnorderedIndexedSet< Element, Index >& set );
 
-} // namespace Containers
-} // namespace noa::TNL
+}  // namespace Containers
+}  // namespace noa::TNL
 
 #include <noa/3rdparty/tnl-noa/src/TNL/Containers/UnorderedIndexedSet.hpp>

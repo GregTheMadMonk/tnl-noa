@@ -1,3 +1,48 @@
+## Code formatting
+
+Source code should follow the formatting conventions established in the project.
+There are several software configurations to help developers format their code:
+
+1. [.editorconfig](.editorconfig) specifies basic formatting elements, such as
+   character set and indentation width. Many text editors and IDEs provide
+   built-in support or a plugin for _editorconfig_, see
+   https://editorconfig.org/ for details.
+2. The [.clang-format](src/.clang-format) file contains detailed specification
+   for C++ source code formatting. Automatic formatting may be applied with
+   [clang-format][clang-format] version 13 or later. Use the
+   [run-clang-format.py](scripts/run-clang-format.py) script for parallel
+   processing and correct formatting of CUDA kernel launches and OpenMP pragmas.
+   The script is also run in a continuous integration job on Gitlab to give
+   developers hints about what should be reformatted.
+3. Source files in the `src/TNL/` directory should include a copyright header at
+   the top. The [update-copyright-headers.py](scripts/update-copyright-headers.py)
+   script can be used to generate or update copyright headers in source files.
+
+When you are unsure or if something is not specified in the aforementioned
+configuration, rely on [mirroring][mirroring] the formatting style of existing
+code.
+
+> __Note:__ Code formatting changes should be applied _before making a commit_,
+> i.e., all commits should be already formatted correctly. Ideally, there should
+> be no separate commits to fix formatting issues. When working on a feature
+> branch, you can squash separate commits fixing style issues into previous
+> commits which introduced the problem (see below on how to use the interactive
+> rebase).
+
+[clang-format]: https://clang.llvm.org/docs/ClangFormat.html
+[mirroring]: https://en.wikipedia.org/wiki/Mirroring_(psychology)
+
+## Code linting
+
+The continuous integration on Gitlab features a code linting job using
+[clang-tidy](https://clang.llvm.org/extra/clang-tidy/) to help developers
+diagnosing and fixing common programming errors. The configuration is provided
+in the [.clang-tidy](src/.clang-tidy) file. Various editors and IDEs provide
+[integrations](https://clang.llvm.org/extra/clang-tidy/Integrations.html) either
+directly for _clang-tidy_ or for [clangd](https://clangd.llvm.org/) (which
+integrates _clang-tidy_). This way you can get full linting directly in your
+editor without having to rely on the continuous integration.
+
 ## How to configure git
 
 It is important to [configure your git username and email address](
@@ -70,6 +115,10 @@ The development of new features should follow the rebase-based workflow:
     - This is also a good time to squash small commits (e.g. typos, forgotten
       changes or trivial corrections) with relevant bigger commits to make the
       review easier.
+- When your work in the _feature_ branch is finished, you should also do an
+  [interactive rebase](https://thoughtbot.com/blog/git-interactive-rebase-squash-amend-rewriting-history)
+  and squash small commits (notably when fixing typos or compilation problems),
+  reword commit messages (check all typos) and overall make the history _nice_.
 - When reviewed, the feature branch can be merged into the develop branch.
 
 The main advantages of this workflow are linear history, clear commits and

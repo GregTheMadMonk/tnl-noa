@@ -12,65 +12,68 @@
 namespace noa::TNL {
 
 namespace Meshes {
-   template< typename, typename, typename > class MeshEntity;
+template< typename, typename, typename >
+class MeshEntity;
 }
 
 namespace Functions {
 
 class MeshFunctionGnuplotWriterBase
 {
-   protected:
-
-      template< typename Entity, int dim = Entity::getEntityDimension() >
-      struct center
+protected:
+   template< typename Entity, int dim = Entity::getEntityDimension() >
+   struct center
+   {
+      static auto
+      get( const Entity& entity ) -> decltype( entity.getCenter() )
       {
-         static auto get( const Entity& entity ) -> decltype(entity.getCenter())
-         {
-            return entity.getCenter();
-         }
-      };
+         return entity.getCenter();
+      }
+   };
 
-      template< typename Entity >
-      struct center< Entity, 0 >
+   template< typename Entity >
+   struct center< Entity, 0 >
+   {
+      static auto
+      get( const Entity& entity ) -> decltype( entity.getPoint() )
       {
-         static auto get( const Entity& entity ) -> decltype(entity.getPoint())
-         {
-            return entity.getPoint();
-         }
-      };
+         return entity.getPoint();
+      }
+   };
 
-      template< typename MeshConfig, typename Device, typename Topology, int dim >
-      struct center< noa::TNL::Meshes::MeshEntity< MeshConfig, Device, Topology >, dim >
+   template< typename MeshConfig, typename Device, typename Topology, int dim >
+   struct center< TNL::Meshes::MeshEntity< MeshConfig, Device, Topology >, dim >
+   {
+      static int
+      get( const TNL::Meshes::MeshEntity< MeshConfig, Device, Topology >& entity )
       {
-         static int get( const noa::TNL::Meshes::MeshEntity< MeshConfig, Device, Topology >& entity )
-         {
-            throw Exceptions::NotImplementedError();
-         }
-      };
+         throw Exceptions::NotImplementedError();
+      }
+   };
 
-      template< typename MeshConfig, typename Device, typename Topology >
-      struct center< noa::TNL::Meshes::MeshEntity< MeshConfig, Device, Topology >, 0 >
+   template< typename MeshConfig, typename Device, typename Topology >
+   struct center< TNL::Meshes::MeshEntity< MeshConfig, Device, Topology >, 0 >
+   {
+      static int
+      get( const TNL::Meshes::MeshEntity< MeshConfig, Device, Topology >& entity )
       {
-         static int get( const noa::TNL::Meshes::MeshEntity< MeshConfig, Device, Topology >& entity )
-         {
-            throw Exceptions::NotImplementedError();
-         }
-      };
+         throw Exceptions::NotImplementedError();
+      }
+   };
 };
 
 template< typename MeshFunction,
           typename Mesh = typename MeshFunction::MeshType,
           int EntitiesDimension = MeshFunction::getEntitiesDimension() >
-class MeshFunctionGnuplotWriter
-: public MeshFunctionGnuplotWriterBase
+class MeshFunctionGnuplotWriter : public MeshFunctionGnuplotWriterBase
 {
 public:
    using MeshType = typename MeshFunction::MeshType;
    using EntityType = typename MeshType::template EntityType< MeshFunction::getEntitiesDimension() >;
    using GlobalIndex = typename MeshType::GlobalIndexType;
 
-   static bool write( const MeshFunction& function,
-                      std::ostream& str )
+   static bool
+   write( const MeshFunction& function, std::ostream& str )
    {
       const MeshType& mesh = function.getMesh();
       const GlobalIndex entitiesCount = mesh.template getEntitiesCount< EntityType >();
@@ -85,11 +88,7 @@ public:
    }
 };
 
-template< typename MeshFunction,
-   typename Real,
-   typename Device,
-   typename Index,
-   int EntityDimension >
+template< typename MeshFunction, typename Real, typename Device, typename Index, int EntityDimension >
 class MeshFunctionGnuplotWriter< MeshFunction, Meshes::Grid< 2, Real, Device, Index >, EntityDimension >
 : public MeshFunctionGnuplotWriterBase
 {
@@ -98,19 +97,17 @@ public:
    using EntityType = typename MeshType::template EntityType< MeshFunction::getEntitiesDimension() >;
    using GlobalIndex = typename MeshType::GlobalIndexType;
 
-   static bool write( const MeshFunction& function,
-                      std::ostream& str )
+   static bool
+   write( const MeshFunction& function, std::ostream& str )
    {
       const MeshType& grid = function.getMesh();
       EntityType entity( grid );
       auto& c = entity.getCoordinates();
-      for( c.y() = 0; c.y() < grid.getDimensions().y(); c.y()++ )
-      {
-         for( c.x() = 0; c.x() < grid.getDimensions().x(); c.x()++ )
-         {
+      for( c.y() = 0; c.y() < grid.getDimensions().y(); c.y()++ ) {
+         for( c.x() = 0; c.x() < grid.getDimensions().x(); c.x()++ ) {
             entity.refresh();
             typename MeshType::PointType v = center< EntityType >::get( entity );
-            //std::cerr << entity.getCoordinates() << " -> " << v << std::endl;
+            // std::cerr << entity.getCoordinates() << " -> " << v << std::endl;
             for( int j = 0; j < v.getSize(); j++ )
                str << v[ j ] << " ";
             str << function.getData().getElement( entity.getIndex() ) << "\n";
@@ -121,11 +118,7 @@ public:
    }
 };
 
-template< typename MeshFunction,
-   typename Real,
-   typename Device,
-   typename Index,
-   int EntityDimension >
+template< typename MeshFunction, typename Real, typename Device, typename Index, int EntityDimension >
 class MeshFunctionGnuplotWriter< MeshFunction, Meshes::Grid< 3, Real, Device, Index >, EntityDimension >
 : public MeshFunctionGnuplotWriterBase
 {
@@ -134,17 +127,15 @@ public:
    using EntityType = typename MeshType::template EntityType< MeshFunction::getEntitiesDimension() >;
    using GlobalIndex = typename MeshType::GlobalIndexType;
 
-   static bool write( const MeshFunction& function,
-                      std::ostream& str )
+   static bool
+   write( const MeshFunction& function, std::ostream& str )
    {
       const MeshType& grid = function.getMesh();
       EntityType entity( grid );
       auto& c = entity.getCoordinates();
       for( c.z() = 0; c.z() < grid.getDimensions().z(); c.z()++ )
-         for( c.y() = 0; c.y() < grid.getDimensions().y(); c.y()++ )
-         {
-            for( c.x() = 0; c.x() < grid.getDimensions().x(); c.x()++ )
-            {
+         for( c.y() = 0; c.y() < grid.getDimensions().y(); c.y()++ ) {
+            for( c.x() = 0; c.x() < grid.getDimensions().x(); c.x()++ ) {
                entity.refresh();
                typename MeshType::PointType v = center< EntityType >::get( entity );
                for( int j = 0; j < v.getSize(); j++ )
@@ -157,5 +148,5 @@ public:
    }
 };
 
-} // namespace Functions
-} // namespace noa::TNL
+}  // namespace Functions
+}  // namespace noa::TNL

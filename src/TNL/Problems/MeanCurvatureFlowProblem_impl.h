@@ -26,49 +26,35 @@
 namespace noa::TNL {
 namespace Problems {
 
-template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename DifferentialOperator >
+template< typename Mesh, typename BoundaryCondition, typename RightHandSide, typename DifferentialOperator >
 String
-MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getPrologHeader() const
+MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::getPrologHeader() const
 {
    return String( "Mean Curvative Flow" );
 }
 
-template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename DifferentialOperator >
+template< typename Mesh, typename BoundaryCondition, typename RightHandSide, typename DifferentialOperator >
 void
-MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
-{
-}
+MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::writeProlog(
+   Logger& logger,
+   const Config::ParameterContainer& parameters ) const
+{}
 
-template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename DifferentialOperator >
+template< typename Mesh, typename BoundaryCondition, typename RightHandSide, typename DifferentialOperator >
 bool
-MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setup( const Config::ParameterContainer& parameters )
+MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::setup(
+   const Config::ParameterContainer& parameters )
 {
-   if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
-       ! this->rightHandSide.setup( parameters, "right-hand-side-" ) )
+   if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" )
+       || ! this->rightHandSide.setup( parameters, "right-hand-side-" ) )
       return false;
    this->differentialOperator.nonlinearDiffusionOperator.operatorQ.setEps( parameters.getParameter< double >( "eps" ) );
    return true;
 }
 
-template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename DifferentialOperator >
+template< typename Mesh, typename BoundaryCondition, typename RightHandSide, typename DifferentialOperator >
 typename MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::IndexType
-MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getDofs( const MeshType& mesh ) const
+MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::getDofs( const MeshType& mesh ) const
 {
    /****
     * Set-up DOFs and supporting grid functions
@@ -76,51 +62,40 @@ getDofs( const MeshType& mesh ) const
    return mesh.template getEntitiesCount< typename Mesh::Cell >();
 }
 
-template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename DifferentialOperator >
+template< typename Mesh, typename BoundaryCondition, typename RightHandSide, typename DifferentialOperator >
 void
-MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-bindDofs( const MeshType& mesh,
-          DofVectorType& dofVector )
+MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::bindDofs( const MeshType& mesh,
+                                                                                                    DofVectorType& dofVector )
 {
    const IndexType dofs = mesh.template getEntitiesCount< typename Mesh::Cell >();
    this->solution.bind( dofVector.getData(), dofs );
-   //differentialOperator.nonlinearDiffusionOperator.operatorQ.bind(solution);
-//   this->differentialOperator.setupDofs(mesh);
+   // differentialOperator.nonlinearDiffusionOperator.operatorQ.bind(solution);
+   //   this->differentialOperator.setupDofs(mesh);
 }
 
-template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename DifferentialOperator >
+template< typename Mesh, typename BoundaryCondition, typename RightHandSide, typename DifferentialOperator >
 bool
-MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setInitialCondition( const Config::ParameterContainer& parameters,
-                     const MeshType& mesh,
-                     DofVectorType& dofs,
-                     MeshDependentDataPointer& meshDependentData )
+MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::setInitialCondition(
+   const Config::ParameterContainer& parameters,
+   const MeshType& mesh,
+   DofVectorType& dofs,
+   MeshDependentDataPointer& meshDependentData )
 {
    this->bindDofs( mesh, dofs );
    const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
-   if( ! this->solution.load( initialConditionFile ) )
-   {
+   if( ! this->solution.load( initialConditionFile ) ) {
       std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
       return false;
    }
    return true;
 }
 
-template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename DifferentialOperator >
+template< typename Mesh, typename BoundaryCondition, typename RightHandSide, typename DifferentialOperator >
 template< typename Matrix >
 bool
-MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setupLinearSystem( const MeshType& mesh,
-                   Matrix& matrix )
+MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::setupLinearSystem(
+   const MeshType& mesh,
+   Matrix& matrix )
 {
    const IndexType dofs = this->getDofs( mesh );
    typedef typename MatrixType::RowsCapacitiesType RowsCapacitiesTypeType;
@@ -128,32 +103,25 @@ setupLinearSystem( const MeshType& mesh,
    rowLengths.setSize( dofs );
    MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, RowsCapacitiesTypeType > matrixSetter;
    matrixSetter.template getCompressedRowLengths< typename Mesh::Cell >(
-      mesh,
-      differentialOperator,
-      boundaryCondition,
-      rowLengths
-   );
+      mesh, differentialOperator, boundaryCondition, rowLengths );
    matrix.setDimensions( dofs, dofs );
    matrix.setRowCapacities( rowLengths );
    return true;
 }
 
-template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename DifferentialOperator >
+template< typename Mesh, typename BoundaryCondition, typename RightHandSide, typename DifferentialOperator >
 bool
-MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-makeSnapshot( const RealType& time,
-              const IndexType& step,
-              const MeshType& mesh,
-              DofVectorType& dofs,
-              MeshDependentDataPointer& meshDependentData )
+MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::makeSnapshot(
+   const RealType& time,
+   const IndexType& step,
+   const MeshType& mesh,
+   DofVectorType& dofs,
+   MeshDependentDataPointer& meshDependentData )
 {
-  std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
+   std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
 
    this->bindDofs( mesh, dofs );
-   //cout << "dofs = " << dofs << std::endl;
+   // cout << "dofs = " << dofs << std::endl;
    String fileName;
    FileNameBaseNumberEnding( "u-", step, 5, ".vti", fileName );
    if( ! this->solution.write( "u", fileName ) )
@@ -161,18 +129,15 @@ makeSnapshot( const RealType& time,
    return true;
 }
 
-template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename DifferentialOperator >
+template< typename Mesh, typename BoundaryCondition, typename RightHandSide, typename DifferentialOperator >
 void
-MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getExplicitUpdate( const RealType& time,
-                const RealType& tau,
-                const MeshType& mesh,
-                DofVectorType& inDofs,
-                DofVectorType& outDofs,
-                MeshDependentDataPointer& meshDependentData )
+MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::getExplicitUpdate(
+   const RealType& time,
+   const RealType& tau,
+   const MeshType& mesh,
+   DofVectorType& inDofs,
+   DofVectorType& outDofs,
+   MeshDependentDataPointer& meshDependentData )
 {
    /****
     * If you use an explicit solver like Euler or Merson, you
@@ -183,13 +148,13 @@ getExplicitUpdate( const RealType& time,
     * You may use supporting vectors again if you need.
     */
 
-//   this->differentialOperator.computeFirstGradient(mesh,time,u);
+   //   this->differentialOperator.computeFirstGradient(mesh,time,u);
 
-   //cout << "u = " << u << std::endl;
-   //this->bindDofs( mesh, u );
+   // cout << "u = " << u << std::endl;
+   // this->bindDofs( mesh, u );
    MeshFunctionType u( mesh, inDofs );
    MeshFunctionType fu( mesh, outDofs );
-   //differentialOperator.nonlinearDiffusionOperator.operatorQ.update( mesh, time );
+   // differentialOperator.nonlinearDiffusionOperator.operatorQ.update( mesh, time );
    ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
    explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer );
    explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer );
@@ -204,20 +169,17 @@ getExplicitUpdate( const RealType& time,
    getchar();*/
 }
 
-template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename DifferentialOperator >
+template< typename Mesh, typename BoundaryCondition, typename RightHandSide, typename DifferentialOperator >
 template< typename Matrix >
 void
-MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-assemblyLinearSystem( const RealType& time,
-                      const RealType& tau,
-                      const MeshType& mesh,
-                      DofVectorType& dofsU,
-                      Matrix& matrix,
-                      DofVectorType& b,
-                      MeshDependentDataPointer& meshDependentData )
+MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::assemblyLinearSystem(
+   const RealType& time,
+   const RealType& tau,
+   const MeshType& mesh,
+   DofVectorType& dofsU,
+   Matrix& matrix,
+   DofVectorType& b,
+   MeshDependentDataPointer& meshDependentData )
 {
    MeshFunctionType u( mesh, dofsU );
    LinearSystemAssembler< Mesh,
@@ -227,17 +189,10 @@ assemblyLinearSystem( const RealType& time,
                           RightHandSide,
                           BackwardTimeDiscretisation,
                           MatrixType,
-                          DofVectorType > systemAssembler;
+                          DofVectorType >
+      systemAssembler;
    systemAssembler.template assembly< typename Mesh::Cell >(
-      time,
-      tau,
-      mesh,
-      this->differentialOperator,
-      this->boundaryCondition,
-      this->rightHandSide,
-      u,
-      matrix,
-      b );
+      time, tau, mesh, this->differentialOperator, this->boundaryCondition, this->rightHandSide, u, matrix, b );
    /*matrix.print(std::cout );
   std::cout << std::endl << b << std::endl;
   std::cout << std::endl << u << std::endl;
@@ -245,5 +200,5 @@ assemblyLinearSystem( const RealType& time,
    //abort();*/
 }
 
-} // namespace Problems
-} // namespace noa::TNL
+}  // namespace Problems
+}  // namespace noa::TNL

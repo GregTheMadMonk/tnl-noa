@@ -16,8 +16,7 @@ namespace noa::TNL {
  */
 namespace Exceptions {
 
-struct CudaSupportMissing
-   : public std::runtime_error
+struct CudaSupportMissing : public std::runtime_error
 {
    CudaSupportMissing()
    : std::runtime_error( "CUDA support is missing, but the program called a function which needs it. "
@@ -25,5 +24,5 @@ struct CudaSupportMissing
    {}
 };
 
-} // namespace Exceptions
-} // namespace noa::TNL
+}  // namespace Exceptions
+}  // namespace noa::TNL

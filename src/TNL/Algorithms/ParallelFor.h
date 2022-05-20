@@ -12,7 +12,7 @@
 #include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CheckDevice.h>
 #include <noa/3rdparty/tnl-noa/src/TNL/Cuda/DeviceInfo.h>
 #include <noa/3rdparty/tnl-noa/src/TNL/Cuda/LaunchHelpers.h>
-#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/CudaSupportMissing.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/KernelLaunch.h>
 #include <noa/3rdparty/tnl-noa/src/TNL/Math.h>
 
 /****
@@ -45,19 +45,21 @@ namespace Algorithms {
  *
  * Only parallel for-loops in CUDA are affected by this mode.
  */
-enum ParallelForMode { SynchronousMode, AsynchronousMode };
-
+enum ParallelForMode
+{
+   SynchronousMode,
+   AsynchronousMode
+};
 
 /**
  * \brief Parallel for loop for one dimensional interval of indices.
  *
  * \tparam Device specifies the device where the for-loop will be executed.
- *    It can be \ref noa::TNL::Devices::Host, \ref noa::TNL::Devices::Cuda or
- *    \ref noa::TNL::Devices::Sequential.
+ *    It can be \ref TNL::Devices::Host, \ref TNL::Devices::Cuda or
+ *    \ref TNL::Devices::Sequential.
  * \tparam Mode defines synchronous/asynchronous mode on parallel devices.
  */
-template< typename Device = Devices::Sequential,
-          ParallelForMode Mode = SynchronousMode >
+template< typename Device = Devices::Sequential, ParallelForMode Mode = SynchronousMode >
 struct ParallelFor
 {
    /**
@@ -80,10 +82,9 @@ struct ParallelFor
     * \include ParallelForExample.out
     *
     */
-   template< typename Index,
-             typename Function,
-             typename... FunctionArgs >
-   static void exec( Index start, Index end, Function f, FunctionArgs... args )
+   template< typename Index, typename Function, typename... FunctionArgs >
+   static void
+   exec( Index start, Index end, Function f, FunctionArgs... args )
    {
       for( Index i = start; i < end; i++ )
          f( i, args... );
@@ -94,12 +95,11 @@ struct ParallelFor
  * \brief Parallel for loop for two dimensional domain of indices.
  *
  * \tparam Device specifies the device where the for-loop will be executed.
- *    It can be \ref noa::TNL::Devices::Host, \ref noa::TNL::Devices::Cuda or
- *    \ref noa::TNL::Devices::Sequential.
+ *    It can be \ref TNL::Devices::Host, \ref TNL::Devices::Cuda or
+ *    \ref TNL::Devices::Sequential.
  * \tparam Mode defines synchronous/asynchronous mode on parallel devices.
  */
-template< typename Device = Devices::Sequential,
-          ParallelForMode Mode = SynchronousMode >
+template< typename Device = Devices::Sequential, ParallelForMode Mode = SynchronousMode >
 struct ParallelFor2D
 {
    /**
@@ -132,14 +132,13 @@ struct ParallelFor2D
     * \include ParallelForExample-2D.out
     *
     */
-   template< typename Index,
-             typename Function,
-             typename... FunctionArgs >
-   static void exec( Index startX, Index startY, Index endX, Index endY, Function f, FunctionArgs... args )
+   template< typename Index, typename Function, typename... FunctionArgs >
+   static void
+   exec( Index startX, Index startY, Index endX, Index endY, Function f, FunctionArgs... args )
    {
       for( Index j = startY; j < endY; j++ )
-      for( Index i = startX; i < endX; i++ )
-         f( i, j, args... );
+         for( Index i = startX; i < endX; i++ )
+            f( i, j, args... );
    }
 };
 
@@ -147,12 +146,11 @@ struct ParallelFor2D
  * \brief Parallel for loop for three dimensional domain of indices.
  *
  * \tparam Device specifies the device where the for-loop will be executed.
- *    It can be \ref noa::TNL::Devices::Host, \ref noa::TNL::Devices::Cuda or
- *    \ref noa::TNL::Devices::Sequential.
+ *    It can be \ref TNL::Devices::Host, \ref TNL::Devices::Cuda or
+ *    \ref TNL::Devices::Sequential.
  * \tparam Mode defines synchronous/asynchronous mode on parallel devices.
  */
-template< typename Device = Devices::Sequential,
-          ParallelForMode Mode = SynchronousMode >
+template< typename Device = Devices::Sequential, ParallelForMode Mode = SynchronousMode >
 struct ParallelFor3D
 {
    /**
@@ -187,31 +185,28 @@ struct ParallelFor3D
     * \include ParallelForExample-3D.out
     *
     */
-   template< typename Index,
-             typename Function,
-             typename... FunctionArgs >
-   static void exec( Index startX, Index startY, Index startZ, Index endX, Index endY, Index endZ, Function f, FunctionArgs... args )
+   template< typename Index, typename Function, typename... FunctionArgs >
+   static void
+   exec( Index startX, Index startY, Index startZ, Index endX, Index endY, Index endZ, Function f, FunctionArgs... args )
    {
       for( Index k = startZ; k < endZ; k++ )
-      for( Index j = startY; j < endY; j++ )
-      for( Index i = startX; i < endX; i++ )
-         f( i, j, k, args... );
+         for( Index j = startY; j < endY; j++ )
+            for( Index i = startX; i < endX; i++ )
+               f( i, j, k, args... );
    }
 };
 
 template< ParallelForMode Mode >
 struct ParallelFor< Devices::Host, Mode >
 {
-   template< typename Index,
-             typename Function,
-             typename... FunctionArgs >
-   static void exec( Index start, Index end, Function f, FunctionArgs... args )
+   template< typename Index, typename Function, typename... FunctionArgs >
+   static void
+   exec( Index start, Index end, Function f, FunctionArgs... args )
    {
 #ifdef HAVE_OPENMP
       // Benchmarks show that this is significantly faster compared
       // to '#pragma omp parallel for if( Devices::Host::isOMPEnabled() && end - start > 512 )'
-      if( Devices::Host::isOMPEnabled() && end - start > 512 )
-      {
+      if( Devices::Host::isOMPEnabled() && end - start > 512 ) {
          #pragma omp parallel for
          for( Index i = start; i < end; i++ )
             f( i, args... );
@@ -227,20 +222,18 @@ struct ParallelFor< Devices::Host, Mode >
 template< ParallelForMode Mode >
 struct ParallelFor2D< Devices::Host, Mode >
 {
-   template< typename Index,
-             typename Function,
-             typename... FunctionArgs >
-   static void exec( Index startX, Index startY, Index endX, Index endY, Function f, FunctionArgs... args )
+   template< typename Index, typename Function, typename... FunctionArgs >
+   static void
+   exec( Index startX, Index startY, Index endX, Index endY, Function f, FunctionArgs... args )
    {
 #ifdef HAVE_OPENMP
       // Benchmarks show that this is significantly faster compared
       // to '#pragma omp parallel for if( Devices::Host::isOMPEnabled() )'
-      if( Devices::Host::isOMPEnabled() )
-      {
+      if( Devices::Host::isOMPEnabled() ) {
          #pragma omp parallel for
          for( Index j = startY; j < endY; j++ )
-         for( Index i = startX; i < endX; i++ )
-            f( i, j, args... );
+            for( Index i = startX; i < endX; i++ )
+               f( i, j, args... );
       }
       else
          ParallelFor2D< Devices::Sequential >::exec( startX, startY, endX, endY, f, args... );
@@ -253,21 +246,19 @@ struct ParallelFor2D< Devices::Host, Mode >
 template< ParallelForMode Mode >
 struct ParallelFor3D< Devices::Host, Mode >
 {
-   template< typename Index,
-             typename Function,
-             typename... FunctionArgs >
-   static void exec( Index startX, Index startY, Index startZ, Index endX, Index endY, Index endZ, Function f, FunctionArgs... args )
+   template< typename Index, typename Function, typename... FunctionArgs >
+   static void
+   exec( Index startX, Index startY, Index startZ, Index endX, Index endY, Index endZ, Function f, FunctionArgs... args )
    {
 #ifdef HAVE_OPENMP
       // Benchmarks show that this is significantly faster compared
       // to '#pragma omp parallel for if( Devices::Host::isOMPEnabled() )'
-      if( Devices::Host::isOMPEnabled() )
-      {
+      if( Devices::Host::isOMPEnabled() ) {
          #pragma omp parallel for collapse(2)
          for( Index k = startZ; k < endZ; k++ )
-         for( Index j = startY; j < endY; j++ )
-         for( Index i = startX; i < endX; i++ )
-            f( i, j, k, args... );
+            for( Index j = startY; j < endY; j++ )
+               for( Index i = startX; i < endX; i++ )
+                  f( i, j, k, args... );
       }
       else
          ParallelFor3D< Devices::Sequential >::exec( startX, startY, startZ, endX, endY, endZ, f, args... );
@@ -277,41 +268,45 @@ struct ParallelFor3D< Devices::Host, Mode >
    }
 };
 
-#ifdef HAVE_CUDA
-template< bool gridStrideX = true,
-          typename Index,
-          typename Function,
-          typename... FunctionArgs >
-__global__ void
+template< bool gridStrideX = true, typename Index, typename Function, typename... FunctionArgs >
+__global__
+void
 ParallelForKernel( Index start, Index end, Function f, FunctionArgs... args )
 {
+#ifdef HAVE_CUDA
    Index i = start + blockIdx.x * blockDim.x + threadIdx.x;
    while( i < end ) {
       f( i, args... );
-      if( gridStrideX ) i += blockDim.x * gridDim.x;
-      else break;
+      if( gridStrideX )
+         i += blockDim.x * gridDim.x;
+      else
+         break;
    }
+#endif
 }
 
-template< bool gridStrideX = true,
-          bool gridStrideY = true,
-          typename Index,
-          typename Function,
-          typename... FunctionArgs >
-__global__ void
+template< bool gridStrideX = true, bool gridStrideY = true, typename Index, typename Function, typename... FunctionArgs >
+__global__
+void
 ParallelFor2DKernel( Index startX, Index startY, Index endX, Index endY, Function f, FunctionArgs... args )
 {
+#ifdef HAVE_CUDA
    Index j = startY + blockIdx.y * blockDim.y + threadIdx.y;
    Index i = startX + blockIdx.x * blockDim.x + threadIdx.x;
    while( j < endY ) {
       while( i < endX ) {
          f( i, j, args... );
-         if( gridStrideX ) i += blockDim.x * gridDim.x;
-         else break;
+         if( gridStrideX )
+            i += blockDim.x * gridDim.x;
+         else
+            break;
       }
-      if( gridStrideY ) j += blockDim.y * gridDim.y;
-      else break;
+      if( gridStrideY )
+         j += blockDim.y * gridDim.y;
+      else
+         break;
    }
+#endif
 }
 
 template< bool gridStrideX = true,
@@ -320,9 +315,18 @@ template< bool gridStrideX = true,
           typename Index,
           typename Function,
           typename... FunctionArgs >
-__global__ void
-ParallelFor3DKernel( Index startX, Index startY, Index startZ, Index endX, Index endY, Index endZ, Function f, FunctionArgs... args )
+__global__
+void
+ParallelFor3DKernel( Index startX,
+                     Index startY,
+                     Index startZ,
+                     Index endX,
+                     Index endY,
+                     Index endZ,
+                     Function f,
+                     FunctionArgs... args )
 {
+#ifdef HAVE_CUDA
    Index k = startZ + blockIdx.z * blockDim.z + threadIdx.z;
    Index j = startY + blockIdx.y * blockDim.y + threadIdx.y;
    Index i = startX + blockIdx.x * blockDim.x + threadIdx.x;
@@ -330,209 +334,210 @@ ParallelFor3DKernel( Index startX, Index startY, Index startZ, Index endX, Index
       while( j < endY ) {
          while( i < endX ) {
             f( i, j, k, args... );
-            if( gridStrideX ) i += blockDim.x * gridDim.x;
-            else break;
+            if( gridStrideX )
+               i += blockDim.x * gridDim.x;
+            else
+               break;
          }
-         if( gridStrideY ) j += blockDim.y * gridDim.y;
-         else break;
+         if( gridStrideY )
+            j += blockDim.y * gridDim.y;
+         else
+            break;
       }
-      if( gridStrideZ ) k += blockDim.z * gridDim.z;
-      else break;
+      if( gridStrideZ )
+         k += blockDim.z * gridDim.z;
+      else
+         break;
    }
-}
 #endif
+}
 
 template< ParallelForMode Mode >
 struct ParallelFor< Devices::Cuda, Mode >
 {
-   template< typename Index,
-             typename Function,
-             typename... FunctionArgs >
-   static void exec( Index start, Index end, Function f, FunctionArgs... args )
+   template< typename Index, typename Function, typename... FunctionArgs >
+   static void
+   exec( Index start, Index end, Function f, FunctionArgs... args )
    {
-#ifdef HAVE_CUDA
-      if( end > start ) {
-         dim3 blockSize( 256 );
-         dim3 gridSize;
-         gridSize.x = noa::TNL::min( Cuda::getMaxGridSize(), Cuda::getNumberOfBlocks( end - start, blockSize.x ) );
+      if( end <= start )
+         return;
 
-         if( (std::size_t) blockSize.x * gridSize.x >= (std::size_t) end - start )
-            ParallelForKernel< false ><<< gridSize, blockSize >>>( start, end, f, args... );
-         else {
-            // decrease the grid size and align to the number of multiprocessors
-            const int desGridSize = 32 * Cuda::DeviceInfo::getCudaMultiprocessors( Cuda::DeviceInfo::getActiveDevice() );
-            gridSize.x = noa::TNL::min( desGridSize, Cuda::getNumberOfBlocks( end - start, blockSize.x ) );
-            ParallelForKernel< true ><<< gridSize, blockSize >>>( start, end, f, args... );
-         }
+      Cuda::LaunchConfiguration launch_config;
+      launch_config.blockSize.x = 256;
+      launch_config.gridSize.x =
+         TNL::min( Cuda::getMaxGridSize(), Cuda::getNumberOfBlocks( end - start, launch_config.blockSize.x ) );
 
-         if( Mode == SynchronousMode )
-         {
-            cudaStreamSynchronize(0);
-            TNL_CHECK_CUDA_DEVICE;
-         }
+      constexpr bool synchronous = Mode == SynchronousMode;
+
+      if( (std::size_t) launch_config.blockSize.x * launch_config.gridSize.x >= (std::size_t) end - start ) {
+         constexpr auto kernel = ParallelForKernel< false, Index, Function, FunctionArgs... >;
+         Cuda::launchKernel< synchronous >( kernel, 0, launch_config, start, end, f, args... );
       }
-#else
-      throw Exceptions::CudaSupportMissing();
-#endif
+      else {
+         // decrease the grid size and align to the number of multiprocessors
+         const int desGridSize = 32 * Cuda::DeviceInfo::getCudaMultiprocessors( Cuda::DeviceInfo::getActiveDevice() );
+         launch_config.gridSize.x = TNL::min( desGridSize, Cuda::getNumberOfBlocks( end - start, launch_config.blockSize.x ) );
+         constexpr auto kernel = ParallelForKernel< true, Index, Function, FunctionArgs... >;
+         Cuda::launchKernel< synchronous >( kernel, 0, launch_config, start, end, f, args... );
+      }
    }
 };
 
 template< ParallelForMode Mode >
 struct ParallelFor2D< Devices::Cuda, Mode >
 {
-   template< typename Index,
-             typename Function,
-             typename... FunctionArgs >
-   static void exec( Index startX, Index startY, Index endX, Index endY, Function f, FunctionArgs... args )
+   template< typename Index, typename Function, typename... FunctionArgs >
+   static void
+   exec( Index startX, Index startY, Index endX, Index endY, Function f, FunctionArgs... args )
    {
-#ifdef HAVE_CUDA
-      if( endX > startX && endY > startY ) {
-         const Index sizeX = endX - startX;
-         const Index sizeY = endY - startY;
+      if( endX <= startX || endY <= startY )
+         return;
 
-         dim3 blockSize;
-         if( sizeX >= sizeY * sizeY ) {
-            blockSize.x = noa::TNL::min( 256, sizeX );
-            blockSize.y = 1;
-         }
-         else if( sizeY >= sizeX * sizeX ) {
-            blockSize.x = 1;
-            blockSize.y = noa::TNL::min( 256, sizeY );
-         }
-         else {
-            blockSize.x = noa::TNL::min( 32, sizeX );
-            blockSize.y = noa::TNL::min( 8, sizeY );
-         }
-         dim3 gridSize;
-         gridSize.x = noa::TNL::min( Cuda::getMaxGridSize(), Cuda::getNumberOfBlocks( sizeX, blockSize.x ) );
-         gridSize.y = noa::TNL::min( Cuda::getMaxGridSize(), Cuda::getNumberOfBlocks( sizeY, blockSize.y ) );
+      const Index sizeX = endX - startX;
+      const Index sizeY = endY - startY;
 
-         dim3 gridCount;
-         gridCount.x = roundUpDivision( sizeX, blockSize.x * gridSize.x );
-         gridCount.y = roundUpDivision( sizeY, blockSize.y * gridSize.y );
-
-         if( gridCount.x == 1 && gridCount.y == 1 )
-            ParallelFor2DKernel< false, false ><<< gridSize, blockSize >>>
-               ( startX, startY, endX, endY, f, args... );
-         else if( gridCount.x == 1 && gridCount.y > 1 )
-            ParallelFor2DKernel< false, true ><<< gridSize, blockSize >>>
-               ( startX, startY, endX, endY, f, args... );
-         else if( gridCount.x > 1 && gridCount.y == 1 )
-            ParallelFor2DKernel< true, false ><<< gridSize, blockSize >>>
-               ( startX, startY, endX, endY, f, args... );
-         else
-            ParallelFor2DKernel< true, true ><<< gridSize, blockSize >>>
-               ( startX, startY, endX, endY, f, args... );
-
-         if( Mode == SynchronousMode )
-         {
-            cudaStreamSynchronize(0);
-            TNL_CHECK_CUDA_DEVICE;
-         }
+      Cuda::LaunchConfiguration launch_config;
+      if( sizeX >= sizeY * sizeY ) {
+         launch_config.blockSize.x = TNL::min( 256, sizeX );
+         launch_config.blockSize.y = 1;
       }
-#else
-      throw Exceptions::CudaSupportMissing();
-#endif
+      else if( sizeY >= sizeX * sizeX ) {
+         launch_config.blockSize.x = 1;
+         launch_config.blockSize.y = TNL::min( 256, sizeY );
+      }
+      else {
+         launch_config.blockSize.x = TNL::min( 32, sizeX );
+         launch_config.blockSize.y = TNL::min( 8, sizeY );
+      }
+      launch_config.gridSize.x =
+         TNL::min( Cuda::getMaxGridSize(), Cuda::getNumberOfBlocks( sizeX, launch_config.blockSize.x ) );
+      launch_config.gridSize.y =
+         TNL::min( Cuda::getMaxGridSize(), Cuda::getNumberOfBlocks( sizeY, launch_config.blockSize.y ) );
+
+      constexpr bool synchronous = Mode == SynchronousMode;
+
+      dim3 gridCount;
+      gridCount.x = roundUpDivision( sizeX, launch_config.blockSize.x * launch_config.gridSize.x );
+      gridCount.y = roundUpDivision( sizeY, launch_config.blockSize.y * launch_config.gridSize.y );
+
+      if( gridCount.x == 1 && gridCount.y == 1 ) {
+         constexpr auto kernel = ParallelFor2DKernel< false, false, Index, Function, FunctionArgs... >;
+         Cuda::launchKernel< synchronous >( kernel, 0, launch_config, startX, startY, endX, endY, f, args... );
+      }
+      else if( gridCount.x == 1 && gridCount.y > 1 ) {
+         constexpr auto kernel = ParallelFor2DKernel< false, true, Index, Function, FunctionArgs... >;
+         Cuda::launchKernel< synchronous >( kernel, 0, launch_config, startX, startY, endX, endY, f, args... );
+      }
+      else if( gridCount.x > 1 && gridCount.y == 1 ) {
+         constexpr auto kernel = ParallelFor2DKernel< true, false, Index, Function, FunctionArgs... >;
+         Cuda::launchKernel< synchronous >( kernel, 0, launch_config, startX, startY, endX, endY, f, args... );
+      }
+      else {
+         constexpr auto kernel = ParallelFor2DKernel< true, true, Index, Function, FunctionArgs... >;
+         Cuda::launchKernel< synchronous >( kernel, 0, launch_config, startX, startY, endX, endY, f, args... );
+      }
    }
 };
 
 template< ParallelForMode Mode >
 struct ParallelFor3D< Devices::Cuda, Mode >
 {
-   template< typename Index,
-             typename Function,
-             typename... FunctionArgs >
-   static void exec( Index startX, Index startY, Index startZ, Index endX, Index endY, Index endZ, Function f, FunctionArgs... args )
+   template< typename Index, typename Function, typename... FunctionArgs >
+   static void
+   exec( Index startX, Index startY, Index startZ, Index endX, Index endY, Index endZ, Function f, FunctionArgs... args )
    {
-#ifdef HAVE_CUDA
-      if( endX > startX && endY > startY && endZ > startZ ) {
-         const Index sizeX = endX - startX;
-         const Index sizeY = endY - startY;
-         const Index sizeZ = endZ - startZ;
+      if( endX <= startX || endY <= startY || endZ <= startZ )
+         return;
 
-         dim3 blockSize;
-         if( sizeX >= sizeY * sizeY * sizeZ * sizeZ ) {
-            blockSize.x = noa::TNL::min( 256, sizeX );
-            blockSize.y = 1;
-            blockSize.z = 1;
-         }
-         else if( sizeY >= sizeX * sizeX * sizeZ * sizeZ ) {
-            blockSize.x = 1;
-            blockSize.y = noa::TNL::min( 256, sizeY );
-            blockSize.z = 1;
-         }
-         else if( sizeZ >= sizeX * sizeX * sizeY * sizeY ) {
-            blockSize.x = noa::TNL::min( 2, sizeX );
-            blockSize.y = noa::TNL::min( 2, sizeY );
-            // CUDA allows max 64 for blockSize.z
-            blockSize.z = noa::TNL::min( 64, sizeZ );
-         }
-         else if( sizeX >= sizeZ * sizeZ && sizeY >= sizeZ * sizeZ ) {
-            blockSize.x = noa::TNL::min( 32, sizeX );
-            blockSize.y = noa::TNL::min( 8, sizeY );
-            blockSize.z = 1;
-         }
-         else if( sizeX >= sizeY * sizeY && sizeZ >= sizeY * sizeY ) {
-            blockSize.x = noa::TNL::min( 32, sizeX );
-            blockSize.y = 1;
-            blockSize.z = noa::TNL::min( 8, sizeZ );
-         }
-         else if( sizeY >= sizeX * sizeX && sizeZ >= sizeX * sizeX ) {
-            blockSize.x = 1;
-            blockSize.y = noa::TNL::min( 32, sizeY );
-            blockSize.z = noa::TNL::min( 8, sizeZ );
-         }
-         else {
-            blockSize.x = noa::TNL::min( 16, sizeX );
-            blockSize.y = noa::TNL::min( 4, sizeY );
-            blockSize.z = noa::TNL::min( 4, sizeZ );
-         }
-         dim3 gridSize;
-         gridSize.x = noa::TNL::min( Cuda::getMaxGridSize(), Cuda::getNumberOfBlocks( sizeX, blockSize.x ) );
-         gridSize.y = noa::TNL::min( Cuda::getMaxGridSize(), Cuda::getNumberOfBlocks( sizeY, blockSize.y ) );
-         gridSize.z = noa::TNL::min( Cuda::getMaxGridSize(), Cuda::getNumberOfBlocks( sizeZ, blockSize.z ) );
+      const Index sizeX = endX - startX;
+      const Index sizeY = endY - startY;
+      const Index sizeZ = endZ - startZ;
 
-         dim3 gridCount;
-         gridCount.x = roundUpDivision( sizeX, blockSize.x * gridSize.x );
-         gridCount.y = roundUpDivision( sizeY, blockSize.y * gridSize.y );
-         gridCount.z = roundUpDivision( sizeZ, blockSize.z * gridSize.z );
-
-         if( gridCount.x == 1 && gridCount.y == 1 && gridCount.z == 1 )
-            ParallelFor3DKernel< false, false, false ><<< gridSize, blockSize >>>
-               ( startX, startY, startZ, endX, endY, endZ, f, args... );
-         else if( gridCount.x == 1 && gridCount.y == 1 && gridCount.z > 1 )
-            ParallelFor3DKernel< false, false, true ><<< gridSize, blockSize >>>
-               ( startX, startY, startZ, endX, endY, endZ, f, args... );
-         else if( gridCount.x == 1 && gridCount.y > 1 && gridCount.z == 1 )
-            ParallelFor3DKernel< false, true, false ><<< gridSize, blockSize >>>
-               ( startX, startY, startZ, endX, endY, endZ, f, args... );
-         else if( gridCount.x > 1 && gridCount.y == 1 && gridCount.z == 1 )
-            ParallelFor3DKernel< true, false, false ><<< gridSize, blockSize >>>
-               ( startX, startY, startZ, endX, endY, endZ, f, args... );
-         else if( gridCount.x == 1 && gridCount.y > 1 && gridCount.z > 1 )
-            ParallelFor3DKernel< false, true, true ><<< gridSize, blockSize >>>
-               ( startX, startY, startZ, endX, endY, endZ, f, args... );
-         else if( gridCount.x > 1 && gridCount.y > 1 && gridCount.z == 1 )
-            ParallelFor3DKernel< true, true, false ><<< gridSize, blockSize >>>
-               ( startX, startY, startZ, endX, endY, endZ, f, args... );
-         else if( gridCount.x > 1 && gridCount.y == 1 && gridCount.z > 1 )
-            ParallelFor3DKernel< true, false, true ><<< gridSize, blockSize >>>
-               ( startX, startY, startZ, endX, endY, endZ, f, args... );
-         else
-            ParallelFor3DKernel< true, true, true ><<< gridSize, blockSize >>>
-               ( startX, startY, startZ, endX, endY, endZ, f, args... );
-
-         if( Mode == SynchronousMode )
-         {
-            cudaStreamSynchronize(0);
-            TNL_CHECK_CUDA_DEVICE;
-         }
+      Cuda::LaunchConfiguration launch_config;
+      if( sizeX >= sizeY * sizeY * sizeZ * sizeZ ) {
+         launch_config.blockSize.x = TNL::min( 256, sizeX );
+         launch_config.blockSize.y = 1;
+         launch_config.blockSize.z = 1;
       }
-#else
-      throw Exceptions::CudaSupportMissing();
-#endif
+      else if( sizeY >= sizeX * sizeX * sizeZ * sizeZ ) {
+         launch_config.blockSize.x = 1;
+         launch_config.blockSize.y = TNL::min( 256, sizeY );
+         launch_config.blockSize.z = 1;
+      }
+      else if( sizeZ >= sizeX * sizeX * sizeY * sizeY ) {
+         launch_config.blockSize.x = TNL::min( 2, sizeX );
+         launch_config.blockSize.y = TNL::min( 2, sizeY );
+         // CUDA allows max 64 for launch_config.blockSize.z
+         launch_config.blockSize.z = TNL::min( 64, sizeZ );
+      }
+      else if( sizeX >= sizeZ * sizeZ && sizeY >= sizeZ * sizeZ ) {
+         launch_config.blockSize.x = TNL::min( 32, sizeX );
+         launch_config.blockSize.y = TNL::min( 8, sizeY );
+         launch_config.blockSize.z = 1;
+      }
+      else if( sizeX >= sizeY * sizeY && sizeZ >= sizeY * sizeY ) {
+         launch_config.blockSize.x = TNL::min( 32, sizeX );
+         launch_config.blockSize.y = 1;
+         launch_config.blockSize.z = TNL::min( 8, sizeZ );
+      }
+      else if( sizeY >= sizeX * sizeX && sizeZ >= sizeX * sizeX ) {
+         launch_config.blockSize.x = 1;
+         launch_config.blockSize.y = TNL::min( 32, sizeY );
+         launch_config.blockSize.z = TNL::min( 8, sizeZ );
+      }
+      else {
+         launch_config.blockSize.x = TNL::min( 16, sizeX );
+         launch_config.blockSize.y = TNL::min( 4, sizeY );
+         launch_config.blockSize.z = TNL::min( 4, sizeZ );
+      }
+      launch_config.gridSize.x =
+         TNL::min( Cuda::getMaxGridSize(), Cuda::getNumberOfBlocks( sizeX, launch_config.blockSize.x ) );
+      launch_config.gridSize.y =
+         TNL::min( Cuda::getMaxGridSize(), Cuda::getNumberOfBlocks( sizeY, launch_config.blockSize.y ) );
+      launch_config.gridSize.z =
+         TNL::min( Cuda::getMaxGridSize(), Cuda::getNumberOfBlocks( sizeZ, launch_config.blockSize.z ) );
+
+      constexpr bool synchronous = Mode == SynchronousMode;
+
+      dim3 gridCount;
+      gridCount.x = roundUpDivision( sizeX, launch_config.blockSize.x * launch_config.gridSize.x );
+      gridCount.y = roundUpDivision( sizeY, launch_config.blockSize.y * launch_config.gridSize.y );
+      gridCount.z = roundUpDivision( sizeZ, launch_config.blockSize.z * launch_config.gridSize.z );
+
+      if( gridCount.x == 1 && gridCount.y == 1 && gridCount.z == 1 ) {
+         constexpr auto kernel = ParallelFor3DKernel< false, false, false, Index, Function, FunctionArgs... >;
+         Cuda::launchKernel< synchronous >( kernel, 0, launch_config, startX, startY, startZ, endX, endY, endZ, f, args... );
+      }
+      else if( gridCount.x == 1 && gridCount.y == 1 && gridCount.z > 1 ) {
+         constexpr auto kernel = ParallelFor3DKernel< false, false, true, Index, Function, FunctionArgs... >;
+         Cuda::launchKernel< synchronous >( kernel, 0, launch_config, startX, startY, startZ, endX, endY, endZ, f, args... );
+      }
+      else if( gridCount.x == 1 && gridCount.y > 1 && gridCount.z == 1 ) {
+         constexpr auto kernel = ParallelFor3DKernel< false, true, false, Index, Function, FunctionArgs... >;
+         Cuda::launchKernel< synchronous >( kernel, 0, launch_config, startX, startY, startZ, endX, endY, endZ, f, args... );
+      }
+      else if( gridCount.x > 1 && gridCount.y == 1 && gridCount.z == 1 ) {
+         constexpr auto kernel = ParallelFor3DKernel< true, false, false, Index, Function, FunctionArgs... >;
+         Cuda::launchKernel< synchronous >( kernel, 0, launch_config, startX, startY, startZ, endX, endY, endZ, f, args... );
+      }
+      else if( gridCount.x == 1 && gridCount.y > 1 && gridCount.z > 1 ) {
+         constexpr auto kernel = ParallelFor3DKernel< false, true, true, Index, Function, FunctionArgs... >;
+         Cuda::launchKernel< synchronous >( kernel, 0, launch_config, startX, startY, startZ, endX, endY, endZ, f, args... );
+      }
+      else if( gridCount.x > 1 && gridCount.y > 1 && gridCount.z == 1 ) {
+         constexpr auto kernel = ParallelFor3DKernel< true, true, false, Index, Function, FunctionArgs... >;
+         Cuda::launchKernel< synchronous >( kernel, 0, launch_config, startX, startY, startZ, endX, endY, endZ, f, args... );
+      }
+      else if( gridCount.x > 1 && gridCount.y == 1 && gridCount.z > 1 ) {
+         constexpr auto kernel = ParallelFor3DKernel< true, false, true, Index, Function, FunctionArgs... >;
+         Cuda::launchKernel< synchronous >( kernel, 0, launch_config, startX, startY, startZ, endX, endY, endZ, f, args... );
+      }
+      else {
+         constexpr auto kernel = ParallelFor3DKernel< true, true, true, Index, Function, FunctionArgs... >;
+         Cuda::launchKernel< synchronous >( kernel, 0, launch_config, startX, startY, startZ, endX, endY, endZ, f, args... );
+      }
    }
 };
 
-} // namespace Algorithms
-} // namespace noa::TNL
+}  // namespace Algorithms
+}  // namespace noa::TNL

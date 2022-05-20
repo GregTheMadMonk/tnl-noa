@@ -43,6 +43,7 @@ PROJECT_NUMBER="version $_branch:$(git rev-parse --short HEAD)"
 
 # Generate documentation
 PROJECT_NUMBER="$PROJECT_NUMBER" doxygen
+cp output_snippets/*png html
 
 # Install
 if [[ "$INSTALL" == "yes" ]]; then

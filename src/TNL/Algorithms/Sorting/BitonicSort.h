@@ -12,8 +12,8 @@
 #include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/NotImplementedError.h>
 
 namespace noa::TNL {
-   namespace Algorithms {
-      namespace Sorting {
+namespace Algorithms {
+namespace Sorting {
 
 struct BitonicSort
 {
@@ -39,6 +39,6 @@ struct BitonicSort
    }
 };
 
-      } // namespace Sorting
-   } // namespace Algorithms
-} //namespace noa::TNL
+}  // namespace Sorting
+}  // namespace Algorithms
+}  // namespace noa::TNL

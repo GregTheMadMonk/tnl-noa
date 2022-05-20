@@ -11,7 +11,7 @@
 #include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
 
 #ifdef HAVE_OPENMP
-#include <omp.h>
+   #include <omp.h>
 #endif
 
 namespace noa::TNL {
@@ -20,17 +20,20 @@ namespace Devices {
 class Host
 {
 public:
-   static void disableOMP()
+   static void
+   disableOMP()
    {
       ompEnabled() = false;
    }
 
-   static void enableOMP()
+   static void
+   enableOMP()
    {
       ompEnabled() = true;
    }
 
-   static inline bool isOMPEnabled()
+   static inline bool
+   isOMPEnabled()
    {
 #ifdef HAVE_OPENMP
       return ompEnabled();
@@ -39,7 +42,8 @@ public:
 #endif
    }
 
-   static void setMaxThreadsCount( int maxThreadsCount_ )
+   static void
+   setMaxThreadsCount( int maxThreadsCount_ )
    {
       maxThreadsCount() = maxThreadsCount_;
 #ifdef HAVE_OPENMP
@@ -47,7 +51,8 @@ public:
 #endif
    }
 
-   static int getMaxThreadsCount()
+   static int
+   getMaxThreadsCount()
    {
 #ifdef HAVE_OPENMP
       if( maxThreadsCount() == -1 )
@@ -58,7 +63,8 @@ public:
 #endif
    }
 
-   static int getThreadIdx()
+   static int
+   getThreadIdx()
    {
 #ifdef HAVE_OPENMP
       return omp_get_thread_num();
@@ -67,20 +73,21 @@ public:
 #endif
    }
 
-   static void configSetup( Config::ConfigDescription& config,
-                            const String& prefix = "" )
+   static void
+   configSetup( Config::ConfigDescription& config, const String& prefix = "" )
    {
 #ifdef HAVE_OPENMP
       config.addEntry< bool >( prefix + "openmp-enabled", "Enable support of OpenMP.", true );
-      config.addEntry<  int >( prefix + "openmp-max-threads", "Set maximum number of OpenMP threads.", omp_get_max_threads() );
+      config.addEntry< int >( prefix + "openmp-max-threads", "Set maximum number of OpenMP threads.", omp_get_max_threads() );
 #else
       config.addEntry< bool >( prefix + "openmp-enabled", "Enable support of OpenMP (not supported on this system).", false );
-      config.addEntry<  int >( prefix + "openmp-max-threads", "Set maximum number of OpenMP threads (not supported on this system).", 0 );
+      config.addEntry< int >(
+         prefix + "openmp-max-threads", "Set maximum number of OpenMP threads (not supported on this system).", 0 );
 #endif
    }
 
-   static bool setup( const Config::ParameterContainer& parameters,
-                      const String& prefix = "" )
+   static bool
+   setup( const Config::ParameterContainer& parameters, const String& prefix = "" )
    {
       if( parameters.getParameter< bool >( prefix + "openmp-enabled" ) ) {
 #ifdef HAVE_OPENMP
@@ -99,23 +106,25 @@ public:
       return true;
    }
 
-   protected:
-      static bool& ompEnabled()
-      {
+protected:
+   static bool&
+   ompEnabled()
+   {
 #ifdef HAVE_OPENMP
-         static bool ompEnabled = true;
+      static bool ompEnabled = true;
 #else
-         static bool ompEnabled = false;
+      static bool ompEnabled = false;
 #endif
-         return ompEnabled;
-      }
+      return ompEnabled;
+   }
 
-      static int& maxThreadsCount()
-      {
-         static int maxThreadsCount = -1;
-         return maxThreadsCount;
-      }
+   static int&
+   maxThreadsCount()
+   {
+      static int maxThreadsCount = -1;
+      return maxThreadsCount;
+   }
 };
 
-} // namespace Devices
-} // namespace noa::TNL
+}  // namespace Devices
+}  // namespace noa::TNL

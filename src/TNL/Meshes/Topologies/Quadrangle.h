@@ -23,11 +23,10 @@ struct Quadrangle
    static constexpr int dimension = 2;
 };
 
-
 template<>
 struct Subtopology< Quadrangle, 0 >
 {
-   typedef Vertex Topology;
+   using Topology = Vertex;
 
    static constexpr int count = 4;
 };
@@ -35,11 +34,10 @@ struct Subtopology< Quadrangle, 0 >
 template<>
 struct Subtopology< Quadrangle, 1 >
 {
-   typedef Edge Topology;
+   using Topology = Edge;
 
    static constexpr int count = 4;
 };
-
 
 /****
  * Indexing of the vertices follows the VTK file format
@@ -68,18 +66,50 @@ struct Subtopology< Quadrangle, 1 >
  *
  */
 
-template<> struct SubentityVertexMap< Quadrangle, Edge, 0, 0> { static constexpr int index = 0; };
-template<> struct SubentityVertexMap< Quadrangle, Edge, 0, 1> { static constexpr int index = 1; };
+template<>
+struct SubentityVertexMap< Quadrangle, Edge, 0, 0 >
+{
+   static constexpr int index = 0;
+};
+template<>
+struct SubentityVertexMap< Quadrangle, Edge, 0, 1 >
+{
+   static constexpr int index = 1;
+};
 
-template<> struct SubentityVertexMap< Quadrangle, Edge, 1, 0> { static constexpr int index = 1; };
-template<> struct SubentityVertexMap< Quadrangle, Edge, 1, 1> { static constexpr int index = 2; };
+template<>
+struct SubentityVertexMap< Quadrangle, Edge, 1, 0 >
+{
+   static constexpr int index = 1;
+};
+template<>
+struct SubentityVertexMap< Quadrangle, Edge, 1, 1 >
+{
+   static constexpr int index = 2;
+};
 
-template<> struct SubentityVertexMap< Quadrangle, Edge, 2, 0> { static constexpr int index = 2; };
-template<> struct SubentityVertexMap< Quadrangle, Edge, 2, 1> { static constexpr int index = 3; };
+template<>
+struct SubentityVertexMap< Quadrangle, Edge, 2, 0 >
+{
+   static constexpr int index = 2;
+};
+template<>
+struct SubentityVertexMap< Quadrangle, Edge, 2, 1 >
+{
+   static constexpr int index = 3;
+};
 
-template<> struct SubentityVertexMap< Quadrangle, Edge, 3, 0> { static constexpr int index = 3; };
-template<> struct SubentityVertexMap< Quadrangle, Edge, 3, 1> { static constexpr int index = 0; };
+template<>
+struct SubentityVertexMap< Quadrangle, Edge, 3, 0 >
+{
+   static constexpr int index = 3;
+};
+template<>
+struct SubentityVertexMap< Quadrangle, Edge, 3, 1 >
+{
+   static constexpr int index = 0;
+};
 
-} // namespace Topologies
-} // namespace Meshes
-} // namespace noa::TNL
+}  // namespace Topologies
+}  // namespace Meshes
+}  // namespace noa::TNL

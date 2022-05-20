@@ -2,7 +2,7 @@
 #define	TNL_BENCHMARK_SIMPLE_HEAT_EQUATION_H
 
 #include <iostream>
-#include <stdio.h>
+#include <cstdio>
 #include <TNL/Config/parseCommandLine.h>
 #include <TNL/Timer.h>
 #include <TNL/Devices/Cuda.h>
@@ -537,8 +537,8 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
    /****
     * Saving the result
     */
-   typedef Meshes::Grid< 2, Real, Devices::Host, Index > GridType;
-   typedef typename GridType::PointType PointType;
+   using GridType = Meshes::Grid< 2, Real, Devices::Host, Index >;
+   using PointType = typename GridType::PointType;
    Pointers::SharedPointer<  GridType > gridPointer;
    gridPointer->setDimensions( gridXSize, gridYSize );
    gridPointer->setDomain( PointType( 0.0, 0.0 ), PointType( domainXSize, domainYSize ) );
@@ -579,7 +579,9 @@ int main( int argc, char* argv[] )
    if( ! parseCommandLine( argc, argv, config, parameters ) )
       return EXIT_FAILURE;
 
-   Timer timer, computationTimer, updateTimer;
+   Timer timer;
+   Timer computationTimer;
+   Timer updateTimer;
 
    String device = parameters.getParameter< String >( "device" );
    if( device == "host" &&

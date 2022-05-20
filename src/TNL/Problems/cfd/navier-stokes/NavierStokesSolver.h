@@ -11,13 +11,10 @@
 
 namespace noa::TNL {
 
-template< typename AdvectionScheme,
-          typename DiffusionScheme,
-          typename BoundaryConditions >
+template< typename AdvectionScheme, typename DiffusionScheme, typename BoundaryConditions >
 class NavierStokesSolver
 {
-   public:
-
+public:
    typedef AdvectionScheme AdvectionSchemeType;
    typedef DiffusionScheme DiffusionSchemeType;
    typedef BoundaryConditions BoundaryConditionsType;
@@ -30,101 +27,124 @@ class NavierStokesSolver
 
    NavierStokesSolver();
 
-   void setAdvectionScheme( AdvectionSchemeType& advection );
+   void
+   setAdvectionScheme( AdvectionSchemeType& advection );
 
-   void setDiffusionScheme( DiffusionSchemeType& u1Viscosity,
-                            DiffusionSchemeType& u2Viscosity,
-                            DiffusionSchemeType& temperatureViscosity);
+   void
+   setDiffusionScheme( DiffusionSchemeType& u1Viscosity,
+                       DiffusionSchemeType& u2Viscosity,
+                       DiffusionSchemeType& temperatureViscosity );
 
-   void setBoundaryConditions( BoundaryConditionsType& boundaryConditions );
+   void
+   setBoundaryConditions( BoundaryConditionsType& boundaryConditions );
 
-   void setMesh( MeshType& mesh );
+   void
+   setMesh( MeshType& mesh );
 
-   void setMu( const RealType& mu );
+   void
+   setMu( const RealType& mu );
 
-   const RealType& getMu() const;
+   const RealType&
+   getMu() const;
 
-   void setR( const RealType& R );
+   void
+   setR( const RealType& R );
 
-   const RealType& getR() const;
+   const RealType&
+   getR() const;
 
-   void setT( const RealType& T );
+   void
+   setT( const RealType& T );
 
-   const RealType& getT() const;
+   const RealType&
+   getT() const;
 
-   void setHeatCapacityRatio( const RealType& gamma );
+   void
+   setHeatCapacityRatio( const RealType& gamma );
 
-   const RealType& getHeatCapacityRatio() const;
+   const RealType&
+   getHeatCapacityRatio() const;
 
-   void setGravity( const RealType& gravity );
+   void
+   setGravity( const RealType& gravity );
 
-   const RealType& getGravity() const;
+   const RealType&
+   getGravity() const;
 
-   VectorType& getRho();
+   VectorType&
+   getRho();
 
-   const VectorType& getRho() const;
+   const VectorType&
+   getRho() const;
 
-   VectorType& getU1();
+   VectorType&
+   getU1();
 
-   const VectorType& getU1() const;
+   const VectorType&
+   getU1() const;
 
-   VectorType& getU2();
+   VectorType&
+   getU2();
 
-   const VectorType& getU2() const;
+   const VectorType&
+   getU2() const;
 
-   VectorType& getU();
+   VectorType&
+   getU();
 
-   const VectorType& getU() const;
+   const VectorType&
+   getU() const;
 
-   VectorType& getPressure();
+   VectorType&
+   getPressure();
 
-   const VectorType& getPressure() const;
+   const VectorType&
+   getPressure() const;
 
-   VectorType& getEnergy();
+   VectorType&
+   getEnergy();
 
-   const VectorType& getEnergy() const;
+   const VectorType&
+   getEnergy() const;
 
+   IndexType
+   getDofs() const;
 
-   IndexType getDofs() const;
+   void
+   bindDofVector( RealType* );
 
-   void bindDofVector( RealType* );
-
-   DofVectorType& getDofVector();
+   DofVectorType&
+   getDofVector();
 
    template< typename Vector >
-   void updatePhysicalQuantities( const Vector& rho,
-                                  const Vector& rho_u1,
-                                  const Vector& rho_u2,
-                                  const Vector& e );
+   void
+   updatePhysicalQuantities( const Vector& rho, const Vector& rho_u1, const Vector& rho_u2, const Vector& e );
 
    template< typename SolverVectorType >
-   void getExplicitUpdate( const RealType& time,
-                        const RealType& tau,
-                        SolverVectorType& u,
-                        SolverVectorType& fu );
+   void
+   getExplicitUpdate( const RealType& time, const RealType& tau, SolverVectorType& u, SolverVectorType& fu );
 
-   bool writePhysicalVariables( const RealType& t,
-                                const IndexType step );
+   bool
+   writePhysicalVariables( const RealType& t, const IndexType step );
 
-   bool writeConservativeVariables( const RealType& t,
-                                    const IndexType step );
+   bool
+   writeConservativeVariables( const RealType& t, const IndexType step );
 
    template< typename DofVector >
-   bool writeExplicitRhs( const RealType& t,
-                          const IndexType step,
-                          DofVector& rhs );
+   bool
+   writeExplicitRhs( const RealType& t, const IndexType step, DofVector& rhs );
 
-   protected:
-
-   RealType computeEnergy( const RealType& rho,
-                           const RealType& temperature,
-                           const RealType& gamma,
-                           const RealType& u1,
-                           const RealType& u2 ) const;
+protected:
+   RealType
+   computeEnergy( const RealType& rho,
+                  const RealType& temperature,
+                  const RealType& gamma,
+                  const RealType& u1,
+                  const RealType& u2 ) const;
 
    AdvectionSchemeType* advection;
 
-   DiffusionSchemeType  *u1Viscosity, *u2Viscosity, *energyViscosity;
+   DiffusionSchemeType *u1Viscosity, *u2Viscosity, *energyViscosity;
 
    BoundaryConditionsType* boundaryConditions;
 
@@ -137,9 +157,8 @@ class NavierStokesSolver
    DofVectorType dofVector;
 
    VectorType rhsDofVector;
-
 };
 
-} // namespace noa::TNL
+}  // namespace noa::TNL
 
 #include <noa/3rdparty/tnl-noa/src/TNL/Solvers/cfd/navier-stokes/NavierStokesSolver_impl.h>

@@ -11,8 +11,8 @@
 #include <algorithm>
 
 namespace noa::TNL {
-   namespace Algorithms {
-      namespace Sorting {
+namespace Algorithms {
+namespace Sorting {
 
 struct STLSort
 {
@@ -29,6 +29,6 @@ struct STLSort
    }
 };
 
-      } // namespace Sorting
-   } // namespace Algorithms
-} //namespace noa::TNL
+}  // namespace Sorting
+}  // namespace Algorithms
+}  // namespace noa::TNL

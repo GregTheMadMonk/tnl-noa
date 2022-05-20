@@ -50,7 +50,6 @@ several modules:
 See also [Comparison with other libraries](comparison-with-other-libraries.md).
 
 TNL also provides several optional components:
-<a name="optional-components"></a>
 
 - TNL header files in the
   [src/TNL](https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev/tree/develop/src/TNL)
@@ -74,20 +73,60 @@ details.
 
 ## Installation   {#installation}
 
-You can either download the [stable version](http://tnl-project.org/download/)
-or directly clone the git repository via HTTPS:
+TNL is a header-only library, so it can be used directly after fetching the
+source code (header files) without the usual build step. However, TNL has some
+dependencies and provides several optional components that may be built and
+installed on your system.
 
-    git clone https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev.git
+In the following, we review the available installation methods:
 
-or via SSH:
+1. __System-wide installation on Arch Linux__
 
-    git clone gitlab@mmg-gitlab.fjfi.cvut.cz:tnl/tnl-dev.git
+   If you have an Arch Linux system, you can install the [tnl-git](
+   https://aur.archlinux.org/packages/tnl-git) package from the AUR. This will
+   do a complete build of TNL including all optional components. The advantage
+   of this approach is that all installed files and dependencies are tracked
+   properly by the package manager.
 
-Since TNL is a header-only library, no installation is necessary to actually use
-the library in your project. See the [Usage](#usage) section for details.
+   See the [Arch User Repository](
+   https://wiki.archlinux.org/title/Arch_User_Repository) wiki page for details
+   on using the AUR.
 
-You may also want to install some optional dependencies and/or compile and
-install various tools and examples. See the following section for details.
+2. __Manual installation to the user home directory__
+
+   You can clone the git repository via HTTPS:
+
+       git clone https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev.git
+
+   or via SSH:
+
+       git clone gitlab@mmg-gitlab.fjfi.cvut.cz:tnl/tnl-dev.git
+
+   Then execute the `install` script to copy the header files to the final
+   location (`~/.local/include` by default):
+
+       cd tnl-dev
+       ./install
+
+   However, we also recommend to install at least the `tools` [optional
+   component](#optional-components):
+
+       ./install tools
+
+   Finally, see [Environment variables](#environment-variables)
+
+3. __Adding a git submodule to another project__
+
+   To include TNL as a git submodule in another project, e.g. in the `libs/tnl`
+   location, execute the following command in the git repository:
+
+       git submodule add https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev.git libs/tnl
+
+   See the [git submodules tutorial](https://git-scm.com/book/en/v2/Git-Tools-Submodules)
+   for details.
+
+   You will need to adjust the build system of your project to use TNL from the
+   submodule. The [Usage](#usage) section for some hints.
 
 ### Dependencies   {#dependencies}
 
@@ -161,25 +200,33 @@ computing platform, and (optionally) some libraries.
       the corresponding development package (depending on your operating system)
       for building the Python bindings.
 
-### Optional components
+### Optional components   {#optional-components}
 
 TNL provides several optional components such as pre-processing and
-post-processing tools which can be compiled and installed by executing the
-`install` script:
+post-processing tools which can be compiled and installed by the `install`
+script to the user home directory (`~/.local/` by default). The script can be
+used as follows:
 
-    ./install
+    ./install [options] [list of targets]
 
-[CMake](https://cmake.org/) 3.13 or later is required for the compilation.
+In the above, `[list of targets]` should be replaced with a space-separated list
+of targets that can be selected from the following list:
 
-The script compiles and/or installs all [optional components](#optional-components)
-into the `~/.local/` directory, and compiles and executes all unit tests from
-the [src/UnitTests](
-https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev/tree/develop/src/UnitTests)
-directory.
+- `all`: Special target which includes all other targets.
+- `benchmarks`: Compile the `src/Benchmarks` directory.
+- `examples`: Compile the `src/Examples` directory.
+- `tools`: Compile the `src/Tools` directory.
+- `tests`: Compile unit tests in the `src/UnitTests` directory (except tests for
+  matrix formats, which have a separate target).
+- `matrix-tests`: Compile unit tests for matrix formats.
+- `python`: Compile the Python bindings.
+- `doc`: Generate the documentation.
 
-Individual components can be disabled and the installation prefix can be changed
-by passing command-line arguments to the install script. Run `./install --help`
-for details.
+Additionally, `[options]` can be replaced with a list of options with the `--`
+prefix that can be viewed by running `./install --help`.
+
+Note that [CMake](https://cmake.org/) 3.13 or later is required when using the
+`install` script.
 
 ## Usage   {#usage}
 

@@ -9,21 +9,18 @@
 #pragma once
 
 namespace noa::TNL {
-   namespace Matrices {
-      namespace details {
-
-
-template< typename SegmentView,
-          typename ValuesView,
-          typename ColumnsIndexesView,
-          typename Real = std::remove_const_t<typename ValuesView::RealType >,
-          bool isBinary_ = std::is_same< std::remove_const_t<typename ValuesView::RealType >, bool >::value >
-struct SparseMatrixRowViewValueGetter {};
+namespace Matrices {
+namespace details {
 
 template< typename SegmentView,
           typename ValuesView,
           typename ColumnsIndexesView,
-          typename Real >
+          typename Real = std::remove_const_t< typename ValuesView::RealType >,
+          bool isBinary_ = std::is_same< std::remove_const_t< typename ValuesView::RealType >, bool >::value >
+struct SparseMatrixRowViewValueGetter
+{};
+
+template< typename SegmentView, typename ValuesView, typename ColumnsIndexesView, typename Real >
 struct SparseMatrixRowViewValueGetter< SegmentView, ValuesView, ColumnsIndexesView, Real, true >
 {
    using RealType = typename ValuesView::RealType;
@@ -35,18 +32,17 @@ struct SparseMatrixRowViewValueGetter< SegmentView, ValuesView, ColumnsIndexesVi
    using ConstResultType = bool;
 
    __cuda_callable__
-   static bool getValue( const IndexType& globalIdx, const ValuesView& values, const ColumnsIndexesView& columnIndexes, const IndexType& paddingIndex )
+   static bool
+   getValue( const IndexType& globalIdx,
+             const ValuesView& values,
+             const ColumnsIndexesView& columnIndexes,
+             const IndexType& paddingIndex )
    {
-      if( columnIndexes[ globalIdx ] != paddingIndex )
-         return true;
-      return false;
+      return columnIndexes[ globalIdx ] != paddingIndex;
    };
 };
 
-template< typename SegmentView,
-          typename ValuesView,
-          typename ColumnsIndexesView,
-          typename Real >
+template< typename SegmentView, typename ValuesView, typename ColumnsIndexesView, typename Real >
 struct SparseMatrixRowViewValueGetter< SegmentView, ValuesView, ColumnsIndexesView, Real, false >
 {
    using RealType = typename ValuesView::RealType;
@@ -58,18 +54,23 @@ struct SparseMatrixRowViewValueGetter< SegmentView, ValuesView, ColumnsIndexesVi
    using ConstResultType = const RealType&;
 
    __cuda_callable__
-   static const RealType& getValue( const IndexType& globalIdx, const ValuesView& values, const ColumnsIndexesView& columnIndexes, const IndexType& paddingIndex )
+   static const RealType&
+   getValue( const IndexType& globalIdx,
+             const ValuesView& values,
+             const ColumnsIndexesView& columnIndexes,
+             const IndexType& paddingIndex )
    {
       return values[ globalIdx ];
    };
 
    __cuda_callable__
-   static RealType& getValue( const IndexType& globalIdx, ValuesView& values, ColumnsIndexesView& columnIndexes, const IndexType& paddingIndex )
+   static RealType&
+   getValue( const IndexType& globalIdx, ValuesView& values, ColumnsIndexesView& columnIndexes, const IndexType& paddingIndex )
    {
       return values[ globalIdx ];
    };
 };
 
-      } //namespace details
-   } //namepsace Matrices
-} //namespace noa::TNL
+}  // namespace details
+}  // namespace Matrices
+}  // namespace noa::TNL

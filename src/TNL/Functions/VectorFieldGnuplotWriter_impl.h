@@ -14,37 +14,31 @@ namespace Functions {
 
 template< typename VectorField >
 bool
-VectorFieldGnuplotWriter< VectorField >::
-write( const VectorField& vectorField,
-       std::ostream& str )
+VectorFieldGnuplotWriter< VectorField >::write( const VectorField& vectorField, std::ostream& str )
 {
-   std::cerr << "Gnuplot writer for mesh vectorFields defined on mesh type " << getType< typename VectorField::MeshType >() << " is not (yet) implemented." << std::endl;
+   std::cerr << "Gnuplot writer for mesh vectorFields defined on mesh type " << getType< typename VectorField::MeshType >()
+             << " is not (yet) implemented." << std::endl;
    return false;
 }
 
 /****
  * 1D grid, cells
  */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          int VectorFieldSize >
+template< typename MeshReal, typename Device, typename MeshIndex, typename Real, int VectorFieldSize >
 bool
-VectorFieldGnuplotWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 1, Real > > >::
-write( const VectorFieldType& vectorField,
-       std::ostream& str )
+VectorFieldGnuplotWriter<
+   VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 1, Real > > >::
+   write( const VectorFieldType& vectorField, std::ostream& str )
 {
    const MeshType& mesh = vectorField.getMesh();
    typename MeshType::Cell entity( mesh );
    auto& c = entity.getCoordinates();
-   for( c.x() = 0; c.x() < mesh.getDimensions().x(); c.x()++ )
-   {
+   for( c.x() = 0; c.x() < mesh.getDimensions().x(); c.x()++ ) {
       entity.refresh();
       typename MeshType::PointType v = entity.getCenter();
       str << v.x();
       for( int i = 0; i < VectorFieldSize; i++ )
-          str << " " << vectorField[ i ]->getData().getElement( entity.getIndex() );
+         str << " " << vectorField[ i ]->getData().getElement( entity.getIndex() );
       str << std::endl;
    }
    return true;
@@ -53,57 +47,45 @@ write( const VectorFieldType& vectorField,
 /****
  * 1D grid, vertices
  */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          int VectorFieldSize >
+template< typename MeshReal, typename Device, typename MeshIndex, typename Real, int VectorFieldSize >
 bool
-VectorFieldGnuplotWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 0, Real > > >::
-write( const VectorFieldType& vectorField,
-       std::ostream& str )
+VectorFieldGnuplotWriter<
+   VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 0, Real > > >::
+   write( const VectorFieldType& vectorField, std::ostream& str )
 {
    const MeshType& mesh = vectorField.getMesh();
    typename MeshType::Vertex entity( mesh );
    auto& c = entity.getCoordinates();
-   for( c.x() = 0; c.x() <= mesh.getDimensions().x(); c.x()++ )
-   {
+   for( c.x() = 0; c.x() <= mesh.getDimensions().x(); c.x()++ ) {
       entity.refresh();
       typename MeshType::PointType v = entity.getCenter();
       str << v.x();
       for( int i = 0; i < VectorFieldSize; i++ )
-          str << " " << vectorField[ i ]->getData().getElement( entity.getIndex() );
+         str << " " << vectorField[ i ]->getData().getElement( entity.getIndex() );
       str << std::endl;
    }
    return true;
 }
 
-
 /****
  * 2D grid, cells
  */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          int VectorFieldSize >
+template< typename MeshReal, typename Device, typename MeshIndex, typename Real, int VectorFieldSize >
 bool
-VectorFieldGnuplotWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 2, Real > > >::
-write( const VectorFieldType& vectorField,
-       std::ostream& str )
+VectorFieldGnuplotWriter<
+   VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 2, Real > > >::
+   write( const VectorFieldType& vectorField, std::ostream& str )
 {
    const MeshType& mesh = vectorField.getMesh();
    typename MeshType::Cell entity( mesh );
    auto& c = entity.getCoordinates();
-   for( c.y() = 0; c.y() < mesh.getDimensions().y(); c.y()++ )
-   {
-      for( c.x() = 0; c.x() < mesh.getDimensions().x(); c.x()++ )
-      {
+   for( c.y() = 0; c.y() < mesh.getDimensions().y(); c.y()++ ) {
+      for( c.x() = 0; c.x() < mesh.getDimensions().x(); c.x()++ ) {
          entity.refresh();
          typename MeshType::PointType v = entity.getCenter();
          str << v.x() << " " << v.y();
          for( int i = 0; i < VectorFieldSize; i++ )
-             str << " " << vectorField[ i ]->getData().getElement( entity.getIndex() );
+            str << " " << vectorField[ i ]->getData().getElement( entity.getIndex() );
          str << std::endl;
       }
       str << std::endl;
@@ -114,15 +96,11 @@ write( const VectorFieldType& vectorField,
 /****
  * 2D grid, faces
  */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          int VectorFieldSize >
+template< typename MeshReal, typename Device, typename MeshIndex, typename Real, int VectorFieldSize >
 bool
-VectorFieldGnuplotWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real > > >::
-write( const VectorFieldType& vectorField,
-       std::ostream& str )
+VectorFieldGnuplotWriter<
+   VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real > > >::
+   write( const VectorFieldType& vectorField, std::ostream& str )
 {
    const MeshType& mesh = vectorField.getMesh();
    typedef typename MeshType::Face EntityType;
@@ -131,63 +109,52 @@ write( const VectorFieldType& vectorField,
    auto& c = entity.getCoordinates();
 
    entity.setOrientation( EntityOrientation( 1.0, 0.0 ) );
-   for( c.y() = 0; c.y() < mesh.getDimensions().y(); c.y()++ )
-   {
-      for( c.x() = 0; c.x() <= mesh.getDimensions().x(); c.x()++ )
-      {
+   for( c.y() = 0; c.y() < mesh.getDimensions().y(); c.y()++ ) {
+      for( c.x() = 0; c.x() <= mesh.getDimensions().x(); c.x()++ ) {
          entity.refresh();
          typename MeshType::PointType v = entity.getCenter();
          str << v.x() << " " << v.y();
          for( int i = 0; i < VectorFieldSize; i++ )
-             str << " " << vectorField[ i ]->getData().getElement( entity.getIndex() );
+            str << " " << vectorField[ i ]->getData().getElement( entity.getIndex() );
          str << std::endl;
       }
       str << std::endl;
    }
 
    entity.setOrientation( EntityOrientation( 0.0, 1.0 ) );
-   for( c.x() = 0; c.x() < mesh.getDimensions().x(); c.x()++ )
-   {
-      for( c.y() = 0; c.y() <= mesh.getDimensions().y(); c.y()++ )
-      {
+   for( c.x() = 0; c.x() < mesh.getDimensions().x(); c.x()++ ) {
+      for( c.y() = 0; c.y() <= mesh.getDimensions().y(); c.y()++ ) {
          entity.refresh();
          typename MeshType::PointType v = entity.getCenter();
          str << v.x() << " " << v.y();
          for( int i = 0; i < VectorFieldSize; i++ )
-             str << " " << vectorField[ i ]->getData().getElement( entity.getIndex() );
+            str << " " << vectorField[ i ]->getData().getElement( entity.getIndex() );
          str << std::endl;
       }
       str << std::endl;
    }
    return true;
 }
-
 
 /****
  * 2D grid, vertices
  */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          int VectorFieldSize >
+template< typename MeshReal, typename Device, typename MeshIndex, typename Real, int VectorFieldSize >
 bool
-VectorFieldGnuplotWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 0, Real > > >::
-write( const VectorFieldType& vectorField,
-       std::ostream& str )
+VectorFieldGnuplotWriter<
+   VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 0, Real > > >::
+   write( const VectorFieldType& vectorField, std::ostream& str )
 {
    const MeshType& mesh = vectorField.getMesh();
    typename MeshType::Vertex entity( mesh );
    auto& c = entity.getCoordinates();
-   for( c.y() = 0; c.y() <= mesh.getDimensions().y(); c.y()++ )
-   {
-      for( c.x() = 0; c.x() <= mesh.getDimensions().x(); c.x()++ )
-      {
+   for( c.y() = 0; c.y() <= mesh.getDimensions().y(); c.y()++ ) {
+      for( c.x() = 0; c.x() <= mesh.getDimensions().x(); c.x()++ ) {
          entity.refresh();
          typename MeshType::PointType v = entity.getCenter();
          str << v.x() << " " << v.y();
          for( int i = 0; i < VectorFieldSize; i++ )
-             str << " " << vectorField[ i ]->getData().getElement( entity.getIndex() );
+            str << " " << vectorField[ i ]->getData().getElement( entity.getIndex() );
          str << std::endl;
       }
       str << std::endl;
@@ -195,33 +162,26 @@ write( const VectorFieldType& vectorField,
    return true;
 }
 
-
 /****
  * 3D grid, cells
  */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          int VectorFieldSize >
+template< typename MeshReal, typename Device, typename MeshIndex, typename Real, int VectorFieldSize >
 bool
-VectorFieldGnuplotWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 3, Real > > >::
-write( const VectorFieldType& vectorField,
-       std::ostream& str )
+VectorFieldGnuplotWriter<
+   VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 3, Real > > >::
+   write( const VectorFieldType& vectorField, std::ostream& str )
 {
    const MeshType& mesh = vectorField.getMesh();
    typename MeshType::Cell entity( mesh );
    auto& c = entity.getCoordinates();
    for( c.z() = 0; c.z() < mesh.getDimensions().z(); c.z()++ )
-      for( c.y() = 0; c.y() < mesh.getDimensions().y(); c.y()++ )
-      {
-         for( c.x() = 0; c.x() < mesh.getDimensions().x(); c.x()++ )
-         {
+      for( c.y() = 0; c.y() < mesh.getDimensions().y(); c.y()++ ) {
+         for( c.x() = 0; c.x() < mesh.getDimensions().x(); c.x()++ ) {
             entity.refresh();
             typename MeshType::PointType v = entity.getCenter();
             str << v.x() << " " << v.y() << " " << v.z();
             for( int i = 0; i < VectorFieldSize; i++ )
-                str << " " << vectorField[ i ]->getData().getElement( entity.getIndex() );
+               str << " " << vectorField[ i ]->getData().getElement( entity.getIndex() );
             str << std::endl;
          }
          str << std::endl;
@@ -232,15 +192,11 @@ write( const VectorFieldType& vectorField,
 /****
  * 3D grid, faces
  */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          int VectorFieldSize >
+template< typename MeshReal, typename Device, typename MeshIndex, typename Real, int VectorFieldSize >
 bool
-VectorFieldGnuplotWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real > > >::
-write( const VectorFieldType& vectorField,
-       std::ostream& str )
+VectorFieldGnuplotWriter<
+   VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real > > >::
+   write( const VectorFieldType& vectorField, std::ostream& str )
 {
    const MeshType& mesh = vectorField.getMesh();
    typedef typename MeshType::Face EntityType;
@@ -250,15 +206,13 @@ write( const VectorFieldType& vectorField,
 
    entity.setOrientation( EntityOrientation( 1.0, 0.0, 0.0 ) );
    for( c.z() = 0; c.z() < mesh.getDimensions().z(); c.z()++ )
-      for( c.y() = 0; c.y() < mesh.getDimensions().y(); c.y()++ )
-      {
-         for( c.x() = 0; c.x() <= mesh.getDimensions().x(); c.x()++ )
-         {
+      for( c.y() = 0; c.y() < mesh.getDimensions().y(); c.y()++ ) {
+         for( c.x() = 0; c.x() <= mesh.getDimensions().x(); c.x()++ ) {
             entity.refresh();
             typename MeshType::PointType v = entity.getCenter();
             str << v.x() << " " << v.y() << " " << v.z();
             for( int i = 0; i < VectorFieldSize; i++ )
-                str << " " << vectorField[ i ]->getData().getElement( entity.getIndex() );
+               str << " " << vectorField[ i ]->getData().getElement( entity.getIndex() );
             str << std::endl;
          }
          str << std::endl;
@@ -266,15 +220,13 @@ write( const VectorFieldType& vectorField,
 
    entity.setOrientation( EntityOrientation( 0.0, 1.0, 0.0 ) );
    for( c.z() = 0; c.z() < mesh.getDimensions().z(); c.z()++ )
-      for( c.x() = 0; c.x() < mesh.getDimensions().x(); c.x()++ )
-      {
-         for( c.y() = 0; c.y() <= mesh.getDimensions().y(); c.y()++ )
-         {
+      for( c.x() = 0; c.x() < mesh.getDimensions().x(); c.x()++ ) {
+         for( c.y() = 0; c.y() <= mesh.getDimensions().y(); c.y()++ ) {
             entity.refresh();
             typename MeshType::PointType v = entity.getCenter();
             str << v.x() << " " << v.y() << " " << v.z();
             for( int i = 0; i < VectorFieldSize; i++ )
-                str << " " << vectorField[ i ]->getData().getElement( entity.getIndex() );
+               str << " " << vectorField[ i ]->getData().getElement( entity.getIndex() );
             str << std::endl;
          }
          str << std::endl;
@@ -282,15 +234,13 @@ write( const VectorFieldType& vectorField,
 
    entity.setOrientation( EntityOrientation( 0.0, 0.0, 1.0 ) );
    for( c.x() = 0; c.x() < mesh.getDimensions().x(); c.x()++ )
-      for( c.y() = 0; c.y() <= mesh.getDimensions().y(); c.y()++ )
-      {
-         for( c.z() = 0; c.z() < mesh.getDimensions().z(); c.z()++ )
-         {
+      for( c.y() = 0; c.y() <= mesh.getDimensions().y(); c.y()++ ) {
+         for( c.z() = 0; c.z() < mesh.getDimensions().z(); c.z()++ ) {
             entity.refresh();
             typename MeshType::PointType v = entity.getCenter();
             str << v.x() << " " << v.y() << " " << v.z();
             for( int i = 0; i < VectorFieldSize; i++ )
-                str << " " << vectorField[ i ]->getData().getElement( entity.getIndex() );
+               str << " " << vectorField[ i ]->getData().getElement( entity.getIndex() );
             str << std::endl;
          }
          str << std::endl;
@@ -298,33 +248,26 @@ write( const VectorFieldType& vectorField,
    return true;
 }
 
-
 /****
  * 3D grid, vertices
  */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          int VectorFieldSize >
+template< typename MeshReal, typename Device, typename MeshIndex, typename Real, int VectorFieldSize >
 bool
-VectorFieldGnuplotWriter< VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 0, Real > > >::
-write( const VectorFieldType& vectorField,
-       std::ostream& str )
+VectorFieldGnuplotWriter<
+   VectorField< VectorFieldSize, MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 0, Real > > >::
+   write( const VectorFieldType& vectorField, std::ostream& str )
 {
    const MeshType& mesh = vectorField.getMesh();
    typename MeshType::Vertex entity( mesh );
    auto& c = entity.getCoordinates();
    for( c.z() = 0; c.z() <= mesh.getDimensions().z(); c.z()++ )
-      for( c.y() = 0; c.y() <= mesh.getDimensions().y(); c.y()++ )
-      {
-         for( c.x() = 0; c.x() <= mesh.getDimensions().x(); c.x()++ )
-         {
+      for( c.y() = 0; c.y() <= mesh.getDimensions().y(); c.y()++ ) {
+         for( c.x() = 0; c.x() <= mesh.getDimensions().x(); c.x()++ ) {
             entity.refresh();
             typename MeshType::PointType v = entity.getCenter();
             str << v.x() << " " << v.y() << " " << v.z();
             for( int i = 0; i < VectorFieldSize; i++ )
-                str << " " << vectorField[ i ]->getData().getElement( entity.getIndex() );
+               str << " " << vectorField[ i ]->getData().getElement( entity.getIndex() );
             str << std::endl;
          }
          str << std::endl;
@@ -332,5 +275,5 @@ write( const VectorFieldType& vectorField,
    return true;
 }
 
-} // namespace Functions
-} // namespace noa::TNL
+}  // namespace Functions
+}  // namespace noa::TNL

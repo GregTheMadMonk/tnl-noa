@@ -32,8 +32,11 @@ benchmarkGemv( Benchmark<> & benchmark, int rows, int columns )
    HostMatrix hostMatrix;
    RowMajorCudaMatrix rowMajorCudaMatrix;
    ColumnMajorCudaMatrix columnMajorCudaMatrix;
-   HostVector inHostVector, outHostVector;
-   CudaVector inCudaVector, outCudaVector1, outCudaVector2;
+   HostVector inHostVector;
+   HostVector outHostVector;
+   CudaVector inCudaVector;
+   CudaVector outCudaVector1;
+   CudaVector outCudaVector2;
 
    hostMatrix.setDimensions( rows, columns );
    inHostVector.setSize( columns );

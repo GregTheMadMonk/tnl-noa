@@ -97,7 +97,7 @@ TYPED_TEST( StaticArrayTest, getData )
    ArrayType u1;
    EXPECT_TRUE( u1.getData() );
 
-   const ArrayType u2;
+   const ArrayType& u2 = u1;
    EXPECT_TRUE( u2.getData() );
 }
 

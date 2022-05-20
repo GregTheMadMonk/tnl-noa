@@ -23,14 +23,13 @@ template< typename Real,
 class GridTraverser< Meshes::Grid< 2, Real, Devices::Host, Index >, Cell >
 {
    public:
-      
-      typedef Meshes::Grid< 2, Real, Devices::Host, Index > GridType;
-      typedef Pointers::SharedPointer<  GridType > GridPointer;
-      typedef Real RealType;
-      typedef Devices::Host DeviceType;
-      typedef Index IndexType;
-      typedef typename GridType::CoordinatesType CoordinatesType;
- 
+      using GridType = Meshes::Grid< 2, Real, Devices::Host, Index >;
+      using GridPointer = Pointers::SharedPointer< GridType >;
+      using RealType = Real;
+      using DeviceType = Devices::Host;
+      using IndexType = Index;
+      using CoordinatesType = typename GridType::CoordinatesType;
+
       template<
          typename GridEntity,
          typename EntitiesProcessor,
@@ -62,14 +61,13 @@ template< typename Real,
 class GridTraverser< Meshes::Grid< 2, Real, Devices::Cuda, Index >, Cell >
 {
    public:
-      
-      typedef Meshes::Grid< 2, Real, Devices::Cuda, Index > GridType;
-      typedef Pointers::SharedPointer<  GridType > GridPointer;
-      typedef Real RealType;
-      typedef Devices::Cuda DeviceType;
-      typedef Index IndexType;
-      typedef typename GridType::CoordinatesType CoordinatesType;
- 
+      using GridType = Meshes::Grid< 2, Real, Devices::Cuda, Index >;
+      using GridPointer = Pointers::SharedPointer< GridType >;
+      using RealType = Real;
+      using DeviceType = Devices::Cuda;
+      using IndexType = Index;
+      using CoordinatesType = typename GridType::CoordinatesType;
+
       template<
          typename GridEntity,
          typename EntitiesProcessor,

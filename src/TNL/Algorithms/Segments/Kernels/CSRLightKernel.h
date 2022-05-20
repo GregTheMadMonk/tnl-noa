@@ -13,13 +13,17 @@
 #include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/detail/LambdaAdapter.h>
 
 namespace noa::TNL {
-   namespace Algorithms {
-      namespace Segments {
+namespace Algorithms {
+namespace Segments {
 
-enum LightCSRSThreadsMapping { LightCSRConstantThreads, CSRLightAutomaticThreads, CSRLightAutomaticThreadsLightSpMV };
+enum LightCSRSThreadsMapping
+{
+   LightCSRConstantThreads,
+   CSRLightAutomaticThreads,
+   CSRLightAutomaticThreadsLightSpMV
+};
 
-template< typename Index,
-          typename Device >
+template< typename Index, typename Device >
 struct CSRLightKernel
 {
    using IndexType = Index;
@@ -28,49 +32,54 @@ struct CSRLightKernel
    using ConstViewType = CSRLightKernel< Index, Device >;
 
    template< typename Offsets >
-   void init( const Offsets& offsets );
+   void
+   init( const Offsets& offsets );
 
-   void reset();
+   void
+   reset();
 
-   ViewType getView();
+   ViewType
+   getView();
 
-   ConstViewType getConstView() const;
+   ConstViewType
+   getConstView() const;
 
-   static noa::TNL::String getKernelType();
+   static TNL::String
+   getKernelType();
 
-   noa::TNL::String getSetup() const;
+   TNL::String
+   getSetup() const;
 
-   template< typename OffsetsView,
-             typename Fetch,
-             typename Reduction,
-             typename ResultKeeper,
-             typename Real >
-   void reduceSegments( const OffsetsView& offsets,
-                        Index first,
-                        Index last,
-                        Fetch& fetch,
-                        const Reduction& reduction,
-                        ResultKeeper& keeper,
-                        const Real& zero ) const;
+   template< typename OffsetsView, typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+   void
+   reduceSegments( const OffsetsView& offsets,
+                   Index first,
+                   Index last,
+                   Fetch& fetch,
+                   const Reduction& reduction,
+                   ResultKeeper& keeper,
+                   const Real& zero ) const;
 
+   void
+   setThreadsMapping( LightCSRSThreadsMapping mapping );
 
-   void setThreadsMapping( LightCSRSThreadsMapping mapping );
+   LightCSRSThreadsMapping
+   getThreadsMapping() const;
 
-   LightCSRSThreadsMapping getThreadsMapping() const;
+   void
+   setThreadsPerSegment( int threadsPerSegment );
 
-   void setThreadsPerSegment( int threadsPerSegment );
+   int
+   getThreadsPerSegment() const;
 
-   int getThreadsPerSegment() const;
+protected:
+   LightCSRSThreadsMapping mapping = CSRLightAutomaticThreads;
 
-   protected:
-
-      LightCSRSThreadsMapping mapping = CSRLightAutomaticThreads;
-
-      int threadsPerSegment = 32;
+   int threadsPerSegment = 32;
 };
 
-      } // namespace Segments
-   }  // namespace Algorithms
-} // namespace noa::TNL
+}  // namespace Segments
+}  // namespace Algorithms
+}  // namespace noa::TNL
 
 #include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/Kernels/CSRLightKernel.hpp>

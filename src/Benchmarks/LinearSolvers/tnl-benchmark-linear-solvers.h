@@ -173,7 +173,7 @@ benchmarkIterativeSolvers( Benchmark<>& benchmark,
       if( solvers.count( "gmres" ) ) {
          for( auto variant : gmresVariants ) {
             benchmark.setOperation(variant + "-GMRES (Jacobi)");
-            parameters.template setParameter< String >( "gmres-variant", variant.c_str() );
+            parameters.template setParameter< String >( "gmres-variant", variant );
             benchmarkSolver< GMRES, Diagonal >( benchmark, parameters, matrixPointer, x0, b );
             #ifdef HAVE_CUDA
             benchmarkSolver< GMRES, Diagonal >( benchmark, parameters, cudaMatrixPointer, cuda_x0, cuda_b );
@@ -223,7 +223,7 @@ benchmarkIterativeSolvers( Benchmark<>& benchmark,
       if( solvers.count( "gmres" ) ) {
          for( auto variant : gmresVariants ) {
             benchmark.setOperation(variant + "-GMRES (ILU0)");
-            parameters.template setParameter< String >( "gmres-variant", variant.c_str() );
+            parameters.template setParameter< String >( "gmres-variant", variant );
             benchmarkSolver< GMRES, ILU0 >( benchmark, parameters, matrixPointer, x0, b );
             #ifdef HAVE_CUDA
             benchmarkSolver< GMRES, ILU0 >( benchmark, parameters, cudaMatrixPointer, cuda_x0, cuda_b );
@@ -272,7 +272,7 @@ benchmarkIterativeSolvers( Benchmark<>& benchmark,
       if( solvers.count( "gmres" ) ) {
          for( auto variant : gmresVariants ) {
             benchmark.setOperation(variant + "-GMRES (ILUT)");
-            parameters.template setParameter< String >( "gmres-variant", variant.c_str() );
+            parameters.template setParameter< String >( "gmres-variant", variant );
             benchmarkSolver< GMRES, ILUT >( benchmark, parameters, matrixPointer, x0, b );
             #ifdef HAVE_CUDA
             benchmarkSolver< GMRES, ILUT >( benchmark, parameters, cudaMatrixPointer, cuda_x0, cuda_b );

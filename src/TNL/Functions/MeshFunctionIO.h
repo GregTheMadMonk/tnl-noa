@@ -7,7 +7,7 @@
 #pragma once
 
 #include <type_traits>
-#include <filesystem>
+#include <experimental/filesystem>
 
 #include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Traits.h>
 #include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Readers/getMeshReader.h>
@@ -34,7 +34,7 @@ readMeshFunction( MeshFunction& function,
    reader->detectMesh();
 
    // load the mesh if the function does not have it yet
-   if( function.getMesh() == typename MeshFunction::MeshType {} )
+   if( function.getMesh() == typename MeshFunction::MeshType{} )
       reader->loadMesh( *function.getMeshPointer() );
 
    Meshes::Readers::MeshReader::VariantVector data;
@@ -43,20 +43,25 @@ readMeshFunction( MeshFunction& function,
    else if( function.getEntitiesDimension() == function.getMeshDimension() )
       data = reader->readCellData( functionName );
    else {
-      std::cerr << "The mesh function with entities dimension " << function.getEntitiesDimension() << " cannot be read from the file " << fileName << std::endl;
+      std::cerr << "The mesh function with entities dimension " << function.getEntitiesDimension()
+                << " cannot be read from the file " << fileName << std::endl;
       return false;
    }
 
-   visit( [&](auto&& array) {
-            const auto entitiesCount = function.getMesh().template getEntitiesCount< MeshFunction::getEntitiesDimension() >();
-            if( array.size() == (std::size_t) entitiesCount )
-               Algorithms::MultiDeviceMemoryOperations< typename MeshFunction::VectorType::DeviceType, Devices::Host >
-                  ::copy( function.getData().getData(), array.data(), array.size() );
-            else
-               throw Exceptions::FileDeserializationError( fileName, "mesh function data size does not match the mesh size (expected " + std::to_string(entitiesCount) + ", got " + std::to_string(array.size()) + ")." );
-         },
-         data
-      );
+   visit(
+      [ & ]( auto&& array )
+      {
+         const auto entitiesCount = function.getMesh().template getEntitiesCount< MeshFunction::getEntitiesDimension() >();
+         if( array.size() == (std::size_t) entitiesCount )
+            Algorithms::MultiDeviceMemoryOperations< typename MeshFunction::VectorType::DeviceType, Devices::Host >::copy(
+               function.getData().getData(), array.data(), array.size() );
+         else
+            throw Exceptions::FileDeserializationError( fileName,
+                                                        "mesh function data size does not match the mesh size (expected "
+                                                           + std::to_string( entitiesCount ) + ", got "
+                                                           + std::to_string( array.size() ) + ")." );
+      },
+      data );
 
    return true;
 }
@@ -78,11 +83,11 @@ readDistributedMeshFunction( Meshes::DistributedMeshes::DistributedMesh< typenam
    // load the mesh if it was not loaded yet
    using MeshType = typename MeshFunction::MeshType;
    using DistributedMeshType = Meshes::DistributedMeshes::DistributedMesh< MeshType >;
-   if( distributedMesh == DistributedMeshType {} ) {
+   if( distributedMesh == DistributedMeshType{} ) {
       if( reader->getMeshType() == "Meshes::DistributedMesh" )
-         dynamic_cast<Meshes::Readers::PVTUReader&>(*reader).loadMesh( distributedMesh );
+         dynamic_cast< Meshes::Readers::PVTUReader& >( *reader ).loadMesh( distributedMesh );
       else if( reader->getMeshType() == "Meshes::DistributedGrid" )
-         dynamic_cast<Meshes::Readers::PVTIReader&>(*reader).loadMesh( distributedMesh );
+         dynamic_cast< Meshes::Readers::PVTIReader& >( *reader ).loadMesh( distributedMesh );
       else
          throw std::runtime_error( "Unknown type of a distributed mesh: " + reader->getMeshType() );
    }
@@ -97,20 +102,25 @@ readDistributedMeshFunction( Meshes::DistributedMeshes::DistributedMesh< typenam
    else if( function.getEntitiesDimension() == function.getMeshDimension() )
       data = reader->readCellData( functionName );
    else {
-      std::cerr << "The mesh function with entities dimension " << function.getEntitiesDimension() << " cannot be read from the file " << fileName << std::endl;
+      std::cerr << "The mesh function with entities dimension " << function.getEntitiesDimension()
+                << " cannot be read from the file " << fileName << std::endl;
       return false;
    }
 
-   visit( [&](auto&& array) {
-            const auto entitiesCount = function.getMesh().template getEntitiesCount< MeshFunction::getEntitiesDimension() >();
-            if( array.size() == (std::size_t) entitiesCount )
-               Algorithms::MultiDeviceMemoryOperations< typename MeshFunction::VectorType::DeviceType, Devices::Host >
-                  ::copy( function.getData().getData(), array.data(), array.size() );
-            else
-               throw Exceptions::FileDeserializationError( fileName, "mesh function data size does not match the mesh size (expected " + std::to_string(entitiesCount) + ", got " + std::to_string(array.size()) + ")." );
-         },
-         data
-      );
+   visit(
+      [ & ]( auto&& array )
+      {
+         const auto entitiesCount = function.getMesh().template getEntitiesCount< MeshFunction::getEntitiesDimension() >();
+         if( array.size() == (std::size_t) entitiesCount )
+            Algorithms::MultiDeviceMemoryOperations< typename MeshFunction::VectorType::DeviceType, Devices::Host >::copy(
+               function.getData().getData(), array.data(), array.size() );
+         else
+            throw Exceptions::FileDeserializationError( fileName,
+                                                        "mesh function data size does not match the mesh size (expected "
+                                                           + std::to_string( entitiesCount ) + ", got "
+                                                           + std::to_string( array.size() ) + ")." );
+      },
+      data );
 
    return true;
 }
@@ -125,19 +135,18 @@ writeMeshFunction( const MeshFunction& function,
 {
    std::ofstream file;
    file.open( fileName );
-   if( ! file )
-   {
+   if( ! file ) {
       std::cerr << "Unable to open a file " << fileName << "." << std::endl;
       return false;
    }
 
-   namespace fs = std::filesystem;
+   namespace fs = std::experimental::filesystem;
    std::string format = fileFormat;
    if( format == "auto" ) {
-      format = fs::path(fileName).extension();
+      format = fs::path( fileName ).extension();
       if( format.length() > 0 )
          // remove dot from the extension
-         format = format.substr(1);
+         format = format.substr( 1 );
    }
 
    if( format == "vti" ) {
@@ -167,19 +176,18 @@ writeMeshFunction( const MeshFunction& function,
 {
    std::ofstream file;
    file.open( fileName );
-   if( ! file )
-   {
+   if( ! file ) {
       std::cerr << "Unable to open a file " << fileName << "." << std::endl;
       return false;
    }
 
-   namespace fs = std::filesystem;
+   namespace fs = std::experimental::filesystem;
    std::string format = fileFormat;
    if( format == "auto" ) {
-      format = fs::path(fileName).extension();
+      format = fs::path( fileName ).extension();
       if( format.length() > 0 )
          // remove dot from the extension
-         format = format.substr(1);
+         format = format.substr( 1 );
    }
 
    if( format == "vtk" ) {
@@ -210,25 +218,26 @@ writeMeshFunction( const MeshFunction& function,
 // specialization for grids
 template< typename MeshFunction >
 std::enable_if_t< Meshes::isGrid< typename MeshFunction::MeshType >::value, bool >
-writeDistributedMeshFunction( const Meshes::DistributedMeshes::DistributedMesh< typename MeshFunction::MeshType >& distributedMesh,
-                              const MeshFunction& function,
-                              const std::string& functionName,
-                              const std::string& fileName,
-                              const std::string& fileFormat = "auto" )
+writeDistributedMeshFunction(
+   const Meshes::DistributedMeshes::DistributedMesh< typename MeshFunction::MeshType >& distributedMesh,
+   const MeshFunction& function,
+   const std::string& functionName,
+   const std::string& fileName,
+   const std::string& fileFormat = "auto" )
 {
-   namespace fs = std::filesystem;
+   namespace fs = std::experimental::filesystem;
    std::string format = fileFormat;
    if( format == "auto" ) {
-      format = fs::path(fileName).extension();
+      format = fs::path( fileName ).extension();
       if( format.length() > 0 )
          // remove dot from the extension
-         format = format.substr(1);
+         format = format.substr( 1 );
    }
 
    if( format == "pvti" ) {
-      const MPI_Comm communicator = distributedMesh.getCommunicator();
+      const MPI::Comm& communicator = distributedMesh.getCommunicator();
       std::ofstream file;
-      if( noa::TNL::MPI::GetRank( communicator ) == 0 )
+      if( communicator.rank() == 0 )
          file.open( fileName );
 
       using PVTI = Meshes::Writers::PVTIWriter< typename MeshFunction::MeshType >;
@@ -236,7 +245,7 @@ writeDistributedMeshFunction( const Meshes::DistributedMeshes::DistributedMesh< 
       // TODO: write metadata: step and time
       pvti.writeImageData( distributedMesh );
       // TODO
-      //if( distributedMesh.getGhostLevels() > 0 ) {
+      // if( distributedMesh.getGhostLevels() > 0 ) {
       //   pvti.template writePPointData< std::uint8_t >( Meshes::VTK::ghostArrayName() );
       //   pvti.template writePCellData< std::uint8_t >( Meshes::VTK::ghostArrayName() );
       //}
@@ -256,14 +265,15 @@ writeDistributedMeshFunction( const Meshes::DistributedMeshes::DistributedMesh< 
       // NOTE: globalBegin and globalEnd here are without overlaps
       writer.writeImageData( distributedMesh.getGlobalGrid().getOrigin(),
                              distributedMesh.getGlobalBegin() - distributedMesh.getLowerOverlap(),
-                             distributedMesh.getGlobalBegin() + distributedMesh.getLocalSize() + distributedMesh.getUpperOverlap(),
+                             distributedMesh.getGlobalBegin() + distributedMesh.getLocalSize()
+                                + distributedMesh.getUpperOverlap(),
                              distributedMesh.getGlobalGrid().getSpaceSteps() );
       if( function.getEntitiesDimension() == 0 )
          writer.writePointData( function.getData(), functionName );
       else
          writer.writeCellData( function.getData(), functionName );
       // TODO
-      //if( mesh.getGhostLevels() > 0 ) {
+      // if( mesh.getGhostLevels() > 0 ) {
       //   writer.writePointData( mesh.vtkPointGhostTypes(), Meshes::VTK::ghostArrayName() );
       //   writer.writeCellData( mesh.vtkCellGhostTypes(), Meshes::VTK::ghostArrayName() );
       //}
@@ -277,5 +287,5 @@ writeDistributedMeshFunction( const Meshes::DistributedMeshes::DistributedMesh< 
 
 // TODO: specialization of writeDistributedMeshFunction for unstructured mesh
 
-} // namespace Functions
-} // namespace noa::TNL
+}  // namespace Functions
+}  // namespace noa::TNL

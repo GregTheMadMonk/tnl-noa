@@ -19,7 +19,8 @@ class AsymptoteWriter
    static_assert( Mesh::getMeshDimension() <= 3, "The Asymptote format supports only 1D, 2D and 3D meshes." );
 
 public:
-   static void writeAllEntities( const Mesh& mesh, std::ostream& str )
+   static void
+   writeAllEntities( const Mesh& mesh, std::ostream& str )
    {
       throw Exceptions::NotImplementedError();
    }
@@ -33,45 +34,39 @@ class AsymptoteWriter< Grid< 2, Real, Device, Index > >
    using PointType = typename Mesh::PointType;
 
 public:
-   static void writeAllEntities( const Mesh& mesh, std::ostream& str )
+   static void
+   writeAllEntities( const Mesh& mesh, std::ostream& str )
    {
-      str << "size( "
-          << mesh.getProportions(). x() << "cm , "
-          << mesh.getProportions(). y() << "cm );"
-          << std::endl << std::endl;
+      str << "size( " << mesh.getProportions().x() << "cm , " << mesh.getProportions().y() << "cm );" << std::endl << std::endl;
       typename Mesh::Vertex vertex( mesh );
       CoordinatesType& vertexCoordinates = vertex.getCoordinates();
       PointType v;
-      for( Index j = 0; j < mesh.dimensions. y(); j ++ )
-      {
+      for( Index j = 0; j < mesh.dimensions.y(); j++ ) {
          str << "draw( ";
          vertexCoordinates.x() = 0;
          vertexCoordinates.y() = j;
          v = vertex.getCenter();
-         str << "( " << v. x() << ", " << v. y() << " )";
-         for( Index i = 0; i < mesh.dimensions. x(); i ++ )
-         {
+         str << "( " << v.x() << ", " << v.y() << " )";
+         for( Index i = 0; i < mesh.dimensions.x(); i++ ) {
             vertexCoordinates.x() = i + 1;
             vertexCoordinates.y() = j;
             v = vertex.getCenter();
-            str << "--( " << v. x() << ", " << v. y() << " )";
+            str << "--( " << v.x() << ", " << v.y() << " )";
          }
          str << " );" << std::endl;
       }
       str << std::endl;
-      for( Index i = 0; i < mesh.dimensions. x(); i ++ )
-      {
+      for( Index i = 0; i < mesh.dimensions.x(); i++ ) {
          str << "draw( ";
          vertexCoordinates.x() = i;
          vertexCoordinates.y() = 0;
          v = vertex.getCenter();
-         str << "( " << v. x() << ", " << v. y() << " )";
-         for( Index j = 0; j < mesh.dimensions. y(); j ++ )
-         {
+         str << "( " << v.x() << ", " << v.y() << " )";
+         for( Index j = 0; j < mesh.dimensions.y(); j++ ) {
             vertexCoordinates.x() = i;
             vertexCoordinates.y() = j + 1;
             v = vertex.getCenter();
-            str << "--( " << v. x() << ", " << v. y() << " )";
+            str << "--( " << v.x() << ", " << v.y() << " )";
          }
          str << " );" << std::endl;
       }
@@ -80,19 +75,17 @@ public:
       typename Mesh::Cell cell( mesh );
       CoordinatesType& cellCoordinates = cell.getCoordinates();
       const Real cellMeasure = mesh.getSpaceSteps().x() * mesh.getSpaceSteps().y();
-      for( Index i = 0; i < mesh.dimensions. x(); i ++ )
-         for( Index j = 0; j < mesh.dimensions. y(); j ++ )
-         {
+      for( Index i = 0; i < mesh.dimensions.x(); i++ )
+         for( Index j = 0; j < mesh.dimensions.y(); j++ ) {
             cellCoordinates.x() = i;
             cellCoordinates.y() = j;
             v = vertex.getCenter();
             str << "label( scale(0.33) * Label( \"$" << std::setprecision( 3 ) << cellMeasure << std::setprecision( 8 )
-                << "$\" ), ( " << v. x() << ", " << v. y() << " ), S );" << std::endl;
+                << "$\" ), ( " << v.x() << ", " << v.y() << " ), S );" << std::endl;
          }
 
-      for( Index i = 0; i < mesh.dimensions. x(); i ++ )
-         for( Index j = 0; j < mesh.dimensions. y(); j ++ )
-         {
+      for( Index i = 0; i < mesh.dimensions.x(); i++ )
+         for( Index j = 0; j < mesh.dimensions.y(); j++ ) {
             PointType v1, v2, c;
 
             /****
@@ -143,6 +136,6 @@ public:
    }
 };
 
-} // namespace Writers
-} // namespace Meshes
-} // namespace noa::TNL
+}  // namespace Writers
+}  // namespace Meshes
+}  // namespace noa::TNL

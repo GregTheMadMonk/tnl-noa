@@ -11,8 +11,8 @@
 #include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/detail/Quicksorter.h>
 
 namespace noa::TNL {
-   namespace Algorithms {
-      namespace Sorting {
+namespace Algorithms {
+namespace Sorting {
 
 struct Quicksort
 {
@@ -29,9 +29,8 @@ struct Quicksort
       Quicksorter< typename Array::ValueType, typename Array::DeviceType > qs;
       qs.sort( array, compare );
    }
-
 };
 
-      } // namespace Sorting
-   } // namespace Algorithms
-} //namespace noa::TNL
+}  // namespace Sorting
+}  // namespace Algorithms
+}  // namespace noa::TNL

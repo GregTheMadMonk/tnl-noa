@@ -13,31 +13,24 @@ namespace noa::TNL {
 namespace Solvers {
 namespace PDE {
 
-template< typename Problem,
-          typename TimeStepper,
-          bool TimeDependent = Problem::isTimeDependent() >
+template< typename Problem, typename TimeStepper, bool TimeDependent = Problem::isTimeDependent() >
 class PDESolverTypeResolver
-{
-};
+{};
 
-template< typename Problem,
-          typename TimeStepper >
+template< typename Problem, typename TimeStepper >
 class PDESolverTypeResolver< Problem, TimeStepper, true >
 {
-   public:
-
-      using SolverType = TimeDependentPDESolver< Problem, TimeStepper >;
+public:
+   using SolverType = TimeDependentPDESolver< Problem, TimeStepper >;
 };
 
-template< typename Problem,
-          typename TimeStepper >
+template< typename Problem, typename TimeStepper >
 class PDESolverTypeResolver< Problem, TimeStepper, false >
 {
-   public:
-
-      using SolverType = TimeIndependentPDESolver< Problem >;
+public:
+   using SolverType = TimeIndependentPDESolver< Problem >;
 };
 
-} // namespace PDE
-} // namespace Solvers
-} // namespace noa::TNL
+}  // namespace PDE
+}  // namespace Solvers
+}  // namespace noa::TNL

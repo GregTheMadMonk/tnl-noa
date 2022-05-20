@@ -67,5 +67,5 @@ containsOnlyValue( const Array& array,
    return detail::ContainsOnlyValue< typename Array::DeviceType >()( array.getData() + begin, end - begin, value );
 }
 
-} // namespace Algorithms
-} // namespace noa::TNL
+}  // namespace Algorithms
+}  // namespace noa::TNL

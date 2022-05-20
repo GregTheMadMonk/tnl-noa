@@ -17,19 +17,15 @@ namespace noa::TNL {
 namespace Containers {
 namespace __ndarray_impl {
 
-template< typename Permutation,
-          typename LevelTag = IndexTag< 0 > >
+template< typename Permutation, typename LevelTag = IndexTag< 0 > >
 struct SequentialExecutor
 {
-   template< typename Begins,
-             typename Ends,
-             typename Func,
-             typename... Indices >
+   template< typename Begins, typename Ends, typename Func, typename... Indices >
    __cuda_callable__
-   void operator()( const Begins& begins, const Ends& ends, Func f, Indices&&... indices )
+   void
+   operator()( const Begins& begins, const Ends& ends, Func f, Indices&&... indices )
    {
-      static_assert( Begins::getDimension() == Ends::getDimension(),
-                     "wrong begins or ends" );
+      static_assert( Begins::getDimension() == Ends::getDimension(), "wrong begins or ends" );
 
       SequentialExecutor< Permutation, IndexTag< LevelTag::value + 1 > > exec;
       const auto begin = begins.template getSize< get< LevelTag::value >( Permutation{} ) >();
@@ -42,16 +38,13 @@ struct SequentialExecutor
 template< typename Permutation >
 struct SequentialExecutor< Permutation, IndexTag< Permutation::size() - 1 > >
 {
-   template< typename Begins,
-             typename Ends,
-             typename Func,
-             typename... Indices >
+   template< typename Begins, typename Ends, typename Func, typename... Indices >
    __cuda_callable__
-   void operator()( const Begins& begins, const Ends& ends, Func f, Indices&&... indices )
+   void
+   operator()( const Begins& begins, const Ends& ends, Func f, Indices&&... indices )
    {
-      static_assert( Begins::getDimension() == Ends::getDimension(),
-                     "wrong begins or ends" );
-      static_assert( sizeof...(indices) == Begins::getDimension() - 1,
+      static_assert( Begins::getDimension() == Ends::getDimension(), "wrong begins or ends" );
+      static_assert( sizeof...( indices ) == Begins::getDimension() - 1,
                      "invalid number of indices in the final step of the SequentialExecutor" );
 
       using LevelTag = IndexTag< Permutation::size() - 1 >;
@@ -63,20 +56,15 @@ struct SequentialExecutor< Permutation, IndexTag< Permutation::size() - 1 > >
    }
 };
 
-
-template< typename Permutation,
-          typename LevelTag = IndexTag< Permutation::size() - 1 > >
+template< typename Permutation, typename LevelTag = IndexTag< Permutation::size() - 1 > >
 struct SequentialExecutorRTL
 {
-   template< typename Begins,
-             typename Ends,
-             typename Func,
-             typename... Indices >
+   template< typename Begins, typename Ends, typename Func, typename... Indices >
    __cuda_callable__
-   void operator()( const Begins& begins, const Ends& ends, Func f, Indices&&... indices )
+   void
+   operator()( const Begins& begins, const Ends& ends, Func f, Indices&&... indices )
    {
-      static_assert( Begins::getDimension() == Ends::getDimension(),
-                     "wrong begins or ends" );
+      static_assert( Begins::getDimension() == Ends::getDimension(), "wrong begins or ends" );
 
       SequentialExecutorRTL< Permutation, IndexTag< LevelTag::value - 1 > > exec;
       const auto begin = begins.template getSize< get< LevelTag::value >( Permutation{} ) >();
@@ -89,16 +77,13 @@ struct SequentialExecutorRTL
 template< typename Permutation >
 struct SequentialExecutorRTL< Permutation, IndexTag< 0 > >
 {
-   template< typename Begins,
-             typename Ends,
-             typename Func,
-             typename... Indices >
+   template< typename Begins, typename Ends, typename Func, typename... Indices >
    __cuda_callable__
-   void operator()( const Begins& begins, const Ends& ends, Func f, Indices&&... indices )
+   void
+   operator()( const Begins& begins, const Ends& ends, Func f, Indices&&... indices )
    {
-      static_assert( Begins::getDimension() == Ends::getDimension(),
-                     "wrong begins or ends" );
-      static_assert( sizeof...(indices) == Begins::getDimension() - 1,
+      static_assert( Begins::getDimension() == Ends::getDimension(), "wrong begins or ends" );
+      static_assert( sizeof...( indices ) == Begins::getDimension() - 1,
                      "invalid number of indices in the final step of the SequentialExecutorRTL" );
 
       const auto begin = begins.template getSize< get< 0 >( Permutation{} ) >();
@@ -108,22 +93,18 @@ struct SequentialExecutorRTL< Permutation, IndexTag< 0 > >
    }
 };
 
-
-template< typename Permutation,
-          typename Device >
+template< typename Permutation, typename Device >
 struct ParallelExecutorDeviceDispatch
 {
-   template< typename Begins,
-             typename Ends,
-             typename Func >
-   void operator()( const Begins& begins, const Ends& ends, Func f )
+   template< typename Begins, typename Ends, typename Func >
+   void
+   operator()( const Begins& begins, const Ends& ends, Func f )
    {
-      static_assert( Begins::getDimension() == Ends::getDimension(),
-                     "wrong begins or ends" );
+      static_assert( Begins::getDimension() == Ends::getDimension(), "wrong begins or ends" );
 
       using Index = typename Ends::IndexType;
 
-      auto kernel = [=] ( Index i2, Index i1, Index i0 )
+      auto kernel = [ = ]( Index i2, Index i1, Index i0 )
       {
          SequentialExecutor< Permutation, IndexTag< 3 > > exec;
          exec( begins, ends, f, i0, i1, i2 );
@@ -142,17 +123,15 @@ struct ParallelExecutorDeviceDispatch
 template< typename Permutation >
 struct ParallelExecutorDeviceDispatch< Permutation, Devices::Cuda >
 {
-   template< typename Begins,
-             typename Ends,
-             typename Func >
-   void operator()( const Begins& begins, const Ends& ends, Func f )
+   template< typename Begins, typename Ends, typename Func >
+   void
+   operator()( const Begins& begins, const Ends& ends, Func f )
    {
-      static_assert( Begins::getDimension() == Ends::getDimension(),
-                     "wrong begins or ends" );
+      static_assert( Begins::getDimension() == Ends::getDimension(), "wrong begins or ends" );
 
       using Index = typename Ends::IndexType;
 
-      auto kernel = [=] __cuda_callable__ ( Index i2, Index i1, Index i0 )
+      auto kernel = [ = ] __cuda_callable__( Index i2, Index i1, Index i0 )
       {
          SequentialExecutorRTL< Permutation, IndexTag< Begins::getDimension() - 4 > > exec;
          exec( begins, ends, f, i0, i1, i2 );
@@ -168,40 +147,34 @@ struct ParallelExecutorDeviceDispatch< Permutation, Devices::Cuda >
    }
 };
 
-template< typename Permutation,
-          typename Device,
-          typename DimTag = IndexTag< Permutation::size() > >
+template< typename Permutation, typename Device, typename DimTag = IndexTag< Permutation::size() > >
 struct ParallelExecutor
 {
-   template< typename Begins,
-             typename Ends,
-             typename Func >
-   void operator()( const Begins& begins, const Ends& ends, Func f )
+   template< typename Begins, typename Ends, typename Func >
+   void
+   operator()( const Begins& begins, const Ends& ends, Func f )
    {
       ParallelExecutorDeviceDispatch< Permutation, Device > dispatch;
       dispatch( begins, ends, f );
    }
 };
 
-template< typename Permutation,
-          typename Device >
+template< typename Permutation, typename Device >
 struct ParallelExecutor< Permutation, Device, IndexTag< 3 > >
 {
-   template< typename Begins,
-             typename Ends,
-             typename Func >
-   void operator()( const Begins& begins, const Ends& ends, Func f )
+   template< typename Begins, typename Ends, typename Func >
+   void
+   operator()( const Begins& begins, const Ends& ends, Func f )
    {
-      static_assert( Begins::getDimension() == Ends::getDimension(),
-                     "wrong begins or ends" );
+      static_assert( Begins::getDimension() == Ends::getDimension(), "wrong begins or ends" );
 
       using Index = typename Ends::IndexType;
 
       // nvcc does not like nested __cuda_callable__ and normal lambdas...
-//      auto kernel = [=] __cuda_callable__ ( Index i2, Index i1, Index i0 )
-//      {
-//         call_with_unpermuted_arguments< Permutation >( f, i0, i1, i2 );
-//      };
+      //      auto kernel = [=] __cuda_callable__ ( Index i2, Index i1, Index i0 )
+      //      {
+      //         call_with_unpermuted_arguments< Permutation >( f, i0, i1, i2 );
+      //      };
       Kernel< Device > kernel;
 
       const Index begin0 = begins.template getSize< get< 0 >( Permutation{} ) >();
@@ -217,7 +190,8 @@ struct ParallelExecutor< Permutation, Device, IndexTag< 3 > >
    struct Kernel
    {
       template< typename Index, typename Func >
-      void operator()( Index i2, Index i1, Index i0, Func f )
+      void
+      operator()( Index i2, Index i1, Index i0, Func f )
       {
          call_with_unpermuted_arguments< Permutation >( f, i0, i1, i2 );
       }
@@ -229,32 +203,30 @@ struct ParallelExecutor< Permutation, Device, IndexTag< 3 > >
    {
       template< typename Index, typename Func >
       __cuda_callable__
-      void operator()( Index i2, Index i1, Index i0, Func f )
+      void
+      operator()( Index i2, Index i1, Index i0, Func f )
       {
          call_with_unpermuted_arguments< Permutation >( f, i0, i1, i2 );
       }
    };
 };
 
-template< typename Permutation,
-          typename Device >
+template< typename Permutation, typename Device >
 struct ParallelExecutor< Permutation, Device, IndexTag< 2 > >
 {
-   template< typename Begins,
-             typename Ends,
-             typename Func >
-   void operator()( const Begins& begins, const Ends& ends, Func f )
+   template< typename Begins, typename Ends, typename Func >
+   void
+   operator()( const Begins& begins, const Ends& ends, Func f )
    {
-      static_assert( Begins::getDimension() == Ends::getDimension(),
-                     "wrong begins or ends" );
+      static_assert( Begins::getDimension() == Ends::getDimension(), "wrong begins or ends" );
 
       using Index = typename Ends::IndexType;
 
       // nvcc does not like nested __cuda_callable__ and normal lambdas...
-//      auto kernel = [=] __cuda_callable__ ( Index i1, Index i0 )
-//      {
-//         call_with_unpermuted_arguments< Permutation >( f, i0, i1 );
-//      };
+      //      auto kernel = [=] __cuda_callable__ ( Index i1, Index i0 )
+      //      {
+      //         call_with_unpermuted_arguments< Permutation >( f, i0, i1 );
+      //      };
       Kernel< Device > kernel;
 
       const Index begin0 = begins.template getSize< get< 0 >( Permutation{} ) >();
@@ -268,7 +240,8 @@ struct ParallelExecutor< Permutation, Device, IndexTag< 2 > >
    struct Kernel
    {
       template< typename Index, typename Func >
-      void operator()( Index i1, Index i0, Func f )
+      void
+      operator()( Index i1, Index i0, Func f )
       {
          call_with_unpermuted_arguments< Permutation >( f, i0, i1 );
       }
@@ -280,47 +253,44 @@ struct ParallelExecutor< Permutation, Device, IndexTag< 2 > >
    {
       template< typename Index, typename Func >
       __cuda_callable__
-      void operator()( Index i1, Index i0, Func f )
+      void
+      operator()( Index i1, Index i0, Func f )
       {
          call_with_unpermuted_arguments< Permutation >( f, i0, i1 );
       }
    };
 };
 
-template< typename Permutation,
-          typename Device >
+template< typename Permutation, typename Device >
 struct ParallelExecutor< Permutation, Device, IndexTag< 1 > >
 {
-   template< typename Begins,
-             typename Ends,
-             typename Func >
-   void operator()( const Begins& begins, const Ends& ends, Func f )
+   template< typename Begins, typename Ends, typename Func >
+   void
+   operator()( const Begins& begins, const Ends& ends, Func f )
    {
-      static_assert( Begins::getDimension() == Ends::getDimension(),
-                     "wrong begins or ends" );
+      static_assert( Begins::getDimension() == Ends::getDimension(), "wrong begins or ends" );
 
       using Index = typename Ends::IndexType;
 
-//      auto kernel = [=] __cuda_callable__ ( Index i )
-//      {
-//         call_with_unpermuted_arguments< Permutation >( f, i );
-//      };
+      //      auto kernel = [=] __cuda_callable__ ( Index i )
+      //      {
+      //         call_with_unpermuted_arguments< Permutation >( f, i );
+      //      };
 
       const Index begin = begins.template getSize< get< 0 >( Permutation{} ) >();
       const Index end = ends.template getSize< get< 0 >( Permutation{} ) >();
-//      Algorithms::ParallelFor< Device >::exec( begin, end, kernel );
+      //      Algorithms::ParallelFor< Device >::exec( begin, end, kernel );
       Algorithms::ParallelFor< Device >::exec( begin, end, f );
    }
 };
 
-
 // Device may be void which stands for StaticNDArray
-template< typename Permutation,
-          typename Device >
+template< typename Permutation, typename Device >
 struct ExecutorDispatcher
 {
    template< typename Begins, typename Ends, typename Func >
-   void operator()( const Begins& begins, const Ends& ends, Func f )
+   void
+   operator()( const Begins& begins, const Ends& ends, Func f )
    {
       SequentialExecutor< Permutation >()( begins, ends, f );
    }
@@ -330,7 +300,8 @@ template< typename Permutation >
 struct ExecutorDispatcher< Permutation, Devices::Host >
 {
    template< typename Begins, typename Ends, typename Func >
-   void operator()( const Begins& begins, const Ends& ends, Func f )
+   void
+   operator()( const Begins& begins, const Ends& ends, Func f )
    {
       if( Devices::Host::isOMPEnabled() && Devices::Host::getMaxThreadsCount() > 1 )
          ParallelExecutor< Permutation, Devices::Host >()( begins, ends, f );
@@ -343,12 +314,13 @@ template< typename Permutation >
 struct ExecutorDispatcher< Permutation, Devices::Cuda >
 {
    template< typename Begins, typename Ends, typename Func >
-   void operator()( const Begins& begins, const Ends& ends, Func f )
+   void
+   operator()( const Begins& begins, const Ends& ends, Func f )
    {
       ParallelExecutor< Permutation, Devices::Cuda >()( begins, ends, f );
    }
 };
 
-} // namespace __ndarray_impl
-} // namespace Containers
-} // namespace noa::TNL
+}  // namespace __ndarray_impl
+}  // namespace Containers
+}  // namespace noa::TNL

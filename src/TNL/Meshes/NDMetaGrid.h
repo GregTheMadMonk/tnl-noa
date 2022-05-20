@@ -31,33 +31,38 @@ public:
    using CoordinatesType = Containers::StaticVector< Dimension, Index >;
 
    //! \brief Returns the spatial dimension of the grid.
-   static constexpr int getMeshDimension()
+   static constexpr int
+   getMeshDimension()
    {
       return Dimension;
    }
 
    //! \brief Sets the grid dimensions/size.
-   void setDimensions( const CoordinatesType& dimensions )
+   void
+   setDimensions( const CoordinatesType& dimensions )
    {
       this->dimensions = dimensions;
    }
 
    //! \brief Returns the grid dimensions/size.
-   const CoordinatesType& getDimensions() const
+   const CoordinatesType&
+   getDimensions() const
    {
       return dimensions;
    }
 
    //! \brief Sets the origin of the grid (coordinates of the left bottom front
    //! corner).
-   void setOrigin( const PointType& origin )
+   void
+   setOrigin( const PointType& origin )
    {
       this->origin = origin;
    }
 
    //! \brief Returns the origin of the grid (coordinates of the left bottom
    //! front corner).
-   const PointType& getOrigin() const
+   const PointType&
+   getOrigin() const
    {
       return origin;
    }
@@ -65,8 +70,8 @@ public:
    //! \brief Sets the domain of the grid (i.e., the origin and
    //! proportions/length). Note that space steps are computed using the
    //! current grid dimensions.
-   void setDomain( const PointType& origin,
-                   const PointType& proportions )
+   void
+   setDomain( const PointType& origin, const PointType& proportions )
    {
       this->origin = origin;
       this->spaceSteps = proportions / dimensions;
@@ -74,13 +79,15 @@ public:
 
    //! \brief Sets the space steps of the grid, i.e. the parameters usually
    //! denoted as \e hx, \e hy, \e hz.
-   void setSpaceSteps( const PointType& spaceSteps )
+   void
+   setSpaceSteps( const PointType& spaceSteps )
    {
       this->spaceSteps = spaceSteps;
    }
 
    //! \brief Returns the space steps of the grid.
-   const PointType& getSpaceSteps() const
+   const PointType&
+   getSpaceSteps() const
    {
       return spaceSteps;
    }
@@ -93,5 +100,5 @@ protected:
    PointType spaceSteps = 0;
 };
 
-} // namespace Meshes
-} // namespace noa::TNL
+}  // namespace Meshes
+}  // namespace noa::TNL

@@ -19,7 +19,7 @@ namespace Debugging {
  *
  * The information is obtained from /proc/self/status, which is assumed to be
  * present on the system. The meaning of the printed values is following:
- *  
+ *
  *  - VmSize: Virtual memory size.
  *  - VmRSS: Resident set size.
  *  - VmHWM: Peak resident set size ("high water mark").
@@ -29,7 +29,7 @@ namespace Debugging {
 static void
 printMemoryUsage( std::ostream& str = std::cerr )
 {
-   std::ifstream meminfo("/proc/self/status");
+   std::ifstream meminfo( "/proc/self/status" );
    if( meminfo.fail() ) {
       std::cerr << "error: unable to open /proc/self/status" << std::endl;
       return;
@@ -41,26 +41,25 @@ printMemoryUsage( std::ostream& str = std::cerr )
 
    std::string desc;
    while( meminfo.good() ) {
-       // extract description (first column)
-       meminfo >> desc;
+      // extract description (first column)
+      meminfo >> desc;
 
-       if( desc == "VmSize:" )
-           meminfo >> vm;
-       if( desc == "VmHWM:" )
-           meminfo >> hwm;
-       if( desc == "VmRSS:" )
-           meminfo >> rss;
+      if( desc == "VmSize:" )
+         meminfo >> vm;
+      if( desc == "VmHWM:" )
+         meminfo >> hwm;
+      if( desc == "VmRSS:" )
+         meminfo >> rss;
 
-       // ignore the rest of irrelevant lines
-       meminfo.ignore( std::numeric_limits< std::streamsize >::max(), '\n' );
+      // ignore the rest of irrelevant lines
+      meminfo.ignore( std::numeric_limits< std::streamsize >::max(), '\n' );
    }
 
    str << "Memory usage (MiB): "
        << "VmSize = " << vm / 1024 << "MiB, "
        << "VmRSS = " << rss / 1024 << "MiB, "
-       << "VmHWM = " << hwm / 1024 << "MiB, "
-       << std::endl;
+       << "VmHWM = " << hwm / 1024 << "MiB, " << std::endl;
 }
 
-} // namespace Debugging
-} // namespace noa::TNL
+}  // namespace Debugging
+}  // namespace noa::TNL

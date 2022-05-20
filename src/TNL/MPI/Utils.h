@@ -6,25 +6,31 @@
 
 #pragma once
 
+#include <cstdlib>  // std::getenv
+
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CheckDevice.h>
 #include <noa/3rdparty/tnl-noa/src/TNL/Debugging/OutputRedirection.h>
 #include <noa/3rdparty/tnl-noa/src/TNL/TypeTraits.h>
 
 #include "Wrappers.h"
+#include "Comm.h"
 
 namespace noa::TNL {
 namespace MPI {
 
-inline bool isInitialized()
+inline bool
+isInitialized()
 {
    return Initialized() && ! Finalized();
 }
 
-inline void setupRedirection( std::string outputDirectory )
+inline void
+setupRedirection( const std::string& outputDirectory )
 {
 #ifdef HAVE_MPI
    if( GetSize() > 1 && GetRank() != 0 ) {
-      const std::string stdoutFile = outputDirectory + "/stdout_" + std::to_string(GetRank()) + ".txt";
-      const std::string stderrFile = outputDirectory + "/stderr_" + std::to_string(GetRank()) + ".txt";
+      const std::string stdoutFile = outputDirectory + "/stdout_" + std::to_string( GetRank() ) + ".txt";
+      const std::string stderrFile = outputDirectory + "/stderr_" + std::to_string( GetRank() ) + ".txt";
       std::cout << GetRank() << ": Redirecting stdout and stderr to files " << stdoutFile << " and " << stderrFile << std::endl;
       Debugging::redirect_stdout_stderr( stdoutFile, stderrFile );
    }
@@ -32,40 +38,35 @@ inline void setupRedirection( std::string outputDirectory )
 }
 
 // restore redirection (usually not necessary, it uses RAII internally...)
-inline void restoreRedirection()
+inline void
+restoreRedirection()
 {
    if( GetSize() > 1 && GetRank() != 0 ) {
       Debugging::redirect_stdout_stderr( "", "", true );
    }
 }
 
-/**
- * \brief Returns a local rank ID of the current process within a group of
- * processes running on a shared-memory node.
- *
- * The given MPI communicator is split into groups according to the
- * `MPI_COMM_TYPE_SHARED` type (from MPI-3) and the rank ID of the process
- * within the group is returned.
- */
-inline int getRankOnNode( MPI_Comm communicator = MPI_COMM_WORLD )
+inline void
+selectGPU()
 {
 #ifdef HAVE_MPI
-   const int rank = GetRank( communicator );
+   #ifdef HAVE_CUDA
+   int gpuCount;
+   cudaGetDeviceCount( &gpuCount );
 
-   MPI_Info info;
-   MPI_Info_create( &info );
+   const int local_rank = getRankOnNode();
+   const int gpuNumber = local_rank % gpuCount;
 
-   MPI_Comm local_comm;
-   MPI_Comm_split_type( communicator, MPI_COMM_TYPE_SHARED, rank, info, &local_comm );
+   // write debug output before calling cudaSetDevice
+   const char* cuda_visible_devices = std::getenv( "CUDA_VISIBLE_DEVICES" );
+   if( ! cuda_visible_devices )
+      cuda_visible_devices = "";
+   std::cout << "Rank " << GetRank() << ": rank on node is " << local_rank << ", using GPU id " << gpuNumber << " of "
+             << gpuCount << ", CUDA_VISIBLE_DEVICES=" << cuda_visible_devices << std::endl;
 
-   const int local_rank = GetRank( local_comm );
-
-   MPI_Comm_free(&local_comm);
-   MPI_Info_free(&info);
-
-   return local_rank;
-#else
-   return 0;
+   cudaSetDevice( gpuNumber );
+   TNL_CHECK_CUDA_DEVICE;
+   #endif
 #endif
 }
 
@@ -86,7 +87,8 @@ inline int getRankOnNode( MPI_Comm communicator = MPI_COMM_WORLD )
  *         value).
  */
 template< typename T >
-T reduce( T value, const MPI_Op& op, MPI_Comm communicator = MPI_COMM_WORLD )
+T
+reduce( T value, const MPI_Op& op, MPI_Comm communicator = MPI_COMM_WORLD )
 {
    // call the in-place variant of Allreduce
    Allreduce( &value, 1, op, communicator );
@@ -102,7 +104,8 @@ T reduce( T value, const MPI_Op& op, MPI_Comm communicator = MPI_COMM_WORLD )
  * to receive the data.
  */
 template< typename Array >
-void send( const Array& array, int dest, int tag, MPI_Comm communicator = MPI_COMM_WORLD )
+void
+send( const Array& array, int dest, int tag, MPI_Comm communicator = MPI_COMM_WORLD )
 {
    const auto size = array.getSize();
    MPI::Send( &size, 1, dest, tag, communicator );
@@ -119,7 +122,7 @@ template< typename Array >
 std::enable_if_t< ! IsViewType< Array >::value >
 recv( Array& array, int src, int tag, MPI_Comm communicator = MPI_COMM_WORLD )
 {
-   using Index = decltype(array.getSize());
+   using Index = decltype( array.getSize() );
    Index size;
    MPI::Recv( &size, 1, src, tag, communicator );
    array.setSize( size );
@@ -139,12 +142,14 @@ template< typename Array >
 std::enable_if_t< IsViewType< Array >::value >
 recv( Array& view, int src, int tag, MPI_Comm communicator = MPI_COMM_WORLD )
 {
-   using Index = decltype(view.getSize());
+   using Index = decltype( view.getSize() );
    Index size;
    MPI::Recv( &size, 1, src, tag, communicator );
    if( size != view.getSize() )
-      throw std::runtime_error( "MPI::recv error: The received size (" + std::to_string(size) + ") does not match "
-                                "the array view size (" + std::to_string(view.getSize()) + ")" );
+      throw std::runtime_error( "MPI::recv error: The received size (" + std::to_string( size )
+                                + ") does not match "
+                                  "the array view size ("
+                                + std::to_string( view.getSize() ) + ")" );
    MPI::Recv( view.getData(), size, src, tag, communicator );
 }
 
@@ -162,14 +167,22 @@ sendrecv( const SendArray& sendArray,
           int recvTag,
           MPI_Comm communicator = MPI_COMM_WORLD )
 {
-   using SendIndex = decltype(sendArray.getSize());
-   using RecvIndex = decltype(recvArray.getSize());
+   using SendIndex = decltype( sendArray.getSize() );
+   using RecvIndex = decltype( recvArray.getSize() );
 
    const SendIndex sendSize = sendArray.getSize();
    RecvIndex recvSize;
    MPI::Sendrecv( &sendSize, 1, dest, sendTag, &recvSize, 1, src, recvTag, communicator );
    recvArray.setSize( recvSize );
-   MPI::Sendrecv( sendArray.getData(), sendArray.getSize(), dest, sendTag, recvArray.getData(), recvArray.getSize(), src, recvTag, communicator );
+   MPI::Sendrecv( sendArray.getData(),
+                  sendArray.getSize(),
+                  dest,
+                  sendTag,
+                  recvArray.getData(),
+                  recvArray.getSize(),
+                  src,
+                  recvTag,
+                  communicator );
 }
 
 /**
@@ -189,16 +202,26 @@ sendrecv( const SendArray& sendArray,
           int recvTag,
           MPI_Comm communicator = MPI_COMM_WORLD )
 {
-   using SendIndex = decltype(sendArray.getSize());
-   using RecvIndex = decltype(recvArray.getSize());
+   using SendIndex = decltype( sendArray.getSize() );
+   using RecvIndex = decltype( recvArray.getSize() );
 
    const SendIndex sendSize = sendArray.getSize();
    RecvIndex recvSize;
    MPI::Sendrecv( &sendSize, 1, dest, sendTag, &recvSize, 1, src, recvTag, communicator );
    if( recvSize != recvArray.getSize() )
-      throw std::runtime_error( "MPI::sendrecv error: The received size (" + std::to_string(recvSize) + ") does not match "
-                                "the array view size (" + std::to_string(recvArray.getSize()) + ")" );
-   MPI::Sendrecv( sendArray.getData(), sendArray.getSize(), dest, sendTag, recvArray.getData(), recvArray.getSize(), src, recvTag, communicator );
+      throw std::runtime_error( "MPI::sendrecv error: The received size (" + std::to_string( recvSize )
+                                + ") does not match "
+                                  "the array view size ("
+                                + std::to_string( recvArray.getSize() ) + ")" );
+   MPI::Sendrecv( sendArray.getData(),
+                  sendArray.getSize(),
+                  dest,
+                  sendTag,
+                  recvArray.getData(),
+                  recvArray.getSize(),
+                  src,
+                  recvTag,
+                  communicator );
 }
 
 /**
@@ -206,9 +229,7 @@ sendrecv( const SendArray& sendArray,
  */
 template< typename T >
 std::enable_if_t< IsScalarType< T >::value, T >
-bcast( T value,
-       int root,
-       MPI_Comm communicator = MPI_COMM_WORLD )
+bcast( T value, int root, MPI_Comm communicator = MPI_COMM_WORLD )
 {
    MPI::Bcast( &value, 1, root, communicator );
    return value;
@@ -219,9 +240,7 @@ bcast( T value,
  */
 template< typename Array >
 std::enable_if_t< ! IsScalarType< Array >::value && ! IsViewType< Array >::value >
-bcast( Array& array,
-       int root,
-       MPI_Comm communicator = MPI_COMM_WORLD )
+bcast( Array& array, int root, MPI_Comm communicator = MPI_COMM_WORLD )
 {
    auto size = array.getSize();
    MPI::Bcast( &size, 1, root, communicator );
@@ -229,5 +248,5 @@ bcast( Array& array,
    MPI::Bcast( array.getData(), size, root, communicator );
 }
 
-} // namespace MPI
-} // namespace noa::TNL
+}  // namespace MPI
+}  // namespace noa::TNL

@@ -58,9 +58,7 @@ namespace Algorithms {
  *
  * \include inclusiveScanExample.out
  */
-template< typename InputArray,
-          typename OutputArray,
-          typename Reduction >
+template< typename InputArray, typename OutputArray, typename Reduction >
 void
 inclusiveScan( const InputArray& input,
                OutputArray& output,
@@ -72,36 +70,35 @@ inclusiveScan( const InputArray& input,
 {
    static_assert( std::is_same< typename InputArray::DeviceType, typename OutputArray::DeviceType >::value,
                   "The input and output arrays must have the same device type." );
-   TNL_ASSERT_EQ( reduction( identity, identity ), identity,
-                  "identity is not an identity element of the reduction operation" );
-   // TODO: check if evaluating the input is expensive (e.g. a vector expression), otherwise use WriteInSecondPhase (optimal for array-to-array)
-   using Scan = detail::Scan< typename OutputArray::DeviceType, detail::ScanType::Inclusive, detail::ScanPhaseType::WriteInFirstPhase >;
+   TNL_ASSERT_EQ( reduction( identity, identity ), identity, "identity is not an identity element of the reduction operation" );
+   // TODO: check if evaluating the input is expensive (e.g. a vector expression), otherwise use WriteInSecondPhase (optimal for
+   // array-to-array)
+   using Scan =
+      detail::Scan< typename OutputArray::DeviceType, detail::ScanType::Inclusive, detail::ScanPhaseType::WriteInFirstPhase >;
    Scan::perform( input, output, begin, end, outputBegin, std::forward< Reduction >( reduction ), identity );
 }
 
 /**
  * \brief Overload of \ref inclusiveScan which uses a TNL functional
- *        object for reduction. \ref noa::TNL::Plus is used by default.
+ *        object for reduction. \ref TNL::Plus is used by default.
  *
  * The [identity element](https://en.wikipedia.org/wiki/Identity_element) is
  * taken as `reduction.template getIdentity< typename OutputArray::ValueType >()`.
  * See \ref inclusiveScan for the explanation of other parameters.
  * Note that when `end` equals 0 (the default), it is set to `input.getSize()`.
  */
-template< typename InputArray,
-          typename OutputArray,
-          typename Reduction = noa::TNL::Plus >
+template< typename InputArray, typename OutputArray, typename Reduction = TNL::Plus >
 void
 inclusiveScan( const InputArray& input,
                OutputArray& output,
                typename InputArray::IndexType begin = 0,
                typename InputArray::IndexType end = 0,
                typename OutputArray::IndexType outputBegin = 0,
-               Reduction&& reduction = noa::TNL::Plus{} )
+               Reduction&& reduction = TNL::Plus{} )
 {
    if( end == 0 )
       end = input.getSize();
-   constexpr typename OutputArray::ValueType identity = Reduction::template getIdentity< typename OutputArray::ValueType >();
+   constexpr auto identity = Reduction::template getIdentity< typename OutputArray::ValueType >();
    inclusiveScan( input, output, begin, end, outputBegin, std::forward< Reduction >( reduction ), identity );
 }
 
@@ -147,9 +144,7 @@ inclusiveScan( const InputArray& input,
  *
  * \include exclusiveScanExample.out
  */
-template< typename InputArray,
-          typename OutputArray,
-          typename Reduction >
+template< typename InputArray, typename OutputArray, typename Reduction >
 void
 exclusiveScan( const InputArray& input,
                OutputArray& output,
@@ -161,36 +156,35 @@ exclusiveScan( const InputArray& input,
 {
    static_assert( std::is_same< typename InputArray::DeviceType, typename OutputArray::DeviceType >::value,
                   "The input and output arrays must have the same device type." );
-   TNL_ASSERT_EQ( reduction( identity, identity ), identity,
-                  "identity is not an identity element of the reduction operation" );
-   // TODO: check if evaluating the input is expensive (e.g. a vector expression), otherwise use WriteInSecondPhase (optimal for array-to-array)
-   using Scan = detail::Scan< typename OutputArray::DeviceType, detail::ScanType::Exclusive, detail::ScanPhaseType::WriteInFirstPhase >;
+   TNL_ASSERT_EQ( reduction( identity, identity ), identity, "identity is not an identity element of the reduction operation" );
+   // TODO: check if evaluating the input is expensive (e.g. a vector expression), otherwise use WriteInSecondPhase (optimal for
+   // array-to-array)
+   using Scan =
+      detail::Scan< typename OutputArray::DeviceType, detail::ScanType::Exclusive, detail::ScanPhaseType::WriteInFirstPhase >;
    Scan::perform( input, output, begin, end, outputBegin, std::forward< Reduction >( reduction ), identity );
 }
 
 /**
  * \brief Overload of \ref exclusiveScan which uses a TNL functional
- *        object for reduction. \ref noa::TNL::Plus is used by default.
+ *        object for reduction. \ref TNL::Plus is used by default.
  *
  * The [identity element](https://en.wikipedia.org/wiki/Identity_element) is
  * taken as `reduction.template getIdentity< typename OutputArray::ValueType >()`.
  * See \ref exclusiveScan for the explanation of other parameters.
  * Note that when `end` equals 0 (the default), it is set to `input.getSize()`.
  */
-template< typename InputArray,
-          typename OutputArray,
-          typename Reduction = noa::TNL::Plus >
+template< typename InputArray, typename OutputArray, typename Reduction = TNL::Plus >
 void
 exclusiveScan( const InputArray& input,
                OutputArray& output,
                typename InputArray::IndexType begin = 0,
                typename InputArray::IndexType end = 0,
                typename OutputArray::IndexType outputBegin = 0,
-               Reduction&& reduction = noa::TNL::Plus{} )
+               Reduction&& reduction = TNL::Plus{} )
 {
    if( end == 0 )
       end = input.getSize();
-   constexpr typename OutputArray::ValueType identity = Reduction::template getIdentity< typename OutputArray::ValueType >();
+   constexpr auto identity = Reduction::template getIdentity< typename OutputArray::ValueType >();
    exclusiveScan( input, output, begin, end, outputBegin, std::forward< Reduction >( reduction ), identity );
 }
 
@@ -230,8 +224,7 @@ exclusiveScan( const InputArray& input,
  *
  * \include inplaceInclusiveScanExample.out
  */
-template< typename Array,
-          typename Reduction >
+template< typename Array, typename Reduction >
 void
 inplaceInclusiveScan( Array& array,
                       typename Array::IndexType begin,
@@ -239,32 +232,31 @@ inplaceInclusiveScan( Array& array,
                       Reduction&& reduction,
                       typename Array::ValueType identity )
 {
-   TNL_ASSERT_EQ( reduction( identity, identity ), identity,
-                  "identity is not an identity element of the reduction operation" );
-   using Scan = detail::Scan< typename Array::DeviceType, detail::ScanType::Inclusive, detail::ScanPhaseType::WriteInSecondPhase >;
+   TNL_ASSERT_EQ( reduction( identity, identity ), identity, "identity is not an identity element of the reduction operation" );
+   using Scan =
+      detail::Scan< typename Array::DeviceType, detail::ScanType::Inclusive, detail::ScanPhaseType::WriteInSecondPhase >;
    Scan::perform( array, array, begin, end, begin, std::forward< Reduction >( reduction ), identity );
 }
 
 /**
  * \brief Overload of \ref inplaceInclusiveScan which uses a TNL functional
- *        object for reduction. \ref noa::TNL::Plus is used by default.
+ *        object for reduction. \ref TNL::Plus is used by default.
  *
  * The [identity element](https://en.wikipedia.org/wiki/Identity_element) is
  * taken as `reduction.template getIdentity< typename Array::ValueType >()`.
  * See \ref inplaceInclusiveScan for the explanation of other parameters.
  * Note that when `end` equals 0 (the default), it is set to `array.getSize()`.
  */
-template< typename Array,
-          typename Reduction = noa::TNL::Plus >
+template< typename Array, typename Reduction = TNL::Plus >
 void
 inplaceInclusiveScan( Array& array,
                       typename Array::IndexType begin = 0,
                       typename Array::IndexType end = 0,
-                      Reduction&& reduction = noa::TNL::Plus{} )
+                      Reduction&& reduction = TNL::Plus{} )
 {
    if( end == 0 )
       end = array.getSize();
-   constexpr typename Array::ValueType identity = Reduction::template getIdentity< typename Array::ValueType >();
+   constexpr auto identity = Reduction::template getIdentity< typename Array::ValueType >();
    inplaceInclusiveScan( array, begin, end, std::forward< Reduction >( reduction ), identity );
 }
 
@@ -304,8 +296,7 @@ inplaceInclusiveScan( Array& array,
  *
  * \include inplaceExclusiveScanExample.out
  */
-template< typename Array,
-          typename Reduction >
+template< typename Array, typename Reduction >
 void
 inplaceExclusiveScan( Array& array,
                       typename Array::IndexType begin,
@@ -313,34 +304,33 @@ inplaceExclusiveScan( Array& array,
                       Reduction&& reduction,
                       typename Array::ValueType identity )
 {
-   TNL_ASSERT_EQ( reduction( identity, identity ), identity,
-                  "identity is not an identity element of the reduction operation" );
-   using Scan = detail::Scan< typename Array::DeviceType, detail::ScanType::Exclusive, detail::ScanPhaseType::WriteInSecondPhase >;
+   TNL_ASSERT_EQ( reduction( identity, identity ), identity, "identity is not an identity element of the reduction operation" );
+   using Scan =
+      detail::Scan< typename Array::DeviceType, detail::ScanType::Exclusive, detail::ScanPhaseType::WriteInSecondPhase >;
    Scan::perform( array, array, begin, end, begin, std::forward< Reduction >( reduction ), identity );
 }
 
 /**
  * \brief Overload of \ref inplaceExclusiveScan which uses a TNL functional
- *        object for reduction. \ref noa::TNL::Plus is used by default.
+ *        object for reduction. \ref TNL::Plus is used by default.
  *
  * The [identity element](https://en.wikipedia.org/wiki/Identity_element) is
  * taken as `reduction.template getIdentity< typename Array::ValueType >()`.
  * See \ref inplaceExclusiveScan for the explanation of other parameters.
  * Note that when `end` equals 0 (the default), it is set to `array.getSize()`.
  */
-template< typename Array,
-          typename Reduction = noa::TNL::Plus >
+template< typename Array, typename Reduction = TNL::Plus >
 void
 inplaceExclusiveScan( Array& array,
                       typename Array::IndexType begin = 0,
                       typename Array::IndexType end = 0,
-                      Reduction&& reduction = noa::TNL::Plus{} )
+                      Reduction&& reduction = TNL::Plus{} )
 {
    if( end == 0 )
       end = array.getSize();
-   constexpr typename Array::ValueType identity = Reduction::template getIdentity< typename Array::ValueType >();
+   constexpr auto identity = Reduction::template getIdentity< typename Array::ValueType >();
    inplaceExclusiveScan( array, begin, end, std::forward< Reduction >( reduction ), identity );
 }
 
-} // namespace Algorithms
-} // namespace noa::TNL
+}  // namespace Algorithms
+}  // namespace noa::TNL

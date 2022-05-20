@@ -12,83 +12,54 @@
 namespace noa::TNL {
 namespace Problems {
 
-template< typename Mesh,
-          typename Real,
-          typename Device,
-          typename Index >
+template< typename Mesh, typename Real, typename Device, typename Index >
 String
-PDEProblem< Mesh, Real, Device, Index >::
-getPrologHeader() const
+PDEProblem< Mesh, Real, Device, Index >::getPrologHeader() const
 {
    return String( "General PDE Problem" );
 }
 
-template< typename Mesh,
-          typename Real,
-          typename Device,
-          typename Index >
+template< typename Mesh, typename Real, typename Device, typename Index >
 void
-PDEProblem< Mesh, Real, Device, Index >::
-writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
-{
-}
+PDEProblem< Mesh, Real, Device, Index >::writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
+{}
 
-template< typename Mesh,
-          typename Real,
-          typename Device,
-          typename Index >
+template< typename Mesh, typename Real, typename Device, typename Index >
 bool
-PDEProblem< Mesh, Real, Device, Index >::
-writeEpilog( Logger& logger ) const
+PDEProblem< Mesh, Real, Device, Index >::writeEpilog( Logger& logger ) const
 {
    return true;
 }
 
-template< typename Mesh,
-          typename Real,
-          typename Device,
-          typename Index >
+template< typename Mesh, typename Real, typename Device, typename Index >
 typename PDEProblem< Mesh, Real, Device, Index >::IndexType
-PDEProblem< Mesh, Real, Device, Index >::
-subdomainOverlapSize()
+PDEProblem< Mesh, Real, Device, Index >::subdomainOverlapSize()
 {
    return 1;
 }
 
-template< typename Mesh,
-          typename Real,
-          typename Device,
-          typename Index >
+template< typename Mesh, typename Real, typename Device, typename Index >
 void
-PDEProblem< Mesh, Real, Device, Index >::
-getSubdomainOverlaps( const Config::ParameterContainer& parameters,
-                      const String& prefix,
-                      const MeshType& mesh,
-                      SubdomainOverlapsType& lower,
-                      SubdomainOverlapsType& upper )
+PDEProblem< Mesh, Real, Device, Index >::getSubdomainOverlaps( const Config::ParameterContainer& parameters,
+                                                               const String& prefix,
+                                                               const MeshType& mesh,
+                                                               SubdomainOverlapsType& lower,
+                                                               SubdomainOverlapsType& upper )
 {
    using namespace Meshes::DistributedMeshes;
    SubdomainOverlapsGetter< MeshType >::getOverlaps( mesh.getDistributedMesh(), lower, upper, this->subdomainOverlapSize() );
 }
 
-template< typename Mesh,
-          typename Real,
-          typename Device,
-          typename Index >
+template< typename Mesh, typename Real, typename Device, typename Index >
 void
-PDEProblem< Mesh, Real, Device, Index >::
-setMesh( MeshPointer& meshPointer)
+PDEProblem< Mesh, Real, Device, Index >::setMesh( MeshPointer& meshPointer )
 {
    this->meshPointer = meshPointer;
 }
 
-template< typename Mesh,
-          typename Real,
-          typename Device,
-          typename Index >
+template< typename Mesh, typename Real, typename Device, typename Index >
 void
-PDEProblem< Mesh, Real, Device, Index >::
-setMesh( DistributedMeshPointer& distributedMeshPointer)
+PDEProblem< Mesh, Real, Device, Index >::setMesh( DistributedMeshPointer& distributedMeshPointer )
 {
    this->distributedMeshPointer = distributedMeshPointer;
    // FIXME: DistributedGrid does not have a SharedPointer of the local grid,
@@ -96,132 +67,88 @@ setMesh( DistributedMeshPointer& distributedMeshPointer)
    *meshPointer = distributedMeshPointer->getLocalMesh();
 }
 
-template< typename Mesh,
-          typename Real,
-          typename Device,
-          typename Index >
+template< typename Mesh, typename Real, typename Device, typename Index >
 const typename PDEProblem< Mesh, Real, Device, Index >::MeshPointer&
 PDEProblem< Mesh, Real, Device, Index >::getMesh() const
 {
    return this->meshPointer;
 }
 
-template< typename Mesh,
-          typename Real,
-          typename Device,
-          typename Index >
+template< typename Mesh, typename Real, typename Device, typename Index >
 typename PDEProblem< Mesh, Real, Device, Index >::MeshPointer&
 PDEProblem< Mesh, Real, Device, Index >::getMesh()
 {
    return this->meshPointer;
 }
 
-template< typename Mesh,
-          typename Real,
-          typename Device,
-          typename Index >
+template< typename Mesh, typename Real, typename Device, typename Index >
 const typename PDEProblem< Mesh, Real, Device, Index >::DistributedMeshPointer&
 PDEProblem< Mesh, Real, Device, Index >::getDistributedMesh() const
 {
    return this->distributedMeshPointer;
 }
 
-template< typename Mesh,
-          typename Real,
-          typename Device,
-          typename Index >
+template< typename Mesh, typename Real, typename Device, typename Index >
 typename PDEProblem< Mesh, Real, Device, Index >::DistributedMeshPointer&
 PDEProblem< Mesh, Real, Device, Index >::getDistributedMesh()
 {
    return this->distributedMeshPointer;
 }
 
-template< typename Mesh,
-          typename Real,
-          typename Device,
-          typename Index >
+template< typename Mesh, typename Real, typename Device, typename Index >
 void
-PDEProblem< Mesh, Real, Device, Index >::
-setCommonData( CommonDataPointer& commonData )
+PDEProblem< Mesh, Real, Device, Index >::setCommonData( CommonDataPointer& commonData )
 {
    this->commonDataPointer = commonData;
 }
 
-template< typename Mesh,
-          typename Real,
-          typename Device,
-          typename Index >
+template< typename Mesh, typename Real, typename Device, typename Index >
 const typename PDEProblem< Mesh, Real, Device, Index >::CommonDataPointer&
-PDEProblem< Mesh, Real, Device, Index >::
-getCommonData() const
+PDEProblem< Mesh, Real, Device, Index >::getCommonData() const
 {
    return this->commonDataPointer;
 }
 
-template< typename Mesh,
-          typename Real,
-          typename Device,
-          typename Index >
+template< typename Mesh, typename Real, typename Device, typename Index >
 typename PDEProblem< Mesh, Real, Device, Index >::CommonDataPointer&
-PDEProblem< Mesh, Real, Device, Index >::
-getCommonData()
+PDEProblem< Mesh, Real, Device, Index >::getCommonData()
 {
    return this->commonDataPointer;
 }
 
-template< typename Mesh,
-          typename Real,
-          typename Device,
-          typename Index >
+template< typename Mesh, typename Real, typename Device, typename Index >
 bool
-PDEProblem< Mesh, Real, Device, Index >::
-preIterate( const RealType& time,
-            const RealType& tau,
-            DofVectorPointer& dofs )
+PDEProblem< Mesh, Real, Device, Index >::preIterate( const RealType& time, const RealType& tau, DofVectorPointer& dofs )
 {
    return true;
 }
 
-template< typename Mesh,
-          typename Real,
-          typename Device,
-          typename Index >
-    template< typename Matrix >
+template< typename Mesh, typename Real, typename Device, typename Index >
+template< typename Matrix >
 void
-PDEProblem< Mesh, Real, Device, Index >::
-saveFailedLinearSystem( const Matrix& matrix,
-                        const DofVectorType& dofs,
-                        const DofVectorType& rhs ) const
+PDEProblem< Mesh, Real, Device, Index >::saveFailedLinearSystem( const Matrix& matrix,
+                                                                 const DofVectorType& dofs,
+                                                                 const DofVectorType& rhs ) const
 {
-    matrix.save( "failed-matrix.tnl" );
-    File( "failed-dof.vec.tnl", std::ios_base::out ) << dofs;
-    File( "failed-rhs.vec.tnl", std::ios_base::out ) << rhs;
-    std::cerr << "The linear system has been saved to failed-{matrix,dof.vec,rhs.vec}.tnl" << std::endl;
+   matrix.save( "failed-matrix.tnl" );
+   File( "failed-dof.vec.tnl", std::ios_base::out ) << dofs;
+   File( "failed-rhs.vec.tnl", std::ios_base::out ) << rhs;
+   std::cerr << "The linear system has been saved to failed-{matrix,dof.vec,rhs.vec}.tnl" << std::endl;
 }
 
-template< typename Mesh,
-          typename Real,
-          typename Device,
-          typename Index >
+template< typename Mesh, typename Real, typename Device, typename Index >
 bool
-PDEProblem< Mesh, Real, Device, Index >::
-postIterate( const RealType& time,
-             const RealType& tau,
-             DofVectorPointer& dofs )
+PDEProblem< Mesh, Real, Device, Index >::postIterate( const RealType& time, const RealType& tau, DofVectorPointer& dofs )
 {
    return true;
 }
 
-template< typename Mesh,
-          typename Real,
-          typename Device,
-          typename Index >
+template< typename Mesh, typename Real, typename Device, typename Index >
 Solvers::SolverMonitor*
-PDEProblem< Mesh, Real, Device, Index >::
-getSolverMonitor()
+PDEProblem< Mesh, Real, Device, Index >::getSolverMonitor()
 {
    return 0;
 }
 
-} // namespace Problems
-} // namespace noa::TNL
+}  // namespace Problems
+}  // namespace noa::TNL

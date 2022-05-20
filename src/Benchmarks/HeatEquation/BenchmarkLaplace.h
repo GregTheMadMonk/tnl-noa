@@ -25,12 +25,12 @@ class BenchmarkLaplace< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, In
                               Index >
 {
    public:
-      typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
-      typedef typename MeshType::CoordinatesType CoordinatesType;
-      typedef Real RealType;
-      typedef Device DeviceType;
-      typedef Index IndexType;
-      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
+      using MeshType = Meshes::Grid< 1, MeshReal, Device, MeshIndex >;
+      using CoordinatesType = typename MeshType::CoordinatesType;
+      using RealType = Real;
+      using DeviceType = Device;
+      using IndexType = Index;
+      using MeshFunctionType = Functions::MeshFunction< MeshType >;
       enum { Dimension = MeshType::getMeshDimension() };
 
       template< typename MeshFunction, typename MeshEntity >
@@ -71,12 +71,12 @@ class BenchmarkLaplace< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Ind
                               Index >
 {
    public:
-      typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
-      typedef typename MeshType::CoordinatesType CoordinatesType;
-      typedef Real RealType;
-      typedef Device DeviceType;
-      typedef Index IndexType;
-      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
+      using MeshType = Meshes::Grid< 2, MeshReal, Device, MeshIndex >;
+      using CoordinatesType = typename MeshType::CoordinatesType;
+      using RealType = Real;
+      using DeviceType = Device;
+      using IndexType = Index;
+      using MeshFunctionType = Functions::MeshFunction< MeshType >;
       enum { Dimension = MeshType::getMeshDimension() };
 
       template< typename MeshFunction, typename MeshEntity >
@@ -132,12 +132,12 @@ class BenchmarkLaplace< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Ind
                               Index >
 {
    public:
-      typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
-      typedef typename MeshType::CoordinatesType CoordinatesType;
-      typedef Real RealType;
-      typedef Device DeviceType;
-      typedef Index IndexType;
-      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
+      using MeshType = Meshes::Grid< 3, MeshReal, Device, MeshIndex >;
+      using CoordinatesType = typename MeshType::CoordinatesType;
+      using RealType = Real;
+      using DeviceType = Device;
+      using IndexType = Index;
+      using MeshFunctionType = Functions::MeshFunction< MeshType >;
       enum { Dimension = MeshType::getMeshDimension() };
 
       template< typename MeshFunction, typename MeshEntity >

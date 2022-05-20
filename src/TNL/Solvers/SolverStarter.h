@@ -17,28 +17,28 @@ namespace Solvers {
 template< typename ConfigTag >
 class SolverStarter
 {
-   public:
-
+public:
    SolverStarter();
 
    template< typename Problem >
-   static bool run( const Config::ParameterContainer& parameters );
+   static bool
+   run( const Config::ParameterContainer& parameters );
 
    template< typename Solver >
-   bool writeEpilog( std::ostream& str, const Solver& solver );
+   bool
+   writeEpilog( std::ostream& str, const Solver& solver );
 
    template< typename Problem, typename TimeStepper >
-   bool runPDESolver( Problem& problem,
-                      const Config::ParameterContainer& parameters );
+   bool
+   runPDESolver( Problem& problem, const Config::ParameterContainer& parameters );
 
-   protected:
-
+protected:
    int logWidth;
 
    Timer ioTimer, computeTimer, totalTimer;
 };
 
-} // namespace Solvers
-} // namespace noa::TNL
+}  // namespace Solvers
+}  // namespace noa::TNL
 
 #include <noa/3rdparty/tnl-noa/src/TNL/Solvers/SolverStarter.hpp>

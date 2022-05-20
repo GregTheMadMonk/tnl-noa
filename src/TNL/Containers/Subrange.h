@@ -35,7 +35,8 @@ public:
 
    // Sets the local subrange and global range size.
    __cuda_callable__
-   void setSubrange( Index begin, Index end )
+   void
+   setSubrange( Index begin, Index end )
    {
       TNL_ASSERT_LE( begin, end, "begin must be before end" );
       TNL_ASSERT_GE( begin, 0, "begin must be non-negative" );
@@ -44,7 +45,8 @@ public:
    }
 
    __cuda_callable__
-   void reset()
+   void
+   reset()
    {
       begin = 0;
       end = 0;
@@ -52,35 +54,40 @@ public:
 
    // Checks if a global index is in the set of local indices.
    __cuda_callable__
-   bool isLocal( Index i ) const
+   bool
+   isLocal( Index i ) const
    {
       return begin <= i && i < end;
    }
 
    // Gets the begin of the subrange.
    __cuda_callable__
-   Index getBegin() const
+   Index
+   getBegin() const
    {
       return begin;
    }
 
    // Gets the begin of the subrange.
    __cuda_callable__
-   Index getEnd() const
+   Index
+   getEnd() const
    {
       return end;
    }
 
    // Gets number of local indices.
    __cuda_callable__
-   Index getSize() const
+   Index
+   getSize() const
    {
       return end - begin;
    }
 
    // Gets local index for given global index.
    __cuda_callable__
-   Index getLocalIndex( Index i ) const
+   Index
+   getLocalIndex( Index i ) const
    {
       TNL_ASSERT_GE( i, getBegin(), "Given global index was not found in the local index set." );
       TNL_ASSERT_LT( i, getEnd(), "Given global index was not found in the local index set." );
@@ -89,7 +96,8 @@ public:
 
    // Gets global index for given local index.
    __cuda_callable__
-   Index getGlobalIndex( Index i ) const
+   Index
+   getGlobalIndex( Index i ) const
    {
       TNL_ASSERT_GE( i, 0, "Given local index was not found in the local index set." );
       TNL_ASSERT_LT( i, getSize(), "Given local index was not found in the local index set." );
@@ -97,16 +105,17 @@ public:
    }
 
    __cuda_callable__
-   bool operator==( const Subrange& other ) const
+   bool
+   operator==( const Subrange& other ) const
    {
-      return begin == other.begin &&
-             end == other.end;
+      return begin == other.begin && end == other.end;
    }
 
    __cuda_callable__
-   bool operator!=( const Subrange& other ) const
+   bool
+   operator!=( const Subrange& other ) const
    {
-      return ! (*this == other);
+      return ! ( *this == other );
    }
 
 protected:
@@ -114,12 +123,13 @@ protected:
    Index end = 0;
 };
 
-// due to formatting in noa::TNL::Assert
+// due to formatting in TNL::Assert
 template< typename Index >
-std::ostream& operator<<( std::ostream& str, const Subrange< Index >& range )
+std::ostream&
+operator<<( std::ostream& str, const Subrange< Index >& range )
 {
    return str << getType< Subrange< Index > >() << "( " << range.getBegin() << ", " << range.getEnd() << " )";
 }
 
-} // namespace Containers
-} // namespace noa::TNL
+}  // namespace Containers
+}  // namespace noa::TNL

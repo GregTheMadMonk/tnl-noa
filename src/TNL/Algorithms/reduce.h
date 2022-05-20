@@ -34,8 +34,8 @@ namespace Algorithms {
  * \tparam Fetch is a lambda function for fetching the input data.
  * \tparam Reduction is a lambda function performing the reduction.
  *
- * \e Device can be on of the following \ref noa::TNL::Devices::Sequential,
- * \ref noa::TNL::Devices::Host and \ref noa::TNL::Devices::Cuda.
+ * \e Device can be on of the following \ref TNL::Devices::Sequential,
+ * \ref TNL::Devices::Host and \ref TNL::Devices::Cuda.
  *
  * \param begin defines range [begin, end) of indexes which will be used for the reduction.
  * \param end defines range [begin, end) of indexes which will be used for the reduction.
@@ -66,22 +66,12 @@ namespace Algorithms {
  *
  * \include SumExampleWithLambda.out
  */
-template< typename Device,
-          typename Index,
-          typename Result,
-          typename Fetch,
-          typename Reduction >
-Result reduce( const Index begin,
-               const Index end,
-               Fetch&& fetch,
-               Reduction&& reduction,
-               const Result& identity )
+template< typename Device, typename Index, typename Result, typename Fetch, typename Reduction >
+Result
+reduce( Index begin, Index end, Fetch&& fetch, Reduction&& reduction, const Result& identity )
 {
-   return detail::Reduction< Device >::reduce( begin,
-                                               end,
-                                               std::forward< Fetch >( fetch ),
-                                               std::forward< Reduction >( reduction ),
-                                               identity );
+   return detail::Reduction< Device >::reduce(
+      begin, end, std::forward< Fetch >( fetch ), std::forward< Reduction >( reduction ), identity );
 }
 
 /**
@@ -92,12 +82,12 @@ Result reduce( const Index begin,
  * \tparam Fetch is a lambda function for fetching the input data.
  * \tparam Reduction is a functional performing the reduction.
  *
- * \e Device can be on of the following \ref noa::TNL::Devices::Sequential,
- * \ref noa::TNL::Devices::Host and \ref noa::TNL::Devices::Cuda.
+ * \e Device can be on of the following \ref TNL::Devices::Sequential,
+ * \ref TNL::Devices::Host and \ref TNL::Devices::Cuda.
  *
- * \e Reduction can be one of the following \ref noa::TNL::Plus, \ref noa::TNL::Multiplies,
- * \ref noa::TNL::Min, \ref noa::TNL::Max, \ref noa::TNL::LogicalAnd, \ref noa::TNL::LogicalOr,
- * \ref noa::TNL::BitAnd or \ref noa::TNL::BitOr. \ref noa::TNL::Plus is used by default.
+ * \e Reduction can be one of the following \ref TNL::Plus, \ref TNL::Multiplies,
+ * \ref TNL::Min, \ref TNL::Max, \ref TNL::LogicalAnd, \ref TNL::LogicalOr,
+ * \ref TNL::BitAnd or \ref TNL::BitOr. \ref TNL::Plus is used by default.
  *
  * \param begin defines range [begin, end) of indexes which will be used for the reduction.
  * \param end defines range [begin, end) of indexes which will be used for the reduction.
@@ -119,16 +109,11 @@ Result reduce( const Index begin,
  *
  * \include SumExampleWithFunctional.out
  */
-template< typename Device,
-          typename Index,
-          typename Fetch,
-          typename Reduction = noa::TNL::Plus >
-auto reduce( const Index begin,
-             const Index end,
-             Fetch&& fetch,
-             Reduction&& reduction = noa::TNL::Plus{} )
+template< typename Device, typename Index, typename Fetch, typename Reduction = TNL::Plus >
+auto
+reduce( Index begin, Index end, Fetch&& fetch, Reduction&& reduction = TNL::Plus{} )
 {
-   using Result = Containers::Expressions::RemoveET< decltype( reduction( fetch(0), fetch(0) ) ) >;
+   using Result = Containers::Expressions::RemoveET< decltype( reduction( fetch( 0 ), fetch( 0 ) ) ) >;
    return reduce< Device >( begin,
                             end,
                             std::forward< Fetch >( fetch ),
@@ -156,27 +141,20 @@ auto reduce( const Index begin,
  *
  * \include reduceArrayExample.out
  */
-template< typename Array,
-          typename Device = typename Array::DeviceType,
-          typename Reduction,
-          typename Result >
-auto reduce( const Array& array,
-             Reduction&& reduction,
-             Result identity )
+template< typename Array, typename Device = typename Array::DeviceType, typename Reduction, typename Result >
+auto
+reduce( const Array& array, Reduction&& reduction, Result identity )
 {
-   return reduce< Device >( (typename Array::IndexType) 0,
-                            array.getSize(),
-                            array.getConstView(),
-                            std::forward< Reduction >( reduction ),
-                            identity );
+   return reduce< Device >(
+      (typename Array::IndexType) 0, array.getSize(), array.getConstView(), std::forward< Reduction >( reduction ), identity );
 }
 
 /**
  * \brief Variant of \ref reduce for arrays, views and compatible objects.
  *
- * \e Reduction can be one of the following \ref noa::TNL::Plus, \ref noa::TNL::Multiplies,
- * \ref noa::TNL::Min, \ref noa::TNL::Max, \ref noa::TNL::LogicalAnd, \ref noa::TNL::LogicalOr,
- * \ref noa::TNL::BitAnd or \ref noa::TNL::BitOr. \ref noa::TNL::Plus is used by default.
+ * \e Reduction can be one of the following \ref TNL::Plus, \ref TNL::Multiplies,
+ * \ref TNL::Min, \ref TNL::Max, \ref TNL::LogicalAnd, \ref TNL::LogicalOr,
+ * \ref TNL::BitAnd or \ref TNL::BitOr. \ref TNL::Plus is used by default.
  *
  * The referenced \ref reduce function is called with:
  *
@@ -195,16 +173,12 @@ auto reduce( const Array& array,
  *
  * \include reduceArrayExample.out
  */
-template< typename Array,
-          typename Device = typename Array::DeviceType,
-          typename Reduction = noa::TNL::Plus >
-auto reduce( const Array& array,
-             Reduction&& reduction = noa::TNL::Plus{} )
+template< typename Array, typename Device = typename Array::DeviceType, typename Reduction = TNL::Plus >
+auto
+reduce( const Array& array, Reduction&& reduction = TNL::Plus{} )
 {
-   using Result = Containers::Expressions::RemoveET< decltype( reduction( array(0), array(0) ) ) >;
-   return reduce< Array, Device >( array,
-                                   std::forward< Reduction >( reduction ),
-                                   reduction.template getIdentity< Result >() );
+   using Result = Containers::Expressions::RemoveET< decltype( reduction( array( 0 ), array( 0 ) ) ) >;
+   return reduce< Array, Device >( array, std::forward< Reduction >( reduction ), reduction.template getIdentity< Result >() );
 }
 
 /**
@@ -220,8 +194,8 @@ auto reduce( const Array& array,
  * \tparam Reduction is a lambda function performing the reduction.
  * \tparam Fetch is a lambda function for fetching the input data.
  *
- * \e Device can be on of the following \ref noa::TNL::Devices::Sequential,
- * \ref noa::TNL::Devices::Host and \ref noa::TNL::Devices::Cuda.
+ * \e Device can be on of the following \ref TNL::Devices::Sequential,
+ * \ref TNL::Devices::Host and \ref TNL::Devices::Cuda.
  *
  * \param begin defines range [begin, end) of indexes which will be used for the reduction.
  * \param end defines range [begin, end) of indexes which will be used for the reduction.
@@ -253,23 +227,12 @@ auto reduce( const Array& array,
  *
  * \include ReductionWithArgument.out
  */
-template< typename Device,
-          typename Index,
-          typename Result,
-          typename Fetch,
-          typename Reduction >
+template< typename Device, typename Index, typename Result, typename Fetch, typename Reduction >
 std::pair< Result, Index >
-reduceWithArgument( const Index begin,
-                    const Index end,
-                    Fetch&& fetch,
-                    Reduction&& reduction,
-                    const Result& identity )
+reduceWithArgument( Index begin, Index end, Fetch&& fetch, Reduction&& reduction, const Result& identity )
 {
-   return detail::Reduction< Device >::reduceWithArgument( begin,
-                                                           end,
-                                                           std::forward< Fetch >( fetch ),
-                                                           std::forward< Reduction >( reduction ),
-                                                           identity );
+   return detail::Reduction< Device >::reduceWithArgument(
+      begin, end, std::forward< Fetch >( fetch ), std::forward< Reduction >( reduction ), identity );
 }
 
 /**
@@ -281,10 +244,10 @@ reduceWithArgument( const Index begin,
  * \tparam Reduction is a functional performing the reduction.
  * \tparam Fetch is a lambda function for fetching the input data.
  *
- * \e Device can be on of the following \ref noa::TNL::Devices::Sequential,
- * \ref noa::TNL::Devices::Host and \ref noa::TNL::Devices::Cuda.
+ * \e Device can be on of the following \ref TNL::Devices::Sequential,
+ * \ref TNL::Devices::Host and \ref TNL::Devices::Cuda.
  *
- * \e Reduction can be one of \ref noa::TNL::MinWithArg, \ref noa::TNL::MaxWithArg.
+ * \e Reduction can be one of \ref TNL::MinWithArg, \ref TNL::MaxWithArg.
  *
  * \param begin defines range [begin, end) of indexes which will be used for the reduction.
  * \param end defines range [begin, end) of indexes which will be used for the reduction.
@@ -316,17 +279,11 @@ reduceWithArgument( const Index begin,
  *
  * \include ReductionWithArgumentWithFunctional.out
  */
-template< typename Device,
-          typename Index,
-          typename Fetch,
-          typename Reduction >
+template< typename Device, typename Index, typename Fetch, typename Reduction >
 auto
-reduceWithArgument( const Index begin,
-                    const Index end,
-                    Fetch&& fetch,
-                    Reduction&& reduction )
+reduceWithArgument( Index begin, Index end, Fetch&& fetch, Reduction&& reduction )
 {
-   using Result = Containers::Expressions::RemoveET< decltype( fetch(0) ) >;
+   using Result = Containers::Expressions::RemoveET< decltype( fetch( 0 ) ) >;
    return reduceWithArgument< Device >( begin,
                                         end,
                                         std::forward< Fetch >( fetch ),
@@ -354,25 +311,18 @@ reduceWithArgument( const Index begin,
  *
  * \include reduceWithArgumentArrayExample.out
  */
-template< typename Array,
-          typename Device = typename Array::DeviceType,
-          typename Reduction,
-          typename Result >
-auto reduceWithArgument( const Array& array,
-                         Reduction&& reduction,
-                         Result identity )
+template< typename Array, typename Device = typename Array::DeviceType, typename Reduction, typename Result >
+auto
+reduceWithArgument( const Array& array, Reduction&& reduction, Result identity )
 {
-   return reduceWithArgument< Device >( (typename Array::IndexType) 0,
-                                        array.getSize(),
-                                        array.getConstView(),
-                                        std::forward< Reduction >( reduction ),
-                                        identity );
+   return reduceWithArgument< Device >(
+      (typename Array::IndexType) 0, array.getSize(), array.getConstView(), std::forward< Reduction >( reduction ), identity );
 }
 
 /**
  * \brief Variant of \ref reduceWithArgument for arrays, views and compatible objects.
  *
- * \e Reduction can be one of \ref noa::TNL::MinWithArg, \ref noa::TNL::MaxWithArg.
+ * \e Reduction can be one of \ref TNL::MinWithArg, \ref TNL::MaxWithArg.
  *
  * The referenced \ref reduceWithArgument function is called with:
  *
@@ -391,17 +341,14 @@ auto reduceWithArgument( const Array& array,
  *
  * \include reduceWithArgumentArrayExample.out
  */
-template< typename Array,
-          typename Device = typename Array::DeviceType,
-          typename Reduction >
-auto reduceWithArgument( const Array& array,
-                         Reduction&& reduction )
+template< typename Array, typename Device = typename Array::DeviceType, typename Reduction >
+auto
+reduceWithArgument( const Array& array, Reduction&& reduction )
 {
-   using Result = Containers::Expressions::RemoveET< decltype( array(0) ) >;
-   return reduceWithArgument< Array, Device >( array,
-                                               std::forward< Reduction >( reduction ),
-                                               reduction.template getIdentity< Result >() );
+   using Result = Containers::Expressions::RemoveET< decltype( array( 0 ) ) >;
+   return reduceWithArgument< Array, Device >(
+      array, std::forward< Reduction >( reduction ), reduction.template getIdentity< Result >() );
 }
 
-} // namespace Algorithms
-} // namespace noa::TNL
+}  // namespace Algorithms
+}  // namespace noa::TNL

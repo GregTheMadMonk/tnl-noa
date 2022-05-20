@@ -11,8 +11,8 @@
 #include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/LinearSolver.h>
 
 namespace noa::TNL {
-   namespace Solvers {
-      namespace Linear {
+namespace Solvers {
+namespace Linear {
 
 /**
  * \brief Iterative solver of linear systems based on the Generalized minimal residual (GMRES) method.
@@ -33,208 +33,212 @@ namespace noa::TNL {
  *
  * See [Wikipedia](https://en.wikipedia.org/wiki/Generalized_minimal_residual_method) for more details.
  *
- * See \ref noa::TNL::Solvers::Linear::IterativeSolver for example of showing how to use the linear solvers.
+ * See \ref TNL::Solvers::Linear::IterativeSolver for example of showing how to use the linear solvers.
  *
- * See \ref noa::TNL::Solvers::Linear::IterativeSolver for example of showing how to use the linear solvers.
+ * See \ref TNL::Solvers::Linear::IterativeSolver for example of showing how to use the linear solvers.
  *
  * \tparam Matrix is type of matrix describing the linear system.
  */
 template< typename Matrix >
-class GMRES
-: public LinearSolver< Matrix >
+class GMRES : public LinearSolver< Matrix >
 {
    using Base = LinearSolver< Matrix >;
    using Traits = Linear::Traits< Matrix >;
 
-   public:
+public:
+   /**
+    * \brief Floating point type used for computations.
+    */
+   using RealType = typename Base::RealType;
 
-      /**
-       * \brief Floating point type used for computations.
-       */
-      using RealType = typename Base::RealType;
+   /**
+    * \brief Device where the solver will run on and auxillary data will alloacted on.
+    */
+   using DeviceType = typename Base::DeviceType;
 
-      /**
-       * \brief Device where the solver will run on and auxillary data will alloacted on.
-       */
-      using DeviceType = typename Base::DeviceType;
+   /**
+    * \brief Type for indexing.
+    */
+   using IndexType = typename Base::IndexType;
 
-      /**
-       * \brief Type for indexing.
-       */
-      using IndexType = typename Base::IndexType;
+   /**
+    * \brief Type for vector view.
+    */
+   using VectorViewType = typename Base::VectorViewType;
 
-      /**
-       * \brief Type for vector view.
-       */
-      using VectorViewType = typename Base::VectorViewType;
+   /**
+    * \brief Type for constant vector view.
+    */
+   using ConstVectorViewType = typename Base::ConstVectorViewType;
 
-      /**
-       * \brief Type for constant vector view.
-       */
-      using ConstVectorViewType = typename Base::ConstVectorViewType;
+   /**
+    * \brief This is method defines configuration entries for setup of the linear iterative solver.
+    *
+    * In addition to config entries defined by \ref IterativeSolver::configSetup, this method
+    * defines the following:
+    *
+    * \e gmres-variant - Algorithm used for the orthogonalization - CGS (Classical Gramm-Schmidt),
+    *     CGSR(Classical Gramm-Schmidt with reorthogonalization), MGS(Modified Gramm-Schmidt),
+    *     MGSR(Modified Gramm-Schmidt with reorthogonalization), CWY(Compact WY form of the Householder reflections).
+    *
+    * \e gmres-restarting-min - minimal number of iterations after which the GMRES restarts.
+    *
+    * \e gmres-restarting-max - maximal number of iterations after which the GMRES restarts.
+    *
+    * \e gmres-restarting-step-min - minimal adjusting step for the adaptivity of the GMRES restarting parameter.
+    *
+    * \e gmres-restarting-step-max - maximal adjusting step for the adaptivity of the GMRES restarting parameter.
+    *
+    * \param config contains description of configuration parameters.
+    * \param prefix is a prefix of particular configuration entries.
+    */
+   static void
+   configSetup( Config::ConfigDescription& config, const String& prefix = "" );
 
-      /**
-       * \brief This is method defines configuration entries for setup of the linear iterative solver.
-       *
-       * In addition to config entries defined by \ref IterativeSolver::configSetup, this method
-       * defines the following:
-       *
-       * \e gmres-variant - Algorithm used for the orthogonalization - CGS (Classical Gramm-Schmidt),
-       *     CGSR(Classical Gramm-Schmidt with reorthogonalization), MGS(Modified Gramm-Schmidt),
-       *     MGSR(Modified Gramm-Schmidt with reorthogonalization), CWY(Compact WY form of the Householder reflections).
-       *
-       * \e gmres-restarting-min - minimal number of iterations after which the GMRES restarts.
-       *
-       * \e gmres-restarting-max - maximal number of iterations after which the GMRES restarts.
-       *
-       * \e gmres-restarting-step-min - minimal adjusting step for the adaptivity of the GMRES restarting parameter.
-       *
-       * \e gmres-restarting-step-max - maximal adjusting step for the adaptivity of the GMRES restarting parameter.
-       *
-       * \param config contains description of configuration parameters.
-       * \param prefix is a prefix of particular configuration entries.
-       */
-      static void configSetup( Config::ConfigDescription& config,
-                              const String& prefix = "" );
+   /**
+    * \brief Method for setup of the linear iterative solver based on configuration parameters.
+    *
+    * \param parameters contains values of the define configuration entries.
+    * \param prefix is a prefix of particular configuration entries.
+    */
+   bool
+   setup( const Config::ParameterContainer& parameters, const String& prefix = "" ) override;
 
-      /**
-       * \brief Method for setup of the linear iterative solver based on configuration parameters.
-       *
-       * \param parameters contains values of the define configuration entries.
-       * \param prefix is a prefix of particular configuration entries.
-       */
-      bool setup( const Config::ParameterContainer& parameters,
-                  const String& prefix = "" ) override;
+   /**
+    * \brief Method for solving of a linear system.
+    *
+    * See \ref LinearSolver::solve for more details.
+    *
+    * \param b vector with the right-hand side of the linear system.
+    * \param x vector for the solution of the linear system.
+    * \return true if the solver converged.
+    * \return false if the solver did not converge.
+    */
+   bool
+   solve( ConstVectorViewType b, VectorViewType x ) override;
 
-      /**
-       * \brief Method for solving of a linear system.
-       *
-       * See \ref LinearSolver::solve for more details.
-       *
-       * \param b vector with the right-hand side of the linear system.
-       * \param x vector for the solution of the linear system.
-       * \return true if the solver converged.
-       * \return false if the solver did not converge.
-       */
-      bool solve( ConstVectorViewType b, VectorViewType x ) override;
+protected:
+   using VectorType = typename Traits::VectorType;
+   // local vectors/views
+   using ConstDeviceView = typename Traits::ConstLocalViewType;
+   using DeviceView = typename Traits::LocalViewType;
+   using DeviceVector = typename Traits::LocalVectorType;
+   using HostView = typename DeviceView::template Self< RealType, Devices::Host >;
+   using HostVector = typename DeviceVector::template Self< RealType, Devices::Host >;
+   ;
 
-   protected:
-      using VectorType = typename Traits::VectorType;
-      // local vectors/views
-      using ConstDeviceView = typename Traits::ConstLocalViewType;
-      using DeviceView = typename Traits::LocalViewType;
-      using DeviceVector = typename Traits::LocalVectorType;
-      using HostView = typename DeviceView::template Self< RealType, Devices::Host >;
-      using HostVector = typename DeviceVector::template Self< RealType, Devices::Host >;;
+   enum class Variant
+   {
+      CGS,
+      CGSR,
+      MGS,
+      MGSR,
+      CWY
+   };
 
-      enum class Variant { CGS, CGSR, MGS, MGSR, CWY };
+// nvcc allows __cuda_callable__ lambdas only in public methods
+#ifdef __NVCC__
+public:
+#endif
+   int
+   orthogonalize_CGS( int m, RealType normb, RealType beta );
+#ifdef __NVCC__
+protected:
+#endif
 
-   // nvcc allows __cuda_callable__ lambdas only in public methods
-   #ifdef __NVCC__
-   public:
-   #endif
-      int orthogonalize_CGS( const int m, const RealType normb, const RealType beta );
-   #ifdef __NVCC__
-   protected:
-   #endif
+   int
+   orthogonalize_MGS( int m, RealType normb, RealType beta );
 
-      int orthogonalize_MGS( const int m, const RealType normb, const RealType beta );
+   int
+   orthogonalize_CWY( int m, RealType normb, RealType beta );
 
-      int orthogonalize_CWY( const int m, const RealType normb, const RealType beta );
+   void
+   compute_residue( VectorViewType r, ConstVectorViewType x, ConstVectorViewType b );
 
-      void compute_residue( VectorViewType r, ConstVectorViewType x, ConstVectorViewType b );
+   void
+   preconditioned_matvec( VectorViewType w, ConstVectorViewType v );
 
-      void preconditioned_matvec( VectorViewType w, ConstVectorViewType v );
+// nvcc allows __cuda_callable__ lambdas only in public methods
+#ifdef __NVCC__
+public:
+#endif
+   void
+   hauseholder_generate( int i, VectorViewType y_i, ConstVectorViewType z );
+#ifdef __NVCC__
+protected:
+#endif
 
-   // nvcc allows __cuda_callable__ lambdas only in public methods
-   #ifdef __NVCC__
-   public:
-   #endif
-      void hauseholder_generate( const int i,
-                                 VectorViewType y_i,
-                                 ConstVectorViewType z );
-   #ifdef __NVCC__
-   protected:
-   #endif
+   void
+   hauseholder_apply_trunc( HostView out, int i, VectorViewType y_i, ConstVectorViewType z );
 
-      void hauseholder_apply_trunc( HostView out,
-                                    const int i,
-                                    VectorViewType y_i,
-                                    ConstVectorViewType z );
+   void
+   hauseholder_cwy( VectorViewType v, int i );
 
-      void hauseholder_cwy( VectorViewType v,
-                           const int i );
+// nvcc allows __cuda_callable__ lambdas only in public methods
+#ifdef __NVCC__
+public:
+#endif
+   void
+   hauseholder_cwy_transposed( VectorViewType z, int i, ConstVectorViewType w );
+#ifdef __NVCC__
+protected:
+#endif
 
-   // nvcc allows __cuda_callable__ lambdas only in public methods
-   #ifdef __NVCC__
-   public:
-   #endif
-      void hauseholder_cwy_transposed( VectorViewType z,
-                                       const int i,
-                                       ConstVectorViewType w );
-   #ifdef __NVCC__
-   protected:
-   #endif
+   template< typename Vector >
+   void
+   update( int k, int m, const HostVector& H, const HostVector& s, DeviceVector& V, Vector& x );
 
-      template< typename Vector >
-      void update( const int k,
-                  const int m,
-                  const HostVector& H,
-                  const HostVector& s,
-                  DeviceVector& V,
-                  Vector& x );
+   void
+   generatePlaneRotation( RealType& dx, RealType& dy, RealType& cs, RealType& sn );
 
-      void generatePlaneRotation( RealType& dx,
-                                 RealType& dy,
-                                 RealType& cs,
-                                 RealType& sn );
+   void
+   applyPlaneRotation( RealType& dx, RealType& dy, RealType& cs, RealType& sn );
 
-      void applyPlaneRotation( RealType& dx,
-                              RealType& dy,
-                              RealType& cs,
-                              RealType& sn );
+   void
+   apply_givens_rotations( int i, int m );
 
-      void apply_givens_rotations( const int i, const int m );
+   void
+   setSize( const VectorViewType& x );
 
-      void setSize( const VectorViewType& x );
+   // Specialized methods to distinguish between normal and distributed matrices
+   // in the implementation.
+   template< typename M >
+   static IndexType
+   getLocalOffset( const M& m )
+   {
+      return 0;
+   }
 
-      // Specialized methods to distinguish between normal and distributed matrices
-      // in the implementation.
-      template< typename M >
-      static IndexType getLocalOffset( const M& m )
-      {
-         return 0;
-      }
+   template< typename M >
+   static IndexType
+   getLocalOffset( const Matrices::DistributedMatrix< M >& m )
+   {
+      return m.getLocalRowRange().getBegin();
+   }
 
-      template< typename M >
-      static IndexType getLocalOffset( const Matrices::DistributedMatrix< M >& m )
-      {
-         return m.getLocalRowRange().getBegin();
-      }
+   // selected GMRES variant
+   Variant variant = Variant::CWY;
 
-      // selected GMRES variant
-      Variant variant = Variant::CWY;
+   // single vectors (distributed)
+   VectorType r, w, z, _M_tmp;
+   // matrices (in column-major format) (local)
+   DeviceVector V, Y;
+   // (CWY only) duplicate of the upper (m+1)x(m+1) submatrix of Y (it is lower triangular) for fast access
+   HostVector YL, T;
+   // host-only storage for Givens rotations and the least squares problem
+   HostVector cs, sn, H, s;
 
-      // single vectors (distributed)
-      VectorType r, w, z, _M_tmp;
-      // matrices (in column-major format) (local)
-      DeviceVector V, Y;
-      // (CWY only) duplicate of the upper (m+1)x(m+1) submatrix of Y (it is lower triangular) for fast access
-      HostVector YL, T;
-      // host-only storage for Givens rotations and the least squares problem
-      HostVector cs, sn, H, s;
-
-      IndexType size = 0;
-      IndexType ldSize = 0;
-      IndexType localOffset = 0;
-      int restarting_min = 10;
-      int restarting_max = 10;
-      int restarting_step_min = 3;
-      int restarting_step_max = 3;
+   IndexType size = 0;
+   IndexType ldSize = 0;
+   IndexType localOffset = 0;
+   int restarting_min = 10;
+   int restarting_max = 10;
+   int restarting_step_min = 3;
+   int restarting_step_max = 3;
 };
 
-      } // namespace Linear
-   } // namespace Solvers
-} // namespace noa::TNL
+}  // namespace Linear
+}  // namespace Solvers
+}  // namespace noa::TNL
 
 #include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/GMRES.hpp>

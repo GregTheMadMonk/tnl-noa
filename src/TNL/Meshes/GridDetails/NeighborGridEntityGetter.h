@@ -15,29 +15,26 @@ namespace Meshes {
 
 template< typename GridEntity,
           int NeighborEntityDimension,
-          typename EntityStencilTag =
-            GridEntityStencilStorageTag< GridEntity::ConfigType::template neighborEntityStorage< GridEntity >( NeighborEntityDimension ) > >
+          typename EntityStencilTag = GridEntityStencilStorageTag<
+             GridEntity::ConfigType::template neighborEntityStorage< GridEntity >( NeighborEntityDimension ) > >
 class NeighborGridEntityGetter
 {
-   public:
+public:
+   // TODO: not all specializations are implemented yet
 
-      // TODO: not all specializations are implemented yet
- 
-      __cuda_callable__
-      NeighborGridEntityGetter( const GridEntity& entity )
-      {
-         //TNL_ASSERT( false, );
-      }
- 
-      __cuda_callable__
-      void refresh( const typename GridEntity::GridType& grid,
-                    const typename GridEntity::IndexType& entityIndex )
-      {
-         //TNL_ASSERT( false, );
-      }
+   __cuda_callable__
+   NeighborGridEntityGetter( const GridEntity& entity )
+   {
+      // TNL_ASSERT( false, );
+   }
 
+   __cuda_callable__
+   void
+   refresh( const typename GridEntity::GridType& grid, const typename GridEntity::IndexType& entityIndex )
+   {
+      // TNL_ASSERT( false, );
+   }
 };
 
-} // namespace Meshes
-} // namespace noa::TNL
-
+}  // namespace Meshes
+}  // namespace noa::TNL

@@ -11,15 +11,16 @@
 #include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
 #include <noa/3rdparty/tnl-noa/src/TNL/String.h>
 #include <noa/3rdparty/tnl-noa/src/TNL/TypeInfo.h>
-#include <noa/3rdparty/tnl-noa/src/TNL/Images//Image.h>
-#include <noa/3rdparty/tnl-noa/src/TNL/Images//DicomHeader.h>
-#include <noa/3rdparty/tnl-noa/src/TNL/Images//RegionOfInterest.h>
 #include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
 
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/DicomHeader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/Image.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/RegionOfInterest.h>
+
 #ifdef HAVE_DCMTK_H
-#define USING_STD_NAMESPACE
-#include <dcmtk/config/osconfig.h>
-#include <dcmtk/dcmimgle/dcmimage.h>
+   #define USING_STD_NAMESPACE
+   #include <dcmtk/config/osconfig.h>
+   #include <dcmtk/dcmimgle/dcmimage.h>
 #endif
 
 #include <dirent.h>
@@ -30,15 +31,14 @@ namespace Images {
 
 struct WindowCenterWidth
 {
-    float center;
-    float width;
+   float center;
+   float width;
 };
 
 struct ImagesInfo
 {
-    int imagesCount, frameUintsCount, bps, colorsCount, mainFrameIndex,
-        frameSize, maxColorValue, minColorValue;
-    WindowCenterWidth window;
+   int imagesCount, frameUintsCount, bps, colorsCount, mainFrameIndex, frameSize, maxColorValue, minColorValue;
+   WindowCenterWidth window;
 };
 
 /***
@@ -48,70 +48,75 @@ struct ImagesInfo
  */
 class DicomSeries : public Image< int >
 {
-   public:
-      
-      typedef int IndexType;
- 
-      inline DicomSeries( const String& filePath );
- 
-      inline virtual ~DicomSeries();
+public:
+   using IndexType = int;
 
-      inline int getImagesCount();
- 
-      template< typename Real,
-                typename Device,
-                typename Index,
-                typename Vector >
-      bool getImage( const int imageIdx,
-                     const Meshes::Grid< 2, Real, Device, Index >& grid,
-                     const RegionOfInterest< int > roi,
-                     Vector& vector );
- 
+   inline DicomSeries( const String& filePath );
+
+   inline virtual ~DicomSeries();
+
+   inline int
+   getImagesCount();
+
+   template< typename Real, typename Device, typename Index, typename Vector >
+   bool
+   getImage( int imageIdx, const Meshes::Grid< 2, Real, Device, Index >& grid, RegionOfInterest< int > roi, Vector& vector );
+
 #ifdef HAVE_DCMTK_H
-      inline const Uint16 *getData( int imageNumber = 0 );
+   inline const Uint16*
+   getData( int imageNumber = 0 );
 #endif
- 
-      inline int getColorCount();
- 
-      inline int getBitsPerSampleCount();
- 
-      inline int getMinColorValue();
- 
-      inline WindowCenterWidth getWindowDefaults();
- 
-      inline int getMaxColorValue();
- 
-      inline void freeData();
- 
-      inline DicomHeader &getHeader(int image);
- 
-      inline bool isDicomSeriesLoaded();
 
-   private:
- 
-      bool loadDicomSeries( const String& filePath );
- 
-      bool retrieveFileList( const String& filePath );
- 
-      bool loadImage( const String& filePath, int number );
+   inline int
+   getColorCount();
 
-      std::list< String > fileList;
- 
-      Containers::Array<DicomHeader *,Devices::Host,int> dicomSeriesHeaders;
+   inline int
+   getBitsPerSampleCount();
 
-      bool isLoaded;
- 
+   inline int
+   getMinColorValue();
+
+   inline WindowCenterWidth
+   getWindowDefaults();
+
+   inline int
+   getMaxColorValue();
+
+   inline void
+   freeData();
+
+   inline DicomHeader&
+   getHeader( int image );
+
+   inline bool
+   isDicomSeriesLoaded();
+
+private:
+   bool
+   loadDicomSeries( const String& filePath );
+
+   bool
+   retrieveFileList( const String& filePath );
+
+   bool
+   loadImage( const String& filePath, int number );
+
+   std::list< String > fileList;
+
+   Containers::Array< DicomHeader*, Devices::Host, int > dicomSeriesHeaders;
+
+   bool isLoaded;
+
 #ifdef HAVE_DCMTK_H
-      DicomImage *dicomImage;
- 
-      Uint16 *pixelData;
+   DicomImage* dicomImage;
+
+   Uint16* pixelData;
 #endif
- 
-      ImagesInfo imagesInfo;
+
+   ImagesInfo imagesInfo;
 };
 
-} // namespace Images
-} // namespace noa::TNL
+}  // namespace Images
+}  // namespace noa::TNL
 
-#include <noa/3rdparty/tnl-noa/src/TNL/Images//DicomSeries_impl.h>
-
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/DicomSeries_impl.h>

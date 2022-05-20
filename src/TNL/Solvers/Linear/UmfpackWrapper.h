@@ -10,10 +10,10 @@
 
 #ifdef HAVE_UMFPACK
 
-#include <umfpack.h>
+   #include <umfpack.h>
 
-#include "LinearSolver.h"
-#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/CSR.h>
+   #include "LinearSolver.h"
+   #include <noa/3rdparty/tnl-noa/src/TNL/Matrices/CSR.h>
 
 namespace noa::TNL {
 namespace Solvers {
@@ -22,21 +22,20 @@ namespace Linear {
 template< typename Matrix >
 struct is_csr_matrix
 {
-    static constexpr bool value = false;
+   static constexpr bool value = false;
 };
 
 template< typename Real, typename Device, typename Index >
 struct is_csr_matrix< Matrices::CSR< Real, Device, Index > >
 {
-    static constexpr bool value = true;
+   static constexpr bool value = true;
 };
 
-
 template< typename Matrix >
-class UmfpackWrapper
-: public LinearSolver< Matrix >
+class UmfpackWrapper : public LinearSolver< Matrix >
 {
    using Base = LinearSolver< Matrix >;
+
 public:
    using RealType = typename Base::RealType;
    using DeviceType = typename Base::DeviceType;
@@ -56,18 +55,19 @@ public:
          std::cerr << "The UmfpackWrapper solver is available only for 'int' index type." << std::endl;
    }
 
-   bool solve( ConstVectorViewType b, VectorViewType x ) override
+   bool
+   solve( ConstVectorViewType b, VectorViewType x ) override
    {
-       return false;
+      return false;
    }
 };
-
 
 template<>
 class UmfpackWrapper< Matrices::CSR< double, Devices::Host, int > >
 : public LinearSolver< Matrices::CSR< double, Devices::Host, int > >
 {
    using Base = LinearSolver< Matrices::CSR< double, Devices::Host, int > >;
+
 public:
    using RealType = typename Base::RealType;
    using DeviceType = typename Base::DeviceType;
@@ -75,13 +75,14 @@ public:
    using VectorViewType = typename Base::VectorViewType;
    using ConstVectorViewType = typename Base::ConstVectorViewType;
 
-   bool solve( ConstVectorViewType b, VectorViewType x ) override;
+   bool
+   solve( ConstVectorViewType b, VectorViewType x ) override;
 };
 
-} // namespace Linear
-} // namespace Solvers
-} // namespace noa::TNL
+}  // namespace Linear
+}  // namespace Solvers
+}  // namespace noa::TNL
 
-#include "UmfpackWrapper.hpp"
+   #include "UmfpackWrapper.hpp"
 
 #endif

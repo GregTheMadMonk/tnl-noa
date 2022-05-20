@@ -32,8 +32,12 @@ benchmarkTriad( Benchmark<> & benchmark,
       using HostArray = Containers::Array< Real, Devices::Host, Index, HostAllocator >;
       using CudaArray = Containers::Array< Real, Devices::Cuda, Index, CudaAllocator >;
 
-      HostArray a_h, b_h, c_h;
-      CudaArray a_d, b_d, c_d;
+      HostArray a_h;
+      HostArray b_h;
+      HostArray c_h;
+      CudaArray a_d;
+      CudaArray b_d;
+      CudaArray c_d;
       a_h.setSize( size );
       b_h.setSize( size );
       c_h.setSize( size );
@@ -76,8 +80,12 @@ benchmarkTriad( Benchmark<> & benchmark,
       using HostArray = Containers::Array< Real, Devices::Host, Index, CudaHostAllocator >;
       using CudaArray = Containers::Array< Real, Devices::Cuda, Index, CudaAllocator >;
 
-      HostArray a_h, b_h, c_h;
-      CudaArray a_d, b_d, c_d;
+      HostArray a_h;
+      HostArray b_h;
+      HostArray c_h;
+      CudaArray a_d;
+      CudaArray b_d;
+      CudaArray c_d;
       a_h.setSize( size );
       b_h.setSize( size );
       c_h.setSize( size );
@@ -119,7 +127,9 @@ benchmarkTriad( Benchmark<> & benchmark,
    {
       using HostArray = Containers::Array< Real, Devices::Host, Index, CudaHostAllocator >;
 
-      HostArray a_h, b_h, c_h;
+      HostArray a_h;
+      HostArray b_h;
+      HostArray c_h;
       a_h.setSize( size );
       b_h.setSize( size );
       c_h.setSize( size );
@@ -150,7 +160,9 @@ benchmarkTriad( Benchmark<> & benchmark,
    {
       using Array = Containers::Array< Real, Devices::Host, Index, CudaManagedAllocator >;
 
-      Array a, b, c;
+      Array a;
+      Array b;
+      Array c;
       a.setSize( size );
       b.setSize( size );
       c.setSize( size );

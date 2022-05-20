@@ -55,9 +55,7 @@ namespace Containers {
  * \par Output
  * \include ArrayViewExample.out
  */
-template< typename Value,
-          typename Device = Devices::Host,
-          typename Index = int >
+template< typename Value, typename Device = Devices::Host, typename Index = int >
 class ArrayView
 {
 public:
@@ -91,11 +89,8 @@ public:
    /**
     * \brief A template which allows to quickly obtain an \ref ArrayView type with changed template parameters.
     */
-   template< typename _Value,
-             typename _Device = Device,
-             typename _Index = Index >
+   template< typename _Value, typename _Device = Device, typename _Index = Index >
    using Self = ArrayView< _Value, _Device, _Index >;
-
 
    /**
     * \brief Constructs an empty array view.
@@ -138,8 +133,7 @@ public:
     */
    template< typename Value_ >
    __cuda_callable__
-   ArrayView( const ArrayView< Value_, Device, Index >& view )
-   : data(view.getData()), size(view.getSize()) {}
+   ArrayView( const ArrayView< Value_, Device, Index >& view ) : data( view.getData() ), size( view.getSize() ) {}
 
    /**
     * \brief Move constructor for initialization from \e rvalues.
@@ -149,7 +143,7 @@ public:
     * \param view The array view to be moved.
     */
    __cuda_callable__
-   ArrayView( ArrayView&& view ) = default;
+   ArrayView( ArrayView&& view ) noexcept = default;
 
    /**
     * \brief Method for rebinding (reinitialization) using a raw pointer and
@@ -161,7 +155,8 @@ public:
     * \param size The number of elements in the array view.
     */
    __cuda_callable__
-   void bind( ValueType* data, IndexType size );
+   void
+   bind( ValueType* data, IndexType size );
 
    /**
     * \brief Method for rebinding (reinitialization) using another array view.
@@ -174,7 +169,8 @@ public:
     * \param view The array view to be bound.
     */
    __cuda_callable__
-   void bind( ArrayView view );
+   void
+   bind( ArrayView view );
 
    /**
     * \brief Returns a modifiable view of the array view.
@@ -189,7 +185,8 @@ public:
     *            which is, however, replaced with the array size.
     */
    __cuda_callable__
-   ViewType getView( IndexType begin = 0, IndexType end = 0 );
+   ViewType
+   getView( IndexType begin = 0, IndexType end = 0 );
 
    /**
     * \brief Returns a non-modifiable view of the array view.
@@ -204,7 +201,8 @@ public:
     *            which is, however, replaced with the array size.
     */
    __cuda_callable__
-   ConstViewType getConstView( IndexType begin = 0, IndexType end = 0 ) const;
+   ConstViewType
+   getConstView( IndexType begin = 0, IndexType end = 0 ) const;
 
    /**
     * \brief Deep copy assignment operator for copying data from another array
@@ -213,7 +211,8 @@ public:
     * \param view Reference to the source array view.
     * \return Reference to this array view.
     */
-   ArrayView& operator=( const ArrayView& view );
+   ArrayView&
+   operator=( const ArrayView& view );
 
    /**
     * \brief Assigns either array-like container or a single value.
@@ -231,7 +230,8 @@ public:
    template< typename T,
              typename...,
              typename = std::enable_if_t< std::is_convertible< T, ValueType >::value || IsArrayType< T >::value > >
-   ArrayView& operator=( const T& array );
+   ArrayView&
+   operator=( const T& array );
 
    /**
     * \brief Swaps this array view with another.
@@ -242,7 +242,8 @@ public:
     * \param view The array view to be swapped with this array view.
     */
    __cuda_callable__
-   void swap( ArrayView& view );
+   void
+   swap( ArrayView& view );
 
    /***
     * \brief Resets the array view to the empty state.
@@ -250,7 +251,8 @@ public:
     * This method can be called from device kernels.
     */
    __cuda_callable__
-   void reset();
+   void
+   reset();
 
    /**
     * \brief Returns \e true if the current array view size is zero.
@@ -258,7 +260,8 @@ public:
     * This method can be called from device kernels.
     */
    __cuda_callable__
-   bool empty() const;
+   bool
+   empty() const;
 
    /**
     * \brief Returns a \e const-qualified raw pointer to the data.
@@ -266,7 +269,8 @@ public:
     * This method can be called from device kernels.
     */
    __cuda_callable__
-   const ValueType* getData() const;
+   const ValueType*
+   getData() const;
 
    /**
     * \brief Returns a raw pointer to the data.
@@ -274,7 +278,8 @@ public:
     * This method can be called from device kernels.
     */
    __cuda_callable__
-   ValueType* getData();
+   ValueType*
+   getData();
 
    /**
     * \brief Returns a \e const-qualified raw pointer to the data.
@@ -285,7 +290,8 @@ public:
     * This method can be called from device kernels.
     */
    __cuda_callable__
-   const ValueType* getArrayData() const;
+   const ValueType*
+   getArrayData() const;
 
    /**
     * \brief Returns a raw pointer to the data.
@@ -296,7 +302,8 @@ public:
     * This method can be called from device kernels.
     */
    __cuda_callable__
-   ValueType* getArrayData();
+   ValueType*
+   getArrayData();
 
    /**
     * \brief Returns the current size of the array view.
@@ -304,7 +311,8 @@ public:
     * This method can be called from device kernels.
     */
    __cuda_callable__
-   IndexType getSize() const;
+   IndexType
+   getSize() const;
 
    /**
     * \brief Sets the value of the \e i-th element to \e v.
@@ -316,7 +324,8 @@ public:
     * \param value The new value of the element.
     */
    __cuda_callable__
-   void setElement( IndexType i, ValueType value );
+   void
+   setElement( IndexType i, ValueType value );
 
    /**
     * \brief Returns the value of the \e i-th element.
@@ -327,7 +336,8 @@ public:
     * \param i The index of the element to be returned.
     */
    __cuda_callable__
-   ValueType getElement( IndexType i ) const;
+   ValueType
+   getElement( IndexType i ) const;
 
    /**
     * \brief Accesses the \e i-th element of the array view.
@@ -345,7 +355,8 @@ public:
     * \return Reference to the \e i-th element.
     */
    __cuda_callable__
-   Value& operator[]( IndexType i );
+   Value&
+   operator[]( IndexType i );
 
    /**
     * \brief Accesses the \e i-th element of the array view.
@@ -363,21 +374,26 @@ public:
     * \return Constant reference to the \e i-th element.
     */
    __cuda_callable__
-   const Value& operator[]( IndexType i ) const;
+   const Value&
+   operator[]( IndexType i ) const;
 
    /**
     * \brief Accesses the \e i-th element of the array.
     *
     * Equivalent to \ref operator[], with the same notes and caveats.
     */
-   __cuda_callable__ Value& operator()( IndexType i );
+   __cuda_callable__
+   Value&
+   operator()( IndexType i );
 
    /**
     * \brief Accesses the \e i-th element of the array.
     *
     * Equivalent to \ref operator[], with the same notes and caveats.
     */
-   __cuda_callable__ const Value& operator()( IndexType i ) const;
+   __cuda_callable__
+   const Value&
+   operator()( IndexType i ) const;
 
    /**
     * \brief Compares the array view with another array-like container.
@@ -390,7 +406,8 @@ public:
     *         array-like container and \ref false otherwise.
     */
    template< typename ArrayT >
-   bool operator==( const ArrayT& array ) const;
+   bool
+   operator==( const ArrayT& array ) const;
 
    /**
     * \brief Compares the array view with another array-like container.
@@ -402,7 +419,8 @@ public:
     * \return The negated result of \ref operator==.
     */
    template< typename ArrayT >
-   bool operator!=( const ArrayT& array ) const;
+   bool
+   operator!=( const ArrayT& array ) const;
 
    /**
     * \brief Sets elements of the array view to given value.
@@ -417,9 +435,8 @@ public:
     * \param end The end of the array view sub-interval. The default value is 0
     *            which is, however, replaced with the array view size.
     */
-   void setValue( ValueType value,
-                  IndexType begin = 0,
-                  IndexType end = 0 );
+   void
+   setValue( ValueType value, IndexType begin = 0, IndexType end = 0 );
 
    /**
     * \brief Process the lambda function \e f for each array element in interval [ \e begin, \e end).
@@ -449,10 +466,12 @@ public:
     *
     */
    template< typename Function >
-   void forElements( IndexType begin, IndexType end, Function&& f );
+   void
+   forElements( IndexType begin, IndexType end, Function&& f );
 
    /**
-    * \brief Process the lambda function \e f for each array element in interval [ \e begin, \e end) for constant instances of the array.
+    * \brief Process the lambda function \e f for each array element in interval [ \e begin, \e end) for constant instances of
+    * the array.
     *
     * The lambda function is supposed to be declared as
     *
@@ -478,7 +497,8 @@ public:
     * \include ArrayViewExample_forElements.out
     */
    template< typename Function >
-   void forElements( IndexType begin, IndexType end, Function&& f ) const;
+   void
+   forElements( IndexType begin, IndexType end, Function&& f ) const;
 
    /**
     * \brief Process the lambda function \e f for each array element.
@@ -506,7 +526,8 @@ public:
     *
     */
    template< typename Function >
-   void forAllElements( Function&& f );
+   void
+   forAllElements( Function&& f );
 
    /**
     * \brief Process the lambda function \e f for each array element for constant instances.
@@ -534,21 +555,24 @@ public:
     *
     */
    template< typename Function >
-   void forAllElements( Function&& f ) const;
+   void
+   forAllElements( Function&& f ) const;
 
    /**
     * \brief Method for saving the data to a binary file \e fileName.
     *
     * \param fileName The output file name.
     */
-   void save( const String& fileName ) const;
+   void
+   save( const String& fileName ) const;
 
    /**
     * \brief Method for loading the data from a binary file \e fileName.
     *
     * \param fileName The input file name.
     */
-   void load( const String& fileName );
+   void
+   load( const String& fileName );
 
 protected:
    //! Pointer to the data
@@ -571,27 +595,32 @@ protected:
  * \return a reference on the output stream \ref std::ostream&.
  */
 template< typename Value, typename Device, typename Index >
-std::ostream& operator<<( std::ostream& str, const ArrayView< Value, Device, Index >& view );
+std::ostream&
+operator<<( std::ostream& str, const ArrayView< Value, Device, Index >& view );
 
 /**
  * \brief Serialization of array views into binary files.
  */
 template< typename Value, typename Device, typename Index >
-File& operator<<( File& file, const ArrayView< Value, Device, Index > view );
+File&
+operator<<( File& file, ArrayView< Value, Device, Index > view );
 
 template< typename Value, typename Device, typename Index >
-File& operator<<( File&& file, const ArrayView< Value, Device, Index > view );
+File&
+operator<<( File&& file, ArrayView< Value, Device, Index > view );
 
 /**
  * \brief Deserialization of array views from binary files.
  */
 template< typename Value, typename Device, typename Index >
-File& operator>>( File& file, ArrayView< Value, Device, Index > view );
+File&
+operator>>( File& file, ArrayView< Value, Device, Index > view );
 
 template< typename Value, typename Device, typename Index >
-File& operator>>( File&& file, ArrayView< Value, Device, Index > view );
+File&
+operator>>( File&& file, ArrayView< Value, Device, Index > view );
 
-} // namespace Containers
-} // namespace noa::TNL
+}  // namespace Containers
+}  // namespace noa::TNL
 
 #include <noa/3rdparty/tnl-noa/src/TNL/Containers/ArrayView.hpp>

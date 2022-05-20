@@ -12,9 +12,7 @@
 namespace noa::TNL {
 namespace Containers {
 
-template< typename Value,
-          typename Index,
-          typename Key >
+template< typename Value, typename Index, typename Key >
 class IndexedMap
 {
 public:
@@ -22,22 +20,30 @@ public:
    using IndexType = Index;
    using KeyType = Key;
 
-   void reset();
+   void
+   reset();
 
-   IndexType getSize() const;
+   IndexType
+   getSize() const;
 
-   IndexType insert( const ValueType &data );
+   IndexType
+   insert( const ValueType& data );
 
-   bool find( const ValueType &data, IndexType& index ) const;
+   bool
+   find( const ValueType& data, IndexType& index ) const;
 
    template< typename ArrayType >
-   void toArray( ArrayType& array ) const;
+   void
+   toArray( ArrayType& array ) const;
 
-   const Value& getElement( KeyType key ) const;
+   const Value&
+   getElement( KeyType key ) const;
 
-   Value& getElement( KeyType key );
+   Value&
+   getElement( KeyType key );
 
-   void print( std::ostream& str ) const;
+   void
+   print( std::ostream& str ) const;
 
 protected:
    struct DataWithIndex
@@ -46,12 +52,11 @@ protected:
       // http://stackoverflow.com/questions/22357887/comparing-two-mapiterators-why-does-it-need-the-copy-constructor-of-stdpair
       DataWithIndex(){};
 
-      DataWithIndex( const DataWithIndex& d ) : data( d.data ), index( d.index) {}
+      DataWithIndex( const DataWithIndex& d ) : data( d.data ), index( d.index ) {}
 
-      explicit DataWithIndex( const Value data) : data( data ) {}
+      explicit DataWithIndex( const Value data ) : data( data ) {}
 
-      DataWithIndex( const Value data,
-                     const Index index) : data(data), index(index) {}
+      DataWithIndex( const Value data, const Index index ) : data( data ), index( index ) {}
 
       Value data;
       Index index;
@@ -64,12 +69,11 @@ protected:
    STDMapType map;
 };
 
-template< typename Value,
-          typename Index,
-          typename Key >
-std::ostream& operator <<( std::ostream& str, IndexedMap< Value, Index, Key >& set );
+template< typename Value, typename Index, typename Key >
+std::ostream&
+operator<<( std::ostream& str, IndexedMap< Value, Index, Key >& set );
 
-} // namespace Containers
-} // namespace noa::TNL
+}  // namespace Containers
+}  // namespace noa::TNL
 
 #include <noa/3rdparty/tnl-noa/src/TNL/Containers/IndexedMap_impl.h>

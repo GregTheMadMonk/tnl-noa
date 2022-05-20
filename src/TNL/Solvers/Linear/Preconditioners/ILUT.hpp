@@ -22,9 +22,7 @@ namespace Preconditioners {
 
 template< typename Matrix, typename Real, typename Index >
 bool
-ILUT_impl< Matrix, Real, Devices::Host, Index >::
-setup( const Config::ParameterContainer& parameters,
-       const String& prefix )
+ILUT_impl< Matrix, Real, Devices::Host, Index >::setup( const Config::ParameterContainer& parameters, const String& prefix )
 {
    if( parameters.checkParameter( prefix + "ilut-p" ) )
       p = parameters.getParameter< int >( prefix + "ilut-p" );
@@ -35,8 +33,7 @@ setup( const Config::ParameterContainer& parameters,
 
 template< typename Matrix, typename Real, typename Index >
 void
-ILUT_impl< Matrix, Real, Devices::Host, Index >::
-update( const MatrixPointer& matrixPointer )
+ILUT_impl< Matrix, Real, Devices::Host, Index >::update( const MatrixPointer& matrixPointer )
 {
    TNL_ASSERT_GT( matrixPointer->getRows(), 0, "empty matrix" );
    TNL_ASSERT_EQ( matrixPointer->getRows(), matrixPointer->getColumns(), "matrix must be square" );
@@ -48,14 +45,15 @@ update( const MatrixPointer& matrixPointer )
    L.setDimensions( N, N );
    U.setDimensions( N, N );
 
-//   Timer timer_total, timer_rowlengths, timer_copy_into_w, timer_k_loop, timer_heap_construct, timer_heap_extract, timer_copy_into_LU, timer_reset;
+   //   Timer timer_total, timer_rowlengths, timer_copy_into_w, timer_k_loop, timer_heap_construct, timer_heap_extract,
+   //   timer_copy_into_LU, timer_reset;
 
-//   timer_total.start();
+   //   timer_total.start();
 
    // compute row lengths
-//   timer_rowlengths.start();
-   typename decltype(L)::RowsCapacitiesType L_rowLengths( N );
-   typename decltype(U)::RowsCapacitiesType U_rowLengths( N );
+   //   timer_rowlengths.start();
+   typename decltype( L )::RowsCapacitiesType L_rowLengths( N );
+   typename decltype( U )::RowsCapacitiesType U_rowLengths( N );
    for( IndexType i = 0; i < N; i++ ) {
       const auto row = localMatrix.getRow( i );
       IndexType L_entries = 0;
@@ -77,7 +75,7 @@ update( const MatrixPointer& matrixPointer )
    }
    L.setRowCapacities( L_rowLengths );
    U.setRowCapacities( U_rowLengths );
-//   timer_rowlengths.stop();
+   //   timer_rowlengths.stop();
 
    // intermediate full vector for the i-th row of A
    VectorType w;
@@ -85,15 +83,23 @@ update( const MatrixPointer& matrixPointer )
    w.setValue( 0.0 );
 
    // intermediate vectors for sorting and keeping only the largest values
-   struct Triplet {
+   struct Triplet
+   {
       IndexType column;
       RealType value;
       RealType abs_value;
-      Triplet(IndexType column, RealType value, RealType abs_value) : column(column), value(value), abs_value(abs_value) {}
+      Triplet( IndexType column, RealType value, RealType abs_value ) : column( column ), value( value ), abs_value( abs_value )
+      {}
    };
-   auto cmp_abs_value = []( const Triplet& a, const Triplet& b ){ return a.abs_value < b.abs_value; };
+   auto cmp_abs_value = []( const Triplet& a, const Triplet& b )
+   {
+      return a.abs_value < b.abs_value;
+   };
    std::vector< Triplet > heap_L, heap_U;
-   auto cmp_column = []( const Triplet& a, const Triplet& b ){ return a.column < b.column; };
+   auto cmp_column = []( const Triplet& a, const Triplet& b )
+   {
+      return a.column < b.column;
+   };
    std::vector< Triplet > values_L, values_U;
 
    // Incomplete LU factorization with threshold
@@ -107,16 +113,18 @@ update( const MatrixPointer& matrixPointer )
       std::set< IndexType > w_k_set;
 
       // copy A_i into the full vector w
-//      timer_copy_into_w.start();
+      //      timer_copy_into_w.start();
       for( IndexType c_j = 0; c_j < A_i.getSize(); c_j++ ) {
          auto j = A_i.getColumnIndex( c_j );
          if( minColumn > 0 ) {
             // skip non-local elements
-            if( j < minColumn ) continue;
+            if( j < minColumn )
+               continue;
             j -= minColumn;
          }
          // handle ellpack dummy entries
-         if( j == localMatrix.getPaddingIndex() ) break;
+         if( j == localMatrix.getPaddingIndex() )
+            break;
          w[ j ] = A_i.getValue( c_j );
 
          // running computation of norm
@@ -124,14 +132,14 @@ update( const MatrixPointer& matrixPointer )
 
          w_k_set.insert( j );
       }
-//      timer_copy_into_w.stop();
+      //      timer_copy_into_w.stop();
 
       // compute relative tolerance
       A_i_norm = std::sqrt( A_i_norm );
       const RealType tau_i = tau * A_i_norm;
 
       // loop for k = 0, ..., i - 1; but only over the non-zero entries of w
-//      timer_k_loop.start();
+      //      timer_k_loop.start();
       for( const IndexType k : w_k_set ) {
          if( k >= i )
             break;
@@ -152,7 +160,8 @@ update( const MatrixPointer& matrixPointer )
                const auto j = U_k.getColumnIndex( c_j );
 
                // skip dropped entries
-               if( j == localMatrix.getPaddingIndex() ) break;
+               if( j == localMatrix.getPaddingIndex() )
+                  break;
                w[ j ] -= w_k * U_k.getValue( c_j );
 
                // add non-zero to the w_k_set
@@ -160,14 +169,14 @@ update( const MatrixPointer& matrixPointer )
             }
          }
       }
-//      timer_k_loop.stop();
+      //      timer_k_loop.stop();
 
       // apply dropping rule to the row w
       // (we drop all values under threshold and keep nl(i) + p largest values in L
       // and nu(i) + p largest values in U; see Saad (2003) for reference)
 
       // construct heaps with the values in the L and U parts separately
-//      timer_heap_construct.start();
+      //      timer_heap_construct.start();
       for( const IndexType j : w_k_set ) {
          const RealType w_j_abs = std::abs( w[ j ] );
          // ignore small values
@@ -181,10 +190,10 @@ update( const MatrixPointer& matrixPointer )
       }
       std::make_heap( heap_L.begin(), heap_L.end(), cmp_abs_value );
       std::make_heap( heap_U.begin(), heap_U.end(), cmp_abs_value );
-//      timer_heap_construct.stop();
+      //      timer_heap_construct.stop();
 
       // extract values for L and U
-//      timer_heap_extract.start();
+      //      timer_heap_extract.start();
       for( IndexType c_j = 0; c_j < L_rowLengths[ i ] && c_j < (IndexType) heap_L.size(); c_j++ ) {
          // move the largest to the end
          std::pop_heap( heap_L.begin(), heap_L.end(), cmp_abs_value );
@@ -201,11 +210,12 @@ update( const MatrixPointer& matrixPointer )
          heap_U.pop_back();
          values_U.push_back( largest );
       }
-//      timer_heap_extract.stop();
+      //      timer_heap_extract.stop();
 
-//      std::cout << "i = " << i << ", L_rowLengths[ i ] = " << L_rowLengths[ i ] << ", U_rowLengths[ i ] = " << U_rowLengths[ N - 1 - i ] << std::endl;
+      //      std::cout << "i = " << i << ", L_rowLengths[ i ] = " << L_rowLengths[ i ] << ", U_rowLengths[ i ] = " <<
+      //      U_rowLengths[ N - 1 - i ] << std::endl;
 
-//      timer_copy_into_LU.start();
+      //      timer_copy_into_LU.start();
 
       // sort by column index to make it insertable into the sparse matrix
       std::sort( values_L.begin(), values_L.end(), cmp_column );
@@ -228,10 +238,10 @@ update( const MatrixPointer& matrixPointer )
          U_i.setElement( c_j, j, values_U[ c_j ].value );
       }
 
-//      timer_copy_into_LU.stop();
+      //      timer_copy_into_LU.stop();
 
       // reset w
-//      timer_reset.start();
+      //      timer_reset.start();
       for( const IndexType j : w_k_set )
          w[ j ] = 0.0;
 
@@ -239,27 +249,26 @@ update( const MatrixPointer& matrixPointer )
       heap_U.clear();
       values_L.clear();
       values_U.clear();
-//      timer_reset.stop();
+      //      timer_reset.stop();
    }
 
-//   timer_total.stop();
+   //   timer_total.stop();
 
-//   std::cout << "ILUT::update statistics:\n";
-//   std::cout << "\ttimer_total:           " << timer_total.getRealTime()          << " s\n";
-//   std::cout << "\ttimer_rowlengths:      " << timer_rowlengths.getRealTime()     << " s\n";
-//   std::cout << "\ttimer_copy_into_w:     " << timer_copy_into_w.getRealTime()    << " s\n";
-//   std::cout << "\ttimer_k_loop:          " << timer_k_loop.getRealTime()         << " s\n";
-//   std::cout << "\ttimer_heap_construct:  " << timer_heap_construct.getRealTime() << " s\n";
-//   std::cout << "\ttimer_heap_extract:    " << timer_heap_extract.getRealTime()   << " s\n";
-//   std::cout << "\ttimer_copy_into_LU:    " << timer_copy_into_LU.getRealTime()   << " s\n";
-//   std::cout << "\ttimer_reset:           " << timer_reset.getRealTime()          << " s\n";
-//   std::cout << std::flush;
+   //   std::cout << "ILUT::update statistics:\n";
+   //   std::cout << "\ttimer_total:           " << timer_total.getRealTime()          << " s\n";
+   //   std::cout << "\ttimer_rowlengths:      " << timer_rowlengths.getRealTime()     << " s\n";
+   //   std::cout << "\ttimer_copy_into_w:     " << timer_copy_into_w.getRealTime()    << " s\n";
+   //   std::cout << "\ttimer_k_loop:          " << timer_k_loop.getRealTime()         << " s\n";
+   //   std::cout << "\ttimer_heap_construct:  " << timer_heap_construct.getRealTime() << " s\n";
+   //   std::cout << "\ttimer_heap_extract:    " << timer_heap_extract.getRealTime()   << " s\n";
+   //   std::cout << "\ttimer_copy_into_LU:    " << timer_copy_into_LU.getRealTime()   << " s\n";
+   //   std::cout << "\ttimer_reset:           " << timer_reset.getRealTime()          << " s\n";
+   //   std::cout << std::flush;
 }
 
 template< typename Matrix, typename Real, typename Index >
 void
-ILUT_impl< Matrix, Real, Devices::Host, Index >::
-solve( ConstVectorViewType _b, VectorViewType _x ) const
+ILUT_impl< Matrix, Real, Devices::Host, Index >::solve( ConstVectorViewType _b, VectorViewType _x ) const
 {
    const auto b = Traits< Matrix >::getConstLocalView( _b );
    auto x = Traits< Matrix >::getLocalView( _x );
@@ -274,7 +283,7 @@ solve( ConstVectorViewType _b, VectorViewType _x ) const
    Traits< Matrix >::startSynchronization( _x );
 }
 
-} // namespace Preconditioners
-} // namespace Linear
-} // namespace Solvers
-} // namespace noa::TNL
+}  // namespace Preconditioners
+}  // namespace Linear
+}  // namespace Solvers
+}  // namespace noa::TNL

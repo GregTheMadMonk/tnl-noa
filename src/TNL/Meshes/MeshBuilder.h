@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <numeric>   // std::iota
+#include <numeric>  // std::iota
 #include <vector>
 
 #include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
@@ -25,92 +25,100 @@ template< typename Mesh >
 class MeshBuilder
 {
 public:
-   using MeshType           = Mesh;
-   using MeshTraitsType     = typename MeshType::MeshTraitsType;
-   using GlobalIndexType    = typename MeshTraitsType::GlobalIndexType;
-   using LocalIndexType     = typename MeshTraitsType::LocalIndexType;
-   using PointType          = typename MeshTraitsType::PointType;
-   using PointArrayType     = typename MeshTraitsType::PointArrayType;
-   using BoolVector         = Containers::Vector< bool, Devices::Host, GlobalIndexType >;
-   using CellTopology       = typename MeshTraitsType::CellTopology;
+   using MeshType = Mesh;
+   using MeshTraitsType = typename MeshType::MeshTraitsType;
+   using GlobalIndexType = typename MeshTraitsType::GlobalIndexType;
+   using LocalIndexType = typename MeshTraitsType::LocalIndexType;
+   using PointType = typename MeshTraitsType::PointType;
+   using PointArrayType = typename MeshTraitsType::PointArrayType;
+   using BoolVector = Containers::Vector< bool, Devices::Host, GlobalIndexType >;
+   using CellTopology = typename MeshTraitsType::CellTopology;
    using CellSeedMatrixType = typename MeshTraitsType::CellSeedMatrixType;
-   using CellSeedType       = typename CellSeedMatrixType::EntitySeedMatrixSeed;
+   using CellSeedType = typename CellSeedMatrixType::EntitySeedMatrixSeed;
    using FaceSeedMatrixType = typename MeshTraitsType::FaceSeedMatrixType;
-   using FaceSeedType       = typename FaceSeedMatrixType::EntitySeedMatrixSeed;
+   using FaceSeedType = typename FaceSeedMatrixType::EntitySeedMatrixSeed;
    using NeighborCountsArray = typename MeshTraitsType::NeighborCountsArray;
 
-   void setEntitiesCount( const GlobalIndexType& points,
-                          const GlobalIndexType& cells = 0,
-                          const GlobalIndexType& faces = 0 )
+   void
+   setEntitiesCount( const GlobalIndexType& points, const GlobalIndexType& cells = 0, const GlobalIndexType& faces = 0 )
    {
       this->points.setSize( points );
       this->pointsSet.setSize( points );
       pointsSet.setValue( false );
 
-      if( std::is_same< CellTopology, Topologies::Polyhedron >::value )
-      {
+      if( std::is_same< CellTopology, Topologies::Polyhedron >::value ) {
          this->faceSeeds.setDimensions( faces, points );
          this->cellSeeds.setDimensions( cells, faces );
       }
-      else // Topologies other than polyhedrons don't use face seeds
+      else  // Topologies other than polyhedrons don't use face seeds
       {
          this->cellSeeds.setDimensions( cells, points );
       }
    }
 
-   void setFaceCornersCounts( const NeighborCountsArray& counts )
+   void
+   setFaceCornersCounts( const NeighborCountsArray& counts )
    {
       this->faceSeeds.setEntityCornersCounts( counts );
    }
 
-   void setFaceCornersCounts( NeighborCountsArray&& counts )
+   void
+   setFaceCornersCounts( NeighborCountsArray&& counts )
    {
       this->faceSeeds.setEntityCornersCounts( std::move( counts ) );
    }
 
-   void setCellCornersCounts( const NeighborCountsArray& counts )
+   void
+   setCellCornersCounts( const NeighborCountsArray& counts )
    {
       this->cellSeeds.setEntityCornersCounts( counts );
    }
 
-   void setCellCornersCounts( NeighborCountsArray&& counts )
+   void
+   setCellCornersCounts( NeighborCountsArray&& counts )
    {
       this->cellSeeds.setEntityCornersCounts( std::move( counts ) );
    }
 
-   GlobalIndexType getPointsCount() const
+   GlobalIndexType
+   getPointsCount() const
    {
       return this->points.getSize();
    }
 
-   GlobalIndexType getFacesCount() const
+   GlobalIndexType
+   getFacesCount() const
    {
       return this->faceSeeds.getEntitiesCount();
    }
 
-   GlobalIndexType getCellsCount() const
+   GlobalIndexType
+   getCellsCount() const
    {
       return this->cellSeeds.getEntitiesCount();
    }
 
-   void setPoint( GlobalIndexType index,
-                  const PointType& point )
+   void
+   setPoint( GlobalIndexType index, const PointType& point )
    {
       this->points[ index ] = point;
       this->pointsSet[ index ] = true;
    }
 
-   FaceSeedType getFaceSeed( GlobalIndexType index )
+   FaceSeedType
+   getFaceSeed( GlobalIndexType index )
    {
       return this->faceSeeds.getSeed( index );
    }
 
-   CellSeedType getCellSeed( GlobalIndexType index )
+   CellSeedType
+   getCellSeed( GlobalIndexType index )
    {
       return this->cellSeeds.getSeed( index );
    }
 
-   void deduplicatePoints( const double numericalThreshold = 1e-9 )
+   void
+   deduplicatePoints( const double numericalThreshold = 1e-9 )
    {
       // prepare vector with an identity permutationutation
       std::vector< GlobalIndexType > permutation( points.getSize() );
@@ -118,12 +126,12 @@ public:
 
       // workaround for lexicographical sorting
       // FIXME: https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev/-/issues/79
-      auto lexless = [numericalThreshold, this] (const GlobalIndexType& a, const GlobalIndexType& b) -> bool
+      auto lexless = [ numericalThreshold, this ]( const GlobalIndexType& a, const GlobalIndexType& b ) -> bool
       {
          const PointType& left = this->points[ a ];
          const PointType& right = this->points[ b ];
          for( LocalIndexType i = 0; i < PointType::getSize(); i++ )
-            if( noa::TNL::abs( left[ i ] - right[ i ] ) > numericalThreshold )
+            if( TNL::abs( left[ i ] - right[ i ] ) > numericalThreshold )
                return left[ i ] < right[ i ];
          return false;
       };
@@ -153,7 +161,8 @@ public:
       if( uniquePointsCount == points.getSize() )
          return;
 
-      std::cout << "Found " << points.getSize() - uniquePointsCount << " duplicate points (total " << points.getSize() << ", unique " << uniquePointsCount << ")" << std::endl;
+      std::cout << "Found " << points.getSize() - uniquePointsCount << " duplicate points (total " << points.getSize()
+                << ", unique " << uniquePointsCount << ")" << std::endl;
 
       // copy this->points and this->pointsSet, drop duplicate points
       // (trying to do this in-place is not worth it, since even Array::reallocate
@@ -177,7 +186,7 @@ public:
       points_perm_to_new.clear();
       points_perm_to_new.shrink_to_fit();
 
-      auto remap_matrix = [uniquePointsCount, &points_old_to_new] ( auto& seeds )
+      auto remap_matrix = [ uniquePointsCount, &points_old_to_new ]( auto& seeds )
       {
          // TODO: parallelize (we have the IndexPermutationApplier)
          for( GlobalIndexType i = 0; i < seeds.getEntitiesCount(); i++ ) {
@@ -198,7 +207,8 @@ public:
          remap_matrix( faceSeeds );
    }
 
-   void deduplicateFaces()
+   void
+   deduplicateFaces()
    {
       // prepare vector with an identity permutationutation
       std::vector< GlobalIndexType > permutation( faceSeeds.getEntitiesCount() );
@@ -206,7 +216,7 @@ public:
 
       // workaround for lexicographical sorting
       // FIXME: https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev/-/issues/79
-      auto lexless = [this] (const GlobalIndexType& a, const GlobalIndexType& b) -> bool
+      auto lexless = [ this ]( const GlobalIndexType& a, const GlobalIndexType& b ) -> bool
       {
          const auto& left = this->faceSeeds.getSeed( a );
          const auto& right = this->faceSeeds.getSeed( b );
@@ -224,9 +234,9 @@ public:
       // vertex indices in each seed, all that *before* lexicographical sorting)
       // (Just for the detection of duplicates, it does not matter that vertices of a polygon get sorted in an arbitrary order
       // instead of clock-wise or counter-clockwise.)
-      auto equiv = [lexless] (const GlobalIndexType& a, const GlobalIndexType& b) -> bool
+      auto equiv = [ lexless ]( const GlobalIndexType& a, const GlobalIndexType& b ) -> bool
       {
-         return ! lexless(a, b) && ! lexless(b, a);
+         return ! lexless( a, b ) && ! lexless( b, a );
       };
 
       // sort face seeds in lexicographical order
@@ -252,7 +262,8 @@ public:
       if( uniqueFacesCount == faceSeeds.getEntitiesCount() )
          return;
 
-      std::cout << "Found " << faceSeeds.getEntitiesCount() - uniqueFacesCount << " duplicate faces (total " << faceSeeds.getEntitiesCount() << ", unique " << uniqueFacesCount << ")" << std::endl;
+      std::cout << "Found " << faceSeeds.getEntitiesCount() - uniqueFacesCount << " duplicate faces (total "
+                << faceSeeds.getEntitiesCount() << ", unique " << uniqueFacesCount << ")" << std::endl;
 
       // get corners counts for unique faces
       NeighborCountsArray cornersCounts( uniqueFacesCount );
@@ -285,7 +296,7 @@ public:
       faceSeeds = std::move( newFaceSeeds );
 
       // TODO: refactoring - basically the same lambda as in deduplicatePoints
-      auto remap_matrix = [uniqueFacesCount, &faces_old_to_new] ( auto& seeds )
+      auto remap_matrix = [ uniqueFacesCount, &faces_old_to_new ]( auto& seeds )
       {
          // TODO: parallelize (we have the IndexPermutationApplier)
          for( GlobalIndexType i = 0; i < seeds.getEntitiesCount(); i++ ) {
@@ -303,7 +314,8 @@ public:
       remap_matrix( cellSeeds );
    }
 
-   bool build( MeshType& mesh )
+   bool
+   build( MeshType& mesh )
    {
       if( ! this->validate() )
          return false;
@@ -313,15 +325,16 @@ public:
    }
 
 private:
-   bool validate() const
+   bool
+   validate() const
    {
       // verify that matrix dimensions are consistent with points
       if( faceSeeds.empty() ) {
          // no face seeds - cell seeds refer to points
          if( cellSeeds.getMatrix().getColumns() != points.getSize() ) {
             std::cerr << "Mesh builder error: Inconsistent size of the cellSeeds matrix (it has "
-                      << cellSeeds.getMatrix().getColumns() << " columns, but there are " << points.getSize()
-                      << " points)." << std::endl;
+                      << cellSeeds.getMatrix().getColumns() << " columns, but there are " << points.getSize() << " points)."
+                      << std::endl;
             return false;
          }
       }
@@ -335,8 +348,8 @@ private:
          }
          if( faceSeeds.getMatrix().getColumns() != points.getSize() ) {
             std::cerr << "Mesh builder error: Inconsistent size of the faceSeeds matrix (it has "
-                      << faceSeeds.getMatrix().getColumns() << " columns, but there are " << points.getSize()
-                      << " points)." << std::endl;
+                      << faceSeeds.getMatrix().getColumns() << " columns, but there are " << points.getSize() << " points)."
+                      << std::endl;
             return false;
          }
       }
@@ -350,8 +363,7 @@ private:
       assignedPoints.setLike( pointsSet );
       assignedPoints.setValue( false );
 
-      if( faceSeeds.empty() )
-      {
+      if( faceSeeds.empty() ) {
          for( GlobalIndexType i = 0; i < getCellsCount(); i++ ) {
             const auto cellSeed = this->cellSeeds.getSeed( i );
             for( LocalIndexType j = 0; j < cellSeed.getCornersCount(); j++ ) {
@@ -369,8 +381,7 @@ private:
             return false;
          }
       }
-      else
-      {
+      else {
          for( GlobalIndexType i = 0; i < getFacesCount(); i++ ) {
             const auto faceSeed = this->faceSeeds.getSeed( i );
             for( LocalIndexType j = 0; j < faceSeed.getCornersCount(); j++ ) {
@@ -419,5 +430,5 @@ private:
    BoolVector pointsSet;
 };
 
-} // namespace Meshes
-} // namespace noa::TNL
+}  // namespace Meshes
+}  // namespace noa::TNL

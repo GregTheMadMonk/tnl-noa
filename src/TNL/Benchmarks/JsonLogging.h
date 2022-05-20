@@ -15,20 +15,19 @@
 namespace noa::TNL {
 namespace Benchmarks {
 
-class JsonLogging
-: public Logging
+class JsonLogging : public Logging
 {
 public:
    // inherit constructors
    using Logging::Logging;
 
-   void writeHeader( const HeaderElements& headerElements, const WidthHints& widths )
+   void
+   writeHeader( const HeaderElements& headerElements, const WidthHints& widths )
    {
       TNL_ASSERT_EQ( headerElements.size(), widths.size(), "elements must have equal sizes" );
-      if( verbose && header_changed )
-      {
-         for( auto & lg : metadataColumns ) {
-            const int width = (metadataWidths.count( lg.first )) ? metadataWidths[ lg.first ] : 14;
+      if( verbose > 0 && header_changed ) {
+         for( const auto& lg : metadataColumns ) {
+            const int width = ( metadataWidths.count( lg.first ) > 0 ) ? metadataWidths[ lg.first ] : 14;
             std::cout << std::setw( width ) << lg.first;
          }
          for( std::size_t i = 0; i < headerElements.size(); i++ )
@@ -38,10 +37,11 @@ public:
       }
    }
 
-   void writeRow( const HeaderElements& headerElements,
-                  const RowElements& rowElements,
-                  const WidthHints& widths,
-                  const std::string& errorMessage )
+   void
+   writeRow( const HeaderElements& headerElements,
+             const RowElements& rowElements,
+             const WidthHints& widths,
+             const std::string& errorMessage )
    {
       TNL_ASSERT_EQ( headerElements.size(), rowElements.size(), "elements must have equal sizes" );
       TNL_ASSERT_EQ( headerElements.size(), widths.size(), "elements must have equal sizes" );
@@ -50,10 +50,9 @@ public:
 
       // write common logs
       int idx( 0 );
-      for( auto lg : this->metadataColumns )
-      {
-         if( verbose ) {
-            const int width = (metadataWidths.count( lg.first )) ? metadataWidths[ lg.first ] : 14;
+      for( const auto& lg : this->metadataColumns ) {
+         if( verbose > 0 ) {
+            const int width = ( metadataWidths.count( lg.first ) > 0 ) ? metadataWidths[ lg.first ] : 14;
             std::cout << std::setw( width ) << lg.second;
          }
          if( idx++ > 0 )
@@ -62,9 +61,8 @@ public:
       }
 
       std::size_t i = 0;
-      for( auto el : rowElements )
-      {
-         if( verbose )
+      for( const auto& el : rowElements ) {
+         if( verbose > 0 )
             std::cout << std::setw( widths[ i ] ) << el;
          if( idx++ > 0 )
             log << ", ";
@@ -74,34 +72,33 @@ public:
       if( ! errorMessage.empty() ) {
          if( idx++ > 0 )
             log << ", ";
-         log << "\"error\": \"" << errorMessage << "\"";
+         log << "\"error\": \"" << escape_json( errorMessage ) << "\"";
       }
       log << "}" << std::endl;
-      if( verbose )
+      if( verbose > 0 )
          std::cout << std::endl;
    }
 
-   virtual void
+   void
    logResult( const std::string& performer,
               const HeaderElements& headerElements,
               const RowElements& rowElements,
               const WidthHints& columnWidthHints,
               const std::string& errorMessage = "" ) override
    {
-      setMetadataElement({ "performer", performer });
+      setMetadataElement( { "performer", performer } );
       writeHeader( headerElements, columnWidthHints );
       writeRow( headerElements, rowElements, columnWidthHints, errorMessage );
    }
 
-   virtual void
+   void
    writeErrorMessage( const std::string& message ) override
    {
       log << "{";
 
       // write common logs
       int idx( 0 );
-      for( auto lg : this->metadataColumns )
-      {
+      for( const auto& lg : this->metadataColumns ) {
          if( idx++ > 0 )
             log << ", ";
          log << "\"" << lg.first << "\": \"" << lg.second << "\"";
@@ -109,7 +106,7 @@ public:
 
       if( idx++ > 0 )
          log << ", ";
-      log << "\"error\": \"" << message << "\"";
+      log << "\"error\": \"" << escape_json( message ) << "\"";
 
       log << "}" << std::endl;
    }
@@ -122,12 +119,50 @@ protected:
       std::stringstream str;
       if( fixed )
          str << std::fixed;
-      if( precision )
+      if( precision > 0 )
          str << std::setprecision( precision );
       str << num;
-      return std::string( str.str().data() );
+      return str.str();
+   }
+
+   // https://stackoverflow.com/a/33799784
+   static std::string
+   escape_json( const std::string& s )
+   {
+      std::ostringstream o;
+      for( auto c : s ) {
+         switch( c ) {
+            case '"':
+               o << "\\\"";
+               break;
+            case '\\':
+               o << "\\\\";
+               break;
+            case '\b':
+               o << "\\b";
+               break;
+            case '\f':
+               o << "\\f";
+               break;
+            case '\n':
+               o << "\\n";
+               break;
+            case '\r':
+               o << "\\r";
+               break;
+            case '\t':
+               o << "\\t";
+               break;
+            default:
+               if( '\x00' <= c && c <= '\x1f' )
+                  o << "\\u" << std::hex << std::setw( 4 ) << std::setfill( '0' ) << (int) c;
+               else
+                  o << c;
+         }
+      }
+      return o.str();
    }
 };
 
-} // namespace Benchmarks
-} // namespace noa::TNL
+}  // namespace Benchmarks
+}  // namespace noa::TNL

@@ -19,35 +19,35 @@
 namespace noa::TNL {
 
 inline String
-SystemInfo::getHostname( void )
+SystemInfo::getHostname()
 {
    char host_name[ 256 ];
    gethostname( host_name, 255 );
-   return String( host_name );
+   return host_name;
 }
 
 inline String
-SystemInfo::getArchitecture( void )
+SystemInfo::getArchitecture()
 {
    utsname uts;
    uname( &uts );
-   return String( uts.machine );
+   return uts.machine;
 }
 
 inline String
-SystemInfo::getSystemName( void )
+SystemInfo::getSystemName()
 {
    utsname uts;
    uname( &uts );
-   return String( uts.sysname );
+   return uts.sysname;
 }
 
 inline String
-SystemInfo::getSystemRelease( void )
+SystemInfo::getSystemRelease()
 {
    utsname uts;
    uname( &uts );
-   return String( uts.release );
+   return uts.release;
 }
 
 inline String
@@ -57,12 +57,11 @@ SystemInfo::getCurrentTime( const char* format )
    std::tm* localtime = std::localtime( &time_since_epoch );
    std::stringstream ss;
    ss << std::put_time( localtime, format );
-   return String( ss.str().c_str() );
+   return ss.str();
 }
 
-
 inline int
-SystemInfo::getNumberOfProcessors( void )
+SystemInfo::getNumberOfProcessors()
 {
    static int numberOfProcessors = 0;
    if( numberOfProcessors == 0 ) {
@@ -73,10 +72,10 @@ SystemInfo::getNumberOfProcessors( void )
 }
 
 inline String
-SystemInfo::getOnlineCPUs( void )
+SystemInfo::getOnlineCPUs()
 {
    std::string online = readFile< std::string >( "/sys/devices/system/cpu/online" );
-   return String( online.c_str() );
+   return online;
 }
 
 inline int
@@ -105,7 +104,7 @@ inline String
 SystemInfo::getCPUModelName( int cpu_id )
 {
    static String CPUModelName;
-   if( CPUModelName == "" ) {
+   if( CPUModelName.empty() ) {
       CPUInfo info = parseCPUInfo();
       CPUModelName = info.CPUModelName;
    }
@@ -154,14 +153,13 @@ SystemInfo::getCPUCacheSizes( int cpu_id )
 inline size_t
 SystemInfo::getFreeMemory()
 {
-   long pages = sysconf(_SC_PHYS_PAGES);
-   long page_size = sysconf(_SC_PAGE_SIZE);
+   long pages = sysconf( _SC_PHYS_PAGES );
+   long page_size = sysconf( _SC_PAGE_SIZE );
    return pages * page_size;
 }
 
-
 inline SystemInfo::CPUInfo
-SystemInfo::parseCPUInfo( void )
+SystemInfo::parseCPUInfo()
 {
    CPUInfo info;
    std::ifstream file( "/proc/cpuinfo" );
@@ -172,36 +170,35 @@ SystemInfo::parseCPUInfo( void )
 
    char line[ 1024 ];
    std::set< int > processors;
-   while( ! file.eof() )
-   {
+   while( ! file.eof() ) {
       int i;
       file.getline( line, 1024 );
-      if( strncmp( line, "physical id", strlen( "physical id" ) ) == 0 )
-      {
+      if( strncmp( line, "physical id", strlen( "physical id" ) ) == 0 ) {
          i = strlen( "physical id" );
-         while( line[ i ] != ':' && line[ i ] ) i ++;
+         while( line[ i ] != ':' && line[ i ] != '\0' )
+            i++;
          processors.insert( atoi( &line[ i + 1 ] ) );
          continue;
       }
       // FIXME: the rest does not work on heterogeneous multi-socket systems
-      if( strncmp( line, "model name", strlen( "model name" ) ) == 0 )
-      {
+      if( strncmp( line, "model name", strlen( "model name" ) ) == 0 ) {
          i = strlen( "model name" );
-         while( line[ i ] != ':' && line[ i ] ) i ++;
+         while( line[ i ] != ':' && line[ i ] != '\0' )
+            i++;
          info.CPUModelName = &line[ i + 1 ];
          continue;
       }
-      if( strncmp( line, "cpu cores", strlen( "cpu cores" ) ) == 0 )
-      {
+      if( strncmp( line, "cpu cores", strlen( "cpu cores" ) ) == 0 ) {
          i = strlen( "cpu MHz" );
-         while( line[ i ] != ':' && line[ i ] ) i ++;
+         while( line[ i ] != ':' && line[ i ] != '\0' )
+            i++;
          info.CPUCores = atoi( &line[ i + 1 ] );
          continue;
       }
-      if( strncmp( line, "siblings", strlen( "siblings" ) ) == 0 )
-      {
+      if( strncmp( line, "siblings", strlen( "siblings" ) ) == 0 ) {
          i = strlen( "siblings" );
-         while( line[ i ] != ':' && line[ i ] ) i ++;
+         while( line[ i ] != ':' && line[ i ] != '\0' )
+            i++;
          info.CPUThreads = atoi( &line[ i + 1 ] );
       }
    }
@@ -210,4 +207,4 @@ SystemInfo::parseCPUInfo( void )
    return info;
 }
 
-} // namespace noa::TNL
+}  // namespace noa::TNL

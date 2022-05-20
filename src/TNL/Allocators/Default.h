@@ -48,5 +48,5 @@ struct Default< Devices::Cuda >
    using Allocator = Allocators::Cuda< T >;
 };
 
-} // namespace Allocators
-} // namespace noa::TNL
+}  // namespace Allocators
+}  // namespace noa::TNL

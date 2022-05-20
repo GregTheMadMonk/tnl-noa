@@ -12,7 +12,7 @@
 #include <noa/3rdparty/tnl-noa/src/TNL/Timer.h>
 
 namespace noa::TNL {
-   namespace Solvers {
+namespace Solvers {
 
 /**
  * \brief Base class for solver monitors.
@@ -22,98 +22,112 @@ namespace noa::TNL {
  */
 class SolverMonitor
 {
-   public:
+public:
+   /**
+    * \brief Basic construct with no arguments
+    */
+   SolverMonitor() = default;
 
-      /**
-       * \brief Basic construct with no arguments
-       */
-      SolverMonitor()
-         : timeout_milliseconds( 500 ),
-         started( false ),
-         stopped( false ),
-         timer( nullptr )
-      {}
+   /**
+    * \brief This abstract method is responsible for printing or visualizing the status of the solver.
+    */
+   virtual void
+   refresh() = 0;
 
-      /**
-       * \brief This abstract method is responsible for printing or visualizing the status of the solver.
-       */
-      virtual void refresh() = 0;
+   /**
+    * \brief Set the time interval between two consecutive calls of \ref SolverMonitor::refresh.
+    *
+    * \param refreshRate refresh rate in miliseconds.
+    */
+   void
+   setRefreshRate( const int& refreshRate )
+   {
+      timeout_milliseconds = refreshRate;
+   }
 
-      /**
-       * \brief Set the time interval between two consecutive calls of \ref SolverMonitor::refresh.
-       *
-       * \param refreshRate refresh rate in miliseconds.
-       */
-      void setRefreshRate( const int& refreshRate ) { timeout_milliseconds = refreshRate; }
+   /**
+    * \brief Set a timer object for the solver monitor.
+    *
+    * If a timer is set, the monitor can measure real elapsed time since the start of the solver.
+    *
+    * \param timer is an instance of \ref TNL::Timer.
+    */
+   void
+   setTimer( Timer& timer )
+   {
+      this->timer = &timer;
+   }
 
-      /**
-       * \brief Set a timer object for the solver monitor.
-       *
-       * If a timer is set, the monitor can measure real elapsed time since the start of the solver.
-       *
-       * \param timer is an instance of \ref noa::TNL::Timer.
-       */
-      void setTimer( Timer& timer ) { this->timer = &timer; }
+   /**
+    * \brief Starts the main loop from which the method \ref SolverMonitor::refresh is called in given time periods.
+    */
+   void
+   runMainLoop()
+   {
+      // We need to use both 'started' and 'stopped' to avoid a deadlock
+      // when the loop thread runs this method delayed after the
+      // SolverMonitorThread's destructor has already called stopMainLoop()
+      // from the main thread.
+      started = true;
 
-      /**
-       * \brief Starts the main loop from which the method \ref SolverMonitor::refresh is called in given time periods.
-       */
-      void runMainLoop()
-      {
-         // We need to use both 'started' and 'stopped' to avoid a deadlock
-         // when the loop thread runs this method delayed after the
-         // SolverMonitorThread's destructor has already called stopMainLoop()
-         // from the main thread.
-         started = true;
+      const int timeout_base = 100;
+      const std::chrono::milliseconds timeout( timeout_base );
 
-         const int timeout_base = 100;
-         const std::chrono::milliseconds timeout( timeout_base );
+      while( ! stopped ) {
+         refresh();
 
-         while( ! stopped ) {
-            refresh();
+         // make sure to detect changes to refresh rate
+         int steps = timeout_milliseconds / timeout_base;
+         if( steps <= 0 )
+            steps = 1;
 
-            // make sure to detect changes to refresh rate
-            int steps = timeout_milliseconds / timeout_base;
-            if( steps <= 0 )
-               steps = 1;
-
-            int i = 0;
-            while( ! stopped && i++ < steps ) {
-               std::this_thread::sleep_for( timeout );
-            }
+         int i = 0;
+         while( ! stopped && i++ < steps ) {
+            std::this_thread::sleep_for( timeout );
          }
-
-         // reset to initial state
-         started = false;
-         stopped = false;
       }
 
-      /**
-       * \brief Stops the main loop of the monitor. See \ref noa::TNL::SolverMonitor::runMainLoop.
-       */
-      void stopMainLoop() { stopped = true; }
+      // reset to initial state
+      started = false;
+      stopped = false;
+   }
 
-      /**
-       * \brief Checks whether the main loop was stopped.
-       *
-       * \return true if the main loop was stopped.
-       * \return false if the main loop was not stopped yet.
-       */
-      bool isStopped() const { return stopped; }
+   /**
+    * \brief Stops the main loop of the monitor. See \ref TNL::SolverMonitor::runMainLoop.
+    */
+   void
+   stopMainLoop()
+   {
+      stopped = true;
+   }
 
-   protected:
-      double getElapsedTime()
-      {
-         if( ! timer )
-            return 0.0;
-         return timer->getRealTime();
-      }
+   /**
+    * \brief Checks whether the main loop was stopped.
+    *
+    * \return true if the main loop was stopped.
+    * \return false if the main loop was not stopped yet.
+    */
+   bool
+   isStopped() const
+   {
+      return stopped;
+   }
 
-      std::atomic_int timeout_milliseconds;
+protected:
+   double
+   getElapsedTime()
+   {
+      if( timer == nullptr )
+         return 0.0;
+      return timer->getRealTime();
+   }
 
-      std::atomic_bool started, stopped;
+   std::atomic_int timeout_milliseconds{ 500 };
 
-      Timer* timer;
+   std::atomic_bool started{ false };
+   std::atomic_bool stopped{ false };
+
+   Timer* timer = nullptr;
 };
 
 /**
@@ -121,34 +135,31 @@ class SolverMonitor
  */
 class SolverMonitorThread
 {
-   public:
+public:
+   /**
+    * \brief Constructor with instance of solver monitor.
+    *
+    * \param solverMonitor is a reference to an instance of a solver monitor.
+    */
+   SolverMonitorThread( SolverMonitor& solverMonitor )
+   : solverMonitor( solverMonitor ), t( &SolverMonitor::runMainLoop, &solverMonitor )
+   {}
 
-      /**
-       * \brief Constructor with instance of solver monitor.
-       *
-       * \param solverMonitor is a reference to an instance of a solver monitor.
-       */
-      SolverMonitorThread( SolverMonitor& solverMonitor )
-         : solverMonitor( solverMonitor ),
-         t( &SolverMonitor::runMainLoop, &solverMonitor )
-      {}
+   /**
+    * \brief Destructor.
+    */
+   ~SolverMonitorThread()
+   {
+      solverMonitor.stopMainLoop();
+      if( t.joinable() )
+         t.join();
+   }
 
-      /**
-       * \brief Destructor.
-       */
-      ~SolverMonitorThread()
-      {
-         solverMonitor.stopMainLoop();
-         if( t.joinable() )
-            t.join();
-      }
+private:
+   SolverMonitor& solverMonitor;
 
-   private:
-
-      SolverMonitor& solverMonitor;
-
-      std::thread t;
+   std::thread t;
 };
 
-   } // namespace Solvers
-} // namespace noa::TNL
+}  // namespace Solvers
+}  // namespace noa::TNL

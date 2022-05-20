@@ -15,7 +15,8 @@ namespace Solvers {
 namespace Linear {
 
 template< typename Matrix >
-bool TFQMR< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
+bool
+TFQMR< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
 {
    this->setSize( x );
 
@@ -47,22 +48,21 @@ bool TFQMR< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
    tau = lpNorm( r, 2.0 );
    theta = eta = 0.0;
    r_ast = r;
-   rho = (r_ast, r);
+   rho = ( r_ast, r );
    // only to avoid compiler warning; alpha is initialized inside the loop
    alpha = 0.0;
 
    if( b_norm == 0.0 )
-       b_norm = 1.0;
+      b_norm = 1.0;
 
    this->resetIterations();
    this->setResidue( tau / b_norm );
 
-   while( this->nextIteration() )
-   {
+   while( this->nextIteration() ) {
       const IndexType iter = this->getIterations();
 
       if( iter % 2 == 1 ) {
-         alpha = rho / (v, r_ast);
+         alpha = rho / ( v, r_ast );
       }
       else {
          // not necessary in odd iter since the previous iteration
@@ -76,26 +76,26 @@ bool TFQMR< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
          }
       }
       w -= alpha * Au;
-      d = u + (theta * theta * eta / alpha) * d;
+      d = u + ( theta * theta * eta / alpha ) * d;
       w_norm = lpNorm( w, 2.0 );
       theta = w_norm / tau;
       const RealType c = 1.0 / std::sqrt( 1.0 + theta * theta );
       tau = tau * theta * c;
-      eta = c * c  * alpha;
+      eta = c * c * alpha;
       x += eta * d;
 
-      this->setResidue( tau * std::sqrt(iter+1) / b_norm );
+      this->setResidue( tau * std::sqrt( iter + 1 ) / b_norm );
       if( iter > this->getMinIterations() && this->getResidue() < this->getConvergenceResidue() ) {
-          break;
+         break;
       }
 
       if( iter % 2 == 0 ) {
-         const RealType rho_new = (w, r_ast);
+         const RealType rho_new = ( w, r_ast );
          const RealType beta = rho_new / rho;
          rho = rho_new;
 
          u = w + beta * u;
-         v = beta * Au + (beta * beta) * v;
+         v = beta * Au + ( beta * beta ) * v;
          if( this->preconditioner ) {
             this->matrix->vectorProduct( u, M_tmp );
             this->preconditioner->solve( M_tmp, Au );
@@ -113,7 +113,8 @@ bool TFQMR< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
 }
 
 template< typename Matrix >
-void TFQMR< Matrix > :: setSize( const VectorViewType& x )
+void
+TFQMR< Matrix >::setSize( const VectorViewType& x )
 {
    d.setLike( x );
    r.setLike( x );
@@ -125,6 +126,6 @@ void TFQMR< Matrix > :: setSize( const VectorViewType& x )
    M_tmp.setLike( x );
 }
 
-} // namespace Linear
-} // namespace Solvers
-} // namespace noa::TNL
+}  // namespace Linear
+}  // namespace Solvers
+}  // namespace noa::TNL
