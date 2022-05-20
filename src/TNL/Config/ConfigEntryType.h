@@ -19,10 +19,10 @@
 namespace noa::TNL {
 namespace Config {
 
-using mpark::get;
-using mpark::holds_alternative;
-using mpark::monostate;
-using mpark::variant;
+using std::get;
+using std::holds_alternative;
+using std::monostate;
+using std::variant;
 
 // aliases for integer types
 using UnsignedInteger = std::size_t;
