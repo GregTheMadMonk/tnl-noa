@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <TNL/Meshes/Grid.h>
-#include <TNL/Exceptions/NotImplementedError.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/NotImplementedError.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 namespace Writers {
 
@@ -138,4 +138,4 @@ public:
 
 }  // namespace Writers
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

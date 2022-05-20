@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include <TNL/Containers/ndarray/SizesHolderHelpers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ndarray/SizesHolderHelpers.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 namespace __ndarray_impl {
 
@@ -314,4 +314,4 @@ struct SlicedNDArrayBase
 
 }  // namespace __ndarray_impl
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

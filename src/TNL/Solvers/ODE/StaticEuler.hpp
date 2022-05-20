@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Solvers/ODE/StaticEuler.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/ODE/StaticEuler.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace ODE {
 
@@ -226,4 +226,4 @@ StaticEuler< Containers::StaticVector< Size_, Real > >::solve( VectorType& u, RH
 
 }  // namespace ODE
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

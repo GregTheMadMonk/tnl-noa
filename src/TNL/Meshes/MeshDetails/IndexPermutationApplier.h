@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <TNL/Meshes/DimensionTag.h>
-#include <TNL/Meshes/Mesh.h>
-#include <TNL/Matrices/MatrixPermutationApplier.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DimensionTag.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Mesh.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixPermutationApplier.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 template< typename Mesh, int Dimension >
@@ -196,4 +196,4 @@ public:
 };
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

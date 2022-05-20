@@ -7,10 +7,10 @@
 #pragma once
 
 #include <iostream>
-#include <TNL/Containers/StaticVector.h>
-#include <TNL/Functions/Domain.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticVector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Domain.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Functions {
 namespace Analytic {
 
@@ -69,6 +69,6 @@ operator<<( std::ostream& str, const Constant< dimensions, Real >& f )
 
 }  // namespace Analytic
 }  // namespace Functions
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Functions/Analytic/Constant_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/Constant_impl.h>

@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <TNL/TypeTraits.h>
-#include <TNL/Meshes/MeshEntity.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshEntity.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 namespace Writers {
 namespace detail {
@@ -48,4 +48,4 @@ public:
 }  // namespace detail
 }  // namespace Writers
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

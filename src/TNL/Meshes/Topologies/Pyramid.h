@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <TNL/Meshes/Topologies/SubentityVertexCount.h>
-#include <TNL/Meshes/Topologies/Polygon.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/SubentityVertexCount.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Polygon.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 namespace Topologies {
 
@@ -247,4 +247,4 @@ struct SubentityVertexMap< Pyramid, Polygon, 4, 2 >
 
 }  // namespace Topologies
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

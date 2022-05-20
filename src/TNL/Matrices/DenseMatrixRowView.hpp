@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Matrices/DenseMatrixRowView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/DenseMatrixRowView.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 
 template< typename SegmentView, typename ValuesView >
@@ -116,4 +116,4 @@ DenseMatrixRowView< SegmentView, ValuesView >::cend() const -> const IteratorTyp
 }
 
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -10,9 +10,9 @@
 
 #include <atomic>  // std::atomic
 
-#include <TNL/Devices/Host.h>
-#include <TNL/Devices/Sequential.h>
-#include <TNL/Devices/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Sequential.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Cuda.h>
 
 // double-precision atomicAdd function for Maxwell and older GPUs
 // copied from: https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#atomic-functions
@@ -39,7 +39,7 @@ atomicAdd( double* address, double val )
    #endif
 #endif
 
-namespace TNL {
+namespace noa::TNL {
 
 template< typename T, typename Device >
 class Atomic;
@@ -389,4 +389,4 @@ protected:
    T value;
 };
 
-}  // namespace TNL
+}  // namespace noa::TNL

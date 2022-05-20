@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Functions/Analytic/Blob.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/Blob.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Functions {
 namespace Analytic {
 
@@ -109,4 +109,4 @@ Blob< 3, Real >::operator()( const PointType& v, const Real& time ) const
 
 }  // namespace Analytic
 }  // namespace Functions
-}  // namespace TNL
+}  // namespace noa::TNL

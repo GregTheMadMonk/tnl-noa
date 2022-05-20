@@ -14,14 +14,14 @@
 #else
    #include "DummyDefs.h"
    #include <cstring>  // std::memcpy
-   #include <TNL/Exceptions/MPISupportMissing.h>
+   #include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/MPISupportMissing.h>
 #endif
 
-#include <TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
 #include "getDataType.h"
 #include "Profiling.h"
 
-namespace TNL {
+namespace noa::TNL {
 namespace MPI {
 
 // wrappers for basic MPI functions
@@ -267,4 +267,4 @@ Alltoall( const T* sendData, int sendCount, T* receiveData, int receiveCount, MP
 }
 
 }  // namespace MPI
-}  // namespace TNL
+}  // namespace noa::TNL

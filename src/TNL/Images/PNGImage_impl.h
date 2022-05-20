@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Images/PNGImage.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/PNGImage.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Images {
 
 template< typename Index >
@@ -336,4 +336,4 @@ PNGImage< Index >::~PNGImage()
 }
 
 }  // namespace Images
-}  // namespace TNL
+}  // namespace noa::TNL

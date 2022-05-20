@@ -7,9 +7,9 @@
 #pragma once
 
 #include <sstream>
-#include <TNL/Matrices/SparseMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/SparseMatrix.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 
 template< typename Real,
@@ -1382,4 +1382,4 @@ SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAlloca
 }
 
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL

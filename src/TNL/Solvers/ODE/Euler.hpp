@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Solvers/ODE/Euler.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/ODE/Euler.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace ODE {
 
@@ -118,4 +118,4 @@ Euler< Vector, SolverMonitor >::solve( VectorType& _u, RHSFunction&& rhsFunction
 
 }  // namespace ODE
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

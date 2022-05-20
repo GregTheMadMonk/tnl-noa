@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 
 template< typename Real, typename Device, typename Index, typename Allocator >
@@ -122,4 +122,4 @@ Vector< Real, Device, Index, Allocator >::operator%=( const VectorExpression& ex
 }
 
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

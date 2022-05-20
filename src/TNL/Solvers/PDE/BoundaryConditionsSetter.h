@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include <TNL/Cuda/CudaCallable.h>
-#include <TNL/Functions/FunctionAdapter.h>
-#include <TNL/Pointers/SharedPointer.h>
-#include <TNL/Meshes/Traverser.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CudaCallable.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/FunctionAdapter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/SharedPointer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Traverser.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace PDE {
 
@@ -68,4 +68,4 @@ public:
 
 }  // namespace PDE
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

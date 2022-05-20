@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <TNL/Containers/Expressions/ExpressionVariableType.h>
-#include <TNL/MPI/Wrappers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/ExpressionVariableType.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Wrappers.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 namespace Expressions {
 
@@ -243,4 +243,4 @@ struct DistributedComparison< T1, T2, VectorExpressionVariable, ArithmeticVariab
 
 }  // namespace Expressions
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

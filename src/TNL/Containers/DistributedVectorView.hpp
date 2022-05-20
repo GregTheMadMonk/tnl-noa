@@ -10,7 +10,7 @@
 
 #include "DistributedVectorView.h"
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 
 template< typename Real, typename Device, typename Index >
@@ -266,4 +266,4 @@ DistributedVectorView< Real, Device, Index >::operator%=( Scalar c )
 }
 
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

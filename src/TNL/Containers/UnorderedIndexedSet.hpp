@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Containers/UnorderedIndexedSet.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/UnorderedIndexedSet.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 
 template< class Key, class Index, class Hash, class KeyEqual, class Allocator >
@@ -131,4 +131,4 @@ operator<<( std::ostream& str, UnorderedIndexedSet< Key, Index, Hash, KeyEqual, 
 }
 
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

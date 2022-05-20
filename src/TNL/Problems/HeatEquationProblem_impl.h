@@ -12,15 +12,15 @@
 
 #pragma once
 
-#include <TNL/FileName.h>
-#include <TNL/Matrices/MatrixSetter.h>
-#include <TNL/Logger.h>
-#include <TNL/Solvers/PDE/BoundaryConditionsSetter.h>
-#include <TNL/MPI/Comm.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/FileName.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixSetter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Logger.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/BoundaryConditionsSetter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Comm.h>
 
 #include "HeatEquationProblem.h"
 
-namespace TNL {
+namespace noa::TNL {
 namespace Problems {
 
 template< typename Mesh, typename BoundaryCondition, typename RightHandSide, typename DifferentialOperator >
@@ -205,4 +205,4 @@ HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperato
 }
 
 }  // namespace Problems
-}  // namespace TNL
+}  // namespace noa::TNL

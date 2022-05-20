@@ -16,9 +16,9 @@
    #include <unistd.h>
 #endif
 
-#include <TNL/Solvers/IterativeSolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/IterativeSolver.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 
 template< typename Real, typename Index >
@@ -210,4 +210,4 @@ IterativeSolverMonitor< Real, Index >::getLineWidth()
 }
 
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

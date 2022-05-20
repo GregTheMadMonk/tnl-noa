@@ -6,14 +6,14 @@
 
 #pragma once
 
-#include <TNL/Allocators/Default.h>
-#include <TNL/Devices/Host.h>
-#include <TNL/Matrices/DenseMatrixRowView.h>
-#include <TNL/Matrices/Matrix.h>
-#include <TNL/Matrices/DenseMatrixView.h>
-#include <TNL/Algorithms/Segments/Ellpack.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Allocators/Default.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/DenseMatrixRowView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/Matrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/DenseMatrixView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/Ellpack.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 
 /**
@@ -1164,6 +1164,6 @@ operator!=( const DenseMatrixView< Real, Device, Index, Organization >& leftMatr
             const DenseMatrix< Real_, Device_, Index_, Organization, RealAllocator >& rightMatrix );
 
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Matrices/DenseMatrix.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/DenseMatrix.hpp>

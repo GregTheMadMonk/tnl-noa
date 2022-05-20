@@ -6,7 +6,7 @@
 
 #pragma once
 
-namespace TNL {
+namespace noa::TNL {
 namespace Operators {
 
 template< int Dimension, int XDerivative, int YDerivative, int ZDerivative >
@@ -25,4 +25,4 @@ public:
 };
 
 }  // namespace Operators
-}  // namespace TNL
+}  // namespace noa::TNL

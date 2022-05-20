@@ -6,14 +6,14 @@
 
 #pragma once
 
-#include <TNL/Assert.h>
-#include <TNL/Cuda/LaunchHelpers.h>
-#include <TNL/Containers/VectorView.h>
-#include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Algorithms/Segments/detail/LambdaAdapter.h>
-#include <TNL/Algorithms/Segments/Kernels/CSRHybridKernel.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/LaunchHelpers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/VectorView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/ParallelFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/detail/LambdaAdapter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/Kernels/CSRHybridKernel.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 namespace Segments {
 
@@ -302,4 +302,4 @@ CSRHybridKernel< Index, Device, ThreadsInBlock >::reduceSegments( const OffsetsV
 
 }  // namespace Segments
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

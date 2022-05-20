@@ -14,10 +14,10 @@
 
 #include <algorithm>
 
-#include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <TNL/Meshes/Topologies/Polyhedron.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/traits/MeshTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Polyhedron.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 template< typename EntitySeed >
@@ -245,4 +245,4 @@ struct EntitySeedEq< EntitySeed< MeshConfig, Topologies::Vertex > >
 };
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

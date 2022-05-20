@@ -6,15 +6,15 @@
 
 #pragma once
 
-#include <TNL/Config/ConfigDescription.h>
-#include <TNL/Problems/PDEProblem.h>
-#include <TNL/Solvers/BuildConfigTags.h>
-#include <TNL/Solvers/PDE/ExplicitTimeStepper.h>
-#include <TNL/Solvers/PDE/TimeDependentPDESolver.h>
-#include <TNL/Solvers/LinearSolverTypeResolver.h>
-#include <TNL/Matrices/SparseMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ConfigDescription.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Problems/PDEProblem.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/BuildConfigTags.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/ExplicitTimeStepper.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/TimeDependentPDESolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/LinearSolverTypeResolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/SparseMatrix.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 
 template< typename ConfigTag, typename ProblemConfig >
@@ -146,4 +146,4 @@ struct SolverConfig
 };
 
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

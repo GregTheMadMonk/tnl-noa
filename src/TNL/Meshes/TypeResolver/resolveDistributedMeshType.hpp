@@ -8,10 +8,10 @@
 
 #include <experimental/filesystem>
 
-#include <TNL/Meshes/TypeResolver/resolveDistributedMeshType.h>
-#include <TNL/Meshes/TypeResolver/resolveMeshType.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/TypeResolver/resolveDistributedMeshType.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/TypeResolver/resolveMeshType.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 template< typename ConfigTag, typename Device, typename Functor >
@@ -101,4 +101,4 @@ loadDistributedMesh( DistributedMeshes::DistributedMesh< Mesh >& distributedMesh
 }
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

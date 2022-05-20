@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include <TNL/Meshes/Grid.h>
-#include <TNL/Logger.h>
-#include <TNL/Meshes/DistributedMeshes/Directions.h>
-#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Logger.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DistributedMeshes/Directions.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 namespace DistributedMeshes {
 
@@ -177,6 +177,6 @@ operator<<( std::ostream& str, const DistributedMesh< Grid< Dimension, Real, Dev
 
 }  // namespace DistributedMeshes
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Meshes/DistributedMeshes/DistributedGrid.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DistributedMeshes/DistributedGrid.hpp>

@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <TNL/Meshes/GridDetails/GridTraverser.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/GridTraverser.h>
 
 #include "Traverser_Grid3D.h"
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 /****
@@ -438,4 +438,4 @@ Traverser< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 0 >::processAllEn
 }
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

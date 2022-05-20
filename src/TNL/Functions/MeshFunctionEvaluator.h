@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Functions/FunctionAdapter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/FunctionAdapter.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Functions {
 
 template< typename OutMeshFunction, typename InFunction, typename Real >
@@ -142,6 +142,6 @@ public:
 };
 
 }  // namespace Functions
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Functions/MeshFunctionEvaluator_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/MeshFunctionEvaluator_impl.h>

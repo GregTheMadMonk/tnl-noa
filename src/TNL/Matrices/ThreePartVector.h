@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include <TNL/Containers/Vector.h>
-#include <TNL/Containers/VectorView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/VectorView.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 namespace __DistributedSpMV_impl {
 
@@ -202,4 +202,4 @@ protected:
 
 }  // namespace __DistributedSpMV_impl
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL

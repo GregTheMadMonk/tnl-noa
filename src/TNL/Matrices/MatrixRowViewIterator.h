@@ -8,10 +8,10 @@
 
 #include <ostream>
 
-#include <TNL/Cuda/CudaCallable.h>
-#include <TNL/Matrices/SparseMatrixElement.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CudaCallable.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/SparseMatrixElement.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 
 template< typename RowView >
@@ -106,6 +106,6 @@ protected:
 };
 
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Matrices/MatrixRowViewIterator.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixRowViewIterator.hpp>

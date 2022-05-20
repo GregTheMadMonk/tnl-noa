@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include <TNL/Containers/ndarray/Executors.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ndarray/Executors.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 
 namespace __ndarray_impl {
@@ -499,4 +499,4 @@ nd_square( Output& output, const Input& input )
 }
 
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

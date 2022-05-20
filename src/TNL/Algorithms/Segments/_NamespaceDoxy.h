@@ -6,7 +6,7 @@
 
 #pragma once
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 /**
  * \brief Namespace holding segments data structures.
@@ -137,4 +137,4 @@ access to the originally managed data is becoming invalid at that moment.
 
 namespace Segments {}  // namespace Segments
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

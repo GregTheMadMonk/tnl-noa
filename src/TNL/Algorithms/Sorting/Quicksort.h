@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include <TNL/Algorithms/Sorting/detail/Quicksorter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/detail/Quicksorter.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 namespace Sorting {
 
@@ -33,4 +33,4 @@ struct Quicksort
 
 }  // namespace Sorting
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

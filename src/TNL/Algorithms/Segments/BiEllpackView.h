@@ -8,13 +8,13 @@
 
 #include <type_traits>
 
-#include <TNL/Containers/Vector.h>
-#include <TNL/Algorithms/Segments/ElementsOrganization.h>
-#include <TNL/Algorithms/Segments/BiEllpackSegmentView.h>
-#include <TNL/Algorithms/Segments/detail/BiEllpack.h>
-#include <TNL/Algorithms/Segments/SegmentsPrinting.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/ElementsOrganization.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/BiEllpackSegmentView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/detail/BiEllpack.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/SegmentsPrinting.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 namespace Segments {
 
@@ -244,6 +244,6 @@ operator<<( std::ostream& str, const BiEllpackView< Device, Index, Organization,
 
 }  // namespace Segments
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Algorithms/Segments/BiEllpackView.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/BiEllpackView.hpp>

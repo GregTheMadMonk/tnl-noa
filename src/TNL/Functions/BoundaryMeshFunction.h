@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Functions/MeshFunction.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/MeshFunction.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Functions {
 
 // BoundaryMeshFunction is supposed to store values of a mesh functions only
@@ -30,4 +30,4 @@ public:
 };
 
 }  // namespace Functions
-}  // namespace TNL
+}  // namespace noa::TNL

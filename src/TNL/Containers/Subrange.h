@@ -10,11 +10,11 @@
 
 #include <ostream>
 
-#include <TNL/Assert.h>
-#include <TNL/String.h>
-#include <TNL/TypeInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeInfo.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 
 // Specifies a subrange [begin, end) of a range [0, globalSize).
@@ -132,4 +132,4 @@ operator<<( std::ostream& str, const Subrange< Index >& range )
 }
 
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

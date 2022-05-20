@@ -9,7 +9,7 @@
 #include "LinearResidueGetter.h"
 #include "Traits.h"
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace Linear {
 
@@ -29,4 +29,4 @@ LinearResidueGetter::getResidue( const Matrix& matrix, const Vector1& x, const V
 
 }  // namespace Linear
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

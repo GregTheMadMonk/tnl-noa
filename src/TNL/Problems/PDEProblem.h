@@ -6,14 +6,14 @@
 
 #pragma once
 
-#include <TNL/Problems/Problem.h>
-#include <TNL/Problems/CommonData.h>
-#include <TNL/Pointers/SharedPointer.h>
-#include <TNL/Matrices/SparseMatrix.h>
-#include <TNL/Algorithms/Segments/SlicedEllpack.h>
-#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Problems/Problem.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Problems/CommonData.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/SharedPointer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/SparseMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/SlicedEllpack.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Problems {
 
 template< typename Mesh,
@@ -125,6 +125,6 @@ public:
 };
 
 }  // namespace Problems
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Problems/PDEProblem_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Problems/PDEProblem_impl.h>

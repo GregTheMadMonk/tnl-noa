@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include <TNL/Allocators/Default.h>
-#include <TNL/Containers/Vector.h>
-#include <TNL/Algorithms/Segments/SlicedEllpackView.h>
-#include <TNL/Algorithms/Segments/SegmentView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Allocators/Default.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/SlicedEllpackView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/SegmentView.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 namespace Segments {
 
@@ -181,6 +181,6 @@ operator<<( std::ostream& str, const SlicedEllpack< Device, Index, IndexAllocato
 
 }  // namespace Segments
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Algorithms/Segments/SlicedEllpack.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/SlicedEllpack.hpp>

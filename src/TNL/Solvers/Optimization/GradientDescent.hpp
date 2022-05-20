@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Solvers/Optimization/GradientDescent.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Optimization/GradientDescent.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace Optimization {
 
@@ -80,4 +80,4 @@ GradientDescent< Vector, SolverMonitor >::solve( VectorView& w, GradientGetter&&
 
 }  // namespace Optimization
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

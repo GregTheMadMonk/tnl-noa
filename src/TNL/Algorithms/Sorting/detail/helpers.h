@@ -7,9 +7,9 @@
 // Implemented by: Xuan Thang Nguyen
 
 #pragma once
-#include <TNL/Math.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Math.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 namespace Sorting {
 
@@ -59,4 +59,4 @@ cmpSwap( Value& a, Value& b, bool ascending, const CMP& Cmp )
 #endif
 }  // namespace Sorting
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

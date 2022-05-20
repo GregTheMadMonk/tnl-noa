@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include <TNL/File.h>
-#include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <TNL/Containers/VectorView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/File.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/traits/MeshTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/VectorView.h>
 
 #include "Traits.h"
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 namespace EntityTags {
 
@@ -325,4 +325,4 @@ protected:
 
 }  // namespace EntityTags
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

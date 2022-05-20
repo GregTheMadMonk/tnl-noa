@@ -6,14 +6,14 @@
 
 #pragma once
 
-#include <TNL/Containers/Vector.h>
-#include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Algorithms/Segments/SlicedEllpackView.h>
-#include <TNL/Algorithms/Segments/detail/LambdaAdapter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/ParallelFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/SlicedEllpackView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/detail/LambdaAdapter.h>
 
 #include "SlicedEllpackView.h"
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 namespace Segments {
 
@@ -340,4 +340,4 @@ SlicedEllpackView< Device, Index, Organization, SliceSize >::print( Fetch&& fetc
 
 }  // namespace Segments
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

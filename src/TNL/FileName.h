@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
 
-namespace TNL {
+namespace noa::TNL {
 
 /**
  * \brief Helper class for the construction of file names based on name, index and extension.
@@ -156,6 +156,6 @@ getFileExtension( const String& fileName );
 String
 removeFileNameExtension( String fileName );
 
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/FileName.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/FileName.hpp>

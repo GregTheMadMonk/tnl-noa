@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <TNL/String.h>
-#include <TNL/Devices/Cuda.h>
-#include <TNL/Operators/Operator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/Operator.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Operators {
 
 template< typename OperatorT >
@@ -48,4 +48,4 @@ protected:
 };
 
 }  // namespace Operators
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -12,11 +12,11 @@
 // 3rd-party async library providing a thread-pool
 #include <async/threadpool.h>
 
-#include <TNL/Containers/ArrayView.h>
-#include <TNL/MPI/Wrappers.h>
-#include <TNL/Timer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ArrayView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Wrappers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Timer.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 
 template< typename Device, typename Index >
@@ -146,4 +146,4 @@ public:
 };
 
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

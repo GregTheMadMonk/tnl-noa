@@ -6,15 +6,15 @@
 
 #pragma once
 
-#include <TNL/Meshes/Grid.h>
-#include <TNL/Containers/Array.h>
-#include <TNL/Meshes/DistributedMeshes/DistributedGrid.h>
-#include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
-#include <TNL/Meshes/DistributedMeshes/BufferEntitiesHelper.h>
-#include <TNL/Meshes/DistributedMeshes/Directions.h>
-#include <TNL/Pointers/SharedPointer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DistributedMeshes/DistributedGrid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DistributedMeshes/BufferEntitiesHelper.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DistributedMeshes/Directions.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/SharedPointer.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 namespace DistributedMeshes {
 
@@ -238,4 +238,4 @@ private:
 
 }  // namespace DistributedMeshes
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

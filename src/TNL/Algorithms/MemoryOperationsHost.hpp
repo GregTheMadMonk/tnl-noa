@@ -10,11 +10,11 @@
 #include <stdexcept>
 #include <algorithm>  // std::copy, std::equal
 
-#include <TNL/Algorithms/MemoryOperations.h>
-#include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Algorithms/reduce.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/MemoryOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/ParallelFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/reduce.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 
 template< typename Element, typename Index >
@@ -146,4 +146,4 @@ MemoryOperations< Devices::Host >::compare( const Element1* destination, const E
 }
 
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Algorithms/scan.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/scan.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 namespace Segments {
 namespace detail {
@@ -120,4 +120,4 @@ public:
 }  // namespace detail
 }  // namespace Segments
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

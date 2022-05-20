@@ -9,14 +9,14 @@
 #include <ostream>
 #include <utility>
 
-#include <TNL/Functional.h>
-#include <TNL/TypeTraits.h>
-#include <TNL/Containers/Expressions/TypeTraits.h>
-#include <TNL/Containers/Expressions/ExpressionVariableType.h>
-#include <TNL/Containers/Expressions/Comparison.h>
-#include <TNL/Algorithms/reduce.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functional.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/TypeTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/ExpressionVariableType.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/Comparison.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/reduce.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 namespace Expressions {
 
@@ -772,4 +772,4 @@ addAndReduceAbs( Vector& lhs,
    return Algorithms::reduce< DeviceType >( (IndexType) 0, lhs.getSize(), fetch, reduction, zero );
 }
 
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Cuda {
 
 struct DeviceInfo
@@ -57,6 +57,6 @@ struct DeviceInfo
 };
 
 }  // namespace Cuda
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Cuda/DeviceInfo.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/DeviceInfo.hpp>

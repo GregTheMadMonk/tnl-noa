@@ -12,7 +12,7 @@
 
 #pragma once
 
-namespace TNL {
+namespace noa::TNL {
 namespace Arithmetics {
 
 template< class T >
@@ -93,4 +93,4 @@ void
 printDouble( T* d );
 
 }  // namespace Arithmetics
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -12,11 +12,11 @@
 
 #pragma once
 
-#include <TNL/Meshes/Topologies/SubentityVertexMap.h>
-#include <TNL/Meshes/DimensionTag.h>
-#include <TNL/Meshes/Topologies/Polyhedron.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/SubentityVertexMap.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DimensionTag.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Polyhedron.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 template< typename MeshConfig, typename EntityTopology, typename DimensionTag >
@@ -93,4 +93,4 @@ class ConfigValidator : public ConfigValidatorLayerCell< MeshConfig >
 };
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

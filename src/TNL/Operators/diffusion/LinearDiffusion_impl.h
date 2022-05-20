@@ -12,10 +12,10 @@
 
 #pragma once
 
-#include <TNL/Operators/diffusion/LinearDiffusion.h>
-#include <TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/diffusion/LinearDiffusion.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Operators {
 
 template< typename MeshReal, typename Device, typename MeshIndex, typename Real, typename Index >
@@ -193,4 +193,4 @@ LinearDiffusion< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 }
 
 }  // namespace Operators
-}  // namespace TNL
+}  // namespace noa::TNL

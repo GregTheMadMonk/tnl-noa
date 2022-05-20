@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <TNL/Algorithms/Segments/ElementsOrganization.h>
-#include <TNL/Algorithms/Segments/SegmentViewIterator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/ElementsOrganization.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/SegmentViewIterator.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 namespace Segments {
 
@@ -285,4 +285,4 @@ protected:
 
 }  // namespace Segments
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

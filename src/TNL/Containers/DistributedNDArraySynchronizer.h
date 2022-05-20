@@ -12,12 +12,12 @@
 // 3rd-party async library providing a thread-pool
 #include <async/threadpool.h>
 
-#include <TNL/Containers/ndarray/SynchronizerBuffers.h>
-#include <TNL/MPI/Comm.h>
-#include <TNL/MPI/Wrappers.h>
-#include <TNL/Timer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ndarray/SynchronizerBuffers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Comm.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Wrappers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Timer.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 
 enum class SyncDirection : std::uint8_t
@@ -565,4 +565,4 @@ public:
 };
 
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

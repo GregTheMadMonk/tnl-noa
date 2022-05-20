@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include <TNL/Containers/Array.h>
-#include <TNL/Algorithms/Sorting/detail/task.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/detail/task.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 namespace Sorting {
 
@@ -111,6 +111,6 @@ protected:
 
 }  // namespace Sorting
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Algorithms/Sorting/detail/Quicksorter.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/detail/Quicksorter.hpp>

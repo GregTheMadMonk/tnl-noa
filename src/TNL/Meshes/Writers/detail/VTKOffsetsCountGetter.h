@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Meshes/Writers/detail/VerticesPerEntity.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/detail/VerticesPerEntity.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 namespace Writers {
 namespace detail {
@@ -76,4 +76,4 @@ struct VTKOffsetsCountGetter< Mesh,
 }  // namespace detail
 }  // namespace Writers
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

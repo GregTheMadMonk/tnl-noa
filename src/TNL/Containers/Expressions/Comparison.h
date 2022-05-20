@@ -8,12 +8,12 @@
 
 #include <stdexcept>
 
-#include <TNL/Assert.h>
-#include <TNL/Containers/Expressions/ExpressionVariableType.h>
-#include <TNL/Algorithms/reduce.h>
-#include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/ExpressionVariableType.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/reduce.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/MultiDeviceMemoryOperations.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 namespace Expressions {
 
@@ -334,4 +334,4 @@ struct Comparison< T1, T2, VectorExpressionVariable, ArithmeticVariable >
 
 }  // namespace Expressions
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -10,17 +10,17 @@
 
 #include <limits>
 
-#include <TNL/Containers/Array.h>
-#include <TNL/Containers/StaticVector.h>  // TNL::product
-#include <TNL/Meshes/Writers/VTIWriter.h>
-#include <TNL/Endianness.h>
-#include <TNL/base64.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticVector.h>  // TNL::product
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/VTIWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Endianness.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/base64.h>
 #include <stdexcept>
 #ifdef HAVE_ZLIB
-   #include <TNL/zlib_compression.h>
+   #include <noa/3rdparty/tnl-noa/src/TNL/zlib_compression.h>
 #endif
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 namespace Writers {
 
@@ -300,4 +300,4 @@ VTIWriter< Mesh >::closePiece()
 
 }  // namespace Writers
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

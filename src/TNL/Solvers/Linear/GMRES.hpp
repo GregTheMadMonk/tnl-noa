@@ -12,12 +12,12 @@
 #include <cmath>
 #include <memory>  // std::unique_ptr
 
-#include <TNL/Algorithms/Multireduction.h>
-#include <TNL/Matrices/MatrixOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Multireduction.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixOperations.h>
 
 #include "GMRES.h"
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace Linear {
 
@@ -798,4 +798,4 @@ GMRES< Matrix >::setSize( const VectorViewType& x )
 
 }  // namespace Linear
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -20,7 +20,7 @@
 
 #define ABS( n ) ( ( n ) > 0 ? ( n ) : -( n ) )
 
-namespace TNL {
+namespace noa::TNL {
 namespace Arithmetics {
 
 template< class T >
@@ -754,4 +754,4 @@ printQuad( T* a )
 }
 
 }  // namespace Arithmetics
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Functions/Analytic/SinWaveSDF.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/SinWaveSDF.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Functions {
 namespace Analytic {
 
@@ -150,4 +150,4 @@ SinWaveSDF< 3, Real >::getPartialDerivative( const PointType& v, const Real& tim
 
 }  // namespace Analytic
 }  // namespace Functions
-}  // namespace TNL
+}  // namespace noa::TNL

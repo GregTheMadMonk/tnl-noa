@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Solvers/Optimization/Momentum.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Optimization/Momentum.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace Optimization {
 
@@ -108,4 +108,4 @@ Momentum< Vector, SolverMonitor >::solve( VectorView& w, GradientGetter&& getGra
 
 }  // namespace Optimization
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

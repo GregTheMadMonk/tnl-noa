@@ -5,10 +5,10 @@
 // SPDX-License-Identifier: MIT
 
 #pragma once
-#include <TNL/Algorithms/Sorting/detail/helpers.h>
-#include <TNL/Containers/Array.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/detail/helpers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 namespace Sorting {
 
@@ -114,4 +114,4 @@ bitonicSort_Block( TNL::Containers::ArrayView< Value, TNL::Devices::Cuda > src, 
 #endif
 }  // namespace Sorting
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

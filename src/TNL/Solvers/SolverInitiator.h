@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <TNL/Config/ParameterContainer.h>
-#include <TNL/Solvers/BuildConfigTags.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/BuildConfigTags.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 
 template<
@@ -24,6 +24,6 @@ public:
 };
 
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Solvers/SolverInitiator.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/SolverInitiator.hpp>

@@ -12,9 +12,9 @@
 #include <sstream>
 #include <type_traits>
 
-#include <TNL/Meshes/VTKTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/VTKTraits.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 namespace Writers {
 
@@ -122,6 +122,6 @@ protected:
 
 }  // namespace Writers
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Meshes/Writers/VTIWriter.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/VTIWriter.hpp>

@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <TNL/Assert.h>
-#include <TNL/Cuda/CudaCallable.h>
-#include <TNL/Meshes/GridEntityConfig.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CudaCallable.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridEntityConfig.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 template< typename GridEntity,
@@ -37,4 +37,4 @@ public:
 };
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

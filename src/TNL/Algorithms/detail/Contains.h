@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include <TNL/Devices/Sequential.h>
-#include <TNL/Devices/Host.h>
-#include <TNL/Devices/Cuda.h>
-#include <TNL/Cuda/CudaCallable.h>
-#include <TNL/Algorithms/reduce.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Sequential.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CudaCallable.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/reduce.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 namespace detail {
 
@@ -156,4 +156,4 @@ struct ContainsOnlyValue< Devices::Cuda >
 
 }  // namespace detail
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

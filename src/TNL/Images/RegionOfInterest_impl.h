@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Images/Image.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/Image.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Images {
 
 template< typename Index >
@@ -155,4 +155,4 @@ RegionOfInterest< Index >::isIn( const Index row, const Index column ) const
 }
 
 }  // namespace Images
-}  // namespace TNL
+}  // namespace noa::TNL

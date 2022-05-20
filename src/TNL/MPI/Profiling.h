@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Timer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Timer.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace MPI {
 
 inline Timer&
@@ -19,4 +19,4 @@ getTimerAllreduce()
 }
 
 }  // namespace MPI
-}  // namespace TNL
+}  // namespace noa::TNL

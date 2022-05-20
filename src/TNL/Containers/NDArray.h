@@ -8,12 +8,12 @@
 
 #pragma once
 
-#include <TNL/Containers/Array.h>
-#include <TNL/Containers/StaticArray.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticArray.h>
 
-#include <TNL/Containers/NDArrayView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/NDArrayView.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 
 template< std::size_t slicedDimension = 0, std::size_t sliceSize = 0 >
@@ -463,4 +463,4 @@ public:
 };
 
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

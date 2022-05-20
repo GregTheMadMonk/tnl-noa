@@ -10,13 +10,13 @@
 #include <memory>  // std::unique_ptr
 #include <stdexcept>
 
-#include <TNL/Algorithms/MemoryOperations.h>
-#include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
-#include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Algorithms/reduce.h>
-#include <TNL/Exceptions/CudaSupportMissing.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/MemoryOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/MultiDeviceMemoryOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/ParallelFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/reduce.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/CudaSupportMissing.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 
 template< typename Element, typename Index >
@@ -164,4 +164,4 @@ MemoryOperations< Devices::Cuda >::compare( const Element1* destination, const E
 }
 
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

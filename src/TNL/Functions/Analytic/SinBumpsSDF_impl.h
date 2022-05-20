@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Functions/Analytic/SinBumpsSDF.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/SinBumpsSDF.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Functions {
 namespace Analytic {
 
@@ -220,4 +220,4 @@ SinBumpsSDF< 3, Real >::getPartialDerivative( const PointType& v, const Real& ti
 
 }  // namespace Analytic
 }  // namespace Functions
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include <TNL/Algorithms/Segments/CSR.h>
-#include <TNL/Algorithms/Segments/Ellpack.h>
-#include <TNL/Matrices/SparseMatrixView.h>
-#include <TNL/Matrices/DenseMatrixView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/CSR.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/Ellpack.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/SparseMatrixView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/DenseMatrixView.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 
 /**
@@ -148,4 +148,4 @@ wrapEllpackMatrix( const Index rows, const Index columns, const Index nonzerosPe
 }
 
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL

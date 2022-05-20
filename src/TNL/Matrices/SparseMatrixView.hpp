@@ -8,13 +8,13 @@
 
 #include <iomanip>
 #include <functional>
-#include <TNL/Matrices/SparseMatrixView.h>
-#include <TNL/Algorithms/reduce.h>
-#include <TNL/Algorithms/AtomicOperations.h>
-#include <TNL/Matrices/details/SparseMatrix.h>
-#include <TNL/Exceptions/NotImplementedError.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/SparseMatrixView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/reduce.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/AtomicOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/details/SparseMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/NotImplementedError.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 
 template< typename Real,

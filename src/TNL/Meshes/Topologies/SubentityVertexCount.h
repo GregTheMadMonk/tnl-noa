@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Meshes/Topologies/SubentityVertexMap.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/SubentityVertexMap.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 namespace Topologies {
 
@@ -20,4 +20,4 @@ struct SubentityVertexCount
 
 }  // namespace Topologies
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include <TNL/Config/ConfigEntry.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ConfigEntry.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Config {
 
 template< typename EntryType >
@@ -22,4 +22,4 @@ public:
 };
 
 }  // namespace Config
-}  // namespace TNL
+}  // namespace noa::TNL

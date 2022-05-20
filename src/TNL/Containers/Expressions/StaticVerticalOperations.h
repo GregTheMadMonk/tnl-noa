@@ -6,14 +6,14 @@
 
 #pragma once
 
-#include <TNL/Math.h>
-#include <TNL/Containers/Expressions/TypeTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Math.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/TypeTraits.h>
 
 ////
 // By vertical operations we mean those applied across vector elements or
 // vector expression elements. It means for example minim/maximum of all
 // vector elements etc.
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 namespace Expressions {
 
@@ -160,4 +160,4 @@ StaticExpressionBinaryXor( const Expression& expression )
 
 }  // namespace Expressions
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

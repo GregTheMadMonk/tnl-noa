@@ -8,10 +8,10 @@
 
 #include <unordered_map>
 
-#include <TNL/Cuda/DeviceInfo.h>
-#include <TNL/Exceptions/CudaSupportMissing.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/DeviceInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/CudaSupportMissing.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Cuda {
 
 inline int
@@ -233,4 +233,4 @@ DeviceInfo::getRegistersPerMultiprocessor( int deviceNum )
 }
 
 }  // namespace Cuda
-}  // namespace TNL
+}  // namespace noa::TNL

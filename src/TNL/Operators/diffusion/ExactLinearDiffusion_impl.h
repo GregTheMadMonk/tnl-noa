@@ -12,7 +12,7 @@
 
 #pragma once
 
-namespace TNL {
+namespace noa::TNL {
 namespace Operators {
 
 template< typename Function >
@@ -49,4 +49,4 @@ ExactLinearDiffusion< 3 >::operator()( const Function& function,
 }
 
 }  // namespace Operators
-}  // namespace TNL
+}  // namespace noa::TNL

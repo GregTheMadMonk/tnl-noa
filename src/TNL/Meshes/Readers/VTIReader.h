@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include <TNL/Meshes/Readers/XMLVTK.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Readers/XMLVTK.h>
 #include <cstdint>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 namespace Readers {
 
@@ -151,4 +151,4 @@ public:
 
 }  // namespace Readers
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

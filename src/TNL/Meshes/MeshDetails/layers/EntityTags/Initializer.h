@@ -6,15 +6,15 @@
 
 #pragma once
 
-#include <TNL/Algorithms/staticFor.h>
-#include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Pointers/DevicePointer.h>
-#include <TNL/Meshes/DimensionTag.h>
-#include <TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/staticFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/ParallelFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/DevicePointer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DimensionTag.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
 
 #include "Traits.h"
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 namespace EntityTags {
 
@@ -192,4 +192,4 @@ public:
 
 }  // namespace EntityTags
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

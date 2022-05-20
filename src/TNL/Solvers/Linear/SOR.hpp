@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include <TNL/Functional.h>
-#include <TNL/Algorithms/AtomicOperations.h>
-#include <TNL/Solvers/Linear/SOR.h>
-#include <TNL/Solvers/Linear/Utils/LinearResidueGetter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functional.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/AtomicOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/SOR.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/Utils/LinearResidueGetter.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace Linear {
 
@@ -118,4 +118,4 @@ SOR< Matrix >::performIteration( const ConstVectorViewType& b,
 
 }  // namespace Linear
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

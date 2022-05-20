@@ -5,11 +5,11 @@
 // SPDX-License-Identifier: MIT
 
 #pragma once
-#include <TNL/Containers/Array.h>
-#include <TNL/Algorithms/Sorting/detail/blockBitonicSort.h>
-#include <TNL/Algorithms/Sorting/detail/helpers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/detail/blockBitonicSort.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/detail/helpers.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 namespace Sorting {
 
@@ -409,4 +409,4 @@ bitonicSort( int begin, int end, const CMP& Cmp, SWAP Swap )
 #endif
 }  // namespace Sorting
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

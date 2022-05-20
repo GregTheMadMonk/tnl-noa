@@ -6,10 +6,10 @@
 
 #pragma once
 
-//#include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <TNL/Meshes/Topologies/IsDynamicTopology.h>
+//#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/traits/MeshTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/IsDynamicTopology.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 template< typename MeshConfig, typename Device >
@@ -514,4 +514,4 @@ private:
 };
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include <TNL/Timer.h>
-#include <TNL/Logger.h>
-#include <TNL/Config/ConfigDescription.h>
-#include <TNL/Config/ParameterContainer.h>
-#include <TNL/Solvers/IterativeSolverMonitor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Timer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Logger.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ConfigDescription.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/IterativeSolverMonitor.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace PDE {
 
@@ -61,6 +61,6 @@ protected:
 
 }  // namespace PDE
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Solvers/PDE/PDESolver.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/PDESolver.hpp>

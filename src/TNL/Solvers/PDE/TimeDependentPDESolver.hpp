@@ -7,11 +7,11 @@
 #pragma once
 
 #include "TimeDependentPDESolver.h"
-#include <TNL/Meshes/TypeResolver/resolveMeshType.h>
-#include <TNL/Meshes/TypeResolver/resolveDistributedMeshType.h>
-#include <TNL/MPI/Comm.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/TypeResolver/resolveMeshType.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/TypeResolver/resolveDistributedMeshType.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Comm.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace PDE {
 
@@ -299,4 +299,4 @@ TimeDependentPDESolver< Problem, TimeStepper >::writeEpilog( Logger& logger ) co
 
 }  // namespace PDE
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -12,11 +12,11 @@
 
 #pragma once
 
-#include <TNL/Containers/StaticArray.h>
-#include <TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
-#include <TNL/Meshes/Topologies/SubentityVertexMap.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticArray.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/SubentityVertexMap.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 /****
@@ -72,4 +72,4 @@ public:
 };
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

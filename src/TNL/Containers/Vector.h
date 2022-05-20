@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <TNL/Containers/Array.h>
-#include <TNL/Containers/VectorView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/VectorView.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 
 /**
@@ -293,6 +293,6 @@ struct HasEnabledExpressionTemplates< Vector< Real, Device, Index, Allocator > >
 }  // namespace Expressions
 
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Containers/Vector.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.hpp>

@@ -6,7 +6,7 @@
 
 #pragma once
 
-namespace TNL {
+namespace noa::TNL {
 namespace Operators {
 
 template< typename Mesh,
@@ -22,8 +22,8 @@ class FiniteDifferences
 {};
 
 }  // namespace Operators
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Operators/fdm/FiniteDifferences_1D.h>
-#include <TNL/Operators/fdm/FiniteDifferences_2D.h>
-#include <TNL/Operators/fdm/FiniteDifferences_3D.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/fdm/FiniteDifferences_1D.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/fdm/FiniteDifferences_2D.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/fdm/FiniteDifferences_3D.h>

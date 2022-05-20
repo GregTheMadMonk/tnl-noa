@@ -11,9 +11,9 @@
 #include <memory>  // std::unique_ptr
 #include <experimental/filesystem>
 
-#include <TNL/Meshes/Writers/PVTIWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/PVTIWriter.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 namespace Writers {
 
@@ -326,4 +326,4 @@ PVTIWriter< Grid >::closePPointData()
 
 }  // namespace Writers
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

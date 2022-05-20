@@ -12,17 +12,17 @@
 
 #pragma once
 
-#include <TNL/Problems/PDEProblem.h>
-#include <TNL/Operators/diffusion/LinearDiffusion.h>
-#include <TNL/Functions/MeshFunctionView.h>
-#include <TNL/Timer.h>
-#include <TNL/Solvers/PDE/ExplicitUpdater.h>
-#include <TNL/Solvers/PDE/LinearSystemAssembler.h>
-#include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Problems/PDEProblem.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/diffusion/LinearDiffusion.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/MeshFunctionView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Timer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/ExplicitUpdater.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/LinearSystemAssembler.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 
-#include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Problems {
 
 template< typename Mesh,
@@ -123,6 +123,6 @@ protected:
 };
 
 }  // namespace Problems
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Problems/HeatEquationProblem_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Problems/HeatEquationProblem_impl.h>

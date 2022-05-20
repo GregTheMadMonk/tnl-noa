@@ -12,15 +12,15 @@
 
 #pragma once
 
-#include <TNL/Containers/Array.h>
-#include <TNL/Containers/UnorderedIndexedSet.h>
-#include <TNL/Meshes/Topologies/SubentityVertexMap.h>
-#include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <TNL/Meshes/MeshDetails/initializer/EntitySeed.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/UnorderedIndexedSet.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/SubentityVertexMap.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/traits/MeshTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/initializer/EntitySeed.h>
 
 #include <unordered_set>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 template< typename MeshConfig, typename Device, typename EntityTopology >
@@ -87,4 +87,4 @@ public:
 };
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

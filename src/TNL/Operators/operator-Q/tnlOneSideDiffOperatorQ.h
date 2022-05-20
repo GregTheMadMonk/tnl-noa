@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Operators {
 
 template< typename Mesh, typename Real = typename Mesh::RealType, typename Index = typename Mesh::GlobalIndexType >
@@ -97,6 +97,6 @@ private:
 };
 
 }  // namespace Operators
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Operators/operator-Q/tnlOneSideDiffOperatorQ_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/operator-Q/tnlOneSideDiffOperatorQ_impl.h>

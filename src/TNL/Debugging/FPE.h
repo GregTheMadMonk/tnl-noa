@@ -9,9 +9,9 @@
 #include <cfenv>
 #include <csignal>
 
-#include <TNL/Debugging/StackBacktrace.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Debugging/StackBacktrace.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Debugging {
 
 static void
@@ -63,4 +63,4 @@ trackFloatingPointExceptions()
 }
 
 }  // namespace Debugging
-}  // namespace TNL
+}  // namespace noa::TNL

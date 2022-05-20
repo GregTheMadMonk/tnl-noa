@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <TNL/Algorithms/MemoryOperations.h>
-#include <TNL/Cuda/LaunchHelpers.h>  // getTransferBufferSize
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/MemoryOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/LaunchHelpers.h>  // getTransferBufferSize
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 
 template< typename DestinationDevice, typename SourceDevice = DestinationDevice >
@@ -219,4 +219,4 @@ MultiDeviceMemoryOperations< Devices::Cuda, DeviceType >::compare( const Element
 }
 
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

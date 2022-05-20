@@ -8,15 +8,15 @@
 
 #include <utility>  // std::pair
 
-#include <TNL/Assert.h>
-#include <TNL/Math.h>
-#include <TNL/Cuda/DeviceInfo.h>
-#include <TNL/Cuda/KernelLaunch.h>
-#include <TNL/Algorithms/CudaReductionBuffer.h>
-#include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
-#include <TNL/Exceptions/CudaSupportMissing.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Math.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/DeviceInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/KernelLaunch.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/CudaReductionBuffer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/MultiDeviceMemoryOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/CudaSupportMissing.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 namespace detail {
 
@@ -860,4 +860,4 @@ protected:
 
 }  // namespace detail
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

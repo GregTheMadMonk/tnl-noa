@@ -8,11 +8,11 @@
 
 #include <utility>
 
-#include <TNL/Meshes/Grid.h>
-#include <TNL/Meshes/TypeResolver/MeshTypeResolver.h>
-#include <TNL/Meshes/VTKTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/TypeResolver/MeshTypeResolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/VTKTraits.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 template< typename ConfigTag, typename Device >
@@ -221,4 +221,4 @@ MeshTypeResolver< ConfigTag, Device >::detail< Reader, Functor >::resolveTermina
 }
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

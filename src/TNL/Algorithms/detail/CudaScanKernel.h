@@ -6,14 +6,14 @@
 
 #pragma once
 
-#include <TNL/Math.h>
-#include <TNL/Cuda/KernelLaunch.h>
-#include <TNL/Cuda/SharedMemory.h>
-#include <TNL/Exceptions/CudaBadAlloc.h>
-#include <TNL/Containers/Array.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Math.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/KernelLaunch.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/SharedMemory.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/CudaBadAlloc.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
 #include "ScanType.h"
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 namespace detail {
 
@@ -961,4 +961,4 @@ struct CudaScanKernelLauncher
 
 }  // namespace detail
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

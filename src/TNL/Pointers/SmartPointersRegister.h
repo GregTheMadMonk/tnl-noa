@@ -9,13 +9,13 @@
 #include <unordered_set>
 #include <unordered_map>
 
-#include <TNL/Pointers/SmartPointer.h>
-#include <TNL/Timer.h>
-#include <TNL/Cuda/DeviceInfo.h>
-#include <TNL/Devices/Sequential.h>
-#include <TNL/Devices/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/SmartPointer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Timer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/DeviceInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Sequential.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Host.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Pointers {
 
 // Since TNL currently supports only execution on host (which does not need
@@ -120,4 +120,4 @@ synchronizeSmartPointersOnDevice( int deviceId = -1 )
 }
 
 }  // namespace Pointers
-}  // namespace TNL
+}  // namespace noa::TNL

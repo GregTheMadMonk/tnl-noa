@@ -9,15 +9,15 @@
 #include <iostream>
 #include <stdexcept>
 
-#include <TNL/Assert.h>
-#include <TNL/Math.h>
-#include <TNL/TypeInfo.h>
-#include <TNL/Containers/detail/ArrayIO.h>
-#include <TNL/Containers/detail/ArrayAssignment.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Math.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/detail/ArrayIO.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/detail/ArrayAssignment.h>
 
 #include "Array.h"
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 
 template< typename Value, typename Device, typename Index, typename Allocator >
@@ -621,4 +621,4 @@ operator>>( File&& file, Array< Value, Device, Index, Allocator >& array )
 }
 
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

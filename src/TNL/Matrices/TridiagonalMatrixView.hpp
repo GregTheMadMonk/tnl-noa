@@ -7,11 +7,11 @@
 #pragma once
 
 #include <iomanip>
-#include <TNL/Assert.h>
-#include <TNL/Matrices/TridiagonalMatrixView.h>
-#include <TNL/Exceptions/NotImplementedError.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/TridiagonalMatrixView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/NotImplementedError.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 
 template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
@@ -700,4 +700,4 @@ TridiagonalMatrixView< Real, Device, Index, Organization >::getPaddingIndex() co
 }
 
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL

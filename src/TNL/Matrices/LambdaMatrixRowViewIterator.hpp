@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <TNL/Matrices/LambdaMatrixRowView.h>
-#include <TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/LambdaMatrixRowView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 
 template< typename RowView >
@@ -79,4 +79,4 @@ LambdaMatrixRowViewIterator< RowView >::operator*() const -> const MatrixElement
 }
 
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL

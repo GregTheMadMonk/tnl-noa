@@ -10,9 +10,9 @@
 #include <memory>
 #include <execinfo.h>
 
-#include <TNL/TypeInfo.h>  // TNL::detail::demangle
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeInfo.h>  // TNL::detail::demangle
 
-namespace TNL {
+namespace noa::TNL {
 namespace Debugging {
 
 /*
@@ -81,4 +81,4 @@ printStackBacktrace( std::ostream& out = std::cout, unsigned int max_frames = 64
 }
 
 }  // namespace Debugging
-}  // namespace TNL
+}  // namespace noa::TNL

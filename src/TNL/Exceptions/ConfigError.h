@@ -10,7 +10,7 @@
 
 #include <stdexcept>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Exceptions {
 
 struct ConfigError : public std::runtime_error
@@ -19,4 +19,4 @@ struct ConfigError : public std::runtime_error
 };
 
 }  // namespace Exceptions
-}  // namespace TNL
+}  // namespace noa::TNL

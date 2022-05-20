@@ -8,7 +8,7 @@
 
 #pragma once
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace Linear {
 
@@ -111,4 +111,4 @@ triangularSolveUpper( const Matrix& U, Vector1& x, const Vector2& b )
 
 }  // namespace Linear
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

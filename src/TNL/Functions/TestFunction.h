@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include <TNL/Devices/Host.h>
-#include <TNL/Containers/StaticVector.h>
-#include <TNL/Config/ConfigDescription.h>
-#include <TNL/Config/ParameterContainer.h>
-#include <TNL/Functions/Domain.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticVector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ConfigDescription.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Domain.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Functions {
 
 template< int FunctionDimension, typename Real = double, typename Device = Devices::Host >
@@ -143,6 +143,6 @@ operator<<( std::ostream& str, const TestFunction< FunctionDimension, Real, Devi
 }
 
 }  // namespace Functions
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Functions/TestFunction_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/TestFunction_impl.h>

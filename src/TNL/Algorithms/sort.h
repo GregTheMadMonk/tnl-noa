@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include <TNL/Algorithms/Sorting/DefaultSorter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/DefaultSorter.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 
 /**
@@ -239,4 +239,4 @@ isDescending( const Array& arr )
 }
 
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

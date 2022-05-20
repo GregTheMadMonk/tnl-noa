@@ -8,12 +8,12 @@
 
 #pragma once
 
-#include <TNL/Containers/NDArrayView.h>
-#include <TNL/Containers/Subrange.h>
-#include <TNL/MPI/Comm.h>
-#include <TNL/MPI/Wrappers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/NDArrayView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Subrange.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Comm.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Wrappers.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 
 template< typename NDArrayView >
@@ -414,4 +414,4 @@ protected:
 };
 
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

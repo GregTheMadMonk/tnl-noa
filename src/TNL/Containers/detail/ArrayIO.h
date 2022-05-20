@@ -8,11 +8,11 @@
 
 #include <type_traits>
 
-#include <TNL/Object.h>
-#include <TNL/File.h>
-#include <TNL/TypeInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Object.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/File.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeInfo.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 namespace detail {
 
@@ -102,4 +102,4 @@ struct ArrayIO< Value, Index, Allocator, false >
 
 }  // namespace detail
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

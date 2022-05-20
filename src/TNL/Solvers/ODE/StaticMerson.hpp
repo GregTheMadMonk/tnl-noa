@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include <TNL/Math.h>
-#include <TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Math.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
 
 #include "StaticMerson.h"
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace ODE {
 
@@ -295,4 +295,4 @@ StaticMerson< Containers::StaticVector< Size_, Real > >::solve( VectorType& u, R
 
 }  // namespace ODE
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

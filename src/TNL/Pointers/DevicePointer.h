@@ -8,16 +8,16 @@
 
 #pragma once
 
-#include <TNL/Allocators/Default.h>
-#include <TNL/Devices/Host.h>
-#include <TNL/Devices/Cuda.h>
-#include <TNL/Pointers/SmartPointer.h>
-#include <TNL/Pointers/SmartPointersRegister.h>
-#include <TNL/TypeInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Allocators/Default.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/SmartPointer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/SmartPointersRegister.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeInfo.h>
 
 #include <cstring>  // std::memcpy, std::memcmp
 
-namespace TNL {
+namespace noa::TNL {
 namespace Pointers {
 
 /**
@@ -842,4 +842,4 @@ struct Formatter< Pointers::DevicePointer< Object, Device > >
 }  // namespace Assert
 #endif
 
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -6,7 +6,7 @@
 
 #pragma once
 
-namespace TNL {
+namespace noa::TNL {
 /**
  * \brief Namespace for image processing.
  */
@@ -37,4 +37,4 @@ protected:
 };
 
 }  // namespace Images
-}  // namespace TNL
+}  // namespace noa::TNL

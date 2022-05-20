@@ -11,13 +11,13 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <mpark/variant.hpp>  // backport of std::variant from C++17
+#include <variant>
 
-#include <TNL/Meshes/MeshBuilder.h>
-#include <TNL/Meshes/VTKTraits.h>
-#include <TNL/Meshes/Traits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshBuilder.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/VTKTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Traits.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 //! \brief Namespace for mesh readers.
 namespace Readers {
@@ -411,4 +411,4 @@ protected:
 
 }  // namespace Readers
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

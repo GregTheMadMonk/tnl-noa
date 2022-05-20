@@ -11,7 +11,7 @@
 #include "Layer.h"
 #include "Traits.h"
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 namespace EntityTags {
 
@@ -295,4 +295,4 @@ protected:
 
 }  // namespace EntityTags
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

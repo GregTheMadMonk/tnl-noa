@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include <TNL/Containers/Vector.h>
-#include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Algorithms/Segments/CSR.h>
-#include <TNL/Algorithms/Segments/detail/CSR.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/ParallelFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/CSR.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/detail/CSR.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 namespace Segments {
 
@@ -253,4 +253,4 @@ CSR< Device, Index, Kernel, IndexAllocator >::print( Fetch&& fetch ) const -> Se
 
 }  // namespace Segments
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -6,7 +6,7 @@
 
 #pragma once
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 template< typename Grid, int EntityDimension, typename EntityOrientation_, typename EntityProportions_ >
@@ -29,4 +29,4 @@ public:
 };
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

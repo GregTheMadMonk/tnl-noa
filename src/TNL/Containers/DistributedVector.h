@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include <TNL/Containers/DistributedArray.h>
-#include <TNL/Containers/DistributedVectorView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/DistributedArray.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/DistributedVectorView.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 
 template< typename Real,
@@ -184,6 +184,6 @@ struct HasEnabledDistributedExpressionTemplates< DistributedVector< Real, Device
 }  // namespace Expressions
 
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Containers/DistributedVector.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/DistributedVector.hpp>

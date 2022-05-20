@@ -6,7 +6,7 @@
 
 #pragma once
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace Linear {
 
@@ -19,6 +19,6 @@ struct LinearResidueGetter
 
 }  // namespace Linear
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL
 
 #include "LinearResidueGetter.hpp"

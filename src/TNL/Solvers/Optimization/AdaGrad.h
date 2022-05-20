@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Solvers/IterativeSolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/IterativeSolver.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace Optimization {
 
@@ -53,6 +53,6 @@ protected:
 
 }  // namespace Optimization
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Solvers/Optimization/AdaGrad.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Optimization/AdaGrad.hpp>

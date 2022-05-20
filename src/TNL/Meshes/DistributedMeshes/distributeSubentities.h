@@ -8,12 +8,12 @@
 
 #pragma once
 
-#include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
-#include <TNL/Meshes/MeshDetails/layers/EntityTags/Traits.h>
-#include <TNL/Algorithms/scan.h>
-#include <TNL/Algorithms/contains.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/layers/EntityTags/Traits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/scan.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/contains.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 namespace DistributedMeshes {
 
@@ -422,4 +422,4 @@ distributeSubentities( DistributedMesh& mesh, bool preferHighRanks = true )
 
 }  // namespace DistributedMeshes
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

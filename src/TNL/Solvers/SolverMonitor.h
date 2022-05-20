@@ -9,9 +9,9 @@
 #include <thread>
 #include <atomic>
 
-#include <TNL/Timer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Timer.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 
 /**
@@ -162,4 +162,4 @@ private:
 };
 
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

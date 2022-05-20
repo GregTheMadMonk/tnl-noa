@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include <TNL/TypeInfo.h>
-#include <TNL/Math.h>
-#include <TNL/Containers/StaticArray.h>
-#include <TNL/Containers/detail/StaticArrayAssignment.h>
-#include <TNL/Algorithms/unrolledFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Math.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticArray.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/detail/StaticArrayAssignment.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/unrolledFor.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 
 namespace detail {
@@ -402,4 +402,4 @@ operator>>( File&& file, StaticArray< Size, Value >& array )
 }
 
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

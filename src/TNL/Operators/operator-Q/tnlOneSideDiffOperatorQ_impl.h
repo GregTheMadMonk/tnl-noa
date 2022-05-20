@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <TNL/Operators/operator-Q/tnlOneSideDiffOperatorQ.h>
-#include <TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/operator-Q/tnlOneSideDiffOperatorQ.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Operators {
 
 template< typename MeshReal, typename Device, typename MeshIndex, typename Real, typename Index >
@@ -175,4 +175,4 @@ tnlOneSideDiffOperatorQ< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, I
 }
 
 }  // namespace Operators
-}  // namespace TNL
+}  // namespace noa::TNL

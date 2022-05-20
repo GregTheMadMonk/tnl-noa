@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include <TNL/Meshes/GridDetails/BoundaryGridEntityChecker.h>
-#include <TNL/Meshes/GridDetails/GridEntityCenterGetter.h>
-#include <TNL/Meshes/GridDetails/GridEntityMeasureGetter.h>
-#include <TNL/Meshes/GridEntity.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/BoundaryGridEntityChecker.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/GridEntityCenterGetter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/GridEntityMeasureGetter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridEntity.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 /*template< int Dimension,
@@ -450,4 +450,4 @@ GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >::getMesh
 }
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -8,11 +8,11 @@
 
 #include <ostream>
 
-#include <TNL/Cuda/CudaCallable.h>
-#include <TNL/Matrices/LambdaMatrixRowViewIterator.h>
-#include <TNL/Matrices/LambdaMatrixElement.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CudaCallable.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/LambdaMatrixRowViewIterator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/LambdaMatrixElement.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 
 /**
@@ -218,6 +218,6 @@ operator<<( std::ostream& str,
             const LambdaMatrixRowView< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Index >& row );
 
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Matrices/LambdaMatrixRowView.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/LambdaMatrixRowView.hpp>

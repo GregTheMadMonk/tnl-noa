@@ -9,7 +9,7 @@
 #include <unordered_map>
 #include <ostream>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 
 template< class Key,
@@ -81,6 +81,6 @@ std::ostream&
 operator<<( std::ostream& str, UnorderedIndexedSet< Element, Index >& set );
 
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Containers/UnorderedIndexedSet.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/UnorderedIndexedSet.hpp>

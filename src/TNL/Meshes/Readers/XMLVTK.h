@@ -12,19 +12,19 @@
 #include <set>
 #include <experimental/filesystem>
 
-#include <TNL/Meshes/Readers/MeshReader.h>
-#include <TNL/base64.h>
-#include <TNL/Endianness.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Readers/MeshReader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/base64.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Endianness.h>
 
 #ifdef HAVE_ZLIB
-   #include <TNL/zlib_compression.h>
+   #include <noa/3rdparty/tnl-noa/src/TNL/zlib_compression.h>
 #endif
 
 #ifdef HAVE_TINYXML2
    #include <tinyxml2.h>
 #endif
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 namespace Readers {
 
@@ -454,4 +454,4 @@ protected:
 
 }  // namespace Readers
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

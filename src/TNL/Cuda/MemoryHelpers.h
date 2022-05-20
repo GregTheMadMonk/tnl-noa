@@ -8,11 +8,11 @@
 
 #include <iostream>
 
-#include <TNL/Cuda/CheckDevice.h>
-#include <TNL/Exceptions/CudaSupportMissing.h>
-#include <TNL/Exceptions/CudaBadAlloc.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CheckDevice.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/CudaSupportMissing.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/CudaBadAlloc.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Cuda {
 
 template< typename ObjectType >
@@ -48,4 +48,4 @@ freeFromDevice( ObjectType* deviceObject )
 }
 
 }  // namespace Cuda
-}  // namespace TNL
+}  // namespace noa::TNL

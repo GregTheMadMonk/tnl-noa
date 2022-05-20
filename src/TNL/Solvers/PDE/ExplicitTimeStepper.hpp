@@ -8,7 +8,7 @@
 
 #include "ExplicitTimeStepper.h"
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace PDE {
 
@@ -150,4 +150,4 @@ ExplicitTimeStepper< DofVector, OdeSolver >::writeEpilog( Logger& logger ) const
 
 }  // namespace PDE
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

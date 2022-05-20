@@ -9,12 +9,12 @@
 #include <limits>
 #include <ostream>
 
-#include <TNL/Endianness.h>
-#include <TNL/Meshes/Grid.h>
-#include <TNL/Meshes/MeshEntity.h>
-#include <TNL/Meshes/VTKTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Endianness.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshEntity.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/VTKTraits.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 namespace Writers {
 namespace detail {
@@ -708,4 +708,4 @@ struct VTKMeshEntityTypesWriter< Grid< Dimension, MeshReal, Device, MeshIndex >,
 }  // namespace detail
 }  // namespace Writers
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -7,12 +7,12 @@
 #pragma once
 
 #include <iomanip>
-#include <TNL/Solvers/StaticIterativeSolver.h>
-#include <TNL/Config/ConfigDescription.h>
-#include <TNL/Config/ParameterContainer.h>
-#include <TNL/Containers/StaticVector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/StaticIterativeSolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ConfigDescription.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticVector.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace ODE {
 
@@ -159,6 +159,6 @@ protected:
 
 }  // namespace ODE
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Solvers/ODE/StaticExplicitSolver.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/ODE/StaticExplicitSolver.hpp>

@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Math.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Math.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Cuda {
 
 // TODO: the max grid size depends on the axis: (x,y,z): (2147483647, 65535, 65535)
@@ -195,4 +195,4 @@ printThreadsSetup( const dim3& blockSize,
 #endif
 
 }  // namespace Cuda
-}  // namespace TNL
+}  // namespace noa::TNL

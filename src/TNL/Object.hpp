@@ -10,9 +10,9 @@
 #include <fstream>
 #include <cstring>
 
-#include <TNL/Object.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Object.h>
 
-namespace TNL {
+namespace noa::TNL {
 
 static constexpr char magic_number[] = "TNLMN";
 
@@ -138,4 +138,4 @@ saveObjectType( File& file, const String& type )
    file << type;
 }
 
-}  // namespace TNL
+}  // namespace noa::TNL

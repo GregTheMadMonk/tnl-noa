@@ -12,17 +12,17 @@
 
 //#define CUDA_REDUCTION_PROFILING
 
-#include <TNL/Assert.h>
-#include <TNL/Algorithms/Multireduction.h>
-#include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
-#include <TNL/Algorithms/detail/CudaMultireductionKernel.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Multireduction.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/MultiDeviceMemoryOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/detail/CudaMultireductionKernel.h>
 
 #ifdef CUDA_REDUCTION_PROFILING
-   #include <TNL/Timer.h>
+   #include <noa/3rdparty/tnl-noa/src/TNL/Timer.h>
    #include <iostream>
 #endif
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 
 template< typename Result, typename DataFetcher, typename Reduction, typename Index >
@@ -230,4 +230,4 @@ Multireduction< Devices::Cuda >::reduce( Result identity,
 };
 
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

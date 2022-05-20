@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <TNL/Config/ConfigDescription.h>
-#include <TNL/Solvers/ODE/StaticExplicitSolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ConfigDescription.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/ODE/StaticExplicitSolver.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace ODE {
 
@@ -288,6 +288,6 @@ protected:
 
 }  // namespace ODE
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Solvers/ODE/StaticMerson.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/ODE/StaticMerson.hpp>

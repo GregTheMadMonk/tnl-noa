@@ -8,13 +8,13 @@
 
 #pragma once
 
-#include <TNL/Assert.h>
-#include <TNL/Cuda/CudaCallable.h>
-#include <TNL/Algorithms/staticFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CudaCallable.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/staticFor.h>
 
-#include <TNL/Containers/ndarray/Meta.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ndarray/Meta.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 
 namespace __ndarray_impl {
@@ -351,4 +351,4 @@ operator<<( std::ostream& str, const __ndarray_impl::LocalBeginsHolder< SizesHol
 }  // namespace __ndarray_impl
 
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

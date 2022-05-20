@@ -6,7 +6,7 @@
 
 #pragma once
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 template< typename Grid, typename GridEntity, int EntityDimension = GridEntity::getEntityDimension() >
@@ -20,4 +20,4 @@ class GridEntityGetter
  */
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

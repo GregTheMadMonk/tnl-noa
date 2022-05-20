@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include <TNL/Operators/fdm/ForwardFiniteDifference.h>
-#include <TNL/Operators/fdm/BackwardFiniteDifference.h>
-#include <TNL/Operators/geometric/ExactGradientNorm.h>
-#include <TNL/Operators/Operator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/fdm/ForwardFiniteDifference.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/fdm/BackwardFiniteDifference.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/geometric/ExactGradientNorm.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/Operator.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Operators {
 
 template< typename Mesh, typename Real = typename Mesh::RealType, typename Index = typename Mesh::GlobalIndexType >
@@ -143,4 +143,4 @@ private:
 };
 
 }  // namespace Operators
-}  // namespace TNL
+}  // namespace noa::TNL

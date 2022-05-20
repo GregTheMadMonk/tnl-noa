@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Devices/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Cuda.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace PDE {
 
@@ -31,4 +31,4 @@ public:
 
 }  // namespace PDE
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

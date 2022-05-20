@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Solvers/cfd/navier-stokes/NavierStokesSolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/cfd/navier-stokes/NavierStokesSolver.h>
 
-namespace TNL {
+namespace noa::TNL {
 
 template< typename AdvectionScheme, typename DiffusionScheme, typename BoundaryConditions >
 NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::NavierStokesSolver()
@@ -526,4 +526,4 @@ NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::writ
    return true;
 }
 
-}  // namespace TNL
+}  // namespace noa::TNL

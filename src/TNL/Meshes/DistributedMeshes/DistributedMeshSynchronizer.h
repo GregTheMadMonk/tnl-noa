@@ -8,14 +8,14 @@
 
 #pragma once
 
-#include <TNL/Algorithms/scan.h>
-#include <TNL/Containers/ByteArraySynchronizer.h>
-#include <TNL/Containers/Vector.h>
-#include <TNL/Matrices/DenseMatrix.h>
-#include <TNL/MPI/Comm.h>
-#include <TNL/MPI/Wrappers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/scan.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ByteArraySynchronizer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/DenseMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Comm.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Wrappers.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 namespace DistributedMeshes {
 
@@ -523,6 +523,6 @@ protected:
 
 }  // namespace DistributedMeshes
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Meshes/DistributedMeshes/DistributedGridSynchronizer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DistributedMeshes/DistributedGridSynchronizer.h>

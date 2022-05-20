@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include <TNL/Matrices/MatrixView.h>
-#include <TNL/Containers/Vector.h>
-#include <TNL/Matrices/MultidiagonalMatrixRowView.h>
-#include <TNL/Algorithms/Segments/Ellpack.h>
-#include <TNL/Matrices/details/MultidiagonalMatrixIndexer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MultidiagonalMatrixRowView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/Ellpack.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/details/MultidiagonalMatrixIndexer.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 
 /**
@@ -907,6 +907,6 @@ protected:
 };
 
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Matrices/MultidiagonalMatrixView.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MultidiagonalMatrixView.hpp>

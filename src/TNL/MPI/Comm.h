@@ -11,7 +11,7 @@
 
 #include "Wrappers.h"
 
-namespace TNL {
+namespace noa::TNL {
 namespace MPI {
 
 inline int
@@ -275,4 +275,4 @@ getRankOnNode( MPI_Comm communicator = MPI_COMM_WORLD )
 }
 
 }  // namespace MPI
-}  // namespace TNL
+}  // namespace noa::TNL

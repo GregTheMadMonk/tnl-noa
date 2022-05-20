@@ -10,7 +10,7 @@
 
 #include "DistributedArray.h"
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 
 template< typename Value, typename Device, typename Index, typename Allocator >
@@ -317,4 +317,4 @@ DistributedArray< Value, Device, Index, Allocator >::forElements( IndexType begi
 }
 
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

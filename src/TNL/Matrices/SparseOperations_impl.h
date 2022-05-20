@@ -13,10 +13,10 @@
 #include <algorithm>
 #include <memory>  // std::unique_ptr
 
-#include <TNL/Pointers/DevicePointer.h>
-#include <TNL/Algorithms/ParallelFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/DevicePointer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/ParallelFor.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 
 #ifdef HAVE_CUDA
@@ -338,4 +338,4 @@ reorderArray( const Array1& src, Array2& dest, const PermutationArray& perm )
 }
 
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL

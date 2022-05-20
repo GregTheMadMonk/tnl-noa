@@ -6,14 +6,14 @@
 
 #pragma once
 
-#include <TNL/Containers/Vector.h>
-#include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Algorithms/Segments/ChunkedEllpackView.h>
-#include <TNL/Algorithms/Segments/detail/LambdaAdapter.h>
-//#include <TNL/Algorithms/Segments/detail/ChunkedEllpack.h>
-#include <TNL/Cuda/SharedMemory.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/ParallelFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/ChunkedEllpackView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/detail/LambdaAdapter.h>
+//#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/detail/ChunkedEllpack.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/SharedMemory.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 namespace Segments {
 
@@ -532,4 +532,4 @@ ChunkedEllpackView< Device, Index, Organization >::reduceSegmentsKernel( IndexTy
 
 }  // namespace Segments
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

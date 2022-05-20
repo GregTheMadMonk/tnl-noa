@@ -10,11 +10,11 @@
 
 #include <cstdlib>  // std::atexit
 
-#include <TNL/Cuda/CheckDevice.h>
-#include <TNL/Exceptions/CudaBadAlloc.h>
-#include <TNL/Exceptions/CudaSupportMissing.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CheckDevice.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/CudaBadAlloc.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/CudaSupportMissing.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 
 class CudaReductionBuffer
@@ -91,4 +91,4 @@ protected:
 };
 
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

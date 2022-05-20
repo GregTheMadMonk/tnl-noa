@@ -8,12 +8,12 @@
 
 #pragma once
 
-#include <TNL/Algorithms/ParallelFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/ParallelFor.h>
 
-#include <TNL/Containers/ndarray/Meta.h>
-#include <TNL/Containers/ndarray/SizesHolder.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ndarray/Meta.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ndarray/SizesHolder.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 namespace __ndarray_impl {
 
@@ -323,4 +323,4 @@ struct ExecutorDispatcher< Permutation, Devices::Cuda >
 
 }  // namespace __ndarray_impl
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

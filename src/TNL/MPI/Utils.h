@@ -8,14 +8,14 @@
 
 #include <cstdlib>  // std::getenv
 
-#include <TNL/Cuda/CheckDevice.h>
-#include <TNL/Debugging/OutputRedirection.h>
-#include <TNL/TypeTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CheckDevice.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Debugging/OutputRedirection.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeTraits.h>
 
 #include "Wrappers.h"
 #include "Comm.h"
 
-namespace TNL {
+namespace noa::TNL {
 namespace MPI {
 
 inline bool
@@ -249,4 +249,4 @@ bcast( Array& array, int root, MPI_Comm communicator = MPI_COMM_WORLD )
 }
 
 }  // namespace MPI
-}  // namespace TNL
+}  // namespace noa::TNL

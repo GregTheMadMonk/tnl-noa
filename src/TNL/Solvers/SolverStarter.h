@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include <TNL/Config/ParameterContainer.h>
-#include <TNL/Timer.h>
-#include <TNL/Solvers/SolverMonitor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Timer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/SolverMonitor.h>
 #include <ostream>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 
 template< typename ConfigTag >
@@ -39,6 +39,6 @@ protected:
 };
 
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Solvers/SolverStarter.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/SolverStarter.hpp>

@@ -12,7 +12,7 @@
 
 #pragma once
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 namespace Topologies {
 
@@ -26,4 +26,4 @@ struct SubentityVertexMap
 
 }  // namespace Topologies
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

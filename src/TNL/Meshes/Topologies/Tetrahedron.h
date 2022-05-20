@@ -12,9 +12,9 @@
 
 #pragma once
 
-#include <TNL/Meshes/Topologies/Triangle.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Triangle.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 namespace Topologies {
 
@@ -180,4 +180,4 @@ struct SubentityVertexMap< Tetrahedron, Triangle, 3, 2 >
 
 }  // namespace Topologies
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

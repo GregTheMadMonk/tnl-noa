@@ -17,7 +17,7 @@
 
 #include "Double.h"
 
-namespace TNL {
+namespace noa::TNL {
 namespace Arithmetics {
 
 template< class T >
@@ -97,4 +97,4 @@ Double< T >::operator/( const Double< T >& rhs ) const
  */
 
 }  // namespace Arithmetics
-}  // namespace TNL
+}  // namespace noa::TNL

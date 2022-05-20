@@ -6,7 +6,7 @@
 
 #pragma once
 
-namespace TNL {
+namespace noa::TNL {
 namespace Problems {
 
 template< typename Real, typename Device, typename Index >
@@ -19,4 +19,4 @@ public:
 };
 
 }  // namespace Problems
-}  // namespace TNL
+}  // namespace noa::TNL

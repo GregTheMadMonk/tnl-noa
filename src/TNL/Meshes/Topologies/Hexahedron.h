@@ -12,9 +12,9 @@
 
 #pragma once
 
-#include <TNL/Meshes/Topologies/Quadrangle.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Quadrangle.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 namespace Topologies {
 
@@ -364,4 +364,4 @@ struct SubentityVertexMap< Hexahedron, Quadrangle, 5, 3 >
 
 }  // namespace Topologies
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

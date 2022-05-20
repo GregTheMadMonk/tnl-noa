@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <TNL/Containers/StaticArray.h>
-#include <TNL/Containers/Expressions/StaticExpressionTemplates.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticArray.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/StaticExpressionTemplates.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 
 /**
@@ -184,12 +184,12 @@ struct HasEnabledStaticExpressionTemplates< StaticVector< Size, Real > > : std::
 }  // namespace Expressions
 
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Containers/StaticVector.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticVector.hpp>
 
 // TODO: move to some other source file
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 
 template< typename Real >
@@ -241,4 +241,4 @@ TriangleArea( const StaticVector< 3, Real >& a, const StaticVector< 3, Real >& b
 }
 
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

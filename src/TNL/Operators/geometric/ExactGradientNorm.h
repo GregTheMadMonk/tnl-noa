@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <TNL/Meshes/Grid.h>
-#include <TNL/Functions/Domain.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Domain.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Operators {
 
 template< int Dimension, typename Real = double >
@@ -210,4 +210,4 @@ protected:
 };
 
 }  // namespace Operators
-}  // namespace TNL
+}  // namespace noa::TNL

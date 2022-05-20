@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/TypeTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeTraits.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 namespace Expressions {
 
@@ -156,4 +156,4 @@ struct OperandMemberType< R, typename enable_if_type< typename R::VectorOperandT
 
 }  // namespace Expressions
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

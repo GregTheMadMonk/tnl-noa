@@ -8,12 +8,12 @@
 
 #include <type_traits>
 
-#include <TNL/Containers/Vector.h>
-#include <TNL/Algorithms/Segments/CSRView.h>
-#include <TNL/Algorithms/Segments/SegmentView.h>
-#include <TNL/Algorithms/Segments/ElementsOrganization.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/CSRView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/SegmentView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/ElementsOrganization.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 namespace Segments {
 
@@ -606,6 +606,6 @@ using CSRDefault = CSRScalar< Device, Index, IndexAllocator >;
 
 }  // namespace Segments
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Algorithms/Segments/CSR.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/CSR.hpp>

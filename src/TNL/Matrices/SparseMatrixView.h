@@ -6,14 +6,14 @@
 
 #pragma once
 
-#include <TNL/Matrices/Matrix.h>
-#include <TNL/Matrices/MatrixType.h>
-#include <TNL/Allocators/Default.h>
-#include <TNL/Algorithms/Segments/CSR.h>
-#include <TNL/Matrices/SparseMatrixRowView.h>
-#include <TNL/TypeTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/Matrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixType.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Allocators/Default.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/CSR.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/SparseMatrixRowView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeTraits.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 
 /// This is to prevent from appearing in Doxygen documentation.
@@ -981,6 +981,6 @@ private:
 };
 
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Matrices/SparseMatrixView.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/SparseMatrixView.hpp>

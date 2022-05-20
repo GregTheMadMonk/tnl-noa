@@ -13,13 +13,13 @@
 #include "Scan.h"
 #include "CudaScanKernel.h"
 
-#include <TNL/Assert.h>
-#include <TNL/Containers/Array.h>
-#include <TNL/Containers/StaticArray.h>
-#include <TNL/Algorithms/reduce.h>
-#include <TNL/Exceptions/CudaSupportMissing.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticArray.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/reduce.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/CudaSupportMissing.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 namespace detail {
 
@@ -420,4 +420,4 @@ Scan< Devices::Cuda, Type, PhaseType >::performSecondPhase( const InputArray& in
 
 }  // namespace detail
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

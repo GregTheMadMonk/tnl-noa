@@ -8,11 +8,11 @@
 
 #include <memory>
 
-#include <TNL/MPI/Comm.h>
-#include <TNL/MPI/Wrappers.h>
-#include <TNL/Algorithms/reduce.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Comm.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Wrappers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/reduce.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 namespace Expressions {
 
@@ -239,4 +239,4 @@ DistributedExpressionBinaryXor( const Expression& expression ) -> std::decay_t< 
 
 }  // namespace Expressions
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

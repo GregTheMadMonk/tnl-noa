@@ -14,10 +14,10 @@
 #include "Subrange.h"
 #include "ByteArraySynchronizer.h"
 
-#include <TNL/Math.h>
-#include <TNL/MPI/Comm.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Math.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Comm.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 
 template< typename Index >
@@ -140,4 +140,4 @@ public:
 };
 
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

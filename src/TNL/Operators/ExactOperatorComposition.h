@@ -6,7 +6,7 @@
 
 #pragma once
 
-namespace TNL {
+namespace noa::TNL {
 namespace Operators {
 
 template< typename OuterOperator, typename InnerOperator >
@@ -30,4 +30,4 @@ protected:
 };
 
 }  // namespace Operators
-}  // namespace TNL
+}  // namespace noa::TNL

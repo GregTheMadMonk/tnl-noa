@@ -14,7 +14,7 @@
 
    #include "MultiPrecision.h"
 
-namespace TNL {
+namespace noa::TNL {
 namespace Arithmetics {
 
 /* CONSTRUCTORS */
@@ -200,6 +200,6 @@ MultiPrecision::printMP()
 MultiPrecision::~MultiPrecision() {}
 
 }  // namespace Arithmetics
-}  // namespace TNL
+}  // namespace noa::TNL
 
 #endif

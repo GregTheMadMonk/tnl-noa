@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <TNL/Containers/VectorView.h>
-#include <TNL/Containers/detail/VectorAssignment.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/VectorView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/detail/VectorAssignment.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 
 template< typename Real, typename Device, typename Index >
@@ -101,4 +101,4 @@ VectorView< Real, Device, Index >::operator%=( const VectorExpression& expressio
 }
 
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

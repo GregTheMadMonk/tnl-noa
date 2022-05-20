@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include <TNL/Meshes/Grid.h>
-#include <TNL/Operators/geometric/ExactGradientNorm.h>
-#include <TNL/Operators/interpolants/MeshEntitiesInterpolants.h>
-#include <TNL/Operators/Operator.h>
-#include <TNL/Operators/OperatorComposition.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/geometric/ExactGradientNorm.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/interpolants/MeshEntitiesInterpolants.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/Operator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/OperatorComposition.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Operators {
 
 template< typename Mesh,
@@ -464,4 +464,4 @@ private:
 };
 
 }  // namespace Operators
-}  // namespace TNL
+}  // namespace noa::TNL

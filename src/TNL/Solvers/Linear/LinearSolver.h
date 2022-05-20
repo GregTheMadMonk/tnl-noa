@@ -11,11 +11,11 @@
 #include <type_traits>  // std::add_const_t
 #include <memory>       // std::shared_ptr
 
-#include <TNL/Solvers/IterativeSolver.h>
-#include <TNL/Solvers/Linear/Preconditioners/Preconditioner.h>
-#include <TNL/Solvers/Linear/Utils/Traits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/IterativeSolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/Preconditioners/Preconditioner.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/Utils/Traits.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace Linear {
 
@@ -172,4 +172,4 @@ protected:
 };
 }  // namespace Linear
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -11,7 +11,7 @@
 #include <string>
 #include <utility>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Config {
 
 class ConfigEntryBase
@@ -83,4 +83,4 @@ public:
 };
 
 }  // namespace Config
-}  // namespace TNL
+}  // namespace noa::TNL

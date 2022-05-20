@@ -10,12 +10,12 @@
    #include <png.h>
 #endif
 
-#include <TNL/String.h>
-#include <TNL/Images/Image.h>
-#include <TNL/Images/RegionOfInterest.h>
-#include <TNL/Functions/MeshFunction.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/Image.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/RegionOfInterest.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/MeshFunction.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Images {
 
 template< typename Index = int >
@@ -74,6 +74,6 @@ protected:
 };
 
 }  // namespace Images
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Images/PNGImage_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/PNGImage_impl.h>

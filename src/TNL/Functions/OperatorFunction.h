@@ -7,11 +7,11 @@
 #pragma once
 
 #include <type_traits>
-#include <TNL/Cuda/CudaCallable.h>
-#include <TNL/Functions/MeshFunction.h>
-#include <TNL/Solvers/PDE/BoundaryConditionsSetter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CudaCallable.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/MeshFunction.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/BoundaryConditionsSetter.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Functions {
 
 /***
@@ -482,4 +482,4 @@ protected:
 };
 
 }  // namespace Functions
-}  // namespace TNL
+}  // namespace noa::TNL

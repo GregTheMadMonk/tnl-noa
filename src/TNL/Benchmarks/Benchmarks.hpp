@@ -15,7 +15,7 @@
 #include <iostream>
 #include <exception>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Benchmarks {
 
 template< typename Logger >
@@ -192,4 +192,4 @@ Benchmark< Logger >::getBaseTime() const
 }
 
 }  // namespace Benchmarks
-}  // namespace TNL
+}  // namespace noa::TNL

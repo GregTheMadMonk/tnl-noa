@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <TNL/Images/DicomHeader.h>
-#include <TNL/Images/DicomImageInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/DicomHeader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/DicomImageInfo.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Images {
 
 inline DicomImageInfo::DicomImageInfo( DicomHeader& dicomHeader ) : dicomHeader( dicomHeader )
@@ -110,4 +110,4 @@ DicomImageInfo::getNumberOfSlices()
 }
 
 }  // namespace Images
-}  // namespace TNL
+}  // namespace noa::TNL

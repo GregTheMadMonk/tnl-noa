@@ -12,9 +12,9 @@
 
 #pragma once
 
-#include <TNL/Functions/Domain.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Domain.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Operators {
 
 template< int Dimension >
@@ -64,6 +64,6 @@ public:
 };
 
 }  // namespace Operators
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Operators/diffusion/ExactLinearDiffusion_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/diffusion/ExactLinearDiffusion_impl.h>

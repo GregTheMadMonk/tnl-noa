@@ -10,9 +10,9 @@
 
 #include "Diagonal.h"
 
-#include <TNL/Algorithms/ParallelFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/ParallelFor.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace Linear {
 namespace Preconditioners {
@@ -98,4 +98,4 @@ Diagonal< Matrices::DistributedMatrix< Matrix > >::solve( ConstVectorViewType b,
 }  // namespace Preconditioners
 }  // namespace Linear
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

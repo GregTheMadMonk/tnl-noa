@@ -8,10 +8,10 @@
 
 #include <dirent.h>
 
-#include <TNL/Images/DicomSeries.h>
-#include <TNL/Images/DicomSeriesInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/DicomSeries.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/DicomSeriesInfo.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Images {
 
 int
@@ -373,4 +373,4 @@ DicomSeries::isDicomSeriesLoaded()
 }
 
 }  // namespace Images
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -8,12 +8,12 @@
 
 #include <limits>
 
-#include <TNL/String.h>
-#include <TNL/Cuda/CudaCallable.h>
-#include <TNL/Config/ConfigDescription.h>
-#include <TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CudaCallable.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ConfigDescription.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 
 /**
@@ -233,6 +233,6 @@ protected:
 };
 
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Solvers/StaticIterativeSolver.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/StaticIterativeSolver.hpp>

@@ -7,7 +7,7 @@
 #pragma once
 
 #include "NonlinearDiffusion.h"
-#include <TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
 
 /***
  * Authors:
@@ -15,7 +15,7 @@
  * Szekely Ondrej, ondra.szekely@gmail.com
  */
 
-namespace TNL {
+namespace noa::TNL {
 namespace Operators {
 
 template< typename MeshReal,
@@ -181,4 +181,4 @@ NonlinearDiffusion< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, NonlinearDif
 }
 
 }  // namespace Operators
-}  // namespace TNL
+}  // namespace noa::TNL

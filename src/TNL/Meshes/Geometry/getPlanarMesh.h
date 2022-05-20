@@ -6,19 +6,19 @@
 
 #pragma once
 
-#include <TNL/Meshes/Mesh.h>
-#include <TNL/Meshes/MeshEntity.h>
-#include <TNL/Meshes/MeshBuilder.h>
-#include <TNL/Meshes/Topologies/Triangle.h>
-#include <TNL/Meshes/Topologies/Tetrahedron.h>
-#include <TNL/Meshes/Topologies/Polygon.h>
-#include <TNL/Meshes/Topologies/Polyhedron.h>
-#include <TNL/Meshes/Geometry/isPlanar.h>
-#include <TNL/Meshes/Geometry/EntityDecomposer.h>
-#include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Algorithms/scan.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Mesh.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshEntity.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshBuilder.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Triangle.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Tetrahedron.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Polygon.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Polyhedron.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Geometry/isPlanar.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Geometry/EntityDecomposer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/ParallelFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/scan.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 // 3D Polygon Mesh
@@ -29,9 +29,9 @@ template< EntityDecomposerVersion DecomposerVersion,
 auto  // returns MeshBuilder
 planarCorrection( const Mesh< MeshConfig, Devices::Host >& inMesh )
 {
-   using namespace TNL;
-   using namespace TNL::Containers;
-   using namespace TNL::Algorithms;
+   using namespace noa::TNL;
+   using namespace noa::TNL::Containers;
+   using namespace noa::TNL::Algorithms;
 
    using PolygonMesh = Mesh< MeshConfig, Devices::Host >;
    using MeshBuilder = MeshBuilder< PolygonMesh >;
@@ -156,9 +156,9 @@ template< EntityDecomposerVersion DecomposerVersion,
 auto  // returns MeshBuilder
 planarCorrection( const Mesh< MeshConfig, Devices::Host >& inMesh )
 {
-   using namespace TNL;
-   using namespace TNL::Containers;
-   using namespace TNL::Algorithms;
+   using namespace noa::TNL;
+   using namespace noa::TNL::Containers;
+   using namespace noa::TNL::Algorithms;
 
    using PolyhedronMesh = Mesh< MeshConfig, Devices::Host >;
    using MeshBuilder = MeshBuilder< PolyhedronMesh >;
@@ -331,4 +331,4 @@ getPlanarMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
 }
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

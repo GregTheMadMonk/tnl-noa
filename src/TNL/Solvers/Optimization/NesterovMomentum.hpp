@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Solvers/Optimization/NesterovMomentum.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Optimization/NesterovMomentum.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace Optimization {
 
@@ -111,4 +111,4 @@ NesterovMomentum< Vector, SolverMonitor >::solve( VectorView& w, GradientGetter&
 
 }  // namespace Optimization
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

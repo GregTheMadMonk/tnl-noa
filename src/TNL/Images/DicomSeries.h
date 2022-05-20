@@ -8,14 +8,14 @@
 
 #include <list>
 
-#include <TNL/Containers/Array.h>
-#include <TNL/String.h>
-#include <TNL/TypeInfo.h>
-#include <TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
 
-#include <TNL/Images/DicomHeader.h>
-#include <TNL/Images/Image.h>
-#include <TNL/Images/RegionOfInterest.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/DicomHeader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/Image.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/RegionOfInterest.h>
 
 #ifdef HAVE_DCMTK_H
    #define USING_STD_NAMESPACE
@@ -26,7 +26,7 @@
 #include <dirent.h>
 #include <string>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Images {
 
 struct WindowCenterWidth
@@ -117,6 +117,6 @@ private:
 };
 
 }  // namespace Images
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Images/DicomSeries_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/DicomSeries_impl.h>

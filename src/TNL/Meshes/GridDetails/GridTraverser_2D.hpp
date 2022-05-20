@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include <TNL/Meshes/Grid.h>
-#include <TNL/Pointers/SharedPointer.h>
-#include <TNL/Cuda/StreamPool.h>
-#include <TNL/Exceptions/CudaSupportMissing.h>
-#include <TNL/Meshes/GridDetails/GridTraverser.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/SharedPointer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/StreamPool.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/CudaSupportMissing.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/GridTraverser.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 //#define GRID_TRAVERSER_USE_STREAMS
@@ -521,4 +521,4 @@ GridTraverser< Meshes::Grid< 2, Real, Devices::Cuda, Index > >::processEntities(
 }
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

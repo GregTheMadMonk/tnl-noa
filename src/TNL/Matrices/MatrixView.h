@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include <TNL/Object.h>
-#include <TNL/Allocators/Default.h>
-#include <TNL/Devices/Host.h>
-#include <TNL/Containers/Vector.h>
-#include <TNL/Containers/VectorView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Object.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Allocators/Default.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/VectorView.h>
 
-namespace TNL {
+namespace noa::TNL {
 /**
  * \brief Namespace for different matrix formats.
  */
@@ -242,6 +242,6 @@ operator<<( std::ostream& str, const MatrixView< Real, Device, Index >& m )
 }
 
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Matrices/MatrixView.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixView.hpp>

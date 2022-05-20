@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include <TNL/Cuda/CudaCallable.h>
-#include <TNL/Meshes/GridEntity.h>
-#include <TNL/Meshes/Mesh.h>
-#include <TNL/Meshes/MeshEntity.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CudaCallable.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridEntity.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Mesh.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshEntity.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 // compatibility wrapper
@@ -53,4 +53,4 @@ getEntityCenter( const Mesh< MeshConfig, Device >& mesh, const MeshEntity< MeshC
 }
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -11,7 +11,7 @@
 #include <utility>
 #include <initializer_list>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 namespace __ndarray_impl {
 
@@ -348,4 +348,4 @@ using make_constant_index_sequence = gen_const_seq_t< std::size_t, std::integral
 
 }  // namespace __ndarray_impl
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

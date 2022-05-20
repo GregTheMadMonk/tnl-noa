@@ -13,10 +13,10 @@
 
 #include <limits>
 
-#include <TNL/String.h>
-#include <TNL/Solvers/IterativeSolverMonitor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/IterativeSolverMonitor.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Benchmarks {
 
 const double oneGB = 1024.0 * 1024.0 * 1024.0;
@@ -161,6 +161,6 @@ protected:
 };
 
 }  // namespace Benchmarks
-}  // namespace TNL
+}  // namespace noa::TNL
 
 #include "Benchmarks.hpp"

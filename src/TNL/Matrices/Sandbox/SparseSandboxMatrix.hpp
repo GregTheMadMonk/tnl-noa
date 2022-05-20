@@ -8,10 +8,10 @@
 
 #include <functional>
 #include <sstream>
-#include <TNL/Algorithms/reduce.h>
-#include <TNL/Matrices/Sandbox/SparseSandboxMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/reduce.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/Sandbox/SparseSandboxMatrix.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 namespace Sandbox {
 
@@ -897,4 +897,4 @@ SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAlloca
 
 }  // namespace Sandbox
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL

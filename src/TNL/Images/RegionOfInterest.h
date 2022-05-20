@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <TNL/Config/ParameterContainer.h>
-#include <TNL/Images/Image.h>
-#include <TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/Image.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Images {
 
 template< typename Index = int >
@@ -55,6 +55,6 @@ protected:
 };
 
 }  // namespace Images
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Images/RegionOfInterest_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/RegionOfInterest_impl.h>

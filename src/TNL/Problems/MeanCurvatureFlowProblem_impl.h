@@ -12,18 +12,18 @@
 
 #pragma once
 
-#include <TNL/FileName.h>
-#include <TNL/Matrices/MatrixSetter.h>
-#include <TNL/Matrices/MultidiagonalMatrixSetter.h>
-#include <TNL/Logger.h>
-#include <TNL/Solvers/PDE/ExplicitUpdater.h>
-#include <TNL/Solvers/PDE/BoundaryConditionsSetter.h>
-#include <TNL/Solvers/PDE/LinearSystemAssembler.h>
-#include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/FileName.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixSetter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MultidiagonalMatrixSetter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Logger.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/ExplicitUpdater.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/BoundaryConditionsSetter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/LinearSystemAssembler.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 
 #include "MeanCurvatureFlowProblem.h"
 
-namespace TNL {
+namespace noa::TNL {
 namespace Problems {
 
 template< typename Mesh, typename BoundaryCondition, typename RightHandSide, typename DifferentialOperator >
@@ -201,4 +201,4 @@ MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOp
 }
 
 }  // namespace Problems
-}  // namespace TNL
+}  // namespace noa::TNL

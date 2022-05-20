@@ -9,9 +9,9 @@
 #include <functional>
 #include <limits>
 
-#include <TNL/Math.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Math.h>
 
-namespace TNL {
+namespace noa::TNL {
 
 /**
  * \brief Function object implementing `x + y`.
@@ -375,4 +375,4 @@ struct Cast
    };
 };
 
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -15,10 +15,10 @@
 #include <numeric>  // std::iota
 #include <vector>
 
-#include <TNL/Containers/Vector.h>
-#include <TNL/Meshes/Topologies/Polyhedron.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Polyhedron.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 template< typename Mesh >
@@ -431,4 +431,4 @@ private:
 };
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -7,10 +7,10 @@
 #pragma once
 
 #include <istream>
-#include <TNL/String.h>
-#include <TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 
 /**
@@ -149,6 +149,6 @@ protected:
 /// \endcond
 
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Matrices/MatrixReader.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixReader.hpp>

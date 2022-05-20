@@ -12,18 +12,18 @@
 
 #pragma once
 
-#include <TNL/Containers/StaticVector.h>
-#include <TNL/Containers/Array.h>
-#include <TNL/Matrices/SparseMatrix.h>
-#include <TNL/Meshes/MeshDetails/initializer/EntitySeedMatrix.h>
-#include <TNL/Algorithms/Segments/Ellpack.h>
-#include <TNL/Algorithms/Segments/SlicedEllpack.h>
-#include <TNL/Meshes/DimensionTag.h>
-#include <TNL/Meshes/Topologies/Vertex.h>
-#include <TNL/Meshes/Topologies/Polyhedron.h>
-#include <TNL/Meshes/Topologies/IsDynamicTopology.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticVector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/SparseMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/initializer/EntitySeedMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/Ellpack.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/SlicedEllpack.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DimensionTag.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Vertex.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Polyhedron.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/IsDynamicTopology.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 template< typename MeshConfig, typename Device, typename EntityTopology >
@@ -122,4 +122,4 @@ public:
 };
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

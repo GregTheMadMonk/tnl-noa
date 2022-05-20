@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <TNL/Solvers/ODE/Merson.h>
-#include <TNL/Solvers/ODE/Euler.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/ODE/Merson.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/ODE/Euler.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 
 class DefaultBuildConfigTag
@@ -101,4 +101,4 @@ struct ConfigTagExplicitSolver
 };
 
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

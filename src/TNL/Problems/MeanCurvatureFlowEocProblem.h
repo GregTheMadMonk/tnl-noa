@@ -12,10 +12,10 @@
 
 #pragma once
 
-#include <TNL/Problems/MeanCurvatureFlowProblem.h>
-#include <TNL/Operators/operator-Q/tnlOneSideDiffOperatorQ.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Problems/MeanCurvatureFlowProblem.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/operator-Q/tnlOneSideDiffOperatorQ.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Problems {
 
 template< typename Mesh,
@@ -39,6 +39,6 @@ public:
 };
 
 }  // namespace Problems
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Problems/MeanCurvatureFlowEocProblem_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Problems/MeanCurvatureFlowEocProblem_impl.h>

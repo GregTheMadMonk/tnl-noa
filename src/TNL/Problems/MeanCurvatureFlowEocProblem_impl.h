@@ -12,7 +12,7 @@
 
 #pragma once
 
-namespace TNL {
+namespace noa::TNL {
 namespace Problems {
 
 template< typename Mesh, typename BoundaryCondition, typename RightHandSide, typename DifferentialOperator >
@@ -29,4 +29,4 @@ MeanCurvatureFlowEocProblem< Mesh, BoundaryCondition, RightHandSide, Differentia
 }
 
 }  // namespace Problems
-}  // namespace TNL
+}  // namespace noa::TNL

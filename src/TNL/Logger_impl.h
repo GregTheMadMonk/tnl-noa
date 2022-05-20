@@ -9,11 +9,11 @@
 #include <sstream>
 #include <iomanip>
 
-#include <TNL/Logger.h>
-#include <TNL/Cuda/DeviceInfo.h>
-#include <TNL/SystemInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Logger.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/DeviceInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/SystemInfo.h>
 
-namespace TNL {
+namespace noa::TNL {
 
 inline void
 Logger::writeHeader( const String& title )
@@ -140,4 +140,4 @@ Logger::writeParameter( const String& label, const T& value, int parameterLevel 
    stream << label << std::setw( width - label.getLength() - parameterLevel - 3 ) << str.str() << " |" << std::endl;
 }
 
-}  // namespace TNL
+}  // namespace noa::TNL

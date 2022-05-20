@@ -10,9 +10,9 @@
 
 #include "SegmentedScan.h"
 
-#include <TNL/Exceptions/NotImplementedError.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/NotImplementedError.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 
 template< detail::ScanType Type >
@@ -86,4 +86,4 @@ SegmentedScan< Devices::Cuda, Type >::perform( Vector& v,
 }
 
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

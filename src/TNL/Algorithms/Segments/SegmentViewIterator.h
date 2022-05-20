@@ -8,10 +8,10 @@
 
 #include <ostream>
 
-#include <TNL/Cuda/CudaCallable.h>
-#include <TNL/Algorithms/Segments/SegmentElement.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CudaCallable.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/SegmentElement.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 namespace Segments {
 
@@ -100,6 +100,6 @@ protected:
 
 }  // namespace Segments
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Algorithms/Segments/SegmentViewIterator.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/SegmentViewIterator.hpp>

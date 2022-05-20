@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Solvers/Optimization/RMSProp.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Optimization/RMSProp.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace Optimization {
 
@@ -88,4 +88,4 @@ RMSProp< Vector, SolverMonitor >::solve( VectorView& w, GradientGetter&& getGrad
 
 }  // namespace Optimization
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

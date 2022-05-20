@@ -6,7 +6,7 @@
 
 #pragma once
 
-namespace TNL {
+namespace noa::TNL {
 namespace Operators {
 
 /***
@@ -163,4 +163,4 @@ public:
 };
 
 }  // namespace Operators
-}  // namespace TNL
+}  // namespace noa::TNL

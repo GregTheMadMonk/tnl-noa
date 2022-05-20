@@ -10,10 +10,10 @@
 
 #include "DistributedArrayView.h"
 
-#include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/MPI/Wrappers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/ParallelFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Wrappers.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 
 template< typename Value, typename Device, typename Index >
@@ -378,4 +378,4 @@ DistributedArrayView< Value, Device, Index >::forElements( IndexType begin, Inde
 }
 
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

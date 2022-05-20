@@ -24,7 +24,7 @@
    #include <cstdlib>   // std::free
 #endif
 
-namespace TNL {
+namespace noa::TNL {
 namespace detail {
 
 inline std::string
@@ -119,4 +119,4 @@ getSerializationType()
    return T::getSerializationType();
 }
 
-}  // namespace TNL
+}  // namespace noa::TNL

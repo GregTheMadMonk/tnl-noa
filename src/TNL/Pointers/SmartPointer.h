@@ -6,7 +6,7 @@
 
 #pragma once
 
-namespace TNL {
+namespace noa::TNL {
 
 /**
  * \brief Namespace for TNL pointers.
@@ -25,4 +25,4 @@ public:
 };
 
 }  // namespace Pointers
-}  // namespace TNL
+}  // namespace noa::TNL

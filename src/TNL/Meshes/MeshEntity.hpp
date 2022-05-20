@@ -12,9 +12,9 @@
 
 #pragma once
 
-#include <TNL/Meshes/MeshEntity.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshEntity.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 template< typename MeshConfig, typename Device, typename EntityTopology >
@@ -128,4 +128,4 @@ operator<<( std::ostream& str, const MeshEntity< MeshConfig, Device, EntityTopol
 }
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

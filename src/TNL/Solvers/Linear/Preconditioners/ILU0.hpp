@@ -11,11 +11,11 @@
 #include <memory>  // std::unique_ptr
 
 #include "ILU0.h"
-#include <TNL/Solvers/Linear/Utils/TriangularSolve.h>
-#include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Exceptions/CudaSupportMissing.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/Utils/TriangularSolve.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/ParallelFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/CudaSupportMissing.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace Linear {
 namespace Preconditioners {
@@ -459,4 +459,4 @@ ILU0_impl< Matrix, double, Devices::Cuda, int >::solve( ConstVectorViewType b, V
 }  // namespace Preconditioners
 }  // namespace Linear
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

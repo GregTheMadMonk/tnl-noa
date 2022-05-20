@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include <TNL/Cuda/CheckDevice.h>
-#include <TNL/Cuda/DummyDefs.h>
-#include <TNL/Exceptions/CudaSupportMissing.h>
-#include <TNL/TypeInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CheckDevice.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/DummyDefs.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/CudaSupportMissing.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeInfo.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Cuda {
 
 /**
@@ -122,4 +122,4 @@ launchKernelAsync( RawKernel kernel_function,
 }
 
 }  // namespace Cuda
-}  // namespace TNL
+}  // namespace noa::TNL

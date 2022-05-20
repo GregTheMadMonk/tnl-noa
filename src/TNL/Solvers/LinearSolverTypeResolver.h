@@ -12,19 +12,19 @@
 #include <string>
 #include <memory>
 
-#include <TNL/Solvers/Linear/Jacobi.h>
-#include <TNL/Solvers/Linear/SOR.h>
-#include <TNL/Solvers/Linear/CG.h>
-#include <TNL/Solvers/Linear/BICGStab.h>
-#include <TNL/Solvers/Linear/BICGStabL.h>
-#include <TNL/Solvers/Linear/GMRES.h>
-#include <TNL/Solvers/Linear/TFQMR.h>
-#include <TNL/Solvers/Linear/UmfpackWrapper.h>
-#include <TNL/Solvers/Linear/Preconditioners/Diagonal.h>
-#include <TNL/Solvers/Linear/Preconditioners/ILU0.h>
-#include <TNL/Solvers/Linear/Preconditioners/ILUT.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/Jacobi.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/SOR.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/CG.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/BICGStab.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/BICGStabL.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/GMRES.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/TFQMR.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/UmfpackWrapper.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/Preconditioners/Diagonal.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/Preconditioners/ILU0.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/Preconditioners/ILUT.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 
 /**
@@ -160,4 +160,4 @@ getPreconditioner( std::string name )
 }
 
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

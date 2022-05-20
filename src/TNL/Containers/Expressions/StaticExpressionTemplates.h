@@ -9,14 +9,14 @@
 #include <ostream>
 #include <utility>
 
-#include <TNL/Functional.h>
-#include <TNL/TypeTraits.h>
-#include <TNL/Containers/Expressions/TypeTraits.h>
-#include <TNL/Containers/Expressions/ExpressionVariableType.h>
-#include <TNL/Containers/Expressions/StaticComparison.h>
-#include <TNL/Containers/Expressions/StaticVerticalOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functional.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/TypeTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/ExpressionVariableType.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/StaticComparison.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/StaticVerticalOperations.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 namespace Expressions {
 
@@ -813,4 +813,4 @@ addAndReduceAbs( Vector& lhs,
    return result;
 }
 
-}  // namespace TNL
+}  // namespace noa::TNL

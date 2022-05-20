@@ -9,11 +9,11 @@
 #include <utility>
 #include <memory>
 
-#include <TNL/Containers/Expressions/ExpressionTemplates.h>
-#include <TNL/Containers/Expressions/DistributedComparison.h>
-#include <TNL/Containers/Expressions/DistributedVerticalOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/ExpressionTemplates.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/DistributedComparison.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/DistributedVerticalOperations.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 namespace Expressions {
 
@@ -955,4 +955,4 @@ addAndReduceAbs( Vector& lhs,
    return Algorithms::reduce< DeviceType >( lhs.getSize(), fetch, reduction, zero );
 }
 
-}  // namespace TNL
+}  // namespace noa::TNL

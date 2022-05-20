@@ -13,9 +13,9 @@
 
 #pragma once
 
-#include <TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Arithmetics {
 
 template< class T >
@@ -161,4 +161,4 @@ void
 printQuad( T* a );  // Print of quad-double
 
 }  // namespace Arithmetics
-}  // namespace TNL
+}  // namespace noa::TNL

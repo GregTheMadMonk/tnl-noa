@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Solvers/Optimization/AdaGrad.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Optimization/AdaGrad.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace Optimization {
 
@@ -86,4 +86,4 @@ AdaGrad< Vector, SolverMonitor >::solve( VectorView& w, GradientGetter&& getGrad
 
 }  // namespace Optimization
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

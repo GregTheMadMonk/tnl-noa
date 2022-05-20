@@ -14,9 +14,9 @@
 #include <vector>
 #include <string>
 #include <stdexcept>
-#include <mpark/variant.hpp>  // backport of std::variant from C++17
+#include <variant>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Config {
 
 using mpark::get;
@@ -168,4 +168,4 @@ getUIEntryType< std::vector< std::string > >()
 };
 
 }  // namespace Config
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <TNL/String.h>
-#include <TNL/File.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/File.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 
 /**
@@ -337,6 +337,6 @@ File&
 operator>>( File&& file, StaticArray< Size, Value >& array );
 
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Containers/StaticArray.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticArray.hpp>

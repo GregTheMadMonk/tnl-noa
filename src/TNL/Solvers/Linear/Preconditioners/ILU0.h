@@ -10,16 +10,16 @@
 
 #include "Preconditioner.h"
 
-#include <TNL/Containers/Vector.h>
-#include <TNL/Matrices/SparseMatrix.h>
-#include <TNL/Pointers/UniquePointer.h>
-#include <TNL/Exceptions/NotImplementedError.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/SparseMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/UniquePointer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/NotImplementedError.h>
 
 #if defined( HAVE_CUDA ) && defined( HAVE_CUSPARSE )
    #include <cusparse.h>
 #endif
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace Linear {
 namespace Preconditioners {
@@ -278,6 +278,6 @@ public:
 }  // namespace Preconditioners
 }  // namespace Linear
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL
 
 #include "ILU0.hpp"

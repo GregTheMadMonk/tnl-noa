@@ -7,9 +7,9 @@
 #pragma once
 
 #include <iostream>
-#include <TNL/Containers/Array.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 namespace Segments {
 
@@ -130,4 +130,4 @@ printSegments( const Segments& segments, Fetch&& fetch, std::ostream& str )
 
 }  // namespace Segments
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

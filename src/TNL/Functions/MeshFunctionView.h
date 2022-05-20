@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include <TNL/File.h>
-#include <TNL/Containers/VectorView.h>
-#include <TNL/Functions/Domain.h>
-#include <TNL/Pointers/SharedPointer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/File.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/VectorView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Domain.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/SharedPointer.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Functions {
 
 template< typename Mesh, int MeshEntityDimension = Mesh::getMeshDimension(), typename Real = typename Mesh::RealType >
@@ -165,6 +165,6 @@ std::ostream&
 operator<<( std::ostream& str, const MeshFunctionView< Mesh, MeshEntityDimension, Real >& f );
 
 }  // namespace Functions
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Functions/MeshFunctionView.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/MeshFunctionView.hpp>

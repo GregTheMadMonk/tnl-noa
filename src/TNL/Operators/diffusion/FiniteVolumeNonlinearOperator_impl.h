@@ -13,9 +13,9 @@
 #pragma once
 
 #include "FiniteVolumeNonlinearOperator.h"
-#include <TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Operators {
 
 template< typename MeshReal, typename Device, typename MeshIndex, typename Real, typename Index, typename OperatorQ >
@@ -211,4 +211,4 @@ FiniteVolumeNonlinearOperator< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, O
 }
 
 }  // namespace Operators
-}  // namespace TNL
+}  // namespace noa::TNL

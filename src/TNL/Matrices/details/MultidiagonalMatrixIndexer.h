@@ -6,7 +6,7 @@
 
 #pragma once
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 namespace details {
 
@@ -101,4 +101,4 @@ protected:
 };
 }  // namespace details
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL

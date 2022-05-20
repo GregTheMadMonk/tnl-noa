@@ -6,14 +6,14 @@
 
 #pragma once
 
-#include <TNL/Devices/Sequential.h>
-#include <TNL/Devices/Host.h>
-#include <TNL/Devices/Cuda.h>
-#include <TNL/Cuda/CheckDevice.h>
-#include <TNL/Cuda/DeviceInfo.h>
-#include <TNL/Cuda/LaunchHelpers.h>
-#include <TNL/Cuda/KernelLaunch.h>
-#include <TNL/Math.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Sequential.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CheckDevice.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/DeviceInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/LaunchHelpers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/KernelLaunch.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Math.h>
 
 /****
  * The implementation of ParallelFor is not meant to provide maximum performance
@@ -26,7 +26,7 @@
  * Implemented by: Jakub Klinkovsky
  */
 
-namespace TNL {
+namespace noa::TNL {
 /**
  * \brief Namespace for fundamental TNL algorithms
  *
@@ -540,4 +540,4 @@ struct ParallelFor3D< Devices::Cuda, Mode >
 };
 
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

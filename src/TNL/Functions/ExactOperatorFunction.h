@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Functions/Domain.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Domain.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Functions {
 
 template< typename Operator, typename Function >
@@ -47,4 +47,4 @@ protected:
 };
 
 }  // namespace Functions
-}  // namespace TNL
+}  // namespace noa::TNL

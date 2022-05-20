@@ -12,16 +12,16 @@
 
 //#define CUDA_REDUCTION_PROFILING
 
-#include <TNL/Algorithms/detail/Reduction.h>
-#include <TNL/Algorithms/detail/CudaReductionKernel.h>
-#include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/detail/Reduction.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/detail/CudaReductionKernel.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/MultiDeviceMemoryOperations.h>
 
 #ifdef CUDA_REDUCTION_PROFILING
    #include <iostream>
-   #include <TNL/Timer.h>
+   #include <noa/3rdparty/tnl-noa/src/TNL/Timer.h>
 #endif
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 namespace detail {
 
@@ -460,4 +460,4 @@ Reduction< Devices::Cuda >::reduceWithArgument( const Index begin,
 
 }  // namespace detail
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -12,10 +12,10 @@
 
 #pragma once
 
-#include <TNL/Meshes/DimensionTag.h>
-#include <TNL/Meshes/MeshDetails/initializer/EntityInitializer.h>
-#include <TNL/Meshes/MeshDetails/initializer/SubentitySeedsCreator.h>
-#include <TNL/Meshes/MeshDetails/initializer/EntitySeed.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DimensionTag.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/initializer/EntityInitializer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/initializer/SubentitySeedsCreator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/initializer/EntitySeed.h>
 
 /*
  * How this beast works:
@@ -51,7 +51,7 @@
  *     space is not wasted.
  */
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 template< typename MeshConfig, typename DimensionTag >
@@ -372,4 +372,4 @@ public:
 };
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

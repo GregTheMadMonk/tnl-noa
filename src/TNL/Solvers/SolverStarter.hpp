@@ -6,20 +6,20 @@
 
 #pragma once
 
-#include <TNL/Logger.h>
-#include <TNL/String.h>
-#include <TNL/Devices/Cuda.h>
-#include <TNL/Devices/Host.h>
-#include <TNL/MPI/Config.h>
-#include <TNL/Solvers/SolverStarter.h>
-#include <TNL/Solvers/BuildConfigTags.h>
-#include <TNL/Solvers/ODE/Merson.h>
-#include <TNL/Solvers/ODE/Euler.h>
-#include <TNL/Solvers/PDE/ExplicitTimeStepper.h>
-#include <TNL/Solvers/PDE/SemiImplicitTimeStepper.h>
-#include <TNL/Solvers/PDE/PDESolverTypeResolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Logger.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Config.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/SolverStarter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/BuildConfigTags.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/ODE/Merson.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/ODE/Euler.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/ExplicitTimeStepper.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/SemiImplicitTimeStepper.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/PDESolverTypeResolver.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 
 template< typename Problem, typename ConfigTag, bool TimeDependent = Problem::isTimeDependent() >
@@ -391,4 +391,4 @@ SolverStarter< ConfigTag >::writeEpilog( std::ostream& str, const Solver& solver
 }
 
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

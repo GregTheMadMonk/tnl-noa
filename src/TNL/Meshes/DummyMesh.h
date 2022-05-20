@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Devices/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Host.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 template< typename Real = double, typename Device = Devices::Host, typename Index = int >
@@ -27,4 +27,4 @@ public:
 };
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

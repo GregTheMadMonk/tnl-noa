@@ -10,11 +10,11 @@
 
 #include <algorithm>
 
-#include <TNL/Assert.h>
-#include <TNL/Algorithms/staticFor.h>
-#include <TNL/Containers/ndarray/Meta.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/staticFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ndarray/Meta.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 namespace __ndarray_impl {
 
@@ -367,4 +367,4 @@ struct SetSizesMinHelper< TargetHolder, SourceHolder, 0 >
 
 }  // namespace __ndarray_impl
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

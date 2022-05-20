@@ -4,17 +4,17 @@
 //
 // SPDX-License-Identifier: MIT
 
-#include <TNL/Solvers/SolverInitiator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/SolverInitiator.h>
 
-#include <TNL/Devices/Host.h>
-#include <TNL/Devices/Cuda.h>
-#include <TNL/Config/ParameterContainer.h>
-#include <TNL/Meshes/TypeResolver/resolveMeshType.h>
-#include <TNL/Solvers/BuildConfigTags.h>
-#include <TNL/Solvers/SolverStarter.h>
-#include <TNL/Meshes/DummyMesh.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/TypeResolver/resolveMeshType.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/BuildConfigTags.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/SolverStarter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DummyMesh.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 
 template<
@@ -240,4 +240,4 @@ public:
 };
 
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

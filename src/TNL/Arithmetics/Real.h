@@ -8,9 +8,9 @@
 
 #include <iostream>
 #include <cmath>
-#include <TNL/Experimental/Arithmetics/FlopsCounter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Experimental/Arithmetics/FlopsCounter.h>
 
-namespace TNL {
+namespace noa::TNL {
 
 template< class T >
 class Real
@@ -514,4 +514,4 @@ operator<<( std::ostream& str, const Real< T >& v )
 typedef Real< float > tnlFloat;
 typedef Real< double > tnlDouble;
 
-}  // namespace TNL
+}  // namespace noa::TNL

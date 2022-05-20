@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
 
 #ifdef HAVE_DCMTK_H
    #define HAVE_CONFIG_H
@@ -16,7 +16,7 @@
    #include <dcmtk/ofstd/ofstring.h>
 #endif
 
-namespace TNL {
+namespace noa::TNL {
 namespace Images {
 
 class DicomHeader;
@@ -110,6 +110,6 @@ private:
 };
 
 }  // namespace Images
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Images/DicomSeriesInfo_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/DicomSeriesInfo_impl.h>

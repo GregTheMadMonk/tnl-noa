@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <TNL/Cuda/CudaCallable.h>
-#include <TNL/Config/ParameterContainer.h>
-#include <TNL/Functions/Domain.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CudaCallable.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Domain.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Functions {
 
 /***
@@ -184,4 +184,4 @@ public:
 #endif
 
 }  // namespace Functions
-}  // namespace TNL
+}  // namespace noa::TNL

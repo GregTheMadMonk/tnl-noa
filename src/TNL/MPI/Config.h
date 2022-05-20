@@ -17,11 +17,11 @@
    #include <unistd.h>  // getpid
 #endif
 
-#include <TNL/Config/ConfigDescription.h>
-#include <TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ConfigDescription.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
 #include "Utils.h"
 
-namespace TNL {
+namespace noa::TNL {
 namespace MPI {
 
 inline void
@@ -95,4 +95,4 @@ setup( const Config::ParameterContainer& parameters, const String& prefix = "" )
 }
 
 }  // namespace MPI
-}  // namespace TNL
+}  // namespace noa::TNL

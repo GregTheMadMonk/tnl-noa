@@ -6,7 +6,7 @@
 
 #pragma once
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 
 /**
@@ -33,4 +33,4 @@ namespace Solvers {
  */
 namespace ODE {}  // namespace ODE
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

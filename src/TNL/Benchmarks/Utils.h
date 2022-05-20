@@ -14,19 +14,19 @@
 #include <fstream>
 #include <experimental/filesystem>
 
-#include <TNL/Timer.h>
-#include <TNL/Devices/Cuda.h>
-#include <TNL/Containers/Vector.h>
-#include <TNL/Solvers/IterativeSolverMonitor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Timer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/IterativeSolverMonitor.h>
 
-#include <TNL/Devices/Host.h>
-#include <TNL/SystemInfo.h>
-#include <TNL/Cuda/DeviceInfo.h>
-#include <TNL/Config/ConfigDescription.h>
-#include <TNL/MPI/Comm.h>
-#include <TNL/MPI/Wrappers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/SystemInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/DeviceInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ConfigDescription.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Comm.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Wrappers.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Benchmarks {
 
 // returns a tuple of (loops, mean, stddev) where loops is the number of
@@ -172,4 +172,4 @@ writeMapAsJson( const std::map< std::string, std::string >& data, std::string fi
 }
 
 }  // namespace Benchmarks
-}  // namespace TNL
+}  // namespace noa::TNL

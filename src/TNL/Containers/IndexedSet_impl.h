@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Containers/IndexedSet.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/IndexedSet.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 
 template< class Key, class Index, class Compare, class Allocator >
@@ -80,4 +80,4 @@ operator<<( std::ostream& str, IndexedSet< Key, Index, Compare, Allocator >& set
 }
 
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

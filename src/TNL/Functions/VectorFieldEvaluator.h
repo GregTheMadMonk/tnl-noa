@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <TNL/Functions/MeshFunction.h>
-#include <TNL/Functions/OperatorFunction.h>
-#include <TNL/Functions/FunctionAdapter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/MeshFunction.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/OperatorFunction.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/FunctionAdapter.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Functions {
 
 template< typename OutVectorField, typename InVectorField, typename Real >
@@ -154,6 +154,6 @@ public:
 };
 
 }  // namespace Functions
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Functions/VectorFieldEvaluator_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/VectorFieldEvaluator_impl.h>

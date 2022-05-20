@@ -7,9 +7,9 @@
 #pragma once
 
 #include <iomanip>
-#include <TNL/Matrices/MatrixWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixWriter.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 
 template< typename Matrix, typename Device >
@@ -195,4 +195,4 @@ MatrixWriter< Matrix, TNL::Devices::Host >::writeEpsBody( std::ostream& str,
 }
 
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL

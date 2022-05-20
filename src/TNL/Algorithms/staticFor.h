@@ -9,7 +9,7 @@
 #include <utility>
 #include <type_traits>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 
 namespace detail {
@@ -111,4 +111,4 @@ staticFor( Func&& f, ArgTypes&&... args )
 }
 
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

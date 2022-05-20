@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <TNL/Operators/fdm/FiniteDifferences.h>
-#include <TNL/Operators/fdm/ExactDifference.h>
-#include <TNL/Operators/Operator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/fdm/FiniteDifferences.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/fdm/ExactDifference.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/Operator.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Operators {
 
 template< typename Mesh,
@@ -65,4 +65,4 @@ public:
 };
 
 }  // namespace Operators
-}  // namespace TNL
+}  // namespace noa::TNL

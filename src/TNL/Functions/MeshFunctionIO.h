@@ -9,15 +9,15 @@
 #include <type_traits>
 #include <experimental/filesystem>
 
-#include <TNL/Meshes/Traits.h>
-#include <TNL/Meshes/Readers/getMeshReader.h>
-#include <TNL/Meshes/Writers/VTKWriter.h>
-#include <TNL/Meshes/Writers/VTUWriter.h>
-#include <TNL/Meshes/Writers/VTIWriter.h>
-#include <TNL/Meshes/Writers/PVTIWriter.h>
-#include <TNL/Functions/MeshFunctionGnuplotWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Traits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Readers/getMeshReader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/VTKWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/VTUWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/VTIWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/PVTIWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/MeshFunctionGnuplotWriter.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Functions {
 
 template< typename MeshFunction >
@@ -288,4 +288,4 @@ writeDistributedMeshFunction(
 // TODO: specialization of writeDistributedMeshFunction for unstructured mesh
 
 }  // namespace Functions
-}  // namespace TNL
+}  // namespace noa::TNL

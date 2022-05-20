@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Meshes/Traverser.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Traverser.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 
 template< typename Mesh, typename DifferentialOperator, typename BoundaryConditions, typename RowsCapacitiesType >
@@ -31,4 +31,4 @@ MatrixSetter< Mesh, DifferentialOperator, BoundaryConditions, RowsCapacitiesType
 }
 
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL

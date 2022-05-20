@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <TNL/Images/DicomPatientInfo.h>
-#include <TNL/Images/DicomHeader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/DicomPatientInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/DicomHeader.h>
 
 #ifdef HAVE_DCMTK_H
    #define HAVE_CONFIG_H
@@ -15,7 +15,7 @@
    #include <dcmtk/ofstd/ofstring.h>
 #endif
 
-namespace TNL {
+namespace noa::TNL {
 namespace Images {
 
 inline DicomPatientInfo::DicomPatientInfo( DicomHeader& dicomHeader ) : dicomHeader( dicomHeader )
@@ -100,4 +100,4 @@ DicomPatientInfo::getOrientation()
 }
 
 }  // namespace Images
-}  // namespace TNL
+}  // namespace noa::TNL

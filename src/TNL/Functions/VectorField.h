@@ -8,17 +8,17 @@
 
 #include <experimental/filesystem>
 
-#include <TNL/Functions/Domain.h>
-#include <TNL/Devices/Cuda.h>
-#include <TNL/Config/ParameterContainer.h>
-#include <TNL/Functions/MeshFunction.h>
-#include <TNL/Functions/MeshFunctionView.h>
-#include <TNL/Functions/VectorFieldGnuplotWriter.h>
-#include <TNL/Meshes/Writers/VTKWriter.h>
-#include <TNL/Meshes/Writers/VTUWriter.h>
-#include <TNL/Meshes/Writers/VTIWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Domain.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/MeshFunction.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/MeshFunctionView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/VectorFieldGnuplotWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/VTKWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/VTUWriter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Writers/VTIWriter.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Functions {
 
 template< int Size, typename Function >
@@ -549,4 +549,4 @@ operator<<( std::ostream& str, const VectorField< Dimension, Function >& f )
 }
 
 }  // namespace Functions
-}  // namespace TNL
+}  // namespace noa::TNL

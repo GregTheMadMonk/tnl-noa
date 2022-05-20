@@ -12,9 +12,9 @@
 
 #pragma once
 
-#include <TNL/Problems/HeatEquationProblem.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Problems/HeatEquationProblem.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Problems {
 
 template< typename Mesh,
@@ -33,6 +33,6 @@ public:
 };
 
 }  // namespace Problems
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Problems/HeatEquationEocProblem_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Problems/HeatEquationEocProblem_impl.h>

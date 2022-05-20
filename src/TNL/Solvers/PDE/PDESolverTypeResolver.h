@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <TNL/Solvers/PDE/TimeDependentPDESolver.h>
-#include <TNL/Solvers/PDE/TimeIndependentPDESolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/TimeDependentPDESolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/TimeIndependentPDESolver.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace PDE {
 
@@ -33,4 +33,4 @@ public:
 
 }  // namespace PDE
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

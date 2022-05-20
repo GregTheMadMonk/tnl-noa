@@ -9,14 +9,14 @@
 #include <stdexcept>
 #include <iostream>
 
-#include <TNL/Timer.h>
-#include <TNL/Containers/Vector.h>
-#include <TNL/Matrices/DenseMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Timer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/DenseMatrix.h>
 
 #include "Comm.h"
 #include "Utils.h"
 
-namespace TNL {
+namespace noa::TNL {
 namespace MPI {
 
 /**
@@ -218,4 +218,4 @@ optimizeRanks( const MPI::Comm& communicator, const CommPattern& communicationPa
 }
 
 }  // namespace MPI
-}  // namespace TNL
+}  // namespace noa::TNL

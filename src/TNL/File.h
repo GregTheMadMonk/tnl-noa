@@ -9,11 +9,11 @@
 #include <fstream>
 #include <type_traits>
 
-#include <TNL/String.h>
-#include <TNL/Allocators/Host.h>
-#include <TNL/Allocators/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Allocators/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Allocators/Cuda.h>
 
-namespace TNL {
+namespace noa::TNL {
 
 /**
  * \brief This class serves for binary IO. It allows to do IO even for data allocated on GPU together with on-the-fly data type
@@ -201,6 +201,6 @@ operator<<( File& file, const std::string& str );
 File&
 operator>>( File& file, std::string& str );
 
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/File.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/File.hpp>

@@ -9,7 +9,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace TNL {
+namespace noa::TNL {
 
 // clang-format off
 
@@ -312,4 +312,4 @@ public:
 
 // clang-format on
 
-}  // namespace TNL
+}  // namespace noa::TNL

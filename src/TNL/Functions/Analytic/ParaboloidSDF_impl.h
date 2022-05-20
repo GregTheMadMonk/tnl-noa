@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Functions/Analytic/ParaboloidSDF.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/ParaboloidSDF.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Functions {
 namespace Analytic {
 
@@ -149,4 +149,4 @@ ParaboloidSDF< 3, Real >::getPartialDerivative( const PointType& v, const Real& 
 
 }  // namespace Analytic
 }  // namespace Functions
-}  // namespace TNL
+}  // namespace noa::TNL

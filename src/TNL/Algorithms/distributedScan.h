@@ -10,10 +10,10 @@
 
 #include <utility>  // std::forward
 
-#include <TNL/Algorithms/detail/DistributedScan.h>
-#include <TNL/Functional.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/detail/DistributedScan.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functional.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 
 /**
@@ -293,4 +293,4 @@ distributedInplaceExclusiveScan( DistributedArray& array,
 }
 
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

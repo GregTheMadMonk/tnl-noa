@@ -10,7 +10,7 @@
 
 #include "Preconditioner.h"
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace Linear {
 namespace Preconditioners {
@@ -164,6 +164,6 @@ protected:
 }  // namespace Preconditioners
 }  // namespace Linear
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL
 
 #include "Diagonal.hpp"

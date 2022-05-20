@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <TNL/Containers/StaticVector.h>
-#include <TNL/Meshes/GridDetails/NeighborGridEntitiesStorage.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticVector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/NeighborGridEntitiesStorage.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 template< typename GridEntity, int NeighborEntityDimension, typename StencilStorage >
@@ -415,6 +415,6 @@ protected:
 };
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Meshes/GridDetails/GridEntity_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/GridEntity_impl.h>

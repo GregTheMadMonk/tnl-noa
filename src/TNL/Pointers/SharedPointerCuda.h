@@ -10,16 +10,16 @@
 
 #include "SharedPointer.h"
 
-#include <TNL/Allocators/Default.h>
-#include <TNL/Devices/Cuda.h>
-#include <TNL/Pointers/SmartPointer.h>
-#include <TNL/Pointers/SmartPointersRegister.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Allocators/Default.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/SmartPointer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/SmartPointersRegister.h>
 
 #include <cstring>    // std::memcpy, std::memcmp
 #include <cstddef>    // std::nullptr_t
 #include <algorithm>  // swap
 
-namespace TNL {
+namespace noa::TNL {
 namespace Pointers {
 
 //#define HAVE_CUDA_UNIFIED_MEMORY
@@ -847,4 +847,4 @@ protected:
 #endif  // ! HAVE_CUDA_UNIFIED_MEMORY
 
 }  // namespace Pointers
-}  // namespace TNL
+}  // namespace noa::TNL

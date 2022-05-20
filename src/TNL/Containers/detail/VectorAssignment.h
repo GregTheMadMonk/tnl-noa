@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <TNL/TypeTraits.h>
-#include <TNL/Containers/Expressions/TypeTraits.h>
-#include <TNL/Algorithms/ParallelFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/TypeTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/ParallelFor.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 namespace detail {
 
@@ -410,4 +410,4 @@ struct VectorAssignmentWithOperation< Vector, T, false, false >
 
 }  // namespace detail
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

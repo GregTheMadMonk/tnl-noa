@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include <TNL/Containers/NDArray.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/NDArray.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 namespace __ndarray_impl {
 
@@ -90,4 +90,4 @@ struct SynchronizerBuffers : public SynchronizerBuffersLayerHelper< DistributedN
 
 }  // namespace __ndarray_impl
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -6,7 +6,7 @@
 
 #pragma once
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 
 /**
@@ -51,4 +51,4 @@ struct SymmetricMatrix : MatrixType< true >
 {};
 
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include <TNL/Config/ConfigEntryBase.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ConfigEntryBase.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Config {
 
 class ConfigDelimiter : public ConfigEntryBase
@@ -32,4 +32,4 @@ public:
 };
 
 }  // namespace Config
-}  // namespace TNL
+}  // namespace noa::TNL

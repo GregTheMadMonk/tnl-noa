@@ -10,7 +10,7 @@
 
 #include <new>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Exceptions {
 
 struct CudaBadAlloc : public std::bad_alloc
@@ -33,4 +33,4 @@ struct CudaBadAlloc : public std::bad_alloc
 };
 
 }  // namespace Exceptions
-}  // namespace TNL
+}  // namespace noa::TNL

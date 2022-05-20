@@ -9,10 +9,10 @@
 #include <cstdlib>
 
 #include "DistributedGrid.h"
-#include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
-#include <TNL/MPI/Wrappers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Wrappers.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 namespace DistributedMeshes {
 
@@ -476,4 +476,4 @@ operator<<( std::ostream& str, const DistributedMesh< Grid< Dimension, Real, Dev
 
 }  // namespace DistributedMeshes
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

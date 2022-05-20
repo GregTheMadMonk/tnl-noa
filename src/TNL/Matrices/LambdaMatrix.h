@@ -7,11 +7,11 @@
 #pragma once
 
 #include <type_traits>
-#include <TNL/String.h>
-#include <TNL/Devices/Host.h>
-#include <TNL/Matrices/LambdaMatrixRowView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/LambdaMatrixRowView.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 
 /**
@@ -631,6 +631,6 @@ struct LambdaMatrixFactory
 };
 
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Matrices/LambdaMatrix.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/LambdaMatrix.hpp>

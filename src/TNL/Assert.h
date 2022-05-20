@@ -116,9 +116,9 @@
    #include <iostream>
    #include <cstdio>
 
-   #include <TNL/Cuda/CudaCallable.h>
+   #include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CudaCallable.h>
 
-namespace TNL {
+namespace noa::TNL {
 /**
  * \brief Internal namespace for helper classes used in the TNL_ASSERT_* macros.
  */
@@ -376,7 +376,7 @@ TNL_IMPL_CMP_HELPER_( GT, > );
    #undef TNL_IMPL_CMP_HELPER_
 
 }  // namespace Assert
-}  // namespace TNL
+}  // namespace noa::TNL
 
    // Internal macro wrapping the __PRETTY_FUNCTION__ "magic".
    #if defined( __NVCC__ ) && ( __CUDACC_VER_MAJOR__ < 8 )

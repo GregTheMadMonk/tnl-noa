@@ -7,11 +7,11 @@
 #pragma once
 
 #include <type_traits>
-#include <TNL/Containers/Vector.h>
-#include <TNL/Algorithms/Segments/ChunkedEllpackSegmentView.h>
-#include <TNL/Algorithms/Segments/detail/CheckLambdas.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/ChunkedEllpackSegmentView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/detail/CheckLambdas.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 namespace Segments {
 namespace detail {
@@ -289,4 +289,4 @@ ChunkedEllpackreduceSegmentsKernel( View chunkedEllpack,
 }  // namespace detail
 }  // namespace Segments
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

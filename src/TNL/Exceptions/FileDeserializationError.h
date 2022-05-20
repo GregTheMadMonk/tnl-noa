@@ -11,7 +11,7 @@
 #include <string>
 #include <stdexcept>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Exceptions {
 
 class FileDeserializationError : public std::runtime_error
@@ -23,4 +23,4 @@ public:
 };
 
 }  // namespace Exceptions
-}  // namespace TNL
+}  // namespace noa::TNL

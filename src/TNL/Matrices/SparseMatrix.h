@@ -7,15 +7,15 @@
 #pragma once
 
 #include <map>
-#include <TNL/Matrices/Matrix.h>
-#include <TNL/Matrices/MatrixType.h>
-#include <TNL/Allocators/Default.h>
-#include <TNL/Algorithms/Segments/CSR.h>
-#include <TNL/Matrices/SparseMatrixRowView.h>
-#include <TNL/Matrices/SparseMatrixView.h>
-#include <TNL/Matrices/DenseMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/Matrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixType.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Allocators/Default.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/CSR.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/SparseMatrixRowView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/SparseMatrixView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/DenseMatrix.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 
 /**
@@ -1256,6 +1256,6 @@ protected:
 };
 
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Matrices/SparseMatrix.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/SparseMatrix.hpp>

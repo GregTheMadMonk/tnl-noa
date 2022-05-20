@@ -6,23 +6,23 @@
 
 #pragma once
 
-#include <TNL/Cuda/CudaCallable.h>
-#include <TNL/Meshes/GridEntity.h>
-#include <TNL/Meshes/Mesh.h>
-#include <TNL/Meshes/MeshEntity.h>
-#include <TNL/Meshes/Geometry/getOutwardNormalVector.h>
-#include <TNL/Meshes/Topologies/Vertex.h>
-#include <TNL/Meshes/Topologies/Edge.h>
-#include <TNL/Meshes/Topologies/Triangle.h>
-#include <TNL/Meshes/Topologies/Quadrangle.h>
-#include <TNL/Meshes/Topologies/Tetrahedron.h>
-#include <TNL/Meshes/Topologies/Hexahedron.h>
-#include <TNL/Meshes/Topologies/Polygon.h>
-#include <TNL/Meshes/Topologies/Wedge.h>
-#include <TNL/Meshes/Topologies/Pyramid.h>
-#include <TNL/Meshes/Topologies/Polyhedron.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CudaCallable.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridEntity.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Mesh.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshEntity.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Geometry/getOutwardNormalVector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Vertex.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Edge.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Triangle.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Quadrangle.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Tetrahedron.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Hexahedron.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Polygon.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Wedge.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Pyramid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Topologies/Polyhedron.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 template< typename Grid, typename Config >
@@ -375,4 +375,4 @@ getEntityMeasure( const Mesh< MeshConfig, Devices::Cuda >& mesh,
 }
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

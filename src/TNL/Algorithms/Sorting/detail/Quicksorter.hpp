@@ -8,15 +8,15 @@
 
 #pragma once
 
-#include <TNL/Functional.h>
-#include <TNL/Algorithms/Sorting/detail/task.h>
-#include <TNL/Algorithms/Sorting/detail/quicksort_kernel.h>
-#include <TNL/Algorithms/Sorting/detail/quicksort_1Block.h>
-#include <TNL/Algorithms/Sorting/detail/Quicksorter.h>
-#include <TNL/Algorithms/reduce.h>
-#include <TNL/Algorithms/scan.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functional.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/detail/task.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/detail/quicksort_kernel.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/detail/quicksort_1Block.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/detail/Quicksorter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/reduce.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/scan.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 namespace Sorting {
 
@@ -388,4 +388,4 @@ Quicksorter< Value, Devices::Cuda >::processNewTasks()
 
 }  // namespace Sorting
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

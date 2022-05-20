@@ -6,7 +6,7 @@
 
 #pragma once
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 
 template< typename ValuesView, typename Indexer, typename DiagonalsOffsetsView >
@@ -105,4 +105,4 @@ MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsOffsetsView >::cend() 
 }
 
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL

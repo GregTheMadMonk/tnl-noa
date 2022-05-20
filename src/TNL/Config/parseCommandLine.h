@@ -12,11 +12,11 @@
 #include <sstream>
 #include <iomanip>
 
-#include <TNL/String.h>
-#include <TNL/Config/ConfigDescription.h>
-#include <TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ConfigDescription.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Config {
 
 /**
@@ -354,4 +354,4 @@ parseCommandLine( int argc,
 }
 
 }  // namespace Config
-}  // namespace TNL
+}  // namespace noa::TNL

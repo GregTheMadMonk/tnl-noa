@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <TNL/Containers/Vector.h>
-#include <TNL/Algorithms/Segments/EllpackView.h>
-#include <TNL/Algorithms/Segments/SegmentView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/EllpackView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/SegmentView.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 namespace Segments {
 
@@ -184,6 +184,6 @@ operator<<( std::ostream& str, const Ellpack< Device, Index, IndexAllocator, Org
 
 }  // namespace Segments
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Algorithms/Segments/Ellpack.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/Ellpack.hpp>

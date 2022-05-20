@@ -8,10 +8,10 @@
 
 #include <ostream>
 
-#include <TNL/Cuda/CudaCallable.h>
-#include <TNL/Matrices/MatrixRowViewIterator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CudaCallable.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixRowViewIterator.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 namespace Sandbox {
 
@@ -280,6 +280,6 @@ operator<<( std::ostream& str, const SparseSandboxMatrixRowView< ValuesView, Col
 
 }  // namespace Sandbox
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Matrices/Sandbox/SparseSandboxMatrixRowView.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/Sandbox/SparseSandboxMatrixRowView.hpp>

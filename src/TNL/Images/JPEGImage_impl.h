@@ -8,9 +8,9 @@
 
 #include <csetjmp>
 
-#include <TNL/Images/JPEGImage.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/JPEGImage.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Images {
 
 #ifdef HAVE_JPEG_H
@@ -283,4 +283,4 @@ JPEGImage< Index >::~JPEGImage()
 }
 
 }  // namespace Images
-}  // namespace TNL
+}  // namespace noa::TNL

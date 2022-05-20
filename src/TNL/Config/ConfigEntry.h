@@ -12,10 +12,10 @@
 #include <vector>
 #include <sstream>
 
-#include <TNL/Config/ConfigEntryBase.h>
-#include <TNL/Config/ConfigEntryType.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ConfigEntryBase.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ConfigEntryType.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Config {
 
 template< typename EntryType, typename DefaultValueType = EntryType >
@@ -114,4 +114,4 @@ private:
 };
 
 }  // namespace Config
-}  // namespace TNL
+}  // namespace noa::TNL

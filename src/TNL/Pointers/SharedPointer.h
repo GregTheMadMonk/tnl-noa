@@ -10,12 +10,12 @@
 
 #include <cstring>
 #include <type_traits>
-#include <TNL/Assert.h>
-#include <TNL/TypeInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeInfo.h>
 
 //#define TNL_DEBUG_SHARED_POINTERS
 
-namespace TNL {
+namespace noa::TNL {
 namespace Pointers {
 
 /**
@@ -71,7 +71,7 @@ struct Formatter< Pointers::SharedPointer< Object, Device > >
 }  // namespace Assert
 #endif
 
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Pointers/SharedPointerHost.h>
-#include <TNL/Pointers/SharedPointerCuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/SharedPointerHost.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/SharedPointerCuda.h>

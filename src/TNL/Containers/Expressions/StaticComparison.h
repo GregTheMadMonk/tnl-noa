@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <TNL/Assert.h>
-#include <TNL/Containers/Expressions/ExpressionVariableType.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/ExpressionVariableType.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 namespace Expressions {
 
@@ -216,4 +216,4 @@ struct StaticComparison< T1, T2, VectorExpressionVariable, ArithmeticVariable >
 
 }  // namespace Expressions
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

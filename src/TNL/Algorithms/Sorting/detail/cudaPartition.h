@@ -8,11 +8,11 @@
 
 #pragma once
 
-#include <TNL/Containers/Array.h>
-#include <TNL/Algorithms/Sorting/detail/task.h>
-#include <TNL/Algorithms/detail/CudaScanKernel.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Sorting/detail/task.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/detail/CudaScanKernel.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 namespace Sorting {
 
@@ -235,4 +235,4 @@ cudaPartition( Containers::ArrayView< Value, Devices::Cuda > src,
 
 }  // namespace Sorting
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

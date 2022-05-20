@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include <TNL/Images/DicomHeader.h>
-#include <TNL/Images/DicomImageInfo.h>
-#include <TNL/Images/DicomPatientInfo.h>
-#include <TNL/Images/DicomSeriesInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/DicomHeader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/DicomImageInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/DicomPatientInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/DicomSeriesInfo.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Images {
 
 inline DicomHeader::DicomHeader()
@@ -76,4 +76,4 @@ DicomHeader::getSeriesInfo()
 }
 
 }  // namespace Images
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -8,7 +8,7 @@
 
 #include <limits>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace ODE {
 
@@ -119,4 +119,4 @@ ExplicitSolver< Real, Index, SolverMonitor >::setTestingMode( bool testingMode )
 
 }  // namespace ODE
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

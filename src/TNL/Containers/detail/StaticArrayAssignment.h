@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <TNL/TypeTraits.h>
-#include <TNL/Algorithms/unrolledFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/unrolledFor.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 namespace detail {
 
@@ -54,4 +54,4 @@ struct StaticArrayAssignment< StaticArray, T, false >
 
 }  // namespace detail
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

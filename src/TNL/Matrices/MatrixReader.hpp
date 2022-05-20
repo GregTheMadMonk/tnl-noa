@@ -8,12 +8,12 @@
 
 #include <iomanip>
 #include <sstream>
-#include <TNL/String.h>
-#include <TNL/Containers/Vector.h>
-#include <TNL/Timer.h>
-#include <TNL/Matrices/MatrixReader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Timer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixReader.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 
 template< typename Matrix, typename Device >
@@ -356,4 +356,4 @@ MatrixReader< Matrix, TNL::Devices::Host >::parseMtxLineWithElement( const Strin
 }
 
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL

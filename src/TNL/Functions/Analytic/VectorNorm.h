@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <TNL/Math.h>
-#include <TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Math.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Functions {
 namespace Analytic {
 
@@ -272,4 +272,4 @@ operator<<( std::ostream& str, const VectorNorm< Dimensions, Real >& f )
 
 }  // namespace Analytic
 }  // namespace Functions
-}  // namespace TNL
+}  // namespace noa::TNL

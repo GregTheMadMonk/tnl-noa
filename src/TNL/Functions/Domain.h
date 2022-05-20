@@ -6,7 +6,7 @@
 
 #pragma once
 
-namespace TNL {
+namespace noa::TNL {
 namespace Functions {
 
 enum DomainType
@@ -38,4 +38,4 @@ public:
 };
 
 }  // namespace Functions
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -8,12 +8,12 @@
 
 #include <fstream>
 
-#include <TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
 
-#include <TNL/Images/Image.h>
-#include <TNL/Images/RegionOfInterest.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/Image.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/RegionOfInterest.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Images {
 
 template< typename Index = int >
@@ -68,6 +68,6 @@ protected:
 };
 
 }  // namespace Images
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Images/PGMImage_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Images/PGMImage_impl.h>

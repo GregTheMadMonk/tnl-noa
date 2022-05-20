@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include <TNL/Meshes/GridDetails/NeighborGridEntityGetter.h>
-#include <TNL/Meshes/GridDetails/Grid1D.h>
-#include <TNL/Meshes/GridDetails/Grid2D.h>
-#include <TNL/Meshes/GridDetails/Grid3D.h>
-#include <TNL/Algorithms/staticFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/NeighborGridEntityGetter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/Grid1D.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/Grid2D.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/Grid3D.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/staticFor.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 /****
@@ -414,4 +414,4 @@ protected:
 };
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

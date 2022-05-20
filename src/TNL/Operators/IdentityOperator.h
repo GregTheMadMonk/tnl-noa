@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Functions/MeshFunction.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/MeshFunction.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Operators {
 
 template< typename MeshFunction >
@@ -36,4 +36,4 @@ protected:
 };
 
 }  // namespace Operators
-}  // namespace TNL
+}  // namespace noa::TNL

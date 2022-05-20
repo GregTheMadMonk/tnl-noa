@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <TNL/MPI/Wrappers.h>
-#include <TNL/Assert.h>
-#include <TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Wrappers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 namespace DistributedMeshes {
 
@@ -184,4 +184,4 @@ SubdomainOverlapsGetter< Grid< 3, Real, Device, Index > >::getOverlaps(
 
 }  // namespace DistributedMeshes
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

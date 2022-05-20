@@ -8,12 +8,12 @@
 
 #include <experimental/filesystem>
 
-#include <TNL/Meshes/TypeResolver/resolveMeshType.h>
-#include <TNL/Meshes/TypeResolver/GridTypeResolver.h>
-#include <TNL/Meshes/TypeResolver/MeshTypeResolver.h>
-#include <TNL/Meshes/Readers/getMeshReader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/TypeResolver/resolveMeshType.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/TypeResolver/GridTypeResolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/TypeResolver/MeshTypeResolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Readers/getMeshReader.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 template< typename ConfigTag, typename Device, typename Functor >
@@ -104,4 +104,4 @@ loadMesh( Mesh< MeshConfig, Devices::Cuda >& mesh, const std::string& fileName, 
 }
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

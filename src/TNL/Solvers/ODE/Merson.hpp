@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include <TNL/Math.h>
-#include <TNL/Config/ParameterContainer.h>
-#include <TNL/MPI/Wrappers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Math.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Wrappers.h>
 
 #include "Merson.h"
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace ODE {
 
@@ -197,4 +197,4 @@ Merson< Vector, SolverMonitor >::writeGrids( const DofVectorType& u )
 
 }  // namespace ODE
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

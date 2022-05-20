@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Exceptions/CudaRuntimeError.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/CudaRuntimeError.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Cuda {
 
 #ifdef HAVE_CUDA
@@ -30,7 +30,7 @@ checkDevice()
 #endif
 
 }  // namespace Cuda
-}  // namespace TNL
+}  // namespace noa::TNL
 
 #ifdef HAVE_CUDA
    #define TNL_CHECK_CUDA_DEVICE ::TNL::Cuda::checkDevice( __FILE__, __LINE__, cudaGetLastError() )

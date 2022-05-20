@@ -8,7 +8,7 @@
 
 #pragma once
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 namespace details {
 
@@ -73,4 +73,4 @@ struct SparseMatrixRowViewValueGetter< SegmentView, ValuesView, ColumnsIndexesVi
 
 }  // namespace details
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL

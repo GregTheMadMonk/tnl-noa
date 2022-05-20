@@ -10,10 +10,10 @@
 #include <type_traits>
 #include <algorithm>
 
-#include <TNL/TypeTraits.h>
-#include <TNL/Cuda/CudaCallable.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CudaCallable.h>
 
-namespace TNL {
+namespace noa::TNL {
 
 /**
  * \brief This function returns minimum of two numbers.
@@ -573,4 +573,4 @@ isPow2( long int x )
    return ( ( x & ( x - 1 ) ) == 0 );
 }
 
-}  // namespace TNL
+}  // namespace noa::TNL

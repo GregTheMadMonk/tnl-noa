@@ -6,14 +6,14 @@
 
 #pragma once
 
-#include <TNL/Allocators/Default.h>
-#include <TNL/Devices/Host.h>
-#include <TNL/Matrices/DenseMatrixRowView.h>
-#include <TNL/Matrices/MatrixView.h>
-#include <TNL/Matrices/MatrixType.h>
-#include <TNL/Algorithms/Segments/Ellpack.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Allocators/Default.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/DenseMatrixRowView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixType.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/Segments/Ellpack.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 
 /**
@@ -963,6 +963,6 @@ protected:
 };
 
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Matrices/DenseMatrixView.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/DenseMatrixView.hpp>

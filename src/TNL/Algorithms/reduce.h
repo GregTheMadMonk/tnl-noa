@@ -10,11 +10,11 @@
 
 #include <utility>  // std::pair, std::forward
 
-#include <TNL/Functional.h>  // extension of STL functionals for reduction
-#include <TNL/Algorithms/detail/Reduction.h>
-#include <TNL/Containers/Expressions/TypeTraits.h>  // RemoveET
+#include <noa/3rdparty/tnl-noa/src/TNL/Functional.h>  // extension of STL functionals for reduction
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/detail/Reduction.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Expressions/TypeTraits.h>  // RemoveET
 
-namespace TNL {
+namespace noa::TNL {
 namespace Algorithms {
 
 /**
@@ -351,4 +351,4 @@ reduceWithArgument( const Array& array, Reduction&& reduction )
 }
 
 }  // namespace Algorithms
-}  // namespace TNL
+}  // namespace noa::TNL

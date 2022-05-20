@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Solvers/SolverMonitor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/SolverMonitor.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 
 /**
@@ -150,6 +150,6 @@ protected:
 };
 
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Solvers/IterativeSolverMonitor.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/IterativeSolverMonitor.hpp>

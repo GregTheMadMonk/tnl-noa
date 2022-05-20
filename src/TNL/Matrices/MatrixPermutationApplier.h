@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include <TNL/Algorithms/ParallelFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/ParallelFor.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 
 template< typename Matrix, typename PermutationArray >
@@ -90,4 +90,4 @@ permuteMatrixColumns( Matrix& matrix, const PermutationArray& iperm )
 }
 
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL

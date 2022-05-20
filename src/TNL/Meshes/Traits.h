@@ -8,10 +8,10 @@
 
 #include <type_traits>
 
-#include <TNL/Meshes/Grid.h>
-#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 template< typename T >
@@ -31,4 +31,4 @@ class isDistributedGrid< DistributedMeshes::DistributedMesh< Grid< Dimension, Re
 {};
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

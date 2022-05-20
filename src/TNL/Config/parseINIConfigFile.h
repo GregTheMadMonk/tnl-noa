@@ -10,13 +10,13 @@
 
 #include <set>
 
-#include <TNL/Config/ConfigDescription.h>
-#include <TNL/Config/ParameterContainer.h>
-#include <TNL/Config/parseCommandLine.h>  // for addDefaultValues and checkEnumValues
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ConfigDescription.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/parseCommandLine.h>  // for addDefaultValues and checkEnumValues
 
 #include <Leksys/iniparser.hpp>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Config {
 
 ParameterContainer
@@ -121,4 +121,4 @@ parseINIConfigFile( const std::string& configPath, const ConfigDescription& desc
 }
 
 }  // namespace Config
-}  // namespace TNL
+}  // namespace noa::TNL

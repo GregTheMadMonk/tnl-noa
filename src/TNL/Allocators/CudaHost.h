@@ -8,11 +8,11 @@
 
 #pragma once
 
-#include <TNL/Exceptions/CudaBadAlloc.h>
-#include <TNL/Exceptions/CudaSupportMissing.h>
-#include <TNL/Cuda/CheckDevice.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/CudaBadAlloc.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/CudaSupportMissing.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/CheckDevice.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Allocators {
 
 /**
@@ -110,4 +110,4 @@ operator!=( const CudaHost< T1 >& lhs, const CudaHost< T2 >& rhs )
 }
 
 }  // namespace Allocators
-}  // namespace TNL
+}  // namespace noa::TNL

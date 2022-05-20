@@ -11,11 +11,11 @@
 #include <unordered_map>
 #include <vector>
 
-#include <TNL/Config/ConfigEntryType.h>
-#include <TNL/TypeInfo.h>
-#include <TNL/Exceptions/ConfigError.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ConfigEntryType.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/TypeInfo.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/ConfigError.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Config {
 
 class ParameterContainer
@@ -211,4 +211,4 @@ protected:
 };
 
 }  // namespace Config
-}  // namespace TNL
+}  // namespace noa::TNL

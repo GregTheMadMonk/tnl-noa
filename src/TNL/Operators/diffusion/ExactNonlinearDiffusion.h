@@ -12,10 +12,10 @@
 
 #pragma once
 
-#include <TNL/Functions/Domain.h>
-#include <TNL/Operators/ExactIdentityOperator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Domain.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/ExactIdentityOperator.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Operators {
 
 template< int Dimension, typename Nonlinearity, typename InnerOperator = ExactIdentityOperator< Dimension > >
@@ -181,4 +181,4 @@ protected:
 };
 
 }  // namespace Operators
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -12,11 +12,11 @@
 
 #pragma once
 
-#include <TNL/Operators/diffusion/ExactNonlinearDiffusion.h>
-#include <TNL/Operators/ExactFunctionInverseOperator.h>
-#include <TNL/Operators/geometric/ExactGradientNorm.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/diffusion/ExactNonlinearDiffusion.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/ExactFunctionInverseOperator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/geometric/ExactGradientNorm.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Operators {
 
 template< int Dimension, typename InnerOperator = ExactIdentityOperator< Dimension > >
@@ -74,4 +74,4 @@ protected:
 };
 
 }  // namespace Operators
-}  // namespace TNL
+}  // namespace noa::TNL

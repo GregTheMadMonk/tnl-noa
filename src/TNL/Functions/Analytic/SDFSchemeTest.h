@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <TNL/Config/ParameterContainer.h>
-#include <TNL/Containers/StaticVector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticVector.h>
 #include <functions/tnlSDFSinWaveFunction.h>
 #include <functions/tnlSDFSinWaveFunctionSDF.h>
 #include <functions/tnlSDFSinBumps.h>
@@ -16,7 +16,7 @@
 #include <functions/tnlSDFParaboloid.h>
 #include <functions/tnlSDFParaboloidSDF.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Functions {
 namespace Analytic {
 
@@ -86,6 +86,6 @@ public:
 
 }  // namespace Analytic
 }  // namespace Functions
-}  // namespace TNL
+}  // namespace noa::TNL
 
 #include <functions/SDFSchemeTest_impl.h>

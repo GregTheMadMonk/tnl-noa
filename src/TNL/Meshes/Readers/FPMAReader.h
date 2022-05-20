@@ -10,9 +10,9 @@
 #include <sstream>
 #include <vector>
 
-#include <TNL/Meshes/Readers/MeshReader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Readers/MeshReader.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 namespace Readers {
 
@@ -179,4 +179,4 @@ private:
 
 }  // namespace Readers
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

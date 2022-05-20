@@ -12,9 +12,9 @@
 
 #pragma once
 
-#include <TNL/Functions/Domain.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Domain.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Problems {
 
 template< typename ExactOperator, typename TestFunction >
@@ -48,4 +48,4 @@ protected:
 };
 
 }  // namespace Problems
-}  // namespace TNL
+}  // namespace noa::TNL

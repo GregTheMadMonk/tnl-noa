@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <TNL/Meshes/Geometry/getEntityMeasure.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Geometry/getEntityMeasure.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 // Polygon
@@ -35,4 +35,4 @@ isPlanar( const Mesh< MeshConfig, Device >& mesh,
 }
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

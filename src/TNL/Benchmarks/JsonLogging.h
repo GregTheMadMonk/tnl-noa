@@ -10,9 +10,9 @@
 #pragma once
 
 #include "Logging.h"
-#include <TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Benchmarks {
 
 class JsonLogging : public Logging
@@ -165,4 +165,4 @@ protected:
 };
 
 }  // namespace Benchmarks
-}  // namespace TNL
+}  // namespace noa::TNL

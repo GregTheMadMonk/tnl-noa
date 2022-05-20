@@ -13,16 +13,16 @@
 #pragma once
 
 #include <ostream>
-#include <TNL/Logger.h>
-#include <TNL/Containers/Vector.h>
-#include <TNL/Meshes/MeshDetails/ConfigValidator.h>
-#include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <TNL/Meshes/MeshDetails/layers/StorageLayer.h>
-#include <TNL/Meshes/MeshDetails/layers/EntityTags/LayerFamily.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Logger.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/ConfigValidator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/traits/MeshTraits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/layers/StorageLayer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/layers/EntityTags/LayerFamily.h>
 
-#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
-namespace TNL {
+namespace noa::TNL {
 /**
  * \brief Namespace for numerical meshes and related objects.
  */
@@ -314,8 +314,8 @@ std::ostream&
 operator<<( std::ostream& str, const Mesh< MeshConfig, Device >& mesh );
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Meshes/MeshEntity.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshEntity.h>
 
-#include <TNL/Meshes/Mesh.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Mesh.hpp>

@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include <TNL/Matrices/Matrix.h>
-#include <TNL/Assert.h>
-#include <TNL/Cuda/LaunchHelpers.h>
-#include <TNL/Cuda/MemoryHelpers.h>
-#include <TNL/Cuda/SharedMemory.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/Matrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Assert.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/LaunchHelpers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/MemoryHelpers.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Cuda/SharedMemory.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 
 template< typename Real, typename Device, typename Index, typename RealAllocator >
@@ -189,4 +189,4 @@ computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector)
 }*/
 
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL

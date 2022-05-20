@@ -13,7 +13,7 @@
 #include <stdexcept>
 #include <cmath>  // std::ceil
 
-namespace TNL {
+namespace noa::TNL {
 /**
  * \brief Namespace for base64 encoding and decoding functions.
  *
@@ -205,4 +205,4 @@ write_encoded_block( const T* data, const std::size_t data_length, std::ostream&
 }
 
 }  // namespace base64
-}  // namespace TNL
+}  // namespace noa::TNL

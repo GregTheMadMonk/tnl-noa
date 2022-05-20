@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <TNL/Containers/StaticVector.h>
-#include <TNL/Containers/detail/VectorAssignment.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/StaticVector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/detail/VectorAssignment.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 
 template< int Size, typename Real >
@@ -101,4 +101,4 @@ StaticVector< Size, Real >::operator StaticVector< Size, OtherReal >() const
 }
 
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

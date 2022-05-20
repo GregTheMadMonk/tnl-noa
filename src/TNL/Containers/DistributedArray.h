@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include <TNL/Containers/Array.h>
-#include <TNL/Containers/DistributedArrayView.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Array.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/DistributedArrayView.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 
 template< typename Value,
@@ -295,6 +295,6 @@ private:
 };
 
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL
 
 #include "DistributedArray.hpp"

@@ -8,14 +8,14 @@
 
 #include <iomanip>
 #include <functional>
-#include <TNL/Containers/Vector.h>
-#include <TNL/Matrices/LambdaMatrix.h>
-#include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Matrices/LambdaMatrix.h>
-#include <TNL/Matrices/details/SparseMatrix.h>
-#include <TNL/Exceptions/NotImplementedError.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/Vector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/LambdaMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/ParallelFor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/LambdaMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/details/SparseMatrix.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Exceptions/NotImplementedError.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 
 template< typename MatrixElementsLambda, typename CompressedRowLengthsLambda, typename Real, typename Device, typename Index >
@@ -352,4 +352,4 @@ operator<<( std::ostream& str,
 }
 
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL

@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include <TNL/Containers/SharedVector.h>
-#include <TNL/Meshes/Grid.h>
-#include <TNL/Meshes/tnlIdenticalGridGeometry.h>
-#include <TNL/Operators/gradient/tnlCentralFDMGradient.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/SharedVector.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/tnlIdenticalGridGeometry.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/gradient/tnlCentralFDMGradient.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Operators {
 
 template< typename Mesh, typename PressureGradient = tnlCentralFDMGradient< Mesh > >
@@ -171,6 +171,6 @@ protected:
 };
 
 }  // namespace Operators
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/implementation/operators/euler/fvm/LaxFridrichs_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/implementation/operators/euler/fvm/LaxFridrichs_impl.h>

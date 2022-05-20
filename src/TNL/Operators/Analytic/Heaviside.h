@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include <TNL/Functions/Domain.h>
-#include <TNL/Devices/Cuda.h>
-#include <TNL/Config/ParameterContainer.h>
-#include <TNL/Functions/Domain.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Domain.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Domain.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Operators {
 namespace Analytic {
 
@@ -66,4 +66,4 @@ protected:
 
 }  // namespace Analytic
 }  // namespace Operators
-}  // namespace TNL
+}  // namespace noa::TNL

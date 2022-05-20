@@ -8,13 +8,13 @@
 
 #include <memory>  // std::shared_ptr
 
-#include <TNL/Timer.h>
-#include <TNL/Logger.h>
-#include <TNL/Pointers/SharedPointer.h>
-#include <TNL/Solvers/IterativeSolverMonitor.h>
-#include <TNL/Solvers/Linear/LinearSolver.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Timer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Logger.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/SharedPointer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/IterativeSolverMonitor.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/LinearSolver.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace PDE {
 
@@ -90,6 +90,6 @@ protected:
 
 }  // namespace PDE
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Solvers/PDE/SemiImplicitTimeStepper.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/PDE/SemiImplicitTimeStepper.hpp>

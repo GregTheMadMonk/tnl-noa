@@ -11,7 +11,7 @@
 #include <climits>
 #include <type_traits>
 
-namespace TNL {
+namespace noa::TNL {
 
 /**
  * \brief Function takes a value and swaps its endianness.
@@ -63,4 +63,4 @@ forceBigEndian( T value )
    return value;
 }
 
-}  // namespace TNL
+}  // namespace noa::TNL

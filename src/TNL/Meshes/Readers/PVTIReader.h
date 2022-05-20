@@ -10,12 +10,12 @@
 
 #include <experimental/filesystem>
 
-#include <TNL/MPI/Comm.h>
-#include <TNL/MPI/Utils.h>
-#include <TNL/Meshes/Readers/VTIReader.h>
-#include <TNL/Meshes/MeshDetails/layers/EntityTags/Traits.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Comm.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Utils.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Readers/VTIReader.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/MeshDetails/layers/EntityTags/Traits.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 namespace Readers {
 
@@ -343,4 +343,4 @@ protected:
 
 }  // namespace Readers
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL

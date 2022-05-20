@@ -8,10 +8,10 @@
 
 #include <ostream>
 
-#include <TNL/String.h>
-#include <TNL/Config/ParameterContainer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/ParameterContainer.h>
 
-namespace TNL {
+namespace noa::TNL {
 
 /// Creates calculations log in the form of a table.
 class Logger
@@ -84,6 +84,6 @@ protected:
    std::ostream& stream;
 };
 
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Logger_impl.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Logger_impl.h>

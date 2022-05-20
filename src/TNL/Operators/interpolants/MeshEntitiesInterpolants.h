@@ -7,9 +7,9 @@
 #pragma once
 
 #include <type_traits>
-#include <TNL/Functions/Domain.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Domain.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Operators {
 
 template< typename Mesh, int InEntityDimension, int OutEntityDimenions >
@@ -264,4 +264,4 @@ public:
 };
 
 }  // namespace Operators
-}  // namespace TNL
+}  // namespace noa::TNL

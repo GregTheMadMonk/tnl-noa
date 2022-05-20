@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <TNL/Functional.h>
-#include <TNL/Solvers/Linear/Jacobi.h>
-#include <TNL/Solvers/Linear/Utils/LinearResidueGetter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functional.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/Jacobi.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/Linear/Utils/LinearResidueGetter.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 namespace Linear {
 
@@ -128,4 +128,4 @@ Jacobi< Matrix >::performIteration( const ConstVectorViewType& b,
 
 }  // namespace Linear
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

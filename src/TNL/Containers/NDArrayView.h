@@ -8,16 +8,16 @@
 
 #pragma once
 
-#include <TNL/Containers/NDArrayIndexer.h>
-#include <TNL/Containers/ndarray/SizesHolder.h>
-#include <TNL/Containers/ndarray/Subarrays.h>
-#include <TNL/Containers/ndarray/Executors.h>
-#include <TNL/Containers/ndarray/BoundaryExecutors.h>
-#include <TNL/Containers/ndarray/Operations.h>
-#include <TNL/Algorithms/MemoryOperations.h>
-#include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/NDArrayIndexer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ndarray/SizesHolder.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ndarray/Subarrays.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ndarray/Executors.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ndarray/BoundaryExecutors.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Containers/ndarray/Operations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/MemoryOperations.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Algorithms/MultiDeviceMemoryOperations.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Containers {
 
 template< typename Value, typename Device, typename Indexer >
@@ -329,4 +329,4 @@ protected:
 };
 
 }  // namespace Containers
-}  // namespace TNL
+}  // namespace noa::TNL

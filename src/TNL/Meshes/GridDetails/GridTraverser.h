@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <TNL/Meshes/Grid.h>
-#include <TNL/Pointers/SharedPointer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Grid.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Pointers/SharedPointer.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Meshes {
 
 /****
@@ -220,8 +220,8 @@ public:
 };
 
 }  // namespace Meshes
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Meshes/GridDetails/GridTraverser_1D.hpp>
-#include <TNL/Meshes/GridDetails/GridTraverser_2D.hpp>
-#include <TNL/Meshes/GridDetails/GridTraverser_3D.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/GridTraverser_1D.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/GridTraverser_2D.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Meshes/GridDetails/GridTraverser_3D.hpp>

@@ -11,7 +11,7 @@
 #include <cstdlib>  // std::atexit
 #include <unordered_map>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Cuda {
 
 #ifdef HAVE_CUDA
@@ -70,4 +70,4 @@ protected:
 #endif
 
 }  // namespace Cuda
-}  // namespace TNL
+}  // namespace noa::TNL

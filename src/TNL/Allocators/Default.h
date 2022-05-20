@@ -8,13 +8,13 @@
 
 #pragma once
 
-#include <TNL/Allocators/Host.h>
-#include <TNL/Allocators/Cuda.h>
-#include <TNL/Devices/Sequential.h>
-#include <TNL/Devices/Host.h>
-#include <TNL/Devices/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Allocators/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Allocators/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Sequential.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Host.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Cuda.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Allocators {
 
 /**
@@ -49,4 +49,4 @@ struct Default< Devices::Cuda >
 };
 
 }  // namespace Allocators
-}  // namespace TNL
+}  // namespace noa::TNL

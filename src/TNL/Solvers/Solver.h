@@ -6,16 +6,16 @@
 
 #pragma once
 
-#include <TNL/Solvers/BuildConfigTags.h>
-#include <TNL/Solvers/SolverInitiator.h>
-#include <TNL/Solvers/SolverStarter.h>
-#include <TNL/Solvers/SolverConfig.h>
-#include <TNL/Config/parseCommandLine.h>
-#include <TNL/Devices/Cuda.h>
-#include <TNL/MPI/ScopedInitializer.h>
-#include <TNL/MPI/Config.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/BuildConfigTags.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/SolverInitiator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/SolverStarter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Solvers/SolverConfig.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Config/parseCommandLine.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Devices/Cuda.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/ScopedInitializer.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/MPI/Config.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Solvers {
 
 template<
@@ -49,4 +49,4 @@ struct Solver
 };
 
 }  // namespace Solvers
-}  // namespace TNL
+}  // namespace noa::TNL

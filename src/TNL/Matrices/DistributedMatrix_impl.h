@@ -10,7 +10,7 @@
 
 #include "DistributedMatrix.h"
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 
 template< typename Matrix >
@@ -244,4 +244,4 @@ DistributedMatrix< Matrix >::vectorProduct( const InVector& inVector, OutVector&
 }
 
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL

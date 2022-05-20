@@ -10,13 +10,13 @@
 #include <iomanip>
 #include <utility>
 
-#include <TNL/FileName.h>
-#include <TNL/String.h>
-#include <TNL/Math.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/FileName.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Math.h>
 
 #include "FileName.h"
 
-namespace TNL {
+namespace noa::TNL {
 
 inline FileName::FileName( String fileNameBase ) : fileNameBase( std::move( fileNameBase ) ) {}
 
@@ -103,4 +103,4 @@ removeFileNameExtension( String fileName )
    return fileName;
 }
 
-}  // namespace TNL
+}  // namespace noa::TNL

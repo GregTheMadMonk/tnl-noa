@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include <TNL/Operators/Operator.h>
-#include <TNL/Functions/Analytic/Constant.h>
-#include <TNL/Functions/FunctionAdapter.h>
-#include <TNL/Functions/MeshFunction.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Operators/Operator.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/Analytic/Constant.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/FunctionAdapter.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/Functions/MeshFunction.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Operators {
 
 template< typename Mesh,
@@ -118,4 +118,4 @@ operator<<( std::ostream& str, const DirichletBoundaryConditions< Mesh, Function
 }
 
 }  // namespace Operators
-}  // namespace TNL
+}  // namespace noa::TNL

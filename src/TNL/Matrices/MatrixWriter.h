@@ -8,9 +8,9 @@
 
 #include <ostream>
 #include <iostream>
-#include <TNL/String.h>
+#include <noa/3rdparty/tnl-noa/src/TNL/String.h>
 
-namespace TNL {
+namespace noa::TNL {
 namespace Matrices {
 
 /**
@@ -153,6 +153,6 @@ protected:
 /// \endcond
 
 }  // namespace Matrices
-}  // namespace TNL
+}  // namespace noa::TNL
 
-#include <TNL/Matrices/MatrixWriter.hpp>
+#include <noa/3rdparty/tnl-noa/src/TNL/Matrices/MatrixWriter.hpp>
