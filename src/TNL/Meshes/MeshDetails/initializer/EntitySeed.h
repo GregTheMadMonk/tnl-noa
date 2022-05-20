@@ -138,7 +138,7 @@ public:
    // this constructor definition is here to avoid default constructor being implicitly declared as __host__ __device__, that
    // causes warning: warning #20011-D: calling a __host__ function("std::allocator<int> ::allocator") from a __host__
    // __device__ function("TNL::Meshes::EntitySeed< ::MeshTest::TestTwoWedgesMeshConfig,
-   // ::TNL::Meshes::Topologies::Polygon> ::EntitySeed [subobject]") is not allowed
+   // ::noa::TNL::Meshes::Topologies::Polygon> ::EntitySeed [subobject]") is not allowed
    EntitySeed() {}
 
    void

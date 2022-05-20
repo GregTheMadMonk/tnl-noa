@@ -33,7 +33,7 @@ checkDevice()
 }  // namespace noa::TNL
 
 #ifdef HAVE_CUDA
-   #define TNL_CHECK_CUDA_DEVICE ::TNL::Cuda::checkDevice( __FILE__, __LINE__, cudaGetLastError() )
+   #define TNL_CHECK_CUDA_DEVICE ::noa::TNL::Cuda::checkDevice( __FILE__, __LINE__, cudaGetLastError() )
 #else
-   #define TNL_CHECK_CUDA_DEVICE ::TNL::Cuda::checkDevice()
+   #define TNL_CHECK_CUDA_DEVICE ::noa::TNL::Cuda::checkDevice()
 #endif
