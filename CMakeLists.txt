@@ -202,7 +202,7 @@ endif()
 # Check for CUDA
 #
 if( ${WITH_CUDA} )
-    find_package( CUDA 9.0 )
+    find_package( CUDA 10.0 )
     if( CUDA_FOUND )
         set( BUILD_CUDA TRUE)
         set(CUDA_SEPARABLE_COMPILATION ON)
@@ -229,6 +229,10 @@ if( ${WITH_CUDA} )
         set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -Wno-deprecated-gpu-targets -Xcudafe --diag_suppress=code_is_unreachable -Xcudafe --diag_suppress=loop_not_reachable -Xcudafe --diag_suppress=implicit_return_from_non_void_function -Xcudafe --diag_suppress=unsigned_compare_with_zero -Xcudafe --display_error_number)
         # This diagnostic is just plain wrong in CUDA 9 and later, see https://github.com/kokkos/kokkos/issues/1470
         set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -Xcudafe --diag_suppress=esa_on_defaulted_function_ignored)
+        # nvcc 10 causes many invalid VLA errors in the host code
+        if( ${CUDA_VERSION_MAJOR} STREQUAL "10" )
+           set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} -Xcompiler -Wno-vla )
+        endif()
         # Select GPU architecture
         ## cmake bug: cuda_select_nvcc_arch_flags does not work with CMAKE_EXECUTABLE_SUFFIX
         ## see https://gitlab.kitware.com/cmake/cmake/issues/19636
