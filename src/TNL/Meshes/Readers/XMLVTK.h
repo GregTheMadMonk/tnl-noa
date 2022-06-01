@@ -10,7 +10,7 @@
 
 #include <map>
 #include <set>
-#include <experimental/filesystem>
+#include <filesystem>
 
 #include <noa/3rdparty/tnl-noa/src/TNL/Meshes/Readers/MeshReader.h>
 #include <noa/3rdparty/tnl-noa/src/TNL/base64.h>
@@ -20,9 +20,7 @@
    #include <noa/3rdparty/tnl-noa/src/TNL/zlib_compression.h>
 #endif
 
-#ifdef HAVE_TINYXML2
-   #include <tinyxml2.h>
-#endif
+#include <noa/3rdparty/tinyxml2.hh>
 
 namespace noa::TNL {
 namespace Meshes {
@@ -356,7 +354,7 @@ public:
 #ifdef HAVE_TINYXML2
       using namespace tinyxml2;
 
-      namespace fs = std::experimental::filesystem;
+      namespace fs = std::filesystem;
       if( ! fs::exists( fileName ) )
          throw MeshReaderError( "XMLVTK", "file '" + fileName + "' does not exist" );
       if( fs::is_directory( fileName ) )
